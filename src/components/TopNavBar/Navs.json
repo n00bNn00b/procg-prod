@@ -1,0 +1,54 @@
+{
+  "TopNavs": [
+    {
+      "id": 1,
+      "name": "Home",
+      "icon": "Home",
+      "link": "/"
+    },
+    {
+      "id": 2,
+      "name": "Alerts",
+      "icon": "Bell",
+      "link": "/alerts"
+    },
+    {
+      "id": 3,
+      "name": "Tasks",
+      "icon": "ListChecks",
+      "link": "/tasks"
+    },
+    {
+      "id": 4,
+      "name": "Notifications",
+      "icon": "Mail",
+      "link": "/notifications"
+    }
+  ],
+  "Profile": [
+    {
+      "id": 1,
+      "name": "Profile",
+      "icon": "fa-user",
+      "link": "/profile"
+    },
+    {
+      "id": 2,
+      "name": "Security",
+      "icon": "fa-shield-halved",
+      "link": "/security"
+    },
+    {
+      "id": 3,
+      "name": "Settings",
+      "icon": "fa-gear",
+      "link": "/settings"
+    },
+    {
+      "id": 4,
+      "name": "Logout",
+      "icon": "fa-right-from-bracket",
+      "link": "#"
+    }
+  ]
+}

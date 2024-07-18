@@ -1,8 +1,12 @@
+import TopNavBar from "@/components/TopNavBar/TopNavBar";
+
 const Home = () => {
   return (
-    <div>
-      <h2>Home</h2>
-    </div>
+    <main>
+      <nav>
+        <TopNavBar />
+      </nav>
+    </main>
   );
 };
 
