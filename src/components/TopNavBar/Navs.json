@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Home",
-      "icon": "Home",
+      "icon": "House",
       "link": "/"
     },
     {
@@ -29,25 +29,25 @@
     {
       "id": 1,
       "name": "Profile",
-      "icon": "fa-user",
+      "icon": "CircleUserRound",
       "link": "/profile"
     },
     {
       "id": 2,
       "name": "Security",
-      "icon": "fa-shield-halved",
+      "icon": "Shield",
       "link": "/security"
     },
     {
       "id": 3,
       "name": "Settings",
-      "icon": "fa-gear",
+      "icon": "Settings",
       "link": "/settings"
     },
     {
       "id": 4,
       "name": "Logout",
-      "icon": "fa-right-from-bracket",
+      "icon": "ArrowRightToLine",
       "link": "#"
     }
   ]
