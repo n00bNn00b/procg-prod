@@ -1,0 +1,59 @@
+[
+    {
+        "submenu": "Finance",
+        "submenuIcon": "../../public/sidebar/finance.svg",
+        "paths": ["/risk-management", "/control-management", "/issue-management"],
+        "menuItems" : [
+            {"name": "Risk Management", "icon": "../../public/sidebar/risk-management.png", "path": "/risk-management"},
+            {"name": "Control Management", "icon": "../../public/sidebar/control-management.svg", "path": "/control-management"},
+            {"name": "Issue Management", "icon": "../../public/sidebar/issue-management.svg", "path": "/issue-management"}
+        ]
+    },
+    {
+        "submenu": "Continuous Monitoring",
+        "submenuIcon": "../../public/sidebar/continuous-monitoring.svg",
+        "paths": ["/continuous-control-management", "/result-management"],
+        "menuItems" : [
+            {"name": "Continuous Control Management", "icon": "../../public/sidebar/continuous-control-management.svg", "path": "/continuous-control-management"},
+            {"name": "Result Management", "icon": "../../public/sidebar/result-management.svg", "path": "/result-management"}
+        ]
+    },
+    {
+        "submenu": "Tools",
+        "submenuIcon": "../../public/sidebar/tools.svg",
+        "paths": ["/setup-and-administration"],
+        "menuItems" : [
+            {"name": "Setup and Administration", "icon": "../../public/sidebar/setup-and-administration.svg", "path": "/setup-and-administration"}
+        ]
+    },
+    {
+        "submenu": "Controls",
+        "submenuIcon": "../../public/sidebar/controls.png",
+        "paths": ["/manage-controls"],
+        "menuItems" : [
+            {"name": "Manage Controls", "icon": "../../public/sidebar/manage-controls.png", "path": "/manage-controls"}
+        ]
+    },
+    {
+        "submenu": "Access Models",
+        "submenuIcon": "../../public/sidebar/access-model.png",
+        "paths": ["/manage-access-models", "/create-access-model"],
+        "menuItems" : [
+            {"name": "Manage Access Models", "icon": "../../public/sidebar/manage-access-models.png", "path": "/manage-access-models"},
+            {"name": "Create Access Model", "icon": "../../public/sidebar/create-access-model.png", "path": "/create-access-model"}
+        ]
+    },
+    {
+        "submenu": "Manage Administration",
+        "submenuIcon": "../../public/sidebar/manage-administration.png",
+        "paths": ["/manage-access-entitlements", "/manage-access-global-conditions", "/create-access-global-conditions", "/manage-access-path-conditions", "/manage-user-defined-objects",  "/manage-ccm-jobs"],
+        "menuItems" : [
+            {"name": "Manage Access Entitlements", "icon": "../../public/sidebar/risk-management.png", "path": "/manage-access-entitlements"},
+            {"name": "Manage Access Global Conditions", "icon": "../../public/sidebar/continuous-control-management.svg", "path": "/manage-access-global-conditions"},
+            {"name": "Create Access Global Conditions", "icon": "../../public/sidebar/result-management.svg", "path": "/create-access-global-conditions"},
+            {"name": "Manage Access Path Conditions", "icon": "../../public/sidebar/result-management.svg", "path": "/manage-access-path-conditions"},
+            {"name": "Manage User Defined Objects", "icon": "../../public/sidebar/result-management.svg", "path": "/manage-user-defined-objects"},
+            {"name": "Manage CCM Jobs", "icon": "../../public/sidebar/result-management.svg", "path": "/manage-ccm-jobs"}
+        ]
+    }
+]

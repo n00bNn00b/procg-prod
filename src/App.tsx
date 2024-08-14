@@ -1,13 +1,13 @@
-import { Button } from "./components/ui/button";
-import Home from "./pages/Home/Home";
+import { RouterProvider } from "react-router-dom"
+import routes from "./routes/routes"
 
-function App() {
+
+const App = () => {
   return (
     <>
-      <Button className="text-2xl bg-slate-600">Click Me</Button>
-      <Home/>
+      <RouterProvider router={routes}></RouterProvider>
     </>
-  );
+  )
 }
 
-export default App;
+export default App
