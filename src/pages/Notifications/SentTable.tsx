@@ -11,6 +11,7 @@ import {
     AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
+    AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
@@ -44,35 +45,31 @@ const SentTable = ({path, person, sentMessages}: SentTableProps) => {
     })
   }
   return (
-    <div className="ml-[11rem] rounded-md shadow-md mr-4 p-4">
+    <div className="ml-[11rem] rounded-md shadow-md p-4">
         <h1 className="text-lg font-semibold mb-6">{path}</h1>
         <Table>
             <TableHeader>
                 <TableRow>
                 <TableHead>{person}</TableHead>
                 <TableHead><span className="font-bold">Subject/</span>Body</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead className="w-[110px]">Date</TableHead>
                 <TableHead>Action</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
                 {sentMessages.map(msg => (
                   <TableRow key={msg.id}>
-                    <TableCell>{msg.recivers}</TableCell>
+                    <TableCell>{msg.recivers.join(', ')}</TableCell>
                     <TableCell>
                       <span className="font-medium mr-1">{msg.subject}</span> 
-                      <span className="text-dark-400 mr-1">{msg.body?.slice(0,130)}</span>
+                      <span className="text-dark-400 mr-1">{msg.body?.slice(0,60)}</span>
                       <span>...</span>
                     </TableCell>
-                    <TableCell >{msg.date}</TableCell>
+                    <TableCell className="w-[110px]">{msg.date}</TableCell>
                     <TableCell className="flex gap-2 h-full items-center">
-                      {msg.status === "Sent" ? 
-                      <Link to={`/notifications/${msg.id}`} className="bg-blue-600 text-white p-[6px] rounded-full flex justify-center items-center">
+                      <Link to={`/notifications/sent/${msg.id}`} className="bg-blue-600 text-white p-[6px] rounded-full flex justify-center items-center">
                         <View size={20}/>
-                      </Link> : 
-                      <Link to={`/notifications/draft/${msg.id}`} className="bg-blue-600 text-white p-[6px] rounded-full flex justify-center items-center">
-                      <View size={20}/>
-                    </Link>}
+                      </Link>
                       <AlertDialog>
                         <AlertDialogTrigger>
                         <button className="bg-Red-200 text-white p-[6px] rounded-full flex justify-center items-center">
@@ -83,6 +80,9 @@ const SentTable = ({path, person, sentMessages}: SentTableProps) => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                           </AlertDialogHeader>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete from both side.
+                          </AlertDialogDescription>
                           <AlertDialogFooter>
                             <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
                               <X/>

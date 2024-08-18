@@ -12,7 +12,7 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom"
 
-const SingleMessage = () => {
+const SingleSent = () => {
     const {token} = useGlobalContext();
     const navigate = useNavigate();
     const url = import.meta.env.VITE_API_URL;
@@ -87,10 +87,13 @@ const SingleMessage = () => {
             <CardTitle>{`${message.subject}`}</CardTitle>
             <CardDescription className="flex flex-col justify-center gap-4">
                 <p>{message.date}</p>
-                <div className="flex flex-col">
-                   <p>{message.sender}</p>
-                    <img src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-                         alt="img" className="w-10 h-10 rounded-full object-cover object-center"/>
+                <div className="flex gap-2">
+                    {message.recivers.map(reciever => (
+                        <div className="flex flex-col">
+                            <p>{reciever}</p>
+                            <img src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                                alt="img" className="w-10 h-10 rounded-full object-cover object-center"/>
+                        </div>))}
                 </div>
             </CardDescription>
         </CardHeader>
@@ -102,4 +105,4 @@ const SingleMessage = () => {
   )
 }
 
-export default SingleMessage
+export default SingleSent

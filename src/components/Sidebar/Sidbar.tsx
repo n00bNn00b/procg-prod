@@ -36,7 +36,7 @@ const Sidbar = () => {
     }
 
 return (
-    <Sidebar collapsed={!open} transitionDuration={1000} className='h-[calc(100vh-3rem)] text-[13px] bg-white' style={{position: "fixed"}}>
+    <Sidebar collapsed={!open} transitionDuration={1000} className='h-[calc(100vh-3rem)] text-[13px] bg-white z-50' style={{position: "fixed"}}>
         <Menu>
             {menuData.map((menu) => (
                 <SubMenu className={getSubMenuStyle(menu.paths)} key={menu.submenu} label={menu.submenu} icon={<img src={menu.submenuIcon} className='w-[20px] h-[20px]'/>}>

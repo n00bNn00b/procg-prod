@@ -23,12 +23,13 @@ const SingleDraft = () => {
   const url = import.meta.env.VITE_API_URL;
   const idString= useParams();
   const id = Number(idString.id);
-  const [recivers, setRecivers] =useState<string>("");
+  const [recivers, setRecivers] =useState<string[]>([]);
   const [subject, setSubject] = useState<string>("");
   const [body, setBody] = useState<string>("");
   const [showUsers, setShowUsers] = useState(false);
   const [query, setQuery] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
+  const [isAllClicked, setIsAllClicked] = useState(true);
   const sender = token.user_name;
   const time = new Date().toLocaleTimeString();
   const currentDate = new Date().toLocaleDateString();
@@ -47,16 +48,10 @@ const SingleDraft = () => {
             console.log(error)
         }
 
-        try {
-            const response = await axios.delete(`${url}/messages/${id}`);
-            console.log('Resource deleted:', response.data);
-          } catch (error) {
-            console.error('Error deleting resource:', error);
-          }
     }
 
     fetchMessage();
-}, [id]);
+}, [id, url]);
   
 
 const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -64,6 +59,29 @@ const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
 }
 
 const filterdUser = users.filter((user) => user.user_name.toLowerCase().includes(query.toLowerCase()));
+
+const handleReciever = (reciever: string) => {
+  if(isAllClicked){
+      const newArray = recivers.filter(rcvr => rcvr !== reciever)
+      setRecivers(newArray)
+  } 
+  if(recivers.includes(reciever)) {
+      return
+  } else {
+      setRecivers((prevArray) => [...prevArray, reciever])
+  }
+};
+
+const handleRemoveReciever = (reciever: string) => {
+  const newRecipients = recivers.filter(rcvr => rcvr !== reciever);
+  setRecivers(newRecipients)
+}
+
+const handleSelectAll = ()=>{
+  setIsAllClicked(true);
+  const allusers = users.map(user => (user.user_name));
+  setRecivers(allusers)
+}
 
 const handleSend = async () => {
   const data = {
@@ -85,14 +103,21 @@ const handleSend = async () => {
     })
   } catch (error) {
     console.error('Error:', error);
-   
+  }
+
+  try {
+    const response = await axios.delete(`${url}/messages/${id}`);
+    console.log('Resource deleted:', response.data);
+  } catch (error) {
+    console.error('Error deleting resource:', error);
   }
 
   socket.emit("sendMessage", data);
-  setRecivers('');
+  setRecivers([]);
   setSubject('');
   setBody('');
   setIsSending(false);
+  navigate('/notifications/draft');
 };
 
 const handleDelete = async () => {
@@ -124,16 +149,17 @@ return (
             <CardContent>
                 <div className="flex flex-col gap-4">
                 <div className="flex gap-2">
-                <button onClick={()=> setShowUsers(!showUsers)} className="bg-black text-white w-40 h-8 rounded-sm duration-300 font-semibold">Select Recipients</button>
-                    {recivers? 
-                    <div className="rounded-sm w-[calc(100%-11rem)] max-h-20 scrollbar-thin overflow-auto flex flex-wrap gap-1">
-                        <div className="flex gap-1 bg-black text-white h-8 px-4 items-center rounded-full">
-                            <p className="font-semibold">{recivers}</p>
-                            <div onClick={()=> setRecivers("")} className="flex h-[65%] items-end cursor-pointer">
-                                <Delete size={18}/>
-                            </div>
-                        </div>
-                    </div>: null}
+                  <button onClick={()=> setShowUsers(!showUsers)} className="bg-dark-100 text-white w-40 h-8 rounded-sm font-semibold">Select Recipients</button>
+                  <div className="rounded-sm w-[calc(100%-11rem)] max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1 justify-end">
+                      {recivers.map(rec => (
+                          <div className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full">
+                              <p className="font-semibold">{rec}</p>
+                              <div onClick={()=> handleRemoveReciever(rec)} className="flex h-[65%] items-end cursor-pointer">
+                                  <Delete size={18} />
+                              </div>
+                          </div>
+                      ))}
+                  </div>
                 </div>
                 {showUsers? <div className="w-40 fixed z-10 top-[202px] bg-light-100 border max-h-[210px] overflow-auto scrollbar-thin">
                     <input type="text" 
@@ -141,13 +167,13 @@ return (
                         placeholder="Search..."
                         value={query}
                         onChange={handleQueryChange}/>
-                    {/* <div onClick={selectAll} className="flex justify-between px-4 items-center hover:bg-light-200 cursor-pointer">
+                    <div onClick={handleSelectAll} className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer">
                         <p>All</p>
-                    </div> */}
+                    </div>
                     {filterdUser.map(user => (
-                        <div key={user.user_id} onClick={()=>setRecivers(user.user_name)} className="flex justify-between px-4 items-center hover:bg-light-200 cursor-pointer">
+                        <div onClick={() => handleReciever(user.user_name)} key={user.user_id} className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer">
                             <p>{user.user_name}</p>
-                            {recivers === user.user_name? <Check size={14} color="#038C5A"/>: null}
+                            {recivers.includes(user.user_name) ? <Check size={14} color="#038C5A"/>: null}
                         </div>
                     ))}
                 </div>: null}
@@ -168,7 +194,7 @@ return (
                 
             </CardContent>
             <CardFooter className="flex">
-                {recivers === "" || body === "" || recivers === "" ? null : 
+                {recivers.length === 0 || body === "" ? null : 
                 <button onClick={handleSend} className="flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md bg-dark-100 text-white hover:scale-95 duration-300">
                     {isSending? <ButtonSpinner/>: <Send size={18}/>}
                     <p className="font-semibold">Send</p>

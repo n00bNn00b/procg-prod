@@ -8,6 +8,7 @@ import SingleMessage from "@/pages/Notifications/SingleMessage";
 import SingleDraft from "@/pages/Notifications/SingleDraft";
 import Tasks from "@/pages/Tasks/Tasks";
 import Home from "@/pages/Home/Home";
+import SingleSent from "@/pages/Notifications/SingleSent";
 
 const routes = createBrowserRouter([
     {
@@ -49,7 +50,11 @@ const routes = createBrowserRouter([
                         element: <SingleDraft/>,
                     },
                     {
-                        path: ":id",
+                        path: "sent/:id",
+                        element: <SingleSent/>,
+                    },
+                    {
+                        path: "inbox/:id",
                         element: <SingleMessage/>,
                     },
                 ]

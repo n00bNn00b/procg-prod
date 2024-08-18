@@ -35,7 +35,7 @@ export function GlobalContextProvider({
   children,
 }: GlobalContextProviderProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [token, setToken] = useState<Token>({});
+  const [token, setToken] = useState<Token>({user_name: ""});
   const [users, setUsers] = useState<Users[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [socketMessage, setSocketMessages] = useState<Message[]>([]);
@@ -49,6 +49,7 @@ export function GlobalContextProvider({
     socket.on("message", (data) => {
       setSocketMessages((prevArray) => [data, ...prevArray]);
     });
+
   }, [user, socketMessage]);
 
   //Fetch Users
@@ -66,7 +67,7 @@ export function GlobalContextProvider({
 
     fetchUsers();
   }, [url]);
-
+  
   //Fetch Messages
   useEffect(() => {
     const fetchMessages = async () => {
