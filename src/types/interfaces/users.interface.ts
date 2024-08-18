@@ -2,7 +2,7 @@ export interface Token {
     access_token?: string;
     tenant_id?: number;
     user_id?: number;
-    user_name?: string
+    user_name: string
 }
 
 export interface Users {
@@ -20,7 +20,7 @@ export interface Users {
 export interface Message {
     id: number;
     sender: string;
-    recivers: string;
+    recivers: string[];
     subject: string;
     body: string;
     date: string;

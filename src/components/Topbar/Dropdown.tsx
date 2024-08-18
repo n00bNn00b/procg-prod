@@ -7,18 +7,18 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
   import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { NavLink } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import { LogOut, Settings, ShieldBan, User } from "lucide-react"
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext"
 
-  
-
 const Dropdown = () => {
     const {token, setToken} = useGlobalContext();
+    const navigate = useNavigate();
    
     const handleSignOut = () => {
         localStorage.setItem('token', JSON.stringify({access_token: ""}));
-        setToken({});
+        setToken({access_token: ""});
+        navigate('/');
     }
 
   return (

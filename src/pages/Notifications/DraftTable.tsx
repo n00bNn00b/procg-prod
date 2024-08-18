@@ -6,7 +6,7 @@ import {
     TableHeader,
     TableRow,
   } from "@/components/ui/table";
-  import {
+import {
     AlertDialog,
     AlertDialogAction,
     AlertDialogCancel,
@@ -17,33 +17,22 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog";
+import { useToast } from "@/components/ui/use-toast";
 import { Message } from "@/types/interfaces/users.interface";
 import axios from "axios";
 import { Check, Trash2, View, X } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast"
 import { Link } from "react-router-dom";
-import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
 
-  interface NotificationTableProps {
+  interface DraftTableProps {
     path: string;
     person: string;
-    recievedMessages: Message[];
+    sentMessages: Message[];
   }
 
-const NotificationTable = ({path, person, recievedMessages}: NotificationTableProps) => {
-  const {socketMessage, setSocketMessages} = useGlobalContext();
+const DraftTable = ({path, person, sentMessages}: DraftTableProps) => {
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
-  
-  const uniquMessagesIds = socketMessage.map(msg => (msg.id));
-  console.log(uniquMessagesIds);
-    
-  const handleUniqueMessages = (id: number) => {
-      const newArray = socketMessage.filter(msg => msg.id !== id);
-      setSocketMessages(newArray)
-  }
-
   const handleDelete = async (id: number) => {
     try {
       const response = await axios.delete(`${url}/messages/${id}`);
@@ -56,29 +45,29 @@ const NotificationTable = ({path, person, recievedMessages}: NotificationTablePr
     })
   }
   return (
-    <div className="ml-[11rem] rounded-md shadow-md p-4">
+    <div className="ml-[11rem] rounded-md shadow-md mr-4 p-4">
         <h1 className="text-lg font-semibold mb-6">{path}</h1>
         <Table>
             <TableHeader>
                 <TableRow>
                 <TableHead>{person}</TableHead>
                 <TableHead><span className="font-bold">Subject/</span>Body</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead className="w-[110px]">Date</TableHead>
                 <TableHead>Action</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {recievedMessages.map(msg => (
-                  <TableRow key={msg.id} className={uniquMessagesIds.includes(msg.id) ? "bg-winter-100/30" : "mt-0"}>
-                    <TableCell>{msg.sender}</TableCell>
+                {sentMessages.map(msg => (
+                  <TableRow key={msg.id}>
+                    <TableCell>{msg.recivers.join(', ')}</TableCell>
                     <TableCell>
                       <span className="font-medium mr-1">{msg.subject}</span> 
                       <span className="text-dark-400 mr-1">{msg.body?.slice(0,60)}</span>
                       <span>...</span>
                     </TableCell>
-                    <TableCell>{msg.date}</TableCell>
+                    <TableCell className="w-[110px]">{msg.date}</TableCell>
                     <TableCell className="flex gap-2 h-full items-center">
-                      <Link onClick={()=>handleUniqueMessages(msg.id)} to={`/notifications/inbox/${msg.id}`} className="bg-blue-600 text-white p-[6px] rounded-full flex justify-center items-center">
+                      <Link to={`/notifications/draft/${msg.id}`} className="bg-blue-600 text-white p-[6px] rounded-full flex justify-center items-center">
                         <View size={20}/>
                       </Link>
                       <AlertDialog>
@@ -113,4 +102,4 @@ const NotificationTable = ({path, person, recievedMessages}: NotificationTablePr
   )
 }
 
-export default NotificationTable
+export default DraftTable

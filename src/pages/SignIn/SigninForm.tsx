@@ -6,6 +6,7 @@ import axios from "axios"
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useNavigate } from "react-router-dom";
 
+
 const loginSchema = z.object({
     email: z.string().email('Invalid email'),
     password: z.string().min(4, 'Password must be at least 4 characters'),
@@ -15,8 +16,7 @@ const SignInForm = () => {
    const {setToken} = useGlobalContext();
    const navigate = useNavigate();
    const url = import.meta.env.VITE_API_URL;
-   console.log(url)
-    const form = useForm<z.infer<typeof loginSchema>>({
+   const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
             email: '',
@@ -33,11 +33,8 @@ const SignInForm = () => {
             if(response.data) {
                 navigate('/home');
             }
-            
-            // Handle successful sign-in, e.g., store the token, redirect, etc.
           } catch (error) {
             console.error('Error:', error);
-            // Handle sign-in error
           }
     }
 
@@ -50,9 +47,9 @@ const SignInForm = () => {
             name="email"
             render={({ field }) => (
                 <FormItem className="flex flex-col">
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-dark-400">Email</FormLabel>
                     <FormControl>
-                        <input type="text" className="border h-8 outline-none rounded-md pl-2" {...field} />
+                        <input type="text" className="border h-8 outline-none rounded-md pl-2 text-dark-400" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -63,15 +60,15 @@ const SignInForm = () => {
             name="password"
             render={({ field }) => (
                 <FormItem className="flex flex-col">
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-dark-400">Password</FormLabel>
                     <FormControl>
-                    <input type="password" className="border h-8 outline-none rounded-md pl-2" {...field} />
+                    <input type="password" className="border h-8 outline-none rounded-md pl-2 text-dark-400" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
             )}
         />
-        <button type="submit" className="w-full h-10 rounded-md bg-black hover:bg-black/90 text-white">Log In</button>
+        <button type="submit" className="w-full h-[2.2rem] rounded-md bg-Red-200 hover:bg-Red-200/90 text-white">Log In</button>
         </form>
     </Form>
     </div>
