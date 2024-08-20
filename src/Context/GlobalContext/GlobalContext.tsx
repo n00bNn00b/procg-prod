@@ -35,7 +35,7 @@ export function GlobalContextProvider({
   children,
 }: GlobalContextProviderProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [token, setToken] = useState<Token>({user_name: ""});
+  const [token, setToken] = useState<Token>({user_name: "", access_token: ""});
   const [users, setUsers] = useState<Users[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [socketMessage, setSocketMessages] = useState<Message[]>([]);
@@ -45,12 +45,22 @@ export function GlobalContextProvider({
 
   useEffect(() => {
     socket.emit("register", user);
+  }, [user]);
 
+  useEffect(() => {
     socket.on("message", (data) => {
       setSocketMessages((prevArray) => [data, ...prevArray]);
     });
 
-  }, [user, socketMessage]);
+    socket.on("offlineMessage", (data) => {
+      setSocketMessages(data);
+    });
+
+    return () =>{
+      socket.off("message");
+      socket.off("offlineMessage")
+    } 
+  }, [socketMessage]);
 
   //Fetch Users
   useEffect(() => {
