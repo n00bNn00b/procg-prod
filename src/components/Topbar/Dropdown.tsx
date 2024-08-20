@@ -17,7 +17,7 @@ const Dropdown = () => {
    
     const handleSignOut = () => {
         localStorage.setItem('token', JSON.stringify({access_token: ""}));
-        setToken({access_token: ""});
+        setToken({access_token: "", user_name: ""});
         navigate('/');
     }
 
