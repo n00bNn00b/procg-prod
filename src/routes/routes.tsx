@@ -9,67 +9,78 @@ import SingleDraft from "@/pages/Notifications/SingleDraft";
 import Tasks from "@/pages/Tasks/Tasks";
 import Home from "@/pages/Home/Home";
 import SingleSent from "@/pages/Notifications/SingleSent";
+import DataSources from "@/pages/DataSources/DataSources";
 
 const routes = createBrowserRouter([
-    {
-        path: "/",
-        element:<Layout/>,
-        children: 
-        [
-            {
-                path: "home",
-                element: <Home/>
-            },
-            {
-                path: "profile",
-                element: <Profile/>
-            },
-            {
-                path: "tasks",
-                element: <Tasks/>
-            },
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
+        path: "home",
+        element: <Home />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
+      },
+      {
+        path: "tasks",
+        element: <Tasks />,
+      },
 
-            {
-                path: "notifications",
-                children: 
-                [
-                    {
-                        path: "inbox",
-                        element: <Inbox/>,
-                    },
-                    {
-                        path: "sent",
-                        element: <Sent/>,
-                    },
-                    {
-                        path: "draft",
-                        element: <Draft/>,
-                    },
-                    {
-                        path: "draft/:id",
-                        element: <SingleDraft/>,
-                    },
-                    {
-                        path: "sent/:id",
-                        element: <SingleSent/>,
-                    },
-                    {
-                        path: "inbox/:id",
-                        element: <SingleMessage/>,
-                    },
-                ]
-            }
-        ]
-    },
-    
-])
+      {
+        path: "notifications",
+        children: [
+          {
+            path: "inbox",
+            element: <Inbox />,
+          },
+          {
+            path: "sent",
+            element: <Sent />,
+          },
+          {
+            path: "draft",
+            element: <Draft />,
+          },
+          {
+            path: "draft/:id",
+            element: <SingleDraft />,
+          },
+          {
+            path: "sent/:id",
+            element: <SingleSent />,
+          },
+          {
+            path: "inbox/:id",
+            element: <SingleMessage />,
+          },
+        ],
+      },
+      {
+        path: "tools",
+        children: [
+          {
+            path: "setup-and-administration",
+            element: "",
+          },
+          {
+            path: "datasources",
+            element: <DataSources />,
+          },
+        ],
+      },
+    ],
+  },
+]);
 
 export default routes;
 
 // function Router() {
-  
+
 //   return (
-    
+
 //     <>
 //       <Routes>
 //         {/* <Route path="/" element={<SignIn/>}/> */}
