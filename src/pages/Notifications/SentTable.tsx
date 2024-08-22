@@ -33,7 +33,7 @@ import { Link } from "react-router-dom";
 const SentTable = ({path, person, sentMessages}: SentTableProps) => {
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       const response = await axios.delete(`${url}/messages/${id}`);
       console.log('Resource deleted:', response.data);

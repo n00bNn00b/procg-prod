@@ -60,7 +60,9 @@ export function GlobalContextProvider({
       socket.off("message");
       socket.off("offlineMessage")
     } 
-  }, [socketMessage]);
+  }, []);
+
+  console.log(socketMessage)
 
   //Fetch Users
   useEffect(() => {

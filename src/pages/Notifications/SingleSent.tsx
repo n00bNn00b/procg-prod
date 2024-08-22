@@ -6,11 +6,19 @@ import {
     CardTitle,
   } from "@/components/ui/card";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import { Message } from "@/types/interfaces/users.interface";
 import axios from "axios";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom";
+
+interface Message {
+  sender: string;
+  recivers: string[];
+  subject: string;
+  body: string;
+  date: string;
+  status: string;
+}
 
 const SingleSent = () => {
     const {token} = useGlobalContext();
@@ -18,11 +26,10 @@ const SingleSent = () => {
     const url = import.meta.env.VITE_API_URL;
     const user = token.user_name;
     const idString= useParams();
-    const id = Number(idString.id);
+    const id = idString.id;
     
     const [message, setMessage] = useState<Message>(
-      {id,
-      sender: "",
+      {sender: "",
       recivers: [],
       subject: "",
       body: "",
