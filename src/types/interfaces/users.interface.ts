@@ -18,7 +18,7 @@ export interface Users {
 }
 
 export interface Message {
-    id: number;
+    id: string;
     sender: string;
     recivers: string[];
     subject: string;
