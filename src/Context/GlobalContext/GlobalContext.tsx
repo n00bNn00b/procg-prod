@@ -42,7 +42,7 @@ export function useGlobalContext() {
 export function GlobalContextProvider({
   children,
 }: GlobalContextProviderProps) {
-  const [open, setOpen] = useState<boolean>(false); 
+  const [open, setOpen] = useState<boolean>(false);
   const [token, setToken] = useState<Token>(() => {
     const storeData = localStorage.getItem("token");
     if (storeData) {
@@ -55,8 +55,8 @@ export function GlobalContextProvider({
       }
     }
     return null;
-  }); 
- 
+  });
+
   const [users, setUsers] = useState<Users[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [socketMessage, setSocketMessages] = useState<Message[]>([]);
@@ -73,20 +73,19 @@ export function GlobalContextProvider({
     socket.on("message", (data) => {
       setSocketMessages((prevArray) => [data, ...prevArray]);
     });
- 
-  }, [user, socketMessage]);
-  socket.on("offlineMessage", (data) => {
+
+    socket.on("offlineMessage", (data) => {
       setSocketMessages(data);
     });
 
-    return () =>{
+    return () => {
       socket.off("message");
-      socket.off("offlineMessage")
-    } 
+      socket.off("offlineMessage");
+    };
   }, []);
 
-  console.log(socketMessage)
-  
+  console.log(socketMessage);
+
   //Fetch Users
   useEffect(() => {
     const fetchUsers = async () => {
