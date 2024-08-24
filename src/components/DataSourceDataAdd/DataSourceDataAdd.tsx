@@ -6,17 +6,25 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { ChevronDown } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { AlertDialogCancel } from "../ui/alert-dialog";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 
-const DataSourceDataAdd = ({
+interface IDataSourceAddDataTypes {
+  props: string;
+  maxID?: number;
+  selected?: number[] | undefined;
+  editAble?: boolean;
+  setSave: Dispatch<SetStateAction<number>>;
+}
+const DataSourceDataAdd: FC<IDataSourceAddDataTypes> = ({
   props,
-  maxID,
-  selected,
+  maxID = 0,
+  selected = [0],
   editAble,
   setSave,
-}: any) => {
+}) => {
   const { fetchDataSource, createDataSource, updateDataSource } =
     useGlobalContext();
   const [open, setOpen] = useState<boolean>(false);
@@ -80,9 +88,9 @@ const DataSourceDataAdd = ({
     const time = new Date().toLocaleTimeString();
     const currentDate = new Date().toLocaleDateString();
     const date = `${currentDate}, ${time}`;
-    const postData = {
+    const postData: IDataSourceTypes = {
       data_source_id:
-        props === "add" ? maxID + 1 : props === "update" && selected[0],
+        props === "add" ? maxID + 1 : props === "update" ? selected[0] : 0,
       datasource_name: data.datasource_name,
       description: data.description,
       application_type: "EBS",
@@ -93,23 +101,28 @@ const DataSourceDataAdd = ({
       last_transaction_synchronization_status: "COMPLETED",
       default_datasource: data.default_datasource,
     };
-    if (props === "add") {
-      createDataSource(postData);
-      setSave(99);
-    } else if (props === "update") {
-      updateDataSource(selected[0], postData);
-    }
+    const submitAction =
+      props === "add"
+        ? createDataSource(postData)
+        : updateDataSource(selected[0], postData);
 
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">
-            {JSON.stringify(postData, null, 2)}
-          </code>
-        </pre>
-      ),
-    });
+    submitAction
+      .then(() => {
+        toast({
+          title: "Success",
+          description: `Data ${
+            props === "add" ? "added" : "updated"
+          } successfully.`,
+        });
+        setSave((prevSave) => prevSave + 1); // Refresh data
+      })
+      .catch((error) => {
+        toast({
+          title: "Error",
+          description: `Failed to ${props === "add" ? "add" : "update"} data.`,
+        });
+        console.error("Submit error:", error);
+      });
   }
 
   const openProperties = () => {

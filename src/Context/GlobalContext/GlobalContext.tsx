@@ -9,6 +9,8 @@ import axios from "axios";
 import { Token, Users, Message } from "@/types/interfaces/users.interface";
 import socket from "@/Socket/Socket";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
+import { toast } from "@/components/ui/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 interface GlobalContextProviderProps {
   children: ReactNode;
@@ -82,9 +84,7 @@ export function GlobalContextProvider({
       socket.off("message");
       socket.off("offlineMessage");
     };
-  }, []);
-
-  console.log(socketMessage);
+  }, [socketMessage]);
 
   //Fetch Users
   useEffect(() => {
@@ -112,7 +112,7 @@ export function GlobalContextProvider({
     };
 
     fetchMessages();
-  }, [url]);
+  }, [url, messages]);
 
   //Fetch DataSources
   const fetchDataSources = async () => {
@@ -210,9 +210,16 @@ export function GlobalContextProvider({
   // Delete DataSource
   const deleteDataSource = async (id: number) => {
     try {
-      const res = await axios.delete(`${url}/data-sources/${id}`);
-      // for sync data call fetch data source
-      fetchDataSources();
+      const res = await axios.delete<IDataSourceTypes>(
+        `${url}/data-sources/${id}`
+      );
+
+      if (res.status === 200) {
+        toast({
+          title: "Successfully Deleted",
+          description: `DataSource Name : ${res.data.datasource_name}`,
+        });
+      }
       console.log(res);
     } catch (error) {
       console.log(error);
@@ -239,6 +246,7 @@ export function GlobalContextProvider({
         deleteDataSource,
       }}
     >
+      <Toaster />
       {children}
     </GlobalContex.Provider>
   );

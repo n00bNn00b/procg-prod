@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 const Pagination = ({ table }: any) => {
   return (
-    <div className="flex items-center justify-end space-x-2   bottom-0 bg-white py-2">
+    <div className="flex items-center justify-end space-x-2 px-2 bottom-0 bg-white py-2">
       <div className="flex-1 text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
