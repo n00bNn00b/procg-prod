@@ -60,18 +60,25 @@ const DataSources = () => {
   const [data, setData] = React.useState<IDataSourceTypes[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [save, setSave] = React.useState<number>(0);
+  // Fetch Data
   React.useEffect(() => {
-    setIsLoading(true);
     const fetchData = async () => {
-      const result = await fetchDataSources();
-      setData(result ?? []);
-      setIsLoading(false);
+      setIsLoading(true);
+      try {
+        const result = await fetchDataSources();
+        setData(result ?? []);
+      } catch (error) {
+        console.error("Error fetching data sources:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
+
     fetchData();
-  }, [save > 0]);
+  }, [save]);
   // loader
   tailspin.register();
-  //
+  // Shadcn Form
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -83,7 +90,7 @@ const DataSources = () => {
     pageIndex: 0, //initial page index
     pageSize: 5, //default page size
   });
-  const [editRow, setEditRow] = React.useState<boolean>(false);
+
   const [selected, setSelected] = React.useState<number[]>([]);
 
   const [isChecked, setIsChecked] = React.useState<boolean>(false);
@@ -243,14 +250,27 @@ const DataSources = () => {
       pagination,
     },
   });
+  // Select for edit, delete
   React.useEffect(() => {
     setSelected(
       table.getSelectedRowModel().rows.map((row) => row.original.data_source_id)
     );
-  }, []);
+  }, [isChecked]);
+  console.log(selected);
   const handleDelete = async () => {
-    for (const select in selected) {
-      await deleteDataSource(selected[select]);
+    setIsLoading(true);
+    setSelected([]);
+    try {
+      // Iterate through the selected IDs and delete them one by one
+      for (const id of selected) {
+        await deleteDataSource(id);
+      }
+      // Update the `save` state to trigger data re-fetching
+      setSave((prevSave) => prevSave + 1);
+    } catch (error) {
+      console.error("Error deleting data sources:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -287,12 +307,10 @@ const DataSources = () => {
                     setSave={setSave}
                   />
                 </div>
-                <AlertDialogFooter>
-                  {/* <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction>Continue</AlertDialogAction> */}
-                </AlertDialogFooter>
+                <AlertDialogFooter></AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+
             <AlertDialog>
               <AlertDialogTrigger
                 disabled={selected.length !== 1}
@@ -318,17 +336,26 @@ const DataSources = () => {
                     props="update"
                     selected={selected}
                     editAble={true}
-                    date={date}
                     setSave={setSave}
-                    setIsLoading={setIsLoading}
                   />
                 </div>
               </AlertDialogContent>
             </AlertDialog>
 
             <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Trash className="cursor-pointer hover:text-red-500" />
+              <AlertDialogTrigger
+                disabled={selected.length < 1}
+                className={`${
+                  selected.length < 1 && "text-slate-200 cursor-not-allowed"
+                }`}
+              >
+                <Trash
+                  className={`${
+                    selected.length > 0
+                      ? "cursor-pointer"
+                      : "cursor-not-allowed"
+                  }`}
+                />
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -341,9 +368,18 @@ const DataSources = () => {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete}>
-                    Continue
-                  </AlertDialogAction>
+                  {isLoading ? (
+                    <l-tailspin
+                      size="40"
+                      stroke="5"
+                      speed="0.9"
+                      color="black"
+                    />
+                  ) : (
+                    <AlertDialogAction onClick={handleDelete}>
+                      Continue
+                    </AlertDialogAction>
+                  )}
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -415,7 +451,21 @@ const DataSources = () => {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  <l-tailspin
+                    size="40"
+                    stroke="5"
+                    speed="0.9"
+                    color="black"
+                  ></l-tailspin>
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -431,21 +481,6 @@ const DataSources = () => {
                           }
                           onClick={() =>
                             handleRowSelection(row.original.data_source_id)
-                          }
-                        />
-                      ) : selected.find(
-                          (id) => id === row.original.data_source_id
-                        ) === row.original.data_source_id && editRow ? (
-                        <input
-                          type="text"
-                          className="border w-full"
-                          value={String(cell.getValue())}
-                          onChange={(e) =>
-                            handleInputChange(
-                              row.original.data_source_id,
-                              cell.column.id,
-                              e.target.value
-                            )
                           }
                         />
                       ) : (
