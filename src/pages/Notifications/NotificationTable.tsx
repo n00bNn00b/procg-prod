@@ -39,12 +39,12 @@ const NotificationTable = ({path, person, recievedMessages}: NotificationTablePr
   const uniquMessagesIds = socketMessage.map(msg => (msg.id));
   console.log(uniquMessagesIds);
     
-  const handleUniqueMessages = (id: number) => {
+  const handleUniqueMessages = (id: string) => {
       const newArray = socketMessage.filter(msg => msg.id !== id);
       setSocketMessages(newArray)
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       const response = await axios.delete(`${url}/messages/${id}`);
       console.log('Resource deleted:', response.data);

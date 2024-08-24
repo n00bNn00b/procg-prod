@@ -14,12 +14,11 @@ import axios from "axios";
 import { useToast } from "@/components/ui/use-toast"
 import socket from "@/Socket/Socket";
 import ButtonSpinner from "@/components/Spinner/ButtonSpinner";
+import { v4 as uuidv4 } from "uuid"
 
-interface ComposeButtonProps {
-  maxValue: number;
-}
 
-const ComposeButton = ({maxValue}: ComposeButtonProps) => {
+
+const ComposeButton = () => {
   const { users, token} = useGlobalContext();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
@@ -36,6 +35,7 @@ const ComposeButton = ({maxValue}: ComposeButtonProps) => {
   const time = new Date().toLocaleTimeString();
   const currentDate = new Date().toLocaleDateString();
   const date = `${time}, ${currentDate}`;
+  const id = uuidv4();
   
 
 const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +69,7 @@ const handleSelectAll = ()=>{
 
 const handleSend = async () => {
   const data = {
-    id : maxValue+1,
+    id,
     sender, 
     recivers,
     subject,
@@ -77,28 +77,23 @@ const handleSend = async () => {
     date,
     status: "Sent"
   };
-  setIsSending(true);
-  try {
-    const response = await axios.post(`${url}/messages`, data);
-    console.log('Response:', response.data);
-    toast({
-      title: "Message Sent"
-    })
-  } catch (error) {
-    console.error('Error:', error);
-   
-  }
-
+  
   socket.emit("sendMessage", data);
+  toast({
+    title: "Message sent"
+  })
+  setIsSending(true);
+
   setRecivers([]);
   setSubject('');
   setBody('');
   setIsSending(false);
+  setShowUsers(false);
 };
 
 const handleDraft = async () => {
   const data = {
-    id : maxValue+1,
+    id,
     sender, 
     recivers,
     subject,
@@ -122,6 +117,7 @@ const handleDraft = async () => {
   setSubject('');
   setBody('');
   setIsDrafting(false);
+  setShowUsers(false);
 }
 
 

@@ -14,15 +14,23 @@ import { useToast } from "@/components/ui/use-toast"
 import socket from "@/Socket/Socket";
 import ButtonSpinner from "@/components/Spinner/ButtonSpinner";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Message } from "@/types/interfaces/users.interface";
+import { v4 as uuidv4 } from 'uuid';
 
+interface Message {
+  sender: string;
+  recivers: string[];
+  subject: string;
+  body: string;
+  date: string;
+  status: string;
+}
 const SingleDraft = () => {
-  const { users, token, messages} = useGlobalContext();
+  const { users, token} = useGlobalContext();
   const navigate = useNavigate();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
   const idString= useParams();
-  const id = Number(idString.id);
+  const id = idString.id;
   const [recivers, setRecivers] =useState<string[]>([]);
   const [subject, setSubject] = useState<string>("");
   const [body, setBody] = useState<string>("");
@@ -34,8 +42,7 @@ const SingleDraft = () => {
   const time = new Date().toLocaleTimeString();
   const currentDate = new Date().toLocaleDateString();
   const date = `${time}, ${currentDate}`;
-  const maxValue =  Math.max(...messages.map(obj => obj.id));
-
+  
   useEffect(()=> {
     const fetchMessage = async () => {
         try {
@@ -85,7 +92,7 @@ const handleSelectAll = ()=>{
 
 const handleSend = async () => {
   const data = {
-    id: maxValue + 1,
+    id: uuidv4(),
     sender, 
     recivers,
     subject,
@@ -94,17 +101,12 @@ const handleSend = async () => {
     status: "Sent"
   };
   setIsSending(true);
-  try {
-    const response = await axios.post(`${url}/messages`, data);
-    console.log('Response:', response.data);
-    toast({
-      title: "Message Sent",
-      description: "Message sent sucessfully"
-    })
-  } catch (error) {
-    console.error('Error:', error);
-  }
 
+  socket.emit("sendMessage", data);
+  toast({
+    title: "Message Sent"
+  })
+  
   try {
     const response = await axios.delete(`${url}/messages/${id}`);
     console.log('Resource deleted:', response.data);
@@ -112,7 +114,7 @@ const handleSend = async () => {
     console.error('Error deleting resource:', error);
   }
 
-  socket.emit("sendMessage", data);
+  
   setRecivers([]);
   setSubject('');
   setBody('');
