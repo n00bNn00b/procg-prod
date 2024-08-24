@@ -26,7 +26,7 @@ const Topbar = () => {
           </button>
         )}
         <img src={logo} alt="logo" className="h-[2rem] w-auto" />
-        <p className="text-Red-200 font-semibold">Advanced Control</p>
+        <p className="text-blue-500 font-semibold mt-3">Advanced Controls</p>
       </div>
 
       <div className="flex gap-6 items-center">

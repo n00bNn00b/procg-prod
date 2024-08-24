@@ -9,15 +9,15 @@ import Breadcurmbs from "@/components/Breadcrumbs/Breadcrumbs";
 
 const Layout = () => {
   const { open, token, setToken } = useGlobalContext();
-  const getToken = (key: string) => {
-    const value = localStorage.getItem(key);
-    return value ? JSON.parse(value) : null;
-  };
+  // const getToken = (key: string) => {
+  //   const value = localStorage.getItem(key);
+  //   return value ? JSON.parse(value) : null;
+  // };
 
-  useEffect(() => {
-    const localToken = getToken("token");
-    setToken(localToken);
-  }, [setToken]);
+  // useEffect(() => {
+  //   const localToken = getToken("token");
+  //   setToken(localToken);
+  // }, [setToken]);
   return (
     <>
       {token?.access_token ? (
