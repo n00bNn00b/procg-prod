@@ -14,16 +14,18 @@ import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 interface IDataSourceAddDataTypes {
   props: string;
   maxID?: number;
-  selected?: number[] | undefined;
+  selected: IDataSourceTypes[];
   editAble?: boolean;
   setSave: Dispatch<SetStateAction<number>>;
+  setRowSelection: Dispatch<SetStateAction<{}>>;
 }
 const DataSourceDataAdd: FC<IDataSourceAddDataTypes> = ({
   props,
   maxID = 0,
-  selected = [0],
+  selected,
   editAble,
   setSave,
+  setRowSelection,
 }) => {
   const { fetchDataSource, createDataSource, updateDataSource } =
     useGlobalContext();
@@ -33,7 +35,7 @@ const DataSourceDataAdd: FC<IDataSourceAddDataTypes> = ({
     if (props === "update") {
       const fetchDataFromAPI = async () => {
         if (selected[0]) {
-          const result = await fetchDataSource(selected[0]);
+          const result = await fetchDataSource(selected[0].data_source_id);
           form.reset(result); // Sync form with fetched data
         } else return;
       };
@@ -85,12 +87,17 @@ const DataSourceDataAdd: FC<IDataSourceAddDataTypes> = ({
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
+    setRowSelection({});
     const time = new Date().toLocaleTimeString();
     const currentDate = new Date().toLocaleDateString();
     const date = `${currentDate}, ${time}`;
     const postData: IDataSourceTypes = {
       data_source_id:
-        props === "add" ? maxID + 1 : props === "update" ? selected[0] : 0,
+        props === "add"
+          ? maxID + 1
+          : props === "update"
+          ? selected[0].data_source_id
+          : 0,
       datasource_name: data.datasource_name,
       description: data.description,
       application_type: "EBS",
@@ -104,16 +111,10 @@ const DataSourceDataAdd: FC<IDataSourceAddDataTypes> = ({
     const submitAction =
       props === "add"
         ? createDataSource(postData)
-        : updateDataSource(selected[0], postData);
+        : updateDataSource(selected[0].data_source_id, postData);
 
     submitAction
       .then(() => {
-        toast({
-          title: "Success",
-          description: `Data ${
-            props === "add" ? "added" : "updated"
-          } successfully.`,
-        });
         setSave((prevSave) => prevSave + 1); // Refresh data
       })
       .catch((error) => {
@@ -128,7 +129,13 @@ const DataSourceDataAdd: FC<IDataSourceAddDataTypes> = ({
   const openProperties = () => {
     setOpen(!open);
   };
-
+  const [isLoading, setIsLoading] = useState(false);
+  const handleCancel = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 8000);
+  };
   return (
     <div>
       <Form {...form}>
@@ -146,7 +153,9 @@ const DataSourceDataAdd: FC<IDataSourceAddDataTypes> = ({
             >
               Save
             </AlertDialogCancel>
-            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogCancel disabled={isLoading} onClick={handleCancel}>
+              {isLoading ? "loading" : "Close"}
+            </AlertDialogCancel>
           </div>
           <h5>*Indicates required field</h5>
 

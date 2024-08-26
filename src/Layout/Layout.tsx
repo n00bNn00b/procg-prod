@@ -4,11 +4,11 @@ import { Outlet } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import SignIn from "@/pages/SignIn/SignIn";
-import { useEffect } from "react";
+
 import Breadcurmbs from "@/components/Breadcrumbs/Breadcrumbs";
 
 const Layout = () => {
-  const { open, token, setToken } = useGlobalContext();
+  const { open, token } = useGlobalContext();
   // const getToken = (key: string) => {
   //   const value = localStorage.getItem(key);
   //   return value ? JSON.parse(value) : null;

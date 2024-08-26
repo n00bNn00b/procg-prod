@@ -112,7 +112,7 @@ export function GlobalContextProvider({
     };
 
     fetchMessages();
-  }, [url, messages]);
+  }, [url, socketMessage]);
 
   //Fetch DataSources
   const fetchDataSources = async () => {
@@ -120,7 +120,10 @@ export function GlobalContextProvider({
       const response = await axios.get<IDataSourceTypes[]>(
         `${url}/data-sources`
       );
-      return response.data ?? [];
+      const sortingData = response.data.sort(
+        (a, b) => b.data_source_id - a.data_source_id
+      );
+      return sortingData ?? [];
     } catch (error) {
       console.log(error);
     }
@@ -172,9 +175,20 @@ export function GlobalContextProvider({
         default_datasource,
       });
       // for sync data call fetch data source
-      console.log(res);
-      await fetchDataSources();
-    } catch (error) {
+      console.log(res.status);
+      if (res.status === 200) {
+        toast({
+          title: "Success",
+          description: `Data added successfully.`,
+        });
+      }
+    } catch (error: any) {
+      if (error.response.status) {
+        toast({
+          title: "Info !!!",
+          description: `Can't add data already exist !.`,
+        });
+      }
       console.log(error);
     }
   };
@@ -201,9 +215,19 @@ export function GlobalContextProvider({
         }
       );
       // for sync data call fetch data source
-      fetchDataSources();
-      console.log(res);
-    } catch (error) {
+      if (res.status === 200) {
+        toast({
+          title: "Success",
+          description: `Data updated successfully.`,
+        });
+      }
+    } catch (error: any) {
+      if (error.response.status) {
+        toast({
+          title: "Info !!!",
+          description: `Can't change data already exist !.`,
+        });
+      }
       console.log(error);
     }
   };
