@@ -91,29 +91,29 @@ const DataSources = () => {
     pageSize: 5, //default page size
   });
 
-  const [selected, setSelected] = React.useState<number[]>([]);
+  const [selected, setSelected] = React.useState<IDataSourceTypes[]>([]);
 
   const [isChecked, setIsChecked] = React.useState<boolean>(false);
   // select row
-  const handleRowSelection = (id: number) => {
+  const handleRowSelection = (rowData: IDataSourceTypes) => {
     setSelected((prevSelected) => {
-      if (prevSelected.includes(id)) {
+      if (prevSelected.includes(rowData)) {
         // If the id is already selected, remove it
-        return prevSelected.filter((selectedId) => selectedId !== id);
+        return prevSelected.filter((selectedId) => selectedId !== rowData);
       } else {
         // If the id is not selected, add it
-        return [...prevSelected, id];
+        return [...prevSelected, rowData];
       }
     });
   };
 
-  const handleInputChange = (id: number, field: string, value: string) => {
-    setData((prevData) =>
-      prevData.map((item) =>
-        item.data_source_id === id ? { ...item, [field]: value } : item
-      )
-    );
-  };
+  // const handleInputChange = (id: number, field: string, value: string) => {
+  //   setData((prevData) =>
+  //     prevData.map((item) =>
+  //       item.data_source_id === id ? { ...item, [field]: value } : item
+  //     )
+  //   );
+  // };
 
   const columns: ColumnDef<IDataSourceTypes>[] = [
     {
@@ -136,7 +136,7 @@ const DataSources = () => {
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
-          onClick={() => handleRowSelection(row.original.data_source_id)}
+          onClick={() => handleRowSelection(row.original)}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
         />
@@ -252,18 +252,15 @@ const DataSources = () => {
   });
   // Select for edit, delete
   React.useEffect(() => {
-    setSelected(
-      table.getSelectedRowModel().rows.map((row) => row.original.data_source_id)
-    );
-  }, [isChecked]);
-  console.log(selected);
+    setSelected(table.getSelectedRowModel().rows.map((row) => row.original));
+  }, [table.getSelectedRowModel().rows]);
   const handleDelete = async () => {
     setIsLoading(true);
-    setSelected([]);
     try {
+      setRowSelection({});
       // Iterate through the selected IDs and delete them one by one
-      for (const id of selected) {
-        await deleteDataSource(id);
+      for (const data of selected) {
+        await deleteDataSource(data.data_source_id);
       }
       // Update the `save` state to trigger data re-fetching
       setSave((prevSave) => prevSave + 1);
@@ -276,10 +273,6 @@ const DataSources = () => {
 
   const maxID =
     data.length > 0 ? Math.max(...data.map((item) => item.data_source_id)) : 0;
-
-  const time = new Date().toLocaleTimeString();
-  const currentDate = new Date().toLocaleDateString();
-  const date = `${currentDate}, ${time}`;
 
   return (
     <div className="px-3">
@@ -305,6 +298,8 @@ const DataSources = () => {
                     props="add"
                     maxID={maxID}
                     setSave={setSave}
+                    selected={selected}
+                    setRowSelection={setRowSelection}
                   />
                 </div>
                 <AlertDialogFooter></AlertDialogFooter>
@@ -321,7 +316,7 @@ const DataSources = () => {
                 <Pencil
                   className={`${
                     selected.length === 1
-                      ? "cursor-pointer"
+                      ? "cursor-pointer text-sky-600"
                       : "cursor-not-allowed"
                   }`}
                 />
@@ -337,6 +332,7 @@ const DataSources = () => {
                     selected={selected}
                     editAble={true}
                     setSave={setSave}
+                    setRowSelection={setRowSelection}
                   />
                 </div>
               </AlertDialogContent>
@@ -352,7 +348,7 @@ const DataSources = () => {
                 <Trash
                   className={`${
                     selected.length > 0
-                      ? "cursor-pointer"
+                      ? "cursor-pointer hover:text-red-600"
                       : "cursor-not-allowed"
                   }`}
                 />
@@ -362,8 +358,18 @@ const DataSources = () => {
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
                     This action cannot be undone. This will permanently delete
-                    your account and remove your data from our servers.
-                    {selected}
+                    your account and remove your data from our servers. You are
+                    selected {selected.length}{" "}
+                    {selected.length > 1 ? "rows" : "row"}. Data Source Name is
+                    :{" "}
+                    {selected.map((row, i) => (
+                      <span
+                        key={row.data_source_id}
+                        className="flex flex-col text-red-600"
+                      >
+                        {i + 1}. {row.datasource_name}
+                      </span>
+                    ))}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -376,7 +382,10 @@ const DataSources = () => {
                       color="black"
                     />
                   ) : (
-                    <AlertDialogAction onClick={handleDelete}>
+                    <AlertDialogAction
+                      className="bg-red-400 hover:bg-red-600"
+                      onClick={handleDelete}
+                    >
                       Continue
                     </AlertDialogAction>
                   )}
@@ -472,16 +481,15 @@ const DataSources = () => {
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell, index) => (
-                    <TableCell key={cell.id} className="border">
+                    <TableCell key={cell.id} className="border py-2">
                       {index === 0 ? (
                         <Checkbox
+                          className="mr-2"
                           checked={row.getIsSelected()}
                           onCheckedChange={(value) =>
                             row.toggleSelected(!!value)
                           }
-                          onClick={() =>
-                            handleRowSelection(row.original.data_source_id)
-                          }
+                          onClick={() => handleRowSelection(row.original)}
                         />
                       ) : (
                         flexRender(
