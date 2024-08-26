@@ -4,8 +4,8 @@
 @tailwind utilities;
 
 .scrollbar-thin::-webkit-scrollbar {
-  width: 7px; /* Adjust the width for vertical scrollbars */
-  height: 7px; /* Adjust the height for horizontal scrollbars */
+  width: 5px; /* Adjust the width for vertical scrollbars */
+  height: 5px; /* Adjust the height for horizontal scrollbars */
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {

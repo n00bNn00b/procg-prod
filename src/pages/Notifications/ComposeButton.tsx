@@ -124,7 +124,7 @@ const handleDraft = async () => {
 return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="flex gap-1 items-center px-5 py-2 rounded-md bg-dark-100 text-white hover:scale-95 duration-300 fixed bottom-4">
+        <button className="flex gap-2 items-center px-5 py-2 rounded-xl bg-dark-100 text-white hover:scale-95 duration-300 fixed bottom-4">
             <MailPlus size={18}/>
             <p className="font-semibold">Compose</p>
         </button>
