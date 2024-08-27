@@ -114,6 +114,7 @@ export function GlobalContextProvider({
 
     fetchMessages();
   }, [url])
+  
 
   //Fetch DataSources
   const fetchDataSources = async () => {
