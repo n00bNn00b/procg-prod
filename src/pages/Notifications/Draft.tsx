@@ -3,9 +3,8 @@ import NotificationCard from "./NotificationCard"
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import DraftTable from "./DraftTable";
 
-
 const Draft = () => {
-  const {messages, token} = useGlobalContext();
+  const { token, messages} = useGlobalContext();
   
   const user = token.user_name;
   const totalSentMessages = messages.filter(msg => msg.status === "Sent");

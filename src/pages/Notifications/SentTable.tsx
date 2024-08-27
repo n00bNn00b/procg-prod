@@ -22,15 +22,17 @@ import { Message } from "@/types/interfaces/users.interface";
 import axios from "axios";
 import { Check, Trash2, View, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
-
-  interface SentTableProps {
+interface SentTableProps {
     path: string;
     person: string;
     sentMessages: Message[];
+    
   }
 
 const SentTable = ({path, person, sentMessages}: SentTableProps) => {
+  const {messages, setMessages} = useGlobalContext()
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
   const handleDelete = async (id: string) => {
@@ -42,7 +44,10 @@ const SentTable = ({path, person, sentMessages}: SentTableProps) => {
     }
     toast({
       title: "Message has been deleted."
-    })
+    });
+
+    const currentMessages = messages.filter(msg => msg.id !== id);
+    setMessages(currentMessages);
   }
   return (
     <div className="ml-[11rem] rounded-md shadow-md p-4">
