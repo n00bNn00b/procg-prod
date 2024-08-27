@@ -17,9 +17,8 @@ import ButtonSpinner from "@/components/Spinner/ButtonSpinner";
 import { v4 as uuidv4 } from "uuid"
 
 
-
 const ComposeButton = () => {
-  const { users, token} = useGlobalContext();
+  const { users, token, setMessages} = useGlobalContext();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
   
@@ -79,16 +78,17 @@ const handleSend = async () => {
   };
   
   socket.emit("sendMessage", data);
+  setMessages((prev) => [data, ...prev])
   toast({
     title: "Message sent"
   })
   setIsSending(true);
-
   setRecivers([]);
   setSubject('');
   setBody('');
   setIsSending(false);
   setShowUsers(false);
+  setMessages((prev) => [data, ...prev])
 };
 
 const handleDraft = async () => {
@@ -112,12 +112,12 @@ const handleDraft = async () => {
     console.error('Error:', error);
    
   }
-
   setRecivers([]);
   setSubject('');
   setBody('');
   setIsDrafting(false);
   setShowUsers(false);
+  setMessages((prev) => [data, ...prev])
 }
 
 

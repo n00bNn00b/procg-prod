@@ -21,7 +21,7 @@ interface Message {
 }
 
 const SingleSent = () => {
-    const {token} = useGlobalContext();
+    const {token, messages, setMessages} = useGlobalContext();
     const navigate = useNavigate();
     const url = import.meta.env.VITE_API_URL;
     const user = token.user_name;
@@ -56,6 +56,8 @@ const SingleSent = () => {
       try {
         const response = await axios.delete(`${url}/messages/${id}`);
         console.log('Resource deleted:', response.data);
+        const currentMessages = messages.filter(msg => msg.id !== id);
+        setMessages(currentMessages);
       } catch (error) {
         console.error('Error deleting resource:', error);
       }

@@ -25,7 +25,7 @@ interface Message {
   status: string;
 }
 const SingleDraft = () => {
-  const { users, token} = useGlobalContext();
+  const { users, token, messages, setMessages} = useGlobalContext();
   const navigate = useNavigate();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
@@ -54,7 +54,6 @@ const SingleDraft = () => {
         } catch (error) {
             console.log(error)
         }
-
     }
 
     fetchMessage();
@@ -101,8 +100,8 @@ const handleSend = async () => {
     status: "Sent"
   };
   setIsSending(true);
-
   socket.emit("sendMessage", data);
+  setMessages((prev) => [data, ...prev])
   toast({
     title: "Message Sent"
   })
@@ -110,6 +109,8 @@ const handleSend = async () => {
   try {
     const response = await axios.delete(`${url}/messages/${id}`);
     console.log('Resource deleted:', response.data);
+    const currentMessages = messages.filter(msg => msg.id !== id);
+    setMessages(currentMessages);
   } catch (error) {
     console.error('Error deleting resource:', error);
   }
@@ -126,6 +127,8 @@ const handleDelete = async () => {
   try {
     const response = await axios.delete(`${url}/messages/${id}`);
     console.log('Resource deleted:', response.data);
+    const currentMessages = messages.filter(msg => msg.id !== id);
+    setMessages(currentMessages);
   } catch (error) {
     console.error('Error deleting resource:', error);
   }

@@ -6,7 +6,8 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
 const Topbar = () => {
   const { open, setOpen, socketMessage } = useGlobalContext();
-  const uniquMessages = socketMessage.filter(
+  
+ const uniquMessages = socketMessage.filter(
     (item, index) =>
       index === socketMessage.findIndex((obj) => obj.date === item.date)
   );

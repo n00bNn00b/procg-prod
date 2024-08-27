@@ -29,15 +29,15 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
     path: string;
     person: string;
     recievedMessages: Message[];
+    
   }
 
 const NotificationTable = ({path, person, recievedMessages}: NotificationTableProps) => {
-  const {socketMessage, setSocketMessages} = useGlobalContext();
+  const {socketMessage, setSocketMessages, messages, setMessages} = useGlobalContext();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
   
   const uniquMessagesIds = socketMessage.map(msg => (msg.id));
-  console.log(uniquMessagesIds);
     
   const handleUniqueMessages = (id: string) => {
       const newArray = socketMessage.filter(msg => msg.id !== id);
@@ -54,6 +54,8 @@ const NotificationTable = ({path, person, recievedMessages}: NotificationTablePr
     toast({
       title: "Message has been deleted."
     })
+    const currentMessages = messages.filter(msg => msg.id !== id);
+    setMessages(currentMessages);
   }
   return (
     <div className="ml-[11rem] rounded-md shadow-md p-4">

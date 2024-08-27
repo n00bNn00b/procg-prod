@@ -42,7 +42,7 @@ export function useGlobalContext() {
 }
 
 export function GlobalContextProvider({
-  children,
+  children
 }: GlobalContextProviderProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [token, setToken] = useState<Token>(() => {
@@ -63,7 +63,6 @@ export function GlobalContextProvider({
   const [messages, setMessages] = useState<Message[]>([]);
   const [socketMessage, setSocketMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const user = token?.user_name;
   const url = import.meta.env.VITE_API_URL;
 
@@ -84,7 +83,9 @@ export function GlobalContextProvider({
       socket.off("message");
       socket.off("offlineMessage");
     };
-  }, [socketMessage]);
+  }, [socketMessage, messages]);
+  console.log(socketMessage);
+  console.log(messages)
 
   //Fetch Users
   useEffect(() => {
@@ -101,7 +102,7 @@ export function GlobalContextProvider({
   }, [url]);
 
   //Fetch Messages
-  useEffect(() => {
+  useEffect(()=> {
     const fetchMessages = async () => {
       try {
         const response = await axios.get<Message[]>(`${url}/messages`);
@@ -112,7 +113,7 @@ export function GlobalContextProvider({
     };
 
     fetchMessages();
-  }, [url, socketMessage]);
+  }, [url])
 
   //Fetch DataSources
   const fetchDataSources = async () => {
