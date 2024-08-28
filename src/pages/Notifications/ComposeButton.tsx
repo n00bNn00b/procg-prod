@@ -31,9 +31,6 @@ const ComposeButton = () => {
   const [isDrafting, setIsDrafting] = useState(false);
   const [isAllClicked, setIsAllClicked] = useState(true);
   const sender = token.user_name;
-  const time = new Date().toLocaleTimeString();
-  const currentDate = new Date().toLocaleDateString();
-  const date = `${time}, ${currentDate}`;
   const id = uuidv4();
   
 
@@ -73,7 +70,7 @@ const handleSend = async () => {
     recivers,
     subject,
     body,
-    date,
+    date: new Date(),
     status: "Sent"
   };
   
@@ -88,7 +85,7 @@ const handleSend = async () => {
   setBody('');
   setIsSending(false);
   setShowUsers(false);
-  setMessages((prev) => [data, ...prev])
+  // setMessages((prev) => [data, ...prev])
 };
 
 const handleDraft = async () => {
@@ -98,7 +95,7 @@ const handleDraft = async () => {
     recivers,
     subject,
     body,
-    date,
+    date: new Date(),
     status: "Draft"
   };
   setIsDrafting(true);

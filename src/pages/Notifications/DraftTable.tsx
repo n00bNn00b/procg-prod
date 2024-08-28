@@ -47,6 +47,13 @@ const DraftTable = ({path, person, sentMessages}: DraftTableProps) => {
     const currentMessages = messages.filter(msg => msg.id !== id);
     setMessages(currentMessages);
   }
+
+  const convertDate = (isoDateString: Date) => {
+    const date = new Date(isoDateString);
+    const formattedDate = date.toLocaleString();
+    return formattedDate;
+  }
+
   return (
     <div className="ml-[11rem] rounded-md shadow-md mr-4 p-4">
         <h1 className="text-lg font-semibold mb-6">{path}</h1>
@@ -68,7 +75,7 @@ const DraftTable = ({path, person, sentMessages}: DraftTableProps) => {
                       <span className="text-dark-400 mr-1">{msg.body?.slice(0,60)}</span>
                       <span>...</span>
                     </TableCell>
-                    <TableCell className="w-[110px]">{msg.date}</TableCell>
+                    <TableCell className="w-[110px]">{convertDate(msg.date)}</TableCell>
                     <TableCell className="flex gap-2 h-full items-center">
                       <Link to={`/notifications/draft/${msg.id}`} className="bg-blue-600 text-white p-[6px] rounded-full flex justify-center items-center">
                         <View size={20}/>
