@@ -1,4 +1,3 @@
-import Spineer from "@/components/Spinner/Spineer";
 import {
     Card,
     CardContent,
@@ -11,6 +10,9 @@ import axios from "axios";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { tailspin } from "ldrs";
+
+tailspin.register();
 
 interface Message {
   sender: string;
@@ -94,7 +96,11 @@ const SingleSent = () => {
   return (
     <div className='flex justify-center items-center w-full mb-4'>
       {
-        isLoading? <Spineer/> : (
+        isLoading? (
+          <div className="flex h-[50vh] items-center">
+            <l-tailspin size="80" stroke="5" speed="2" color="#68788C"></l-tailspin>
+          </div>   
+         ) : (
           <Card>
         <CardHeader>
             <div className="flex text-dark-400">

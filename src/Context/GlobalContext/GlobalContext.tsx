@@ -24,6 +24,7 @@ interface GlobalContex {
   users: Users[];
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  fetchMessages: () => Promise<Message[]>;
   socketMessage: Message[];
   setSocketMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   fetchDataSources: () => Promise<IDataSourceTypes[] | undefined>;
@@ -106,18 +107,15 @@ export function GlobalContextProvider({
   }, [url]);
 
   //Fetch Messages
-  useEffect(()=> {
-    const fetchMessages = async () => {
-      try {
-        const response = await axios.get<Message[]>(`${url}/messages`);
-        setMessages(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchMessages();
-  }, [url])
+  const fetchMessages = async () => {
+    try {
+      const response = await axios.get<Message[]>(`${url}/messages`);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
+  };
   
 
   //Fetch DataSources
@@ -264,6 +262,7 @@ export function GlobalContextProvider({
         setToken,
         users,
         messages,
+        fetchMessages,
         setMessages,
         socketMessage,
         setSocketMessages,

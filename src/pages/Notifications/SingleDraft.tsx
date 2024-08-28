@@ -15,7 +15,9 @@ import socket from "@/Socket/Socket";
 import ButtonSpinner from "@/components/Spinner/ButtonSpinner";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
-import Spineer from "@/components/Spinner/Spineer";
+import { tailspin } from "ldrs";
+
+tailspin.register();
 
 interface Message {
   sender: string;
@@ -136,12 +138,14 @@ const handleDelete = async () => {
   navigate("/notifications/draft")
 }
 
-
-
 return (
     <div className="w-full flex justify-center">
         {
-          isLoading? <Spineer/> : (
+          isLoading? (
+           <div className="flex h-[50vh] items-center">
+             <l-tailspin size="80" stroke="5" speed="2" color="#68788C"></l-tailspin>
+           </div>   
+          ) : (
             <Card className="w-[600px]">
             <CardHeader>
                 <div className="flex text-dark-400">
