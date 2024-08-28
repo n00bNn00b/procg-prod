@@ -2,9 +2,18 @@ import ComposeButton from "./ComposeButton"
 import NotificationCard from "./NotificationCard"
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import DraftTable from "./DraftTable";
+import { useEffect } from "react";
 
 const Draft = () => {
-  const { token, messages} = useGlobalContext();
+  const { token, messages, setMessages, fetchMessages} = useGlobalContext();
+  
+useEffect(() => {
+    const fetchedMessage = async () => {
+      const totalMessages = await fetchMessages();
+      setMessages(totalMessages)
+    }
+    fetchedMessage();
+  }, [fetchMessages, setMessages]);
   
   const user = token.user_name;
   const totalSentMessages = messages.filter(msg => msg.status === "Sent");

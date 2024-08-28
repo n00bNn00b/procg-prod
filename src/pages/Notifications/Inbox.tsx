@@ -2,30 +2,36 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import ComposeButton from "./ComposeButton";
 import NotificationCard from "./NotificationCard";
 import NotificationTable from "./NotificationTable";
-import { useEffect, useState } from "react";
-import { Message } from "@/types/interfaces/users.interface";
+import { useEffect } from "react";
 
 const Inbox = () => {
-  const { token, messages} = useGlobalContext();
-  const [newMessages, setNewMessages] = useState<Message[]>([]);
-
-  useEffect(() => {
-    setNewMessages(messages)
-  }, [messages]);
+  const { token, messages, setMessages, fetchMessages} = useGlobalContext();
+  
+useEffect(() => {
+    const fetchedMessage = async () => {
+      const totalMessages = await fetchMessages();
+      setMessages(totalMessages);
+    }
+    fetchedMessage();
+  }, [fetchMessages, setMessages]);
 
   const user = token.user_name;
-  const totalSentMessages = newMessages.filter(msg => msg.status === "Sent");
-  const totalDraftMessages = newMessages.filter(msg => msg.status === "Draft");
+  const totalSentMessages = messages.filter(msg => msg.status === "Sent");
+  const totalDraftMessages = messages.filter(msg => msg.status === "Draft");
   const recievedMessages = totalSentMessages.filter(msg => msg.recivers.includes(user));
   const sentMessages = totalSentMessages.filter(msg => msg.sender === user);
   const draftMessages = totalDraftMessages.filter(msg => msg.sender === user);
 
   return (
-    <div>
+    
+    <>
       <NotificationCard recievedMessages={recievedMessages} sentMessages={sentMessages} draftMessages={draftMessages}/>
       <NotificationTable path="Inbox" person="From" recievedMessages={recievedMessages}/>
       <ComposeButton/>
-    </div>
+    </>
+      
+      
+    
   )
 }
 
