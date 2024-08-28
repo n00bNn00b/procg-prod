@@ -23,6 +23,6 @@ export interface Message {
     recivers: string[];
     subject: string;
     body: string;
-    date: string;
+    date: Date;
     status: string;
 }

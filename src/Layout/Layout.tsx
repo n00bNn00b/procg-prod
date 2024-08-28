@@ -23,7 +23,7 @@ const Layout = () => {
       {token?.access_token ? (
         <div>
           <Topbar />
-          <div className="flex gap-4 pt-[3rem] w-[100vw]">
+          <div className="flex gap-4 pt-[3rem]">
             <Sidbar />
             <div
               className={

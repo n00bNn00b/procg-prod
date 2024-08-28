@@ -1,3 +1,4 @@
+import Spineer from "@/components/Spinner/Spineer";
 import {
     Card,
     CardContent,
@@ -22,6 +23,7 @@ interface Message {
 
 const SingleSent = () => {
     const {token, messages, setMessages} = useGlobalContext();
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
     const url = import.meta.env.VITE_API_URL;
     const user = token.user_name;
@@ -46,6 +48,8 @@ const SingleSent = () => {
                 
             } catch (error) {
                 console.log(error)
+            } finally {
+              setIsLoading(false)
             }
         }
 
@@ -68,6 +72,12 @@ const SingleSent = () => {
       }
     }
 
+    const convertDate = (isoDateString: string) => {
+      const date = new Date(isoDateString);
+      const formattedDate = date.toLocaleString();
+      return formattedDate;
+    }
+
     const renderMessage = (msg: string) => {
         const urlPattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
           '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
@@ -83,7 +93,9 @@ const SingleSent = () => {
       };
   return (
     <div className='flex justify-center items-center w-full mb-4'>
-      <Card>
+      {
+        isLoading? <Spineer/> : (
+          <Card>
         <CardHeader>
             <div className="flex text-dark-400">
               <Link to={user === message.sender ? "/notifications/sent":"/notifications/inbox" } className="p-1 rounded-md hover:bg-winter-100/50">
@@ -95,7 +107,7 @@ const SingleSent = () => {
             </div>
             <CardTitle>{`${message.subject}`}</CardTitle>
             <CardDescription className="flex flex-col justify-center gap-4">
-                <p>{message.date}</p>
+                <p>{convertDate(message.date)}</p>
                 <div className="flex gap-2">
                     {message.recivers.map(reciever => (
                         <div className="flex flex-col">
@@ -110,6 +122,8 @@ const SingleSent = () => {
             <p className="whitespace-pre-wrap">{renderMessage(message.body)}</p>
         </CardContent>
        </Card>
+        )
+      }
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import Spineer from "@/components/Spinner/Spineer";
 import {
     Card,
     CardContent,
@@ -22,6 +23,7 @@ interface Message {
 
 const SingleMessage = () => {
     const {token, messages, setMessages} = useGlobalContext();
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
     const url = import.meta.env.VITE_API_URL;
     const user = token.user_name;
@@ -45,6 +47,8 @@ const SingleMessage = () => {
                 
             } catch (error) {
                 console.log(error)
+            } finally {
+              setIsLoading(false)
             }
         }
 
@@ -67,6 +71,12 @@ const SingleMessage = () => {
       }
     }
 
+    const convertDate = (isoDateString: string) => {
+      const date = new Date(isoDateString);
+      const formattedDate = date.toLocaleString();
+      return formattedDate;
+    }
+
     const renderMessage = (msg: string) => {
         const urlPattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
           '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
@@ -82,30 +92,34 @@ const SingleMessage = () => {
       };
   return (
     <div className='flex justify-center items-center w-full mb-4'>
-      <Card>
-        <CardHeader>
-            <div className="flex text-dark-400">
-              <Link to={user === message.sender ? "/notifications/sent":"/notifications/inbox" } className="p-1 rounded-md hover:bg-winter-100/50">
-                <ArrowLeft size={20}/>
-              </Link>
-              <button onClick={handleDelete} className="p-1 rounded-md hover:bg-winter-100/50">
-                <Trash2 size={20}/>
-              </button>
-            </div>
-            <CardTitle>{`${message.subject}`}</CardTitle>
-            <CardDescription className="flex flex-col justify-center gap-4">
-                <p>{message.date}</p>
-                <div className="flex flex-col">
-                   <p>{message.sender}</p>
-                    <img src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-                         alt="img" className="w-10 h-10 rounded-full object-cover object-center"/>
+      {
+        isLoading? <Spineer/> : (
+          <Card>
+            <CardHeader>
+                <div className="flex text-dark-400">
+                  <Link to={user === message.sender ? "/notifications/sent":"/notifications/inbox" } className="p-1 rounded-md hover:bg-winter-100/50">
+                    <ArrowLeft size={20}/>
+                  </Link>
+                  <button onClick={handleDelete} className="p-1 rounded-md hover:bg-winter-100/50">
+                    <Trash2 size={20}/>
+                  </button>
                 </div>
-            </CardDescription>
-        </CardHeader>
-        <CardContent>
-            <p className="whitespace-pre-wrap">{renderMessage(message.body)}</p>
-        </CardContent>
-       </Card>
+                <CardTitle>{`${message.subject}`}</CardTitle>
+                <CardDescription className="flex flex-col justify-center gap-4">
+                    <p>{convertDate(message.date)}</p>
+                    <div className="flex flex-col">
+                      <p>{message.sender}</p>
+                        <img src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                            alt="img" className="w-10 h-10 rounded-full object-cover object-center"/>
+                    </div>
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <p className="whitespace-pre-wrap">{renderMessage(message.body)}</p>
+            </CardContent>
+          </Card>
+        )
+      }
     </div>
   )
 }

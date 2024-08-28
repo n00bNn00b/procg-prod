@@ -15,6 +15,7 @@ import socket from "@/Socket/Socket";
 import ButtonSpinner from "@/components/Spinner/ButtonSpinner";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
+import Spineer from "@/components/Spinner/Spineer";
 
 interface Message {
   sender: string;
@@ -38,10 +39,8 @@ const SingleDraft = () => {
   const [query, setQuery] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const [isAllClicked, setIsAllClicked] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const sender = token.user_name;
-  const time = new Date().toLocaleTimeString();
-  const currentDate = new Date().toLocaleDateString();
-  const date = `${time}, ${currentDate}`;
   
   useEffect(()=> {
     const fetchMessage = async () => {
@@ -53,6 +52,8 @@ const SingleDraft = () => {
             setBody(result.body)
         } catch (error) {
             console.log(error)
+        } finally {
+          setIsLoading(false);
         }
     }
 
@@ -96,7 +97,7 @@ const handleSend = async () => {
     recivers,
     subject,
     body,
-    date,
+    date: new Date(),
     status: "Sent"
   };
   setIsSending(true);
@@ -139,7 +140,9 @@ const handleDelete = async () => {
 
 return (
     <div className="w-full flex justify-center">
-        <Card className="w-[600px]">
+        {
+          isLoading? <Spineer/> : (
+            <Card className="w-[600px]">
             <CardHeader>
                 <div className="flex text-dark-400">
                   <Link to="/notifications/draft" className="p-1 rounded-md hover:bg-winter-100/50">
@@ -198,7 +201,7 @@ return (
                 </div>
                 
             </CardContent>
-            <CardFooter className="flex">
+            <CardFooter className="flex justify-end">
                 {recivers.length === 0 || body === "" ? null : 
                 <button onClick={handleSend} className="flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md bg-dark-100 text-white hover:scale-95 duration-300">
                     {isSending? <ButtonSpinner/>: <Send size={18}/>}
@@ -206,6 +209,8 @@ return (
                 </button> }
             </CardFooter>
         </Card>
+          )
+        }
     </div>
   )
 }

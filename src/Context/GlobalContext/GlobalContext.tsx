@@ -73,10 +73,14 @@ export function GlobalContextProvider({
   useEffect(() => {
     socket.on("message", (data) => {
       setSocketMessages((prevArray) => [data, ...prevArray]);
+      setMessages((prev) => [data, ...prev])
     });
 
     socket.on("offlineMessage", (data) => {
       setSocketMessages(data);
+      data.forEach(msg => {
+        setMessages((prev) => [msg, ...prev])
+      });
     });
 
     return () => {
