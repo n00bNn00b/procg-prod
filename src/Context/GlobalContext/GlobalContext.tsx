@@ -11,7 +11,6 @@ import socket from "@/Socket/Socket";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { IManageAccessEntitlementsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { ManageAccessEntitlementsProvider } from "../ManageAccessEntitlements/ManageAccessEntitlementsContext";
 
 interface GlobalContextProviderProps {
@@ -81,7 +80,7 @@ export function GlobalContextProvider({
 
     socket.on("offlineMessage", (data) => {
       setSocketMessages(data);
-      data.forEach((msg) => {
+      data.forEach((msg: Message) => {
         setMessages((prev) => [msg, ...prev]);
       });
     });

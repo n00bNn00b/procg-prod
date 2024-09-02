@@ -47,7 +47,7 @@ const ManageAccessEntitlementsTable = () => {
   } = useManageAccessEntitlementsContext();
   const [data, setData] = React.useState<IManageAccessEntitlementsTypes[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [save, setSave] = React.useState<number>(0);
+  // const [save, setSave] = React.useState<number>(0);
   // Fetch Data
   React.useEffect(() => {
     const fetchData = async () => {
@@ -63,7 +63,7 @@ const ManageAccessEntitlementsTable = () => {
     };
 
     fetchData();
-  }, [save]);
+  }, []);
   // loader
   tailspin.register();
   // Shadcn Form
@@ -243,9 +243,6 @@ const ManageAccessEntitlementsTable = () => {
     },
   });
 
-  const maxID =
-    data.length > 0 ? Math.max(...data.map((item) => item.entitlement_id)) : 0;
-
   return (
     <div className="px-3">
       {/* top icon and columns*/}
@@ -267,14 +264,14 @@ const ManageAccessEntitlementsTable = () => {
           </div>
         </div>
         <Input
-          placeholder="Filter Datasource Name..."
+          placeholder="Filter Entitlement Name..."
           value={
             (table.getColumn("entitlement_name")?.getFilterValue() as string) ??
             ""
           }
           onChange={(event) =>
             table
-              .getColumn("datasource_name")
+              .getColumn("entitlement_name")
               ?.setFilterValue(event.target.value)
           }
           className="max-w-sm px-4 py-2"
