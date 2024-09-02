@@ -11,6 +11,8 @@ import socket from "@/Socket/Socket";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { IManageAccessEntitlementsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import { ManageAccessEntitlementsProvider } from "../ManageAccessEntitlements/ManageAccessEntitlementsContext";
 
 interface GlobalContextProviderProps {
   children: ReactNode;
@@ -43,7 +45,7 @@ export function useGlobalContext() {
 }
 
 export function GlobalContextProvider({
-  children
+  children,
 }: GlobalContextProviderProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [token, setToken] = useState<Token>(() => {
@@ -74,13 +76,13 @@ export function GlobalContextProvider({
   useEffect(() => {
     socket.on("message", (data) => {
       setSocketMessages((prevArray) => [data, ...prevArray]);
-      setMessages((prev) => [data, ...prev])
+      setMessages((prev) => [data, ...prev]);
     });
 
     socket.on("offlineMessage", (data) => {
       setSocketMessages(data);
-      data.forEach(msg => {
-        setMessages((prev) => [msg, ...prev])
+      data.forEach((msg) => {
+        setMessages((prev) => [msg, ...prev]);
       });
     });
 
@@ -90,7 +92,7 @@ export function GlobalContextProvider({
     };
   }, [socketMessage, messages]);
   console.log(socketMessage);
-  console.log(messages)
+  console.log(messages);
 
   //Fetch Users
   useEffect(() => {
@@ -116,7 +118,6 @@ export function GlobalContextProvider({
       return [];
     }
   };
-  
 
   //Fetch DataSources
   const fetchDataSources = async () => {
@@ -253,6 +254,7 @@ export function GlobalContextProvider({
       console.log(error);
     }
   };
+
   return (
     <GlobalContex.Provider
       value={{
@@ -275,8 +277,10 @@ export function GlobalContextProvider({
         deleteDataSource,
       }}
     >
-      <Toaster />
-      {children}
+      <ManageAccessEntitlementsProvider>
+        <Toaster />
+        {children}
+      </ManageAccessEntitlementsProvider>
     </GlobalContex.Provider>
   );
 }
