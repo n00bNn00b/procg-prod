@@ -11,6 +11,7 @@ import Home from "@/pages/Home/Home";
 import SingleSent from "@/pages/Notifications/SingleSent";
 import DataSources from "@/pages/DataSources/DataSources";
 import ManageAccessEntitlements from "@/pages/ManageAccessEntitlements/ManageAccessEntitlements";
+import SetupAndAdministration from "@/pages/SetupAndAdministration/SetupAndAdministration";
 
 const routes = createBrowserRouter([
   {
@@ -64,7 +65,7 @@ const routes = createBrowserRouter([
         children: [
           {
             path: "setup-and-administration",
-            element: "",
+            element: <SetupAndAdministration />,
           },
           {
             path: "datasources",

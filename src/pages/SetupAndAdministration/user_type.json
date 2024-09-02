@@ -1,0 +1,10 @@
+[
+  {
+    "name": "Person",
+    "user_type": "person"
+  },
+  {
+    "name": "System",
+    "user_type": "system"
+  }
+]

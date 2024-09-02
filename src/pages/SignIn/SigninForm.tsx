@@ -19,7 +19,7 @@ const loginSchema = z.object({
 });
 
 const SignInForm = () => {
-  const { setToken } = useGlobalContext();
+  const { setToken, isLoading, setIsLoading } = useGlobalContext();
   const navigate = useNavigate();
   const url = import.meta.env.VITE_API_URL;
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -32,10 +32,12 @@ const SignInForm = () => {
 
   const handleSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
+      setIsLoading(true);
       const response = await axios.post(`${url}/login`, data);
       console.log("Response:", response.data);
       setToken(response.data);
       localStorage.setItem("token", JSON.stringify(response.data));
+      setIsLoading(false);
       if (response.data) {
         navigate("/");
       }
@@ -84,9 +86,13 @@ const SignInForm = () => {
           />
           <button
             type="submit"
-            className="w-full h-[2.2rem] rounded-md bg-Red-200 hover:bg-Red-200/90 text-white"
+            className="w-full py-2 rounded-md bg-Red-200 hover:bg-Red-200/90 text-white"
           >
-            Log In
+            {isLoading ? (
+              <l-tailspin size="15" stroke="3" speed="0.9" color="white" />
+            ) : (
+              "Log In"
+            )}
           </button>
         </form>
       </Form>
