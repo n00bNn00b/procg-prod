@@ -6,7 +6,12 @@ import {
   useState,
 } from "react";
 import axios from "axios";
-import { Token, Users, Message } from "@/types/interfaces/users.interface";
+import {
+  Token,
+  Users,
+  Message,
+  IAddUserTypes,
+} from "@/types/interfaces/users.interface";
 import socket from "@/Socket/Socket";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { toast } from "@/components/ui/use-toast";
@@ -35,6 +40,7 @@ interface GlobalContex {
   createDataSource: (postData: IDataSourceTypes) => Promise<void>;
   updateDataSource: (id: number, postData: IDataSourceTypes) => Promise<void>;
   deleteDataSource: (id: number) => Promise<void>;
+  createUser: (postData: IAddUserTypes) => void;
 }
 
 const GlobalContex = createContext({} as GlobalContex);
@@ -253,6 +259,51 @@ export function GlobalContextProvider({
       console.log(error);
     }
   };
+  // Create User
+  const createUser = async (postData: IAddUserTypes) => {
+    const {
+      user_type,
+      user_name,
+      email_addresses,
+      created_by,
+      last_updated_by,
+      tenant_id,
+      first_name,
+      middle_name,
+      last_name,
+      job_title,
+      password,
+    } = postData;
+    try {
+      const res = await axios.post<IAddUserTypes>(`${url}/combined-user`, {
+        user_type,
+        user_name,
+        email_addresses,
+        created_by,
+        last_updated_by,
+        tenant_id,
+        first_name,
+        middle_name,
+        last_name,
+        job_title,
+        password,
+      });
+      if (res.status === 201) {
+        toast({
+          title: "Success",
+          description: `User added successfully.`,
+        });
+      }
+    } catch (error: any) {
+      if (error.response.status) {
+        toast({
+          title: "Info !!!",
+          description: `${error.message}`,
+        });
+      }
+      console.log(error);
+    }
+  };
 
   return (
     <GlobalContex.Provider
@@ -274,6 +325,7 @@ export function GlobalContextProvider({
         createDataSource,
         updateDataSource,
         deleteDataSource,
+        createUser,
       }}
     >
       <ManageAccessEntitlementsProvider>

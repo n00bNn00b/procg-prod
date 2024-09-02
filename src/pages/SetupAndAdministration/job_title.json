@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Admin",
+    "value": "admin"
+  },
+  {
+    "name": "Manager",
+    "value": "manager"
+  },
+  {
+    "name": "DevOps",
+    "value": "dev-ops"
+  },
+  {
+    "name": "Full Stack",
+    "value": "full-stack"
+  },
+  {
+    "name": "Front-End",
+    "value": "front-end"
+  },
+  {
+    "name": "Back-End",
+    "value": "back-end"
+  }
+]
