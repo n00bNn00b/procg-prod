@@ -10,6 +10,7 @@ import Tasks from "@/pages/Tasks/Tasks";
 import Home from "@/pages/Home/Home";
 import SingleSent from "@/pages/Notifications/SingleSent";
 import DataSources from "@/pages/DataSources/DataSources";
+import ManageAccessEntitlements from "@/pages/ManageAccessEntitlements/ManageAccessEntitlements";
 
 const routes = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ const routes = createBrowserRouter([
           {
             path: "datasources",
             element: <DataSources />,
+          },
+          {
+            path: "manage-access-entitlements",
+            element: <ManageAccessEntitlements />,
           },
         ],
       },
