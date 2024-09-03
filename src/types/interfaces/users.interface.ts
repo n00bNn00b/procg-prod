@@ -2,6 +2,7 @@ export interface Token {
   access_token?: string;
   tenant_id?: number;
   user_id?: number;
+  user_type?: string;
   user_name: string;
 }
 
@@ -38,4 +39,8 @@ export interface IAddUserTypes {
   last_name: string;
   job_title: string;
   password: string;
+}
+export interface ITenantsTypes {
+  tenant_id: number;
+  tenant_name: string;
 }

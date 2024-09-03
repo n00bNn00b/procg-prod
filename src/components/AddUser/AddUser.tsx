@@ -21,10 +21,32 @@ import {
 } from "@/components/ui/select";
 import UserTypes from "@/pages/SetupAndAdministration/user_type.json";
 import JobTitleTypes from "@/pages/SetupAndAdministration/job_title.json";
-import { IAddUserTypes } from "@/types/interfaces/users.interface";
+import {
+  IAddUserTypes,
+  ITenantsTypes,
+} from "@/types/interfaces/users.interface";
+import { useEffect, useState } from "react";
+import { hourglass } from "ldrs";
 
 const AddUser = () => {
-  const { createUser, token } = useGlobalContext();
+  const { createUser, token, fetchTenants, isLoading } = useGlobalContext();
+  const [userType, setUserType] = useState<string>("person");
+  const [tenants, setTenants] = useState<ITenantsTypes[] | undefined>([]);
+  hourglass.register();
+  useEffect(() => {
+    const fetchTenantsData = async () => {
+      try {
+        const res = await fetchTenants();
+        if (res) {
+          setTenants(res);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchTenantsData();
+  }, []);
+  console.log(token);
   const FormSchema = z
     .object({
       user_type: z.string(),
@@ -56,7 +78,7 @@ const AddUser = () => {
       user_name: "",
       user_type: "person",
       email_addresses: "",
-      tenant_id: "1",
+      tenant_id: "",
       first_name: "",
       middle_name: "",
       last_name: "",
@@ -90,6 +112,7 @@ const AddUser = () => {
     };
     try {
       createUser(postData);
+      reset();
     } catch (error) {
       console.log(error);
     }
@@ -110,7 +133,7 @@ const AddUser = () => {
     //     console.error("Submit error:", error);
     //   });
   };
-
+  console.log(userType);
   return (
     <div className="border bg-slate-300 w-[50%] mx-auto rounded shadow-xl p-2">
       <div className="w-[50%] py-2 mx-auto text-center font-bold text-2xl">
@@ -119,56 +142,118 @@ const AddUser = () => {
       <div className="flex items-center justify-center ">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="flex gap-4 p-4">
-              <div>
-                <FormField
-                  control={form.control}
-                  name="user_type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>User Type</FormLabel>
-                      <Select
-                        required
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a User" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {UserTypes.map((user) => (
-                            <SelectItem
-                              value={user.user_type}
-                              key={user.user_type}
-                            >
-                              {user.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="user_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>User Name</FormLabel>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="user_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>User Type</FormLabel>
+                    <Select
+                      required
+                      onValueChange={(value) => {
+                        setUserType(value);
+                        field.onChange(value);
+                      }}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
-                        <Input
-                          {...field}
-                          required
-                          autoFocus
-                          type="text"
-                          placeholder="User Name"
-                        />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a User" />
+                        </SelectTrigger>
                       </FormControl>
-                    </FormItem>
-                  )}
-                />
+                      <SelectContent>
+                        {UserTypes.map((user) => (
+                          <SelectItem
+                            value={user.user_type}
+                            key={user.user_type}
+                            onChange={() => setUserType(user.user_type)}
+                          >
+                            {user.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="user_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>User Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        required
+                        autoFocus
+                        type="text"
+                        placeholder="User Name"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="job_title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Job Title</FormLabel>
+                    <Select
+                      required
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a Job Title" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {JobTitleTypes.map((user) => (
+                          <SelectItem value={user.value} key={user.value}>
+                            {user.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="tenant_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tenant ID</FormLabel>
+                    <Select
+                      required
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a Tenant" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {tenants?.map((tenant) => (
+                          <SelectItem
+                            value={String(tenant.tenant_id)}
+                            key={tenant.tenant_id}
+                          >
+                            {tenant.tenant_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              {userType !== "system" && (
                 <FormField
                   control={form.control}
                   name="first_name"
@@ -186,6 +271,8 @@ const AddUser = () => {
                     </FormItem>
                   )}
                 />
+              )}
+              {userType !== "system" && (
                 <FormField
                   control={form.control}
                   name="middle_name"
@@ -202,6 +289,8 @@ const AddUser = () => {
                     </FormItem>
                   )}
                 />
+              )}
+              {userType !== "system" && (
                 <FormField
                   control={form.control}
                   name="last_name"
@@ -219,107 +308,77 @@ const AddUser = () => {
                     </FormItem>
                   )}
                 />
-              </div>
-              <div>
-                <FormField
-                  control={form.control}
-                  name="job_title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Job Title</FormLabel>
-                      <Select
-                        required
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a Job Title" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {JobTitleTypes.map((user) => (
-                            <SelectItem value={user.value} key={user.value}>
-                              {user.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="tenant_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tenant ID</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          required
-                          type="text"
-                          placeholder="Tenant ID"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email_addresses"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="email"
-                          placeholder="example@gmail.com"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+              )}
+              <FormField
+                disabled={token.user_type !== "system" && userType === "system"}
+                control={form.control}
+                name="email_addresses"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="email"
+                        placeholder="example@gmail.com"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          required
-                          type="password"
-                          placeholder="••••••••"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="confirm_password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          required
-                          type="password"
-                          placeholder="••••••••"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormField
+                disabled={token.user_type !== "system" && userType === "system"}
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        required
+                        type="password"
+                        placeholder="••••••••"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                disabled={token.user_type !== "system" && userType === "system"}
+                control={form.control}
+                name="confirm_password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        required
+                        type="password"
+                        placeholder="••••••••"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             <FormMessage />
+            {token.user_type !== "system" && userType === "system" ? (
+              <p className="text-red-500 text-center py-2 flex justify-center items-center gap-2">
+                <l-hourglass
+                  size="20"
+                  bg-opacity="0.1"
+                  speed="1.75"
+                  color="red"
+                ></l-hourglass>{" "}
+                Login as a Admin.
+              </p>
+            ) : (
+              ""
+            )}
             <div className="flex gap-4 p-4">
               <Button
                 className="w-full bg-red-300 hover:bg-red-500"
@@ -328,7 +387,16 @@ const AddUser = () => {
                 Reset
               </Button>
               <Button className="w-full" type="submit">
-                Submit
+                {isLoading ? (
+                  <l-tailspin
+                    size="30"
+                    stroke="5"
+                    speed="0.9"
+                    color="white"
+                  ></l-tailspin>
+                ) : (
+                  "Submit"
+                )}
               </Button>
             </div>
           </form>
