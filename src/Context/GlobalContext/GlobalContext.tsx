@@ -11,6 +11,7 @@ import {
   Users,
   Message,
   IAddUserTypes,
+  ITenantsTypes,
 } from "@/types/interfaces/users.interface";
 import socket from "@/Socket/Socket";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
@@ -41,6 +42,7 @@ interface GlobalContex {
   updateDataSource: (id: number, postData: IDataSourceTypes) => Promise<void>;
   deleteDataSource: (id: number) => Promise<void>;
   createUser: (postData: IAddUserTypes) => void;
+  fetchTenants: () => Promise<ITenantsTypes[] | undefined>;
 }
 
 const GlobalContex = createContext({} as GlobalContex);
@@ -259,8 +261,16 @@ export function GlobalContextProvider({
       console.log(error);
     }
   };
+  // Tenant IDs
+  const fetchTenants = async () => {
+    try {
+      const res = await axios.get<ITenantsTypes[]>(`${url}/tenants`);
+      return res.data;
+    } catch (error) {}
+  };
   // Create User
   const createUser = async (postData: IAddUserTypes) => {
+    setIsLoading(true);
     const {
       user_type,
       user_name,
@@ -288,6 +298,7 @@ export function GlobalContextProvider({
         job_title,
         password,
       });
+      setIsLoading(false);
       if (res.status === 201) {
         toast({
           title: "Success",
@@ -326,6 +337,7 @@ export function GlobalContextProvider({
         updateDataSource,
         deleteDataSource,
         createUser,
+        fetchTenants,
       }}
     >
       <ManageAccessEntitlementsProvider>
