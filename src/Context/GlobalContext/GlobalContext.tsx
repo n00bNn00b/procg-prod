@@ -31,7 +31,6 @@ interface GlobalContex {
   users: Users[];
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  fetchMessages: () => Promise<Message[]>;
   socketMessage: Message[];
   setSocketMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   fetchDataSources: () => Promise<IDataSourceTypes[] | undefined>;
@@ -88,9 +87,6 @@ export function GlobalContextProvider({
 
     socket.on("offlineMessage", (data) => {
       setSocketMessages(data);
-      data.forEach((msg: Message) => {
-        setMessages((prev) => [msg, ...prev]);
-      });
     });
 
     return () => {
@@ -116,15 +112,19 @@ export function GlobalContextProvider({
   }, [url]);
 
   //Fetch Messages
-  const fetchMessages = async () => {
-    try {
-      const response = await axios.get<Message[]>(`${url}/messages`);
-      return response.data;
-    } catch (error) {
-      console.log(error);
-      return [];
-    }
-  };
+  useEffect(()=> {
+    const fetchMessages = async () => {
+      try {
+        const response = await axios.get<Message[]>(`${url}/messages`);
+        setMessages(response.data);
+      } catch (error) {
+        console.log(error);
+        return [];
+      }
+    };
+
+    fetchMessages();
+  }, [url])
 
   //Fetch DataSources
   const fetchDataSources = async () => {
@@ -325,7 +325,6 @@ export function GlobalContextProvider({
         setToken,
         users,
         messages,
-        fetchMessages,
         setMessages,
         socketMessage,
         setSocketMessages,

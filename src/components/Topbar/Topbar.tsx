@@ -1,6 +1,6 @@
 import { Home, Bell, ListTodo, Mail, Menu, X } from "lucide-react";
 import logo from "@/Image/logo-2.png";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import Dropdown from "./Dropdown";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
@@ -26,7 +26,9 @@ const Topbar = () => {
             <Menu className="text-2xl" />
           </button>
         )}
-        <img src={logo} alt="logo" className="h-[2rem] w-auto" />
+        <Link to="/home">
+          <img src={logo} alt="logo" className="h-[2rem] w-auto" />
+        </Link>
         <p className="text-blue-500 font-semibold mt-3">Advanced Controls</p>
       </div>
 

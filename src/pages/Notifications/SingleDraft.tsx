@@ -16,6 +16,8 @@ import ButtonSpinner from "@/components/Spinner/ButtonSpinner";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
 import { tailspin } from "ldrs";
+import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import { DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 tailspin.register();
 
@@ -37,7 +39,6 @@ const SingleDraft = () => {
   const [recivers, setRecivers] =useState<string[]>([]);
   const [subject, setSubject] = useState<string>("");
   const [body, setBody] = useState<string>("");
-  const [showUsers, setShowUsers] = useState(false);
   const [query, setQuery] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const [isAllClicked, setIsAllClicked] = useState(true);
@@ -160,50 +161,54 @@ return (
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col gap-4">
-                <div className="flex gap-2">
-                  <button onClick={()=> setShowUsers(!showUsers)} className="bg-dark-100 text-white w-40 h-8 rounded-sm font-semibold">Select Recipients</button>
-                  <div className="rounded-sm w-[calc(100%-11rem)] max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1 justify-end">
-                      {recivers.map(rec => (
-                          <div className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full">
-                              <p className="font-semibold">{rec}</p>
-                              <div onClick={()=> handleRemoveReciever(rec)} className="flex h-[65%] items-end cursor-pointer">
-                                  <Delete size={18} />
-                              </div>
-                          </div>
-                      ))}
-                  </div>
-                </div>
-                {showUsers? <div className="w-40 fixed z-10 top-[202px] bg-light-100 border max-h-[210px] overflow-auto scrollbar-thin">
-                    <input type="text" 
-                        className="w-full border-b outline-none pl-4"
-                        placeholder="Search..."
-                        value={query}
-                        onChange={handleQueryChange}/>
-                    <div onClick={handleSelectAll} className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer">
-                        <p>All</p>
-                    </div>
-                    {filterdUser.map(user => (
-                        <div onClick={() => handleReciever(user.user_name)} key={user.user_id} className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer">
+                  <div className="flex gap-4 justify-between">
+                      <DropdownMenu>
+                      <DropdownMenuTrigger className="bg-dark-100 text-white w-44 h-8 rounded-sm font-semibold">Select Recipients</DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-44 max-h-[255px] overflow-auto scrollbar-thin">
+                      <input type="text" 
+                              className="w-full bg-light-100 border-b border-light-400 outline-none pl-2"
+                              placeholder="Search..."
+                              value={query}
+                              onChange={handleQueryChange}/>
+                        <div onClick={handleSelectAll} className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer">
+                            <p>All</p>
+                        </div>
+                        {filterdUser.map(user => (
+                          <div onClick={()=> handleReciever(user.user_name)} key={user.user_id} className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer">
                             <p>{user.user_name}</p>
                             {recivers.includes(user.user_name) ? <Check size={14} color="#038C5A"/>: null}
-                        </div>
-                    ))}
-                </div>: null}
-                <div className="flex flex-col gap-2 w-full text-dark-400">
-                    <label className="font-semibold">Subject</label>
-                    <input type="text" 
-                        className="rounded-sm outline-none border pl-2 h-8 w-full text-sm"
-                        value={subject}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setSubject(e.target.value)} />
+                          </div>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <div className="flex gap-2 w-[calc(100%-11rem)] justify-end">
+                      <div className="rounded-sm max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1">
+                          {recivers.map(rec => (
+                              <div className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full">
+                                  <p className="font-semibold">{rec}</p>
+                                  <div onClick={()=> handleRemoveReciever(rec)} className="flex h-[65%] items-end cursor-pointer">
+                                      <Delete size={18} />
+                                  </div>
+                              </div>
+                          ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 w-full text-dark-400">
+                      <label className="font-semibold">Subject</label>
+                      <input type="text" 
+                          className="rounded-sm outline-none border pl-2 h-8 w-full text-sm"
+                          value={subject}
+                          onChange={(e: ChangeEvent<HTMLInputElement>) => setSubject(e.target.value)} />
+                  </div>
+                  <div className="flex flex-col gap-2 w-full text-dark-400">
+                      <label className="font-semibold">Body</label>
+                      <textarea className="rounded-sm outline-none border pl-2 h-24 w-full scrollbar-thin text-sm"
+                              value={body}
+                              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setBody(e.target.value)} />
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2 w-full text-dark-400">
-                    <label className="font-semibold">Body</label>
-                    <textarea className="rounded-sm outline-none border pl-2 h-24 w-full scrollbar-thin text-sm"
-                            value={body}
-                            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setBody(e.target.value)} />
-                </div>
-                </div>
-                
             </CardContent>
             <CardFooter className="flex justify-end">
                 {recivers.length === 0 || body === "" ? null : 

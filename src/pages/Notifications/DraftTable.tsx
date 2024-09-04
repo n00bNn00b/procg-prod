@@ -21,8 +21,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { Message } from "@/types/interfaces/users.interface";
 import axios from "axios";
 import { Check, Trash2, View, X } from "lucide-react";
-import { Link } from "react-router-dom";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { useNavigate } from "react-router-dom";
 
 interface DraftTableProps {
     path: string;
@@ -32,6 +32,7 @@ interface DraftTableProps {
 
 const DraftTable = ({path, person, sentMessages}: DraftTableProps) => {
   const {messages, setMessages} = useGlobalContext();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
   const handleDelete = async (id: string) => {
@@ -54,16 +55,20 @@ const DraftTable = ({path, person, sentMessages}: DraftTableProps) => {
     return formattedDate;
   }
 
+  const handleNavigate = (id: string) => {
+    navigate(`/notifications/draft/${id}`)
+  }
+
   return (
-    <div className="ml-[11rem] rounded-md shadow-md mr-4 p-4">
-        <h1 className="text-lg font-semibold mb-6">{path}</h1>
+    <div className="ml-[11rem] border rounded-md shadow-sm p-4">
+        <h1 className="text-lg font-bold mb-6">{path}</h1>
         <Table>
             <TableHeader>
                 <TableRow>
-                <TableHead>{person}</TableHead>
-                <TableHead><span className="font-bold">Subject/</span>Body</TableHead>
-                <TableHead className="w-[110px]">Date</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead className="font-bold">{person}</TableHead>
+                <TableHead className="font-bold"><span>Subject/</span>Body</TableHead>
+                <TableHead className="w-[115px] font-bold">Date</TableHead>
+                <TableHead className="font-bold">Action</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -75,16 +80,12 @@ const DraftTable = ({path, person, sentMessages}: DraftTableProps) => {
                       <span className="text-dark-400 mr-1">{msg.body?.slice(0,60)}</span>
                       <span>...</span>
                     </TableCell>
-                    <TableCell className="w-[110px]">{convertDate(msg.date)}</TableCell>
+                    <TableCell className="w-[115px]">{convertDate(msg.date)}</TableCell>
                     <TableCell className="flex gap-2 h-full items-center">
-                      <Link to={`/notifications/draft/${msg.id}`} className="bg-blue-600 text-white p-[6px] rounded-full flex justify-center items-center">
-                        <View size={20}/>
-                      </Link>
+                      <View onClick={()=>handleNavigate(msg.id)} color="#044BD9" className="cursor-pointer"/>
                       <AlertDialog>
                         <AlertDialogTrigger>
-                        <button className="bg-Red-200 text-white p-[6px] rounded-full flex justify-center items-center">
-                          <Trash2 size={20}/>
-                        </button>
+                          <Trash2 color="#E60B0B"/>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
