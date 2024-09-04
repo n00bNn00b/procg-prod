@@ -7,6 +7,11 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog";
+  import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu"
 import { ChangeEvent, useState } from "react";
 import { Check} from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
@@ -25,7 +30,6 @@ const ComposeButton = () => {
   const [recivers, setRecivers] =useState<string[]>([]);
   const [subject, setSubject] = useState<string>('');
   const [body, setBody] = useState<string>('');
-  const [showUsers, setShowUsers] = useState(false);
   const [query, setQuery] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const [isDrafting, setIsDrafting] = useState(false);
@@ -84,8 +88,6 @@ const handleSend = async () => {
   setSubject('');
   setBody('');
   setIsSending(false);
-  setShowUsers(false);
-  // setMessages((prev) => [data, ...prev])
 };
 
 const handleDraft = async () => {
@@ -113,7 +115,6 @@ const handleDraft = async () => {
   setSubject('');
   setBody('');
   setIsDrafting(false);
-  setShowUsers(false);
   setMessages((prev) => [data, ...prev])
 }
 
@@ -131,9 +132,29 @@ return (
           <DialogTitle>New Message</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
-        <div className="flex gap-2">
-          <button onClick={()=> setShowUsers(!showUsers)} className="bg-dark-100 text-white w-40 h-8 rounded-sm font-semibold">Select Recipients</button>
-          <div className="rounded-sm w-[calc(100%-11rem)] max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1 justify-end">
+          <div className="flex gap-4">
+            <DropdownMenu>
+            <DropdownMenuTrigger className="bg-dark-100 text-white w-44 h-8 rounded-sm font-semibold">Select Recipients</DropdownMenuTrigger>
+            <DropdownMenuContent className="w-44 max-h-[255px] overflow-auto scrollbar-thin">
+            <input type="text" 
+                    className="w-full bg-light-100 border-b border-light-400 outline-none pl-2"
+                    placeholder="Search..."
+                    value={query}
+                    onChange={handleQueryChange}/>
+              <div onClick={handleSelectAll} className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer">
+                  <p>All</p>
+              </div>
+              {filterdUser.map(user => (
+                <div onClick={()=> handleReciever(user.user_name)} key={user.user_id} className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer">
+                  <p>{user.user_name}</p>
+                  {recivers.includes(user.user_name) ? <Check size={14} color="#038C5A"/>: null}
+                </div>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <div className="w-[calc(100%-11rem)]">
+          <div className="rounded-sm max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1 justify-end">
               {recivers.map(rec => (
                   <div className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full">
                       <p className="font-semibold">{rec}</p>
@@ -144,22 +165,8 @@ return (
               ))}
           </div>
         </div>
-        {showUsers? <div className="w-40 fixed z-10 bg-light-100 border rounded-b-sm top-[90px] max-h-[230px] overflow-auto scrollbar-thin">
-            <input type="text" 
-                   className="w-full bg-light-100 border-b border-light-400 outline-none pl-2"
-                   placeholder="Search..."
-                   value={query}
-                   onChange={handleQueryChange}/>
-            <div onClick={handleSelectAll} className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer">
-                <p>All</p>
-            </div>
-            {filterdUser.map(user => (
-                <div onClick={() => handleReciever(user.user_name)} key={user.user_id} className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer">
-                    <p>{user.user_name}</p>
-                    {recivers.includes(user.user_name) ? <Check size={14} color="#038C5A"/>: null}
-                </div>
-            ))}
-         </div>: null}
+          </div>
+        
         <div className="flex flex-col gap-2 w-full text-dark-400">
             <label className="font-semibold">Subject</label>
             <input type="text" 
