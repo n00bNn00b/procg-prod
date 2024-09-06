@@ -44,6 +44,7 @@ const ManageAccessEntitlementsTable = () => {
     selected,
     setSelected,
     fetchAccessPointsEntitlement,
+    setSelectedManageAccessEntitlementsID,
   } = useManageAccessEntitlementsContext();
   const [data, setData] = React.useState<IManageAccessEntitlementsTypes[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -94,6 +95,8 @@ const ManageAccessEntitlementsTable = () => {
   };
   const handleFetchAccessPoints = () => {
     fetchAccessPointsEntitlement(selected[0].entitlement_id);
+    setSelectedManageAccessEntitlementsID(selected[0].entitlement_id);
+    console.log(selected[0].entitlement_id);
   };
 
   const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [

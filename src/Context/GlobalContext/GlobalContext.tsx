@@ -266,7 +266,9 @@ export function GlobalContextProvider({
     try {
       const res = await axios.get<ITenantsTypes[]>(`${url}/tenants`);
       return res.data;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
   // Create User
   const createUser = async (postData: IAddUserTypes) => {
@@ -298,7 +300,6 @@ export function GlobalContextProvider({
         job_title,
         password,
       });
-      setIsLoading(false);
       if (res.status === 201) {
         toast({
           title: "Success",
@@ -313,6 +314,8 @@ export function GlobalContextProvider({
         });
       }
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

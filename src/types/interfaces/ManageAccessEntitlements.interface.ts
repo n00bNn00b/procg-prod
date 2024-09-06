@@ -12,8 +12,19 @@ export interface IManageAccessEntitlementsTypes {
   last_updated_by: string;
   created_by: string;
 }
-export interface IAccessPointsEntitlementTypes {
+export interface IFetchAccessPointsEntitlementTypes {
   id: number;
+  entitlement_id: number;
+  entitlement_name: string;
+  description: string;
+  datasource: string;
+  platform: string;
+  element_type: string;
+  access_control: string;
+  change_control: string;
+  audit: string;
+}
+export interface ICreateAccessPointsEntitlementTypes {
   entitlement_id: number;
   entitlement_name: string;
   description: string;
