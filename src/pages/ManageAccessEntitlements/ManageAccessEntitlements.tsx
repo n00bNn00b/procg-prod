@@ -1,11 +1,11 @@
-import AccessPointsEntitleTable from "./AccessPointsEntitleTable";
+import AccessPointsEntitle from "./AccessPointsEntitle/AccessPointsEntitle";
 import ManageAccessEntitlementsTable from "./ManageAccessEntitlementsTable";
 
 const ManageAccessEntitlements = () => {
   return (
     <div>
       <ManageAccessEntitlementsTable />
-      <AccessPointsEntitleTable />
+      <AccessPointsEntitle />
     </div>
   );
 };

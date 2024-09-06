@@ -1,5 +1,7 @@
+import { toast } from "@/components/ui/use-toast";
 import {
-  IAccessPointsEntitlementTypes,
+  ICreateAccessPointsEntitlementTypes,
+  IFetchAccessPointsEntitlementTypes,
   IManageAccessEntitlementsTypes,
 } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import axios from "axios";
@@ -20,8 +22,18 @@ interface IContextTypes {
     IManageAccessEntitlementsTypes[] | undefined
   >;
   fetchAccessPointsEntitlement: (id: number) => Promise<void>;
-  filteredData: IAccessPointsEntitlementTypes[];
+  filteredData: IFetchAccessPointsEntitlementTypes[];
   isLoading: boolean;
+  isOpenModal: boolean;
+  setIsOpenModal: Dispatch<SetStateAction<boolean>>;
+  selectedManageAccessEntitlementsID: number | undefined;
+  setSelectedManageAccessEntitlementsID: Dispatch<
+    SetStateAction<number | undefined>
+  >;
+  createAccessPointsEntitlement: (
+    postData: ICreateAccessPointsEntitlementTypes
+  ) => Promise<void>;
+  accessPointsEntitleMaxId: number | undefined;
 }
 export const ManageAccessEntitlements = createContext<IContextTypes | null>(
   null
@@ -42,8 +54,17 @@ export const ManageAccessEntitlementsProvider = ({
     []
   );
   const [filteredData, setFilteredData] = useState<
-    IAccessPointsEntitlementTypes[]
+    IFetchAccessPointsEntitlementTypes[]
   >([]);
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const [accessPointsEntitleMaxId, setAccessPointsEntitleMaxId] = useState<
+    number | undefined
+  >();
+
+  const [
+    selectedManageAccessEntitlementsID,
+    setSelectedManageAccessEntitlementsID,
+  ] = useState<number | undefined>(undefined);
   //Fetch Manage Access Entitlements
   const fetchManageAccessEntitlements = async () => {
     setIsLoading(true);
@@ -54,35 +75,87 @@ export const ManageAccessEntitlementsProvider = ({
       const sortingData = response.data.sort(
         (a, b) => b.entitlement_id - a.entitlement_id
       );
-      setIsLoading(false);
       return sortingData ?? [];
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
   // Fetch Access Points Entitlement
   const fetchAccessPointsEntitlement = async (id: number) => {
     setIsLoading(true);
     try {
-      const response = await axios.get<IAccessPointsEntitlementTypes[]>(
+      const response = await axios.get<IFetchAccessPointsEntitlementTypes[]>(
         `${url}/access-points-entitlement`
       );
-      const sortingData = response.data.sort((a, b) => b.id - a.id);
+      const sortingData = response.data.sort((a, b) => b?.id - a?.id);
 
       const filterData = sortingData.filter(
         (data) => data.entitlement_id === id
       );
       if (filterData.length > 0) {
         setFilteredData(filterData);
-        setIsLoading(false);
+        setAccessPointsEntitleMaxId(
+          Math.max(...filterData.map((item) => item.id))
+        );
       } else {
         setFilteredData([]);
       }
     } catch (error) {
       console.error("Error fetching access points entitlement:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
-
+  console.log(selectedManageAccessEntitlementsID);
+  const createAccessPointsEntitlement = async (
+    postData: ICreateAccessPointsEntitlementTypes
+  ) => {
+    const {
+      entitlement_id,
+      entitlement_name,
+      description,
+      datasource,
+      platform,
+      element_type,
+      access_control,
+      change_control,
+      audit,
+    } = postData;
+    try {
+      const res = await axios.post<ICreateAccessPointsEntitlementTypes>(
+        `${url}/access-points-entitlement`,
+        {
+          entitlement_id,
+          entitlement_name,
+          description,
+          datasource,
+          platform,
+          element_type,
+          access_control,
+          change_control,
+          audit,
+        }
+      );
+      if (res.status === 201) {
+        toast({
+          title: "Success",
+          description: `User added successfully.`,
+        });
+      }
+    } catch (error: any) {
+      if (error.response.status) {
+        toast({
+          title: "Info !!!",
+          description: `${error.message}`,
+        });
+      }
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const value = {
     fetchManageAccessEntitlements,
     setSelected,
@@ -90,6 +163,12 @@ export const ManageAccessEntitlementsProvider = ({
     fetchAccessPointsEntitlement,
     filteredData,
     isLoading,
+    isOpenModal,
+    setIsOpenModal,
+    selectedManageAccessEntitlementsID,
+    setSelectedManageAccessEntitlementsID,
+    createAccessPointsEntitlement,
+    accessPointsEntitleMaxId,
   };
 
   return (

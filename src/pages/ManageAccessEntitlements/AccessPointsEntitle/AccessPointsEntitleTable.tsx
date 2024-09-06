@@ -10,14 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  Check,
-  ChevronDown,
-  X,
-} from "lucide-react";
-
-import { Button } from "@/components/ui/button";
+import { ArrowUpDown, Check, ChevronDown, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -34,14 +27,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
-import { IAccessPointsEntitlementTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import { IFetchAccessPointsEntitlementTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import Pagination from "@/components/Pagination/Pagination";
-const AccessPointsEntitleTable = () => {
-  const { filteredData: data, isLoading } =
-    useManageAccessEntitlementsContext();
 
-  const columns: ColumnDef<IAccessPointsEntitlementTypes>[] = [
+import { Button } from "@/components/ui/button";
+
+const AccessPointsEntitleTable = () => {
+  const {
+    filteredData: data,
+    isLoading,
+    isOpenModal,
+    setIsOpenModal,
+    selectedManageAccessEntitlementsID,
+  } = useManageAccessEntitlementsContext();
+
+  const columns: ColumnDef<IFetchAccessPointsEntitlementTypes>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -84,35 +85,35 @@ const AccessPointsEntitleTable = () => {
     },
     {
       accessorKey: "description",
-      header: "description",
+      header: "Description",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("description")}</div>
       ),
     },
     {
       accessorKey: "datasource",
-      header: "datasource",
+      header: "Datasource",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("datasource")}</div>
       ),
     },
     {
       accessorKey: "platform",
-      header: "platform",
+      header: "Platform",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("platform")}</div>
       ),
     },
     {
       accessorKey: "element_type",
-      header: "element_type",
+      header: "Element Type",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("element_type")}</div>
       ),
     },
     {
       accessorKey: "access_control",
-      header: "access_control",
+      header: "Access Control",
       cell: ({ row }) => (
         <div className="capitalize">
           {row.getValue("access_control") === "true" ? <Check /> : <X />}
@@ -121,14 +122,14 @@ const AccessPointsEntitleTable = () => {
     },
     {
       accessorKey: "change_control",
-      header: "change_control",
+      header: "Change Control",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("change_control")}</div>
       ),
     },
     {
       accessorKey: "audit",
-      header: "audit",
+      header: "Audit",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("audit")}</div>
       ),
@@ -157,21 +158,35 @@ const AccessPointsEntitleTable = () => {
       rowSelection,
     },
   });
+
+  console.log(selectedManageAccessEntitlementsID);
   return (
     <div className="px-3">
       <div className="w-full">
         <div className="flex items-center py-4">
           <div className="flex gap-2">
-            <div className="px-4 py-2 border rounded shadow cursor-pointer hover:bg-slate-200 hover:shadow-md">
+            <div className="px-4 py-2 border rounded shadow text-slate-300">
               <h3>Access Points</h3>
             </div>
-            <div className="px-4 py-2 border rounded shadow cursor-pointer hover:bg-slate-200 hover:shadow-md">
-              <h3>Create Access Point</h3>
+            <div
+              className={`px-4 py-2 border rounded shadow  ${
+                selectedManageAccessEntitlementsID
+                  ? "bg-slate-400  hover:shadow-md hover:bg-slate-500"
+                  : "bg-slate-200 text-slate-400"
+              }`}
+            >
+              <button
+                disabled={!selectedManageAccessEntitlementsID}
+                onClick={() => setIsOpenModal(!isOpenModal)}
+              >
+                Create Access Point
+              </button>
             </div>
-            <div className="px-4 py-2 border rounded shadow cursor-pointer hover:bg-slate-200 hover:shadow-md">
+            <div className="px-4 py-2 border rounded shadow text-slate-300">
               <h3>Delete</h3>
             </div>
           </div>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
