@@ -16,7 +16,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, Filter } from "lucide-react";
+import { ArrowUpDown, ChevronDown, FileEdit, Filter, Plus } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -44,13 +44,16 @@ const ManageAccessEntitlementsTable = () => {
     selected,
     setSelected,
     fetchAccessPointsEntitlement,
-    setSelectedManageAccessEntitlementsID,
+    setSelectedManageAccessEntitlements,
+    setEditManageAccessEntitlement,
   } = useManageAccessEntitlementsContext();
   const [data, setData] = React.useState<IManageAccessEntitlementsTypes[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   // const [save, setSave] = React.useState<number>(0);
   // Fetch Data
   React.useEffect(() => {
+    setSelected([]);
+    setSelectedManageAccessEntitlements(Object);
     const fetchData = async () => {
       setIsLoading(true);
       try {
@@ -94,9 +97,9 @@ const ManageAccessEntitlementsTable = () => {
     });
   };
   const handleFetchAccessPoints = () => {
-    fetchAccessPointsEntitlement(selected[0].entitlement_id);
-    setSelectedManageAccessEntitlementsID(selected[0].entitlement_id);
-    console.log(selected[0].entitlement_id);
+    fetchAccessPointsEntitlement(selected[0]);
+    setSelectedManageAccessEntitlements(selected[0]);
+    console.log(selected[0].entitlement_id, "test now");
   };
 
   const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
@@ -256,14 +259,38 @@ const ManageAccessEntitlementsTable = () => {
             <h3>view</h3>
           </div>
           <div className="flex gap-3 px-4 py-2 border rounded">
-            {selected.length === 1 ? (
-              <Filter
+            <div>
+              {selected.length === 1 ? (
+                <Filter
+                  className="cursor-pointer"
+                  onClick={handleFetchAccessPoints}
+                />
+              ) : (
+                <Filter className="cursor-not-allowed text-slate-200" />
+              )}
+            </div>
+            <div>
+              {selected.length === 1 ? (
+                <FileEdit
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setEditManageAccessEntitlement(true);
+                    setSelectedManageAccessEntitlements(selected[0]);
+                  }}
+                />
+              ) : (
+                <FileEdit className="cursor-not-allowed text-slate-200" />
+              )}
+            </div>
+            <div>
+              <Plus
                 className="cursor-pointer"
-                onClick={handleFetchAccessPoints}
+                onClick={() => {
+                  setEditManageAccessEntitlement(true);
+                  setSelectedManageAccessEntitlements(Object());
+                }}
               />
-            ) : (
-              <Filter className="cursor-not-allowed text-slate-200" />
-            )}
+            </div>
           </div>
         </div>
         <Input

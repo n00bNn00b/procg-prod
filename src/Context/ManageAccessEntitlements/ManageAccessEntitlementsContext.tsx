@@ -1,7 +1,7 @@
 import { toast } from "@/components/ui/use-toast";
 import {
-  ICreateAccessPointsEntitlementTypes,
-  IFetchAccessPointsEntitlementTypes,
+  ICreateAccessPointsElementTypes,
+  IFetchAccessPointsElementTypes,
   IManageAccessEntitlementsTypes,
 } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import axios from "axios";
@@ -21,19 +21,23 @@ interface IContextTypes {
   fetchManageAccessEntitlements: () => Promise<
     IManageAccessEntitlementsTypes[] | undefined
   >;
-  fetchAccessPointsEntitlement: (id: number) => Promise<void>;
-  filteredData: IFetchAccessPointsEntitlementTypes[];
+  fetchAccessPointsEntitlement: (
+    id: IManageAccessEntitlementsTypes
+  ) => Promise<void>;
+  filteredData: IFetchAccessPointsElementTypes[];
   isLoading: boolean;
   isOpenModal: boolean;
   setIsOpenModal: Dispatch<SetStateAction<boolean>>;
-  selectedManageAccessEntitlementsID: number | undefined;
-  setSelectedManageAccessEntitlementsID: Dispatch<
-    SetStateAction<number | undefined>
+  selectedManageAccessEntitlements: IManageAccessEntitlementsTypes | undefined;
+  setSelectedManageAccessEntitlements: Dispatch<
+    SetStateAction<IManageAccessEntitlementsTypes | undefined>
   >;
   createAccessPointsEntitlement: (
-    postData: ICreateAccessPointsEntitlementTypes
+    postData: ICreateAccessPointsElementTypes
   ) => Promise<void>;
   accessPointsEntitleMaxId: number | undefined;
+  editManageAccessEntitlement: boolean;
+  setEditManageAccessEntitlement: Dispatch<SetStateAction<boolean>>;
 }
 export const ManageAccessEntitlements = createContext<IContextTypes | null>(
   null
@@ -54,7 +58,7 @@ export const ManageAccessEntitlementsProvider = ({
     []
   );
   const [filteredData, setFilteredData] = useState<
-    IFetchAccessPointsEntitlementTypes[]
+    IFetchAccessPointsElementTypes[]
   >([]);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [accessPointsEntitleMaxId, setAccessPointsEntitleMaxId] = useState<
@@ -62,9 +66,12 @@ export const ManageAccessEntitlementsProvider = ({
   >();
 
   const [
-    selectedManageAccessEntitlementsID,
-    setSelectedManageAccessEntitlementsID,
-  ] = useState<number | undefined>(undefined);
+    selectedManageAccessEntitlements,
+    setSelectedManageAccessEntitlements,
+  ] = useState<IManageAccessEntitlementsTypes>();
+  const [editManageAccessEntitlement, setEditManageAccessEntitlement] =
+    useState(false);
+  console.log(selectedManageAccessEntitlements);
   //Fetch Manage Access Entitlements
   const fetchManageAccessEntitlements = async () => {
     setIsLoading(true);
@@ -83,16 +90,18 @@ export const ManageAccessEntitlementsProvider = ({
     }
   };
   // Fetch Access Points Entitlement
-  const fetchAccessPointsEntitlement = async (id: number) => {
+  const fetchAccessPointsEntitlement = async (
+    id: IManageAccessEntitlementsTypes
+  ) => {
     setIsLoading(true);
     try {
-      const response = await axios.get<IFetchAccessPointsEntitlementTypes[]>(
-        `${url}/access-points-entitlement`
+      const response = await axios.get<IFetchAccessPointsElementTypes[]>(
+        `${url}/access-points-element`
       );
       const sortingData = response.data.sort((a, b) => b?.id - a?.id);
 
       const filterData = sortingData.filter(
-        (data) => data.entitlement_id === id
+        (data) => data.entitlement_id === id.entitlement_id
       );
       if (filterData.length > 0) {
         setFilteredData(filterData);
@@ -108,13 +117,13 @@ export const ManageAccessEntitlementsProvider = ({
       setIsLoading(false);
     }
   };
-  console.log(selectedManageAccessEntitlementsID);
+  // create access-points-element
   const createAccessPointsEntitlement = async (
-    postData: ICreateAccessPointsEntitlementTypes
+    postData: ICreateAccessPointsElementTypes
   ) => {
     const {
       entitlement_id,
-      entitlement_name,
+      element_name,
       description,
       datasource,
       platform,
@@ -124,11 +133,11 @@ export const ManageAccessEntitlementsProvider = ({
       audit,
     } = postData;
     try {
-      const res = await axios.post<ICreateAccessPointsEntitlementTypes>(
-        `${url}/access-points-entitlement`,
+      const res = await axios.post<ICreateAccessPointsElementTypes>(
+        `${url}/access-points-element`,
         {
           entitlement_id,
-          entitlement_name,
+          element_name,
           description,
           datasource,
           platform,
@@ -165,10 +174,12 @@ export const ManageAccessEntitlementsProvider = ({
     isLoading,
     isOpenModal,
     setIsOpenModal,
-    selectedManageAccessEntitlementsID,
-    setSelectedManageAccessEntitlementsID,
+    selectedManageAccessEntitlements,
+    setSelectedManageAccessEntitlements,
     createAccessPointsEntitlement,
     accessPointsEntitleMaxId,
+    editManageAccessEntitlement,
+    setEditManageAccessEntitlement,
   };
 
   return (

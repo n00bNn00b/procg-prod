@@ -22,11 +22,10 @@ import { toast } from "@/components/ui/use-toast";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 
 const AccessPointsEntitleModal = () => {
-  const { selectedManageAccessEntitlementsID, createAccessPointsEntitlement } =
+  const { selectedManageAccessEntitlements, createAccessPointsEntitlement } =
     useManageAccessEntitlementsContext();
-  console.log(selectedManageAccessEntitlementsID);
   const FormSchema = z.object({
-    entitlement_name: z.string(),
+    element_name: z.string(),
     description: z.string(),
     datasource: z.string(),
     platform: z.string(),
@@ -38,7 +37,7 @@ const AccessPointsEntitleModal = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      entitlement_name: "",
+      element_name: "",
       description: "",
       datasource: "",
       platform: "",
@@ -51,10 +50,10 @@ const AccessPointsEntitleModal = () => {
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const postData = {
-      entitlement_id: selectedManageAccessEntitlementsID
-        ? selectedManageAccessEntitlementsID
+      entitlement_id: selectedManageAccessEntitlements?.entitlement_id
+        ? selectedManageAccessEntitlements.entitlement_id
         : 0,
-      entitlement_name: data.entitlement_name,
+      element_name: data.element_name,
       description: data.description,
       datasource: data.datasource,
       platform: data.platform,
@@ -80,12 +79,12 @@ const AccessPointsEntitleModal = () => {
         <div className="grid grid-cols-2 gap-2 p-2">
           <FormField
             control={form.control}
-            name="entitlement_name"
+            name="element_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Entitlement Name</FormLabel>
+                <FormLabel>Element Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Entitlement Name" {...field} />
+                  <Input placeholder="Element Name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
