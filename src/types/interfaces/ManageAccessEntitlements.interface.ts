@@ -12,10 +12,10 @@ export interface IManageAccessEntitlementsTypes {
   last_updated_by: string;
   created_by: string;
 }
-export interface IFetchAccessPointsEntitlementTypes {
+export interface IFetchAccessPointsElementTypes {
   id: number;
   entitlement_id: number;
-  entitlement_name: string;
+  element_name: string;
   description: string;
   datasource: string;
   platform: string;
@@ -24,9 +24,9 @@ export interface IFetchAccessPointsEntitlementTypes {
   change_control: string;
   audit: string;
 }
-export interface ICreateAccessPointsEntitlementTypes {
+export interface ICreateAccessPointsElementTypes {
   entitlement_id: number;
-  entitlement_name: string;
+  element_name: string;
   description: string;
   datasource: string;
   platform: string;

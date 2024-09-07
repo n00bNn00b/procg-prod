@@ -27,7 +27,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
-import { IFetchAccessPointsEntitlementTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import { IFetchAccessPointsElementTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import Pagination from "@/components/Pagination/Pagination";
 
@@ -39,10 +39,10 @@ const AccessPointsEntitleTable = () => {
     isLoading,
     isOpenModal,
     setIsOpenModal,
-    selectedManageAccessEntitlementsID,
+    selectedManageAccessEntitlements,
   } = useManageAccessEntitlementsContext();
 
-  const columns: ColumnDef<IFetchAccessPointsEntitlementTypes>[] = [
+  const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -68,19 +68,19 @@ const AccessPointsEntitleTable = () => {
     },
 
     {
-      accessorKey: "entitlement_name",
+      accessorKey: "element_name",
       header: ({ column }) => {
         return (
           <div
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Entitlement Name
+            Element Name
             <ArrowUpDown className="ml-2 h-4 w-4 inline-block" />
           </div>
         );
       },
       cell: ({ row }) => (
-        <div className="lowercase">{row.getValue("entitlement_name")}</div>
+        <div className="lowercase">{row.getValue("element_name")}</div>
       ),
     },
     {
@@ -159,24 +159,23 @@ const AccessPointsEntitleTable = () => {
     },
   });
 
-  console.log(selectedManageAccessEntitlementsID);
   return (
-    <div className="px-3">
+    <div className="">
       <div className="w-full">
-        <div className="flex items-center py-4">
+        <div className="flex items-center justify-between py-4">
           <div className="flex gap-2">
             <div className="px-4 py-2 border rounded shadow text-slate-300">
               <h3>Access Points</h3>
             </div>
             <div
               className={`px-4 py-2 border rounded shadow  ${
-                selectedManageAccessEntitlementsID
+                selectedManageAccessEntitlements
                   ? "bg-slate-400  hover:shadow-md hover:bg-slate-500"
                   : "bg-slate-200 text-slate-400"
               }`}
             >
               <button
-                disabled={!selectedManageAccessEntitlementsID}
+                disabled={!selectedManageAccessEntitlements}
                 onClick={() => setIsOpenModal(!isOpenModal)}
               >
                 Create Access Point
@@ -186,10 +185,16 @@ const AccessPointsEntitleTable = () => {
               <h3>Delete</h3>
             </div>
           </div>
-
+          <div>
+            {selectedManageAccessEntitlements && (
+              <h3 className="font-bold ">
+                {selectedManageAccessEntitlements?.entitlement_name}
+              </h3>
+            )}
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
+              <Button variant="outline" className="">
                 Columns <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -214,7 +219,7 @@ const AccessPointsEntitleTable = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded-md border ">
+        <div className="rounded-md border">
           <Table className="">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
