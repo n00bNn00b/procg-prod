@@ -1,14 +1,11 @@
 import {
     Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
     CardTitle,
   } from "@/components/ui/card";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import axios from "axios";
 import { ArrowLeft, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { tailspin } from "ldrs";
 
@@ -81,17 +78,29 @@ const SingleSent = () => {
     }
 
     const renderMessage = (msg: string) => {
-        const urlPattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-          '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
-          '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-          '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-          '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-          '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+      // Split the message by URLs and wrap each URL with <a> tag
+      const parts = msg.split(urlRegex);
     
-        if (urlPattern.test(msg)) {
-          return <a href={msg} target="_blank" rel="noopener noreferrer">{msg}</a>;
+      return parts.map((part, index) => {
+        // If the part matches the URL pattern, return a link
+        if (urlRegex.test(part)) {
+          return (
+            <a href={part} key={index} className="text-blue-700 underline" target="_blank" rel="noopener noreferrer">
+              {part}
+            </a>
+          );
         }
-        return `${msg}`;
+    
+        // Otherwise, return the text and convert newlines to <br />
+        return part.split('\n').map((line, lineIndex) => (
+          <React.Fragment key={lineIndex}>
+            {line}
+            <br />
+          </React.Fragment>
+        ));
+      });
       };
   return (
     <div className='flex justify-center items-center w-full mb-4'>
@@ -101,9 +110,8 @@ const SingleSent = () => {
             <l-tailspin size="80" stroke="5" speed="2" color="#68788C"></l-tailspin>
           </div>   
          ) : (
-          <Card>
-        <CardHeader>
-            <div className="flex text-dark-400">
+          <Card className="p-6">
+            <div className="flex text-dark-400 mb-4">
               <Link to={user === message.sender ? "/notifications/sent":"/notifications/inbox" } className="p-1 rounded-md hover:bg-winter-100/50">
                 <ArrowLeft size={20}/>
               </Link>
@@ -112,21 +120,16 @@ const SingleSent = () => {
               </button>
             </div>
             <CardTitle>{`${message.subject}`}</CardTitle>
-            <CardDescription className="flex flex-col justify-center gap-4">
-                <p>{convertDate(message.date)}</p>
-                <div className="flex gap-2">
-                    {message.recivers.map(reciever => (
-                        <div className="flex flex-col">
-                            <p>{reciever}</p>
-                            <img src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-                                alt="img" className="w-10 h-10 rounded-full object-cover object-center"/>
-                        </div>))}
-                </div>
-            </CardDescription>
-        </CardHeader>
-        <CardContent>
-            <p className="whitespace-pre-wrap">{renderMessage(message.body)}</p>
-        </CardContent>
+            <p className="my-4 text-dark-400">{convertDate(message.date)}</p>
+            <div className="flex gap-2 text-dark-400">
+                {message.recivers.map(reciever => (
+                    <div key={reciever} className="flex flex-col">
+                        <p>{reciever}</p>
+                        <img src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                            alt="img" className="w-10 h-10 rounded-full object-cover object-center"/>
+                    </div>))}
+            </div>
+            <p className="whitespace-pre-wrap mt-4">{renderMessage(message.body)}</p>
        </Card>
         )
       }

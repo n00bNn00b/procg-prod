@@ -13,12 +13,16 @@ import axios from "axios";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useNavigate } from "react-router-dom";
 
+interface SignInFormProps {
+  setIsWrongCredential: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
   password: z.string().min(4, "Password must be at least 4 characters"),
 });
 
-const SignInForm = () => {
+const SignInForm = ({setIsWrongCredential}: SignInFormProps) => {
   const { setToken, isLoading, setIsLoading } = useGlobalContext();
   const navigate = useNavigate();
   const url = import.meta.env.VITE_API_URL;
@@ -36,13 +40,16 @@ const SignInForm = () => {
       const response = await axios.post(`${url}/login`, data);
       console.log("Response:", response.data);
       setToken(response.data);
+      setIsWrongCredential(false)
       localStorage.setItem("token", JSON.stringify(response.data));
       setIsLoading(false);
       if (response.data) {
         navigate("/");
-      }
+      } 
     } catch (error) {
       console.error("Error:", error);
+      setIsWrongCredential(true);
+      setIsLoading(false)
     }
   };
 
