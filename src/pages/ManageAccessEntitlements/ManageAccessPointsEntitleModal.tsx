@@ -18,62 +18,96 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 import { IManageAccessEntitlementsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { FC } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
+import { ring } from "ldrs";
 interface IManageAccessEntitlementsProps {
-  selectedItem?: IManageAccessEntitlementsTypes; // Optional prop
+  selectedItem?: IManageAccessEntitlementsTypes;
 }
 const ManageAccessPointsEntitleModal: FC<IManageAccessEntitlementsProps> = ({
   selectedItem,
 }) => {
   console.log(selectedItem);
-  // const selectData=
-  // const { selectedManageAccessEntitlements, createAccessPointsEntitlement } =
-  //   useManageAccessEntitlementsContext();
+  const { token } = useGlobalContext();
+  const {
+    mangeAccessEntitlementAction,
+    createManageAccessEntitlements,
+    updateManageAccessEntitlements,
+    isLoading,
+    setSelected,
+    table,
+  } = useManageAccessEntitlementsContext();
+  const currentDate = new Date().toLocaleDateString();
   const FormSchema = z.object({
     entitlement_name: z.string(),
     description: z.string(),
     comments: z.string(),
-    status: z.string(),
+    status: z.string().min(3, {
+      message: "Select a option",
+    }),
   });
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      entitlement_name: selectedItem?.entitlement_name,
-      description: selectedItem?.description,
-      comments: selectedItem?.comments,
-      status: selectedItem?.status,
+      entitlement_name:
+        mangeAccessEntitlementAction === "edit"
+          ? selectedItem?.entitlement_name
+          : "",
+      description:
+        mangeAccessEntitlementAction === "edit"
+          ? selectedItem?.description
+          : "",
+      comments:
+        mangeAccessEntitlementAction === "edit" ? selectedItem?.comments : "",
+      status:
+        mangeAccessEntitlementAction === "edit" ? selectedItem?.status : "",
     },
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-    // const postData = {
-    //   entitlement_id: selectedManageAccessEntitlements?.entitlement_id
-    //     ? selectedManageAccessEntitlements.entitlement_id
-    //     : 0,
-    //   element_name: data.element_name,
-    //   description: data.description,
-    //   datasource: data.datasource,
-    //   platform: data.platform,
-    //   element_type: data.element_type,
-    //   access_control: data.access_control,
-    //   change_control: data.change_control,
-    //   audit: data.audit,
-    // };
-    // createAccessPointsEntitlement(postData);
-
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    const id = selectedItem?.entitlement_id || 0;
+    const putData = {
+      entitlement_id: id,
+      entitlement_name: data.entitlement_name,
+      description: data.description,
+      comments: data.comments,
+      status: data?.status,
+      effective_date: selectedItem?.effective_date || "",
+      revison: selectedItem?.revison || 0,
+      revision_date: selectedItem?.revision_date || "",
+      created_on: selectedItem?.created_on || "",
+      last_updated_on: selectedItem?.last_updated_on || "",
+      last_updated_by: token.user_name,
+      created_by: selectedItem?.created_by || "",
+    };
+    const postData = {
+      entitlement_id: 0,
+      entitlement_name: data.entitlement_name,
+      description: data.description,
+      comments: data.comments,
+      status: data?.status,
+      effective_date: currentDate,
+      revison: 0,
+      revision_date: currentDate,
+      created_on: currentDate,
+      last_updated_on: currentDate,
+      last_updated_by: token.user_name,
+      created_by: token.user_name,
+    };
+    if (mangeAccessEntitlementAction === "edit") {
+      updateManageAccessEntitlements(id, putData);
+      setSelected([]);
+      table.getRowModel().rows.map((row: any) => row.toggleSelected(false));
+    } else if (mangeAccessEntitlementAction === "add") {
+      createManageAccessEntitlements(postData);
+    }
   }
+
+  ring.register();
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -85,7 +119,7 @@ const ManageAccessPointsEntitleModal: FC<IManageAccessEntitlementsProps> = ({
               <FormItem>
                 <FormLabel>Entitlement Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Entitlement Name" {...field} />
+                  <Input required placeholder="Entitlement Name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -98,7 +132,7 @@ const ManageAccessPointsEntitleModal: FC<IManageAccessEntitlementsProps> = ({
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input placeholder="Description" {...field} />
+                  <Input required placeholder="Description" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -126,7 +160,7 @@ const ManageAccessPointsEntitleModal: FC<IManageAccessEntitlementsProps> = ({
                 <FormLabel>Status</FormLabel>
                 <Select
                   required
-                  value={field.value}
+                  defaultValue={field.value}
                   onValueChange={field.onChange}
                 >
                   <FormControl>
@@ -139,12 +173,23 @@ const ManageAccessPointsEntitleModal: FC<IManageAccessEntitlementsProps> = ({
                     <SelectItem value="inactive">Inactive</SelectItem>
                   </SelectContent>
                 </Select>
+                <FormMessage />
               </FormItem>
             )}
           />
         </div>
         <Button className="ml-2" type="submit">
-          Submit
+          {isLoading ? (
+            <l-ring
+              size="20"
+              stroke="5"
+              bg-opacity="0"
+              speed="2"
+              color="white"
+            ></l-ring>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </form>
     </Form>

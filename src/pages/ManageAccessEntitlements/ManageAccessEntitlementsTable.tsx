@@ -3,6 +3,17 @@ import { tailspin } from "ldrs";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import {
   ColumnDef,
@@ -16,7 +27,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, FileEdit, Filter, Plus } from "lucide-react";
+import {
+  ArrowUpDown,
+  ChevronDown,
+  FileEdit,
+  Filter,
+  Plus,
+  Trash,
+} from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -46,14 +64,18 @@ const ManageAccessEntitlementsTable = () => {
     fetchAccessPointsEntitlement,
     setSelectedManageAccessEntitlements,
     setEditManageAccessEntitlement,
+    save,
+    setMangeAccessEntitlementAction,
+    deleteManageAccessEntitlement,
+    setTable,
   } = useManageAccessEntitlementsContext();
   const [data, setData] = React.useState<IManageAccessEntitlementsTypes[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   // const [save, setSave] = React.useState<number>(0);
   // Fetch Data
   React.useEffect(() => {
-    setSelected([]);
-    setSelectedManageAccessEntitlements(Object);
+    // setSelected([]);
+    setSelectedManageAccessEntitlements(Object());
     const fetchData = async () => {
       setIsLoading(true);
       try {
@@ -65,9 +87,8 @@ const ManageAccessEntitlementsTable = () => {
         setIsLoading(false);
       }
     };
-
     fetchData();
-  }, []);
+  }, [save]);
   // loader
   tailspin.register();
   // Shadcn Form
@@ -121,14 +142,14 @@ const ManageAccessEntitlementsTable = () => {
           />
         );
       },
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onClick={() => handleRowSelection(row.original)}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
+      // cell: ({ row }) => (
+      //   <Checkbox
+      //     checked={row.getIsSelected()}
+      //     // onClick={() => handleRowSelection(row.original)}
+      //     onCheckedChange={(value) => row.toggleSelected(!!value)}
+      //     aria-label="Select row"
+      //   />
+      // ),
       enableSorting: false,
       enableHiding: false,
     },
@@ -248,7 +269,12 @@ const ManageAccessEntitlementsTable = () => {
       pagination,
     },
   });
-
+  const handleDelete = async () => {
+    deleteManageAccessEntitlement(selected[0].entitlement_id);
+    table.getRowModel().rows.map((row) => row.toggleSelected(false));
+    setSelected([]);
+  };
+  // console.log(table.getRowModel().rows.map((row) => row.toggleSelected(false)));
   return (
     <div className="px-3">
       {/* top icon and columns*/}
@@ -276,6 +302,8 @@ const ManageAccessEntitlementsTable = () => {
                   onClick={() => {
                     setEditManageAccessEntitlement(true);
                     setSelectedManageAccessEntitlements(selected[0]);
+                    setMangeAccessEntitlementAction("edit");
+                    setTable(table);
                   }}
                 />
               ) : (
@@ -288,8 +316,39 @@ const ManageAccessEntitlementsTable = () => {
                 onClick={() => {
                   setEditManageAccessEntitlement(true);
                   setSelectedManageAccessEntitlements(Object());
+                  setMangeAccessEntitlementAction("add");
                 }}
               />
+            </div>
+            <div>
+              <AlertDialog>
+                <AlertDialogTrigger disabled={selected.length === 0}>
+                  <Trash
+                    className={`${
+                      selected.length === 0 || selected.length > 1
+                        ? "text-slate-200 cursor-not-allowed"
+                        : "text-slate-800 cursor-pointer"
+                    }`}
+                  />
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your account and remove your data from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </div>

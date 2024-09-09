@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 
 const AccessPointsEntitle = () => {
   const { isOpenModal, setIsOpenModal } = useManageAccessEntitlementsContext();
+  console.log(isOpenModal);
   return (
     <div className="px-3">
       <div className="w-full">

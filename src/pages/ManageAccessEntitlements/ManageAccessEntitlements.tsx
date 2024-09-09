@@ -13,6 +13,7 @@ const ManageAccessEntitlements = () => {
     isOpenModal,
     setIsOpenModal,
     selectedManageAccessEntitlements: selectedItem,
+    mangeAccessEntitlementAction,
   } = useManageAccessEntitlementsContext();
   console.log(selectedItem);
   return (
@@ -24,10 +25,14 @@ const ManageAccessEntitlements = () => {
           <CustomModal>
             <div className="flex justify-between p-2 bg-slate-300 rounded-t-lg">
               <h2 className="text-lg font-bold">
-                Edit Manage Access Entitlements
+                {mangeAccessEntitlementAction === "edit"
+                  ? "Edit Manage Access Entitlements"
+                  : "Add Access Entitlement"}
               </h2>
               <X
-                onClick={() => setEditManageAccessEntitlement(false)}
+                onClick={() => {
+                  setEditManageAccessEntitlement(false);
+                }}
                 className="cursor-pointer"
               />
             </div>

@@ -158,7 +158,7 @@ const AccessPointsEntitleTable = () => {
       rowSelection,
     },
   });
-
+  console.log(selectedManageAccessEntitlements);
   return (
     <div className="">
       <div className="w-full">
@@ -169,13 +169,13 @@ const AccessPointsEntitleTable = () => {
             </div>
             <div
               className={`px-4 py-2 border rounded shadow  ${
-                selectedManageAccessEntitlements
+                selectedManageAccessEntitlements?.entitlement_id
                   ? "bg-slate-400  hover:shadow-md hover:bg-slate-500"
                   : "bg-slate-200 text-slate-400"
               }`}
             >
               <button
-                disabled={!selectedManageAccessEntitlements}
+                disabled={!selectedManageAccessEntitlements?.entitlement_id}
                 onClick={() => setIsOpenModal(!isOpenModal)}
               >
                 Create Access Point

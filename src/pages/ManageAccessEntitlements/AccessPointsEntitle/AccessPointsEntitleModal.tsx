@@ -20,10 +20,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
-
+import { ring } from "ldrs";
 const AccessPointsEntitleModal = () => {
-  const { selectedManageAccessEntitlements, createAccessPointsEntitlement } =
-    useManageAccessEntitlementsContext();
+  const {
+    selectedManageAccessEntitlements,
+    createAccessPointsEntitlement,
+    isLoading,
+  } = useManageAccessEntitlementsContext();
   const FormSchema = z.object({
     element_name: z.string(),
     description: z.string(),
@@ -73,6 +76,7 @@ const AccessPointsEntitleModal = () => {
       ),
     });
   }
+  ring.register();
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -190,7 +194,17 @@ const AccessPointsEntitleModal = () => {
           />
         </div>
         <Button className="ml-2" type="submit">
-          Submit
+          {isLoading ? (
+            <l-ring
+              size="20"
+              stroke="5"
+              bg-opacity="0"
+              speed="2"
+              color="white"
+            ></l-ring>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </form>
     </Form>
