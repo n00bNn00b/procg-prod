@@ -27,9 +27,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
-import { IFetchAccessPointsElementTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import {
+  ICreateAccessPointsElementTypes,
+  IFetchAccessPointsElementTypes,
+} from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import Pagination from "@/components/Pagination/Pagination";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import { Button } from "@/components/ui/button";
 
@@ -40,8 +54,13 @@ const AccessPointsEntitleTable = () => {
     isOpenModal,
     setIsOpenModal,
     selectedManageAccessEntitlements,
+    deleteAccessPointsElement,
+    fetchAccessPointsEntitlement,
   } = useManageAccessEntitlementsContext();
-
+  const [selectedRow, setSelectedRow] = useState<
+    ICreateAccessPointsElementTypes[]
+  >([]);
+  console.log(selectedRow);
   const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
     {
       id: "select",
@@ -139,7 +158,7 @@ const AccessPointsEntitleTable = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-
+  console.log(rowSelection, "rowSelection");
   const table = useReactTable({
     data,
     columns,
@@ -158,6 +177,25 @@ const AccessPointsEntitleTable = () => {
       rowSelection,
     },
   });
+  const handleRowSelected = (rowData: ICreateAccessPointsElementTypes) => {
+    setSelectedRow((prev) => {
+      if (prev.includes(rowData)) {
+        return prev.filter((item) => item !== rowData);
+      } else {
+        return [...prev, rowData];
+      }
+    });
+  };
+  const handleDelete = async () => {
+    const res = await deleteAccessPointsElement(selectedRow[0]?.id || 0);
+    table.getRowModel().rows.map((row) => row.toggleSelected(false));
+
+    if (res === 200) {
+      if (selectedManageAccessEntitlements) {
+        fetchAccessPointsEntitlement(selectedManageAccessEntitlements);
+      }
+    }
+  };
   console.log(selectedManageAccessEntitlements);
   return (
     <div className="">
@@ -181,8 +219,34 @@ const AccessPointsEntitleTable = () => {
                 Create Access Point
               </button>
             </div>
-            <div className="px-4 py-2 border rounded shadow text-slate-300">
-              <h3>Delete</h3>
+            <div className="px-4 py-2 border rounded shadow ">
+              <AlertDialog>
+                <AlertDialogTrigger
+                  className={`${
+                    selectedRow.length > 1 ? "text-slate-300" : "text-slate-800"
+                  } `}
+                  disabled={selectedRow.length > 1}
+                >
+                  Delete
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your account and remove your data from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
           <div>
@@ -268,11 +332,11 @@ const AccessPointsEntitleTable = () => {
                         {index === 0 ? (
                           <Checkbox
                             className="m-1"
-                            checked={row.getIsSelected()}
+                            checked={row.getIsSelected() || false} // Ensure checked is always a boolean
                             onCheckedChange={(value) =>
                               row.toggleSelected(!!value)
                             }
-                            // onClick={() => handleRowSelection(row.original)}
+                            onClick={() => handleRowSelected(row.original)}
                           />
                         ) : (
                           flexRender(
