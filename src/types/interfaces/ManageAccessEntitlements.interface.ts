@@ -25,6 +25,7 @@ export interface IFetchAccessPointsElementTypes {
   audit: string;
 }
 export interface ICreateAccessPointsElementTypes {
+  id?: number;
   entitlement_id: number;
   element_name: string;
   description: string;

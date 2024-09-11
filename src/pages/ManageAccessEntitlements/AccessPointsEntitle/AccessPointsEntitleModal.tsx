@@ -18,7 +18,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import { ring } from "ldrs";
 const AccessPointsEntitleModal = () => {
@@ -26,6 +25,8 @@ const AccessPointsEntitleModal = () => {
     selectedManageAccessEntitlements,
     createAccessPointsEntitlement,
     isLoading,
+    fetchAccessPointsEntitlement,
+    setIsOpenModal,
   } = useManageAccessEntitlementsContext();
   const FormSchema = z.object({
     element_name: z.string(),
@@ -65,16 +66,16 @@ const AccessPointsEntitleModal = () => {
       change_control: data.change_control,
       audit: data.audit,
     };
-    createAccessPointsEntitlement(postData);
-
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    const postAccessPointsElement = async () => {
+      const res = await createAccessPointsEntitlement(postData);
+      if (res === 201) {
+        if (selectedManageAccessEntitlements) {
+          fetchAccessPointsEntitlement(selectedManageAccessEntitlements);
+        }
+      }
+    };
+    postAccessPointsElement();
+    setIsOpenModal(false);
   }
   ring.register();
   return (

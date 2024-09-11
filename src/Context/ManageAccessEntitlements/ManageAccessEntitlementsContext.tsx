@@ -22,7 +22,7 @@ interface IContextTypes {
     IManageAccessEntitlementsTypes[] | undefined
   >;
   fetchAccessPointsEntitlement: (
-    id: IManageAccessEntitlementsTypes
+    fetchData: IManageAccessEntitlementsTypes
   ) => Promise<void>;
   filteredData: IFetchAccessPointsElementTypes[];
   isLoading: boolean;
@@ -34,7 +34,7 @@ interface IContextTypes {
   >;
   createAccessPointsEntitlement: (
     postData: ICreateAccessPointsElementTypes
-  ) => Promise<void>;
+  ) => Promise<number | undefined>;
   accessPointsEntitleMaxId: number | undefined;
   editManageAccessEntitlement: boolean;
   setEditManageAccessEntitlement: Dispatch<SetStateAction<boolean>>;
@@ -52,6 +52,7 @@ interface IContextTypes {
   setSave: Dispatch<SetStateAction<number>>;
   table: any;
   setTable: Dispatch<React.SetStateAction<any>>;
+  deleteAccessPointsElement: (id: number) => Promise<number | undefined>;
 }
 export const ManageAccessEntitlements = createContext<IContextTypes | null>(
   null
@@ -112,7 +113,7 @@ export const ManageAccessEntitlementsProvider = ({
   };
   // Fetch Access Points Entitlement
   const fetchAccessPointsEntitlement = async (
-    id: IManageAccessEntitlementsTypes
+    fetchData: IManageAccessEntitlementsTypes
   ) => {
     setIsLoading(true);
     try {
@@ -122,7 +123,7 @@ export const ManageAccessEntitlementsProvider = ({
       const sortingData = response.data.sort((a, b) => b?.id - a?.id);
 
       const filterData = sortingData.filter(
-        (data) => data.entitlement_id === id.entitlement_id
+        (data) => data.entitlement_id === fetchData.entitlement_id
       );
       if (filterData.length > 0) {
         setFilteredData(filterData);
@@ -299,13 +300,14 @@ export const ManageAccessEntitlementsProvider = ({
           audit,
         }
       );
-      setSave((prevSave) => prevSave + 1);
+      // setSave((prevSave) => prevSave + 1);
       if (res.status === 201) {
         toast({
           title: "Success",
           description: `Add successfully.`,
         });
       }
+      return res.status;
     } catch (error: any) {
       if (error.response.status) {
         toast({
@@ -316,6 +318,22 @@ export const ManageAccessEntitlementsProvider = ({
       console.log(error);
     } finally {
       setIsLoading(false);
+    }
+  };
+  // delete access-points-element
+  const deleteAccessPointsElement = async (id: number) => {
+    try {
+      const res = await axios.delete(`${url}/access-points-element/${id}`);
+      if (res.status === 200) {
+        toast({
+          title: "Success",
+          description: `Deleted successfully.`,
+        });
+      }
+      // setSave((prevSave) => prevSave + 1);
+      return res.status;
+    } catch (error) {
+      console.log(error);
     }
   };
   const value = {
@@ -342,6 +360,7 @@ export const ManageAccessEntitlementsProvider = ({
     setSave,
     table,
     setTable,
+    deleteAccessPointsElement,
   };
 
   return (
