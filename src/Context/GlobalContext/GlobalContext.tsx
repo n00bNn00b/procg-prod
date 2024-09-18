@@ -18,6 +18,10 @@ import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { ManageAccessEntitlementsProvider } from "../ManageAccessEntitlements/ManageAccessEntitlementsContext";
+import {
+  AACContext,
+  AACContextProvider,
+} from "../ManageAccessEntitlements/AdvanceAccessControlsContext";
 
 interface GlobalContextProviderProps {
   children: ReactNode;
@@ -112,7 +116,7 @@ export function GlobalContextProvider({
   }, [url]);
 
   //Fetch Messages
-  useEffect(()=> {
+  useEffect(() => {
     const fetchMessages = async () => {
       try {
         const response = await axios.get<Message[]>(`${url}/messages`);
@@ -124,7 +128,7 @@ export function GlobalContextProvider({
     };
 
     fetchMessages();
-  }, [url])
+  }, [url]);
 
   //Fetch DataSources
   const fetchDataSources = async () => {
@@ -343,8 +347,10 @@ export function GlobalContextProvider({
       }}
     >
       <ManageAccessEntitlementsProvider>
-        <Toaster />
-        {children}
+        <AACContextProvider>
+          <Toaster />
+          {children}
+        </AACContextProvider>
       </ManageAccessEntitlementsProvider>
     </GlobalContex.Provider>
   );

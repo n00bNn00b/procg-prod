@@ -53,42 +53,37 @@ import {
 } from "@/components/ui/table";
 
 import Pagination from "@/components/Pagination/Pagination";
-import { IManageAccessEntitlementsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import {
+  IManageGlobalConditionLogicExtendTypes,
+  IManageGlobalConditionTypes,
+} from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
+import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
 
-const ManageAccessEntitlementsTable = () => {
+const ManageGlobalConditionsTable = () => {
   const {
-    fetchManageAccessEntitlements,
-    selected,
-    setSelected,
-    fetchAccessPointsEntitlement,
     setSelectedManageAccessEntitlements,
-    setEditManageAccessEntitlement,
     save,
-    setMangeAccessEntitlementAction,
     deleteManageAccessEntitlement,
-    setTable,
   } = useManageAccessEntitlementsContext();
-  const [data, setData] = React.useState<IManageAccessEntitlementsTypes[]>([]);
+  const {
+    stateChange,
+    setIsEditModalOpen,
+    setIsOpenManageGlobalConditionModal,
+    fetchManageGlobalConditions,
+    manageGlobalConditions: data,
+    selectedManageGlobalConditionItem,
+    setSelectedManageGlobalConditionItem,
+    fetchManageGlobalConditionLogics,
+    setManageGlobalConditionTopicData,
+  } = useAACContext();
+  console.log(selectedManageGlobalConditionItem);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   // const [save, setSave] = React.useState<number>(0);
   // Fetch Data
   React.useEffect(() => {
-    // setSelected([]);
-    setSelectedManageAccessEntitlements(Object());
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const result = await fetchManageAccessEntitlements();
-        setData(result ?? []);
-      } catch (error) {
-        console.error("Error fetching data sources:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, [save]);
+    fetchManageGlobalConditions();
+  }, [stateChange]);
   // loader
   tailspin.register();
   // Shadcn Form
@@ -106,8 +101,8 @@ const ManageAccessEntitlementsTable = () => {
 
   const [isChecked, setIsChecked] = React.useState<boolean>(false);
   // select row
-  const handleRowSelection = (rowData: IManageAccessEntitlementsTypes) => {
-    setSelected((prevSelected) => {
+  const handleRowSelection = (rowData: IManageGlobalConditionTypes) => {
+    setSelectedManageGlobalConditionItem((prevSelected) => {
       if (prevSelected.includes(rowData)) {
         // If the id is already selected, remove it
         return prevSelected.filter((selectedId) => selectedId !== rowData);
@@ -117,13 +112,12 @@ const ManageAccessEntitlementsTable = () => {
       }
     });
   };
-  const handleFetchAccessPoints = () => {
-    fetchAccessPointsEntitlement(selected[0]);
-    setSelectedManageAccessEntitlements(selected[0]);
-    console.log(selected[0].entitlement_id, "test now");
-  };
+  // const handleFetchAccessPoints = () => {
+  //   fetchAccessPointsEntitlement(selectedManageGlobalConditionItem[0]);
+  //   setSelectedManageAccessEntitlements(selectedManageGlobalConditionItem[0]);
+  // };
 
-  const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
+  const columns: ColumnDef<IManageGlobalConditionTypes>[] = [
     {
       id: "select",
       header: ({ table }) => {
@@ -142,38 +136,23 @@ const ManageAccessEntitlementsTable = () => {
           />
         );
       },
-      // cell: ({ row }) => (
-      //   <Checkbox
-      //     checked={row.getIsSelected()}
-      //     // onClick={() => handleRowSelection(row.original)}
-      //     onCheckedChange={(value) => row.toggleSelected(!!value)}
-      //     aria-label="Select row"
-      //   />
-      // ),
       enableSorting: false,
       enableHiding: false,
     },
     {
-      accessorKey: "entitlement_id",
-      header: "Entitlement ID",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("entitlement_id")}</div>
-      ),
-    },
-    {
-      accessorKey: "entitlement_name",
+      accessorKey: "name",
       header: ({ column }) => {
         return (
           <div
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            * Entitlement Name{" "}
+            Name{" "}
             <ArrowUpDown className="ml-2 h-4 w-4 cursor-pointer inline-block" />
           </div>
         );
       },
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("entitlement_name")}</div>
+        <div className="capitalize">{row.getValue("name")}</div>
       ),
     },
     {
@@ -184,10 +163,10 @@ const ManageAccessEntitlementsTable = () => {
       ),
     },
     {
-      accessorKey: "comments",
-      header: "Comments",
+      accessorKey: "datasource",
+      header: "Datasource",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("comments")}</div>
+        <div className="capitalize">{row.getValue("datasource")}</div>
       ),
     },
     {
@@ -195,55 +174,6 @@ const ManageAccessEntitlementsTable = () => {
       header: "*Status",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("status")}</div>
-      ),
-    },
-    {
-      accessorKey: "effective_date",
-      header: "Effective Date",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("effective_date")}</div>
-      ),
-    },
-    {
-      accessorKey: "revison",
-      header: "Revison",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("revison")}</div>
-      ),
-    },
-    {
-      accessorKey: "revision_date",
-      header: "Revision Date",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("revision_date")}</div>
-      ),
-    },
-    {
-      accessorKey: "created_on",
-      header: "Created On",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("created_on")}</div>
-      ),
-    },
-    {
-      accessorKey: "last_updated_on",
-      header: "Last Updated On",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("last_updated_on")}</div>
-      ),
-    },
-    {
-      accessorKey: "last_updated_by",
-      header: "Last Updated By",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("last_updated_by")}</div>
-      ),
-    },
-    {
-      accessorKey: "created_by",
-      header: "Created By",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("created_by")}</div>
       ),
     },
   ];
@@ -270,41 +200,40 @@ const ManageAccessEntitlementsTable = () => {
     },
   });
   const handleDelete = async () => {
-    deleteManageAccessEntitlement(selected[0].entitlement_id);
+    deleteManageAccessEntitlement(
+      selectedManageGlobalConditionItem[0].manage_global_condition_id
+    );
     table.getRowModel().rows.map((row) => row.toggleSelected(false));
-    setSelected([]);
+    setSelectedManageGlobalConditionItem([]);
   };
-  // console.log(table.getRowModel().rows.map((row) => row.toggleSelected(false)));
+  const handleEditClick = async () => {
+    setIsEditModalOpen(true);
+    const fetchData = await fetchManageGlobalConditionLogics(
+      selectedManageGlobalConditionItem[0].manage_global_condition_id
+    );
+    setManageGlobalConditionTopicData(fetchData ?? []);
+  };
   return (
     <div className="px-3">
       {/* top icon and columns*/}
       <div className="flex gap-3 items-center py-2">
         <div className="flex gap-3">
-          <div className="flex gap-3 px-4 py-2 border rounded">
-            <h3>actions</h3>
-            <h3>view</h3>
-          </div>
           <div className="flex gap-3 items-center px-4 py-2 border rounded">
             <div>
-              {selected.length === 1 ? (
+              {selectedManageGlobalConditionItem.length === 1 ? (
                 <Filter
                   className="cursor-pointer"
-                  onClick={handleFetchAccessPoints}
+                  // onClick={handleFetchAccessPoints}
                 />
               ) : (
                 <Filter className="cursor-not-allowed text-slate-200" />
               )}
             </div>
             <div>
-              {selected.length === 1 ? (
+              {selectedManageGlobalConditionItem.length === 1 ? (
                 <FileEdit
                   className="cursor-pointer"
-                  onClick={() => {
-                    setEditManageAccessEntitlement(true);
-                    setSelectedManageAccessEntitlements(selected[0]);
-                    setMangeAccessEntitlementAction("edit");
-                    setTable(table);
-                  }}
+                  onClick={handleEditClick}
                 />
               ) : (
                 <FileEdit className="cursor-not-allowed text-slate-200" />
@@ -314,18 +243,22 @@ const ManageAccessEntitlementsTable = () => {
               <Plus
                 className="cursor-pointer"
                 onClick={() => {
-                  setEditManageAccessEntitlement(true);
-                  setSelectedManageAccessEntitlements(Object());
-                  setMangeAccessEntitlementAction("add");
+                  setIsOpenManageGlobalConditionModal(true);
+                  // setEditManageAccessEntitlement(true);
+                  // setSelectedManageAccessEntitlements(Object());
+                  // setMangeAccessEntitlementAction("add");
                 }}
               />
             </div>
             <div className="flex items-center">
               <AlertDialog>
-                <AlertDialogTrigger disabled={selected.length === 0}>
+                <AlertDialogTrigger
+                  disabled={selectedManageGlobalConditionItem.length === 0}
+                >
                   <Trash
                     className={`${
-                      selected.length === 0 || selected.length > 1
+                      selectedManageGlobalConditionItem.length === 0 ||
+                      selectedManageGlobalConditionItem.length > 1
                         ? "text-slate-200 cursor-not-allowed"
                         : "text-slate-800 cursor-pointer"
                     }`}
@@ -353,15 +286,10 @@ const ManageAccessEntitlementsTable = () => {
           </div>
         </div>
         <Input
-          placeholder="Filter Entitlement Name..."
-          value={
-            (table.getColumn("entitlement_name")?.getFilterValue() as string) ??
-            ""
-          }
+          placeholder="Filter by Name..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table
-              .getColumn("entitlement_name")
-              ?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm px-4 py-2"
         />
@@ -491,4 +419,4 @@ const ManageAccessEntitlementsTable = () => {
     </div>
   );
 };
-export default ManageAccessEntitlementsTable;
+export default ManageGlobalConditionsTable;
