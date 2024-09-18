@@ -66,6 +66,16 @@
         "name": "Manage Access Entitlements",
         "icon": "sidebar/setup-and-administration.svg",
         "path": "/tools/manage-access-entitlements"
+      },
+      {
+        "name": "Manage Global Conditions",
+        "icon": "sidebar/setup-and-administration.svg",
+        "path": "/tools/manage-global-conditions"
+      },
+      {
+        "name": "Manage Local Conditions",
+        "icon": "sidebar/setup-and-administration.svg",
+        "path": "/tools/manage-local-conditions"
       }
     ]
   },
