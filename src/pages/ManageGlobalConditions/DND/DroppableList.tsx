@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { toast } from "@/components/ui/use-toast";
 export interface DroppableListProps {
   id: string;
   items: IManageGlobalConditionLogicExtendTypes[];
@@ -24,15 +25,24 @@ export interface DroppableListProps {
 }
 import { FC } from "react";
 import { IManageGlobalConditionLogicExtendTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import { useDroppable } from "@dnd-kit/core";
+import axios from "axios";
+import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
 
 const DroppableList: FC<DroppableListProps> = ({ id, items, setItems }) => {
+  const { setNodeRef } = useDroppable({ id });
   return (
     <SortableContext
       id={id}
       items={items.map((item) => item.manage_global_condition_logic_id)}
       strategy={verticalListSortingStrategy}
     >
-      <div className="flex flex-col gap-4 p-4 ">
+      <div className="flex flex-col gap-4 p-4 " ref={setNodeRef}>
+        {items.length === 0 && (
+          <p className="text-center font-semibold text-winter-500 p-9">
+            Drop here
+          </p>
+        )}
         {items.map((item, index) => (
           <DroppableItem
             key={item.manage_global_condition_logic_id}
@@ -71,6 +81,8 @@ export const DroppableItem: FC<DroppableItemProps> = ({
     transition,
   } = useSortable({ id: item.manage_global_condition_logic_id });
 
+  const { deleteLogicAndAttributeData } = useAACContext();
+
   // const { deleteUser } = useSqliteAuthContext();
 
   const style: CSSProperties = {
@@ -80,14 +92,38 @@ export const DroppableItem: FC<DroppableItemProps> = ({
     cursor: "grab",
   };
 
-  const handleDelete = (id: number) => {
-    // deleteUser(id);
-    const remainingUser = items.filter(
-      (item) => item.manage_global_condition_logic_id !== id
-    );
-    if (remainingUser.length !== 0) {
+  const handleDelete = async (id: number, logicId: number, attrId: number) => {
+    // check if logicId and attrId exist in the database
+    const res = await deleteLogicAndAttributeData(logicId, attrId);
+    console.log(res);
+    if (res === 200) {
+      Promise.all([
+        axios.delete(
+          `http://localhost:3000/manage-global-condition-logics/${logicId}`
+        ),
+        axios.delete(
+          `http://localhost:3000/manage-global-condition-logic-attributes/${attrId}`
+        ),
+      ])
+        .then(([logicResult, attributeResult]) => {
+          console.log("Logic Result:", logicResult);
+          console.log("Attribute Result:", attributeResult);
+        })
+        .catch((error) => {
+          console.error("Error occurred:", error);
+        });
+    } else {
+      // delete Data from the array but not database
+      const remainingUser = items.filter(
+        (item) => item.manage_global_condition_logic_id !== id
+      );
       setItems(remainingUser);
     }
+
+    toast({
+      title: "Message",
+      description: "Delete data successfully.",
+    });
   };
 
   const handleChange = (
@@ -157,7 +193,11 @@ export const DroppableItem: FC<DroppableItemProps> = ({
                 <AlertDialogAction
                   className="bg-red-600"
                   onClick={() =>
-                    handleDelete(item.manage_global_condition_logic_id)
+                    handleDelete(
+                      item.id,
+                      item.manage_global_condition_logic_id,
+                      item.id
+                    )
                   }
                 >
                   Confirm

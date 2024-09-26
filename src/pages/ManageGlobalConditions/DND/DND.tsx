@@ -19,17 +19,22 @@ import { z } from "zod";
 import { ring } from "ldrs";
 import { arrayMove } from "@dnd-kit/sortable";
 import { toast } from "@/components/ui/use-toast";
+import axios from "axios";
+import { FileEdit, X } from "lucide-react";
 
 const DND: FC = () => {
   const {
     isLoading,
+    isEditModalOpen,
+    setIsEditModalOpen,
     selectedManageGlobalConditionItem,
     fetchManageGlobalConditionLogics,
   } = useAACContext();
+  const iniId = Math.floor(Math.random() * 10000);
   const initialLeftWidget: IManageGlobalConditionLogicExtendTypes[] = [
     {
-      id: 1,
-      manage_global_condition_logic_id: 4,
+      id: iniId,
+      manage_global_condition_logic_id: iniId,
       manage_global_condition_id:
         selectedManageGlobalConditionItem[0].manage_global_condition_id,
       object: "",
@@ -45,18 +50,23 @@ const DND: FC = () => {
   const [rightWidgets, setRightWidgets] = useState<
     IManageGlobalConditionLogicExtendTypes[]
   >([]);
-  console.log(rightWidgets);
+  const [originalData, setOriginalData] = useState<
+    IManageGlobalConditionLogicExtendTypes[]
+  >([]);
+
   const [activeId, setActiveId] = useState<number | null>(null);
   useEffect(() => {
     const fetchDataFunc = async () => {
       const fetchData = await fetchManageGlobalConditionLogics(
         selectedManageGlobalConditionItem[0].manage_global_condition_id
       );
+      console.log(fetchData);
       setRightWidgets(fetchData as IManageGlobalConditionLogicExtendTypes[]);
+      setOriginalData(fetchData as IManageGlobalConditionLogicExtendTypes[]);
     };
     fetchDataFunc();
   }, []);
-  console.log(rightWidgets, "rightWidgets");
+
   //Top Form Start
   const FormSchema = z.object({
     name: z.string(),
@@ -123,7 +133,7 @@ const DND: FC = () => {
   const handleDragStart = (event: any) => {
     setActiveId(event.active.id);
   };
-  const findContainer = (id: string | number): string | undefined => {
+  const findContainer = (id: string | number | undefined) => {
     if (
       leftWidgets.some((item) => item.manage_global_condition_logic_id === id)
     ) {
@@ -134,11 +144,11 @@ const DND: FC = () => {
     ) {
       return "right";
     }
-    return undefined;
+    return id;
   };
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
-
+    // console.log(active, over, "handleDragOver");
     if (!over) return;
 
     // Find containers for active and over items
@@ -152,9 +162,10 @@ const DND: FC = () => {
     ) {
       return;
     }
-
     const activeItemId = active.id;
     const overItemId = over.id;
+    console.log(activeItemId, overItemId, " handleDragOver");
+    console.log(activeContainer, overContainer, " handleDragOver 2");
 
     // Ensure that leftEmptyWidget and users are arrays
     if (!Array.isArray(leftWidgets) || !Array.isArray(rightWidgets)) {
@@ -165,10 +176,9 @@ const DND: FC = () => {
     const activeIndexInLeft = leftWidgets.findIndex(
       (item) => item.manage_global_condition_logic_id === activeItemId
     );
-    // const activeIndexInRight = rightWidgets.findIndex(
-    //   (item) => item.manage_global_condition_logic_id === activeItemId
-    // );
-
+    const activeIndexInRight = rightWidgets.findIndex(
+      (item) => item.manage_global_condition_logic_id === activeItemId
+    );
     let newIndex = rightWidgets.length; // Default new index at end
 
     if (overItemId) {
@@ -179,8 +189,8 @@ const DND: FC = () => {
       newIndex =
         overIndexInRight === -1 ? rightWidgets.length : overIndexInRight;
     }
-
     if (findEmptyInput.length === 0) {
+      // console.log(rightWidgets, "right widgets");
       if (activeContainer === "left" && overContainer === "right") {
         // Move item from leftEmptyWidget to users
         setRightWidgets((prev) => {
@@ -198,9 +208,10 @@ const DND: FC = () => {
       });
     }
   };
+  console.log(rightWidgets, "right widgets");
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-
+    // console.log(active, over, "handleDragEnd");
     if (over) {
       const activeItemId = active.id;
       const overItemId = over.id;
@@ -224,7 +235,78 @@ const DND: FC = () => {
       }
     }
   };
-  console.log(rightWidgets);
+  //function handleSave
+  const items = rightWidgets.filter(
+    (item) =>
+      !originalData.some(
+        (ori) =>
+          ori.attribute === item.attribute &&
+          ori.object === item.object &&
+          ori.condition === item.condition &&
+          ori.value === item.value &&
+          ori.widget_position === item.widget_position &&
+          ori.widget_state === item.widget_state
+      )
+  );
+  const handleSave = async () => {
+    console.log(items, "data");
+    const upsertLogics = items.map((item) => ({
+      manage_global_condition_logic_id: item.manage_global_condition_logic_id,
+      manage_global_condition_id: item.manage_global_condition_id,
+      object: item.object,
+      attribute: item.attribute,
+      condition: item.condition,
+      value: item.value,
+    }));
+    const upsertAttributes = items.map((item) => ({
+      id: item.id,
+      manage_global_condition_logic_id: item.manage_global_condition_logic_id,
+      widget_position: item.widget_position,
+      widget_state: item.widget_state,
+    }));
+    console.log(upsertAttributes, upsertLogics);
+
+    try {
+      Promise.all([
+        axios.post(
+          `http://localhost:3000/manage-global-condition-logics/upsert`,
+          { upsertLogics }
+        ),
+        axios.post(
+          `http://localhost:3000/manage-global-condition-logic-attributes/upsert`,
+          { upsertAttributes }
+        ),
+      ])
+        .then(([logicResult, attributeResult]) => {
+          if (logicResult.status === 200 && attributeResult.status === 200) {
+            toast({
+              title: "Message",
+              description: "Save data successfully.",
+            });
+          }
+          console.log("Logic Result:", logicResult);
+          console.log("Attribute Result:", attributeResult);
+        })
+        .catch((error) => {
+          console.error("Error occurred:", error);
+        })
+        .finally(() => {
+          // toast({
+          //   title: "Finally",
+          //   description: "Save data successfully.",
+          // });
+        });
+
+      // console.log(logicResult, attributeResult);
+      // results.forEach(({ logicResult, attributeResult }) => {
+      //   console.log("Logic Result:", logicResult);
+      //   console.log("Attribute Result:", attributeResult);
+      // });
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
+
   return (
     <div>
       <DndContext
@@ -235,16 +317,33 @@ const DND: FC = () => {
         onDragEnd={handleDragEnd}
         autoScroll
       >
-        <div className="flex gap-1">
+        <div className="flex gap-4">
           <div className="w-1/3">
             <DraggableList id="left" items={leftWidgets} />
           </div>
           <div className="w-2/3">
+            <div className="flex gap-2 flex-row-reverse sticky top-0 p-2 ml-auto rounded-lg mr-4">
+              <X
+                size={30}
+                onClick={() => setIsEditModalOpen(!isEditModalOpen)}
+                className="cursor-pointer hover:text-red-800 bg-red-200 hover:bg-red-300  rounded p-1 hover:scale-110 duration-300"
+              />
+
+              <FileEdit
+                onClick={items.length > 0 ? handleSave : undefined}
+                size={30}
+                className={`cursor-pointer bg-slate-200 rounded p-1 duration-300 ${
+                  items.length > 0
+                    ? "bg-green-300 hover:text-white hover:bg-green-400 hover:scale-110 "
+                    : "opacity-40"
+                }`}
+              />
+            </div>
             {/* Top Form */}
             <div className="px-4 pb-2">
               <ManageGlobalConditionUpdate form={form} />
             </div>
-            <div>
+            <div className="border rounded-lg">
               {isLoading ? (
                 <div className="w-10 mx-auto mt-10">
                   <l-ring

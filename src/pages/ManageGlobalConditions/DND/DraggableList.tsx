@@ -18,7 +18,7 @@ const DraggableList: FC<IDraggableListProps> = ({ id, items }) => {
       items={items.map((widget) => widget.manage_global_condition_logic_id)}
       strategy={verticalListSortingStrategy}
     >
-      <div className="p-4">
+      <div className="p-4 border rounded-lg">
         {items.map((item) => (
           <DraggableItem
             key={item.manage_global_condition_logic_id}
