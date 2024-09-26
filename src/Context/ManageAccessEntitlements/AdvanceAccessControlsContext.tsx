@@ -40,6 +40,10 @@ interface IAACContextTypes {
   setManageGlobalConditionTopicData: Dispatch<
     SetStateAction<IManageGlobalConditionLogicExtendTypes[]>
   >;
+  deleteLogicAndAttributeData: (
+    logicId: number,
+    attrId: number
+  ) => Promise<number | undefined>;
 }
 export const AACContext = createContext<IAACContextTypes | null>(null);
 
@@ -147,6 +151,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         ...(attributesMap.get(item.manage_global_condition_logic_id) || {}),
       }));
 
+      console.log(logicsRes, attributesRes, "mergedData");
       const filteredData = mergedData.filter(
         (item) => item.manage_global_condition_id === filterId
       );
@@ -155,6 +160,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         const sortedData = filteredData.sort(
           (a, b) => Number(a.widget_position) - Number(b.widget_position)
         );
+        console.log(sortedData, "sortedData");
         return sortedData as IManageGlobalConditionLogicExtendTypes[];
       }
     } catch (error) {
@@ -164,6 +170,26 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     }
   };
 
+  const deleteLogicAndAttributeData = async (
+    logicId: number,
+    attrId: number
+  ) => {
+    try {
+      const [isExistLogicId, isExistAttrId] = await Promise.all([
+        axios.get(
+          `http://localhost:3000/manage-global-condition-logics/${logicId}`
+        ),
+        axios.get(
+          `http://localhost:3000/manage-global-condition-logic-attributes/${attrId}`
+        ),
+      ]);
+      if (isExistLogicId.status === 200 && isExistAttrId.status === 200) {
+        return isExistLogicId.status;
+      }
+    } catch (error: any) {
+      return error.response.status;
+    }
+  };
   const value = {
     isLoading,
     setIsLoading,
@@ -180,6 +206,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     fetchManageGlobalConditionLogics,
     manageGlobalConditionTopicData,
     setManageGlobalConditionTopicData,
+    deleteLogicAndAttributeData,
   };
   return <AACContext.Provider value={value}>{children}</AACContext.Provider>;
 };

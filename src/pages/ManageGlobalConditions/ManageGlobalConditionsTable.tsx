@@ -77,7 +77,6 @@ const ManageGlobalConditionsTable = () => {
     fetchManageGlobalConditionLogics,
     setManageGlobalConditionTopicData,
   } = useAACContext();
-  console.log(selectedManageGlobalConditionItem);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   // const [save, setSave] = React.useState<number>(0);
   // Fetch Data

@@ -85,13 +85,12 @@ const ManageGlobalConditionUpdate: FC<IManageGlobalConditionProps> = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Status</FormLabel>
-                <Select
-                  defaultValue={field.value}
-                  onValueChange={field.onChange}
-                >
+                <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl className="px-1 h-6">
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a option" />
+                      <SelectValue>
+                        {field.value || "Select a status"}
+                      </SelectValue>
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -99,7 +98,6 @@ const ManageGlobalConditionUpdate: FC<IManageGlobalConditionProps> = ({
                     <SelectItem value="inactive">Inactive</SelectItem>
                   </SelectContent>
                 </Select>
-                <FormMessage />
               </FormItem>
             )}
           />
