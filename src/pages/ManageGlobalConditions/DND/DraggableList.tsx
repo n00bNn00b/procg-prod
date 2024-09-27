@@ -61,11 +61,12 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item }) => {
       {...listeners}
       className="bg-gray-300 shadow-lg border border-sky-500 rounded-lg cursor-pointer shadow-slate-400 hover:shadow-sky-500 hover:shadow-lg hover:duration-500"
     >
-      <div className="flex justify-between bg-sky-500 rounded-t-lg py-1 px-2 items-center text-sky-500">
+      <div className="flex justify-between bg-sky-500 rounded-t-lg py-1 px-2 items-center text-white">
         {item.manage_global_condition_logic_id}
       </div>
       <div className="p-3">
         <input
+          readOnly
           autoComplete="on"
           type="text"
           className="rounded-lg w-full"

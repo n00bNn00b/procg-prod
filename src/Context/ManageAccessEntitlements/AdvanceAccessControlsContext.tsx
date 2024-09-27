@@ -11,6 +11,7 @@ import {
   Dispatch,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from "react";
 interface IAACContextProviderProps {
@@ -19,6 +20,7 @@ interface IAACContextProviderProps {
 interface IAACContextTypes {
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
+  setStateChange: Dispatch<SetStateAction<number>>;
   stateChange: number;
   isEditModalOpen: boolean;
   setIsEditModalOpen: Dispatch<SetStateAction<boolean>>;
@@ -40,6 +42,9 @@ interface IAACContextTypes {
   setManageGlobalConditionTopicData: Dispatch<
     SetStateAction<IManageGlobalConditionLogicExtendTypes[]>
   >;
+  attrMaxId: number | undefined;
+  isActionLoading: boolean;
+  setIsActionLoading: Dispatch<SetStateAction<boolean>>;
   deleteLogicAndAttributeData: (
     logicId: number,
     attrId: number
@@ -72,7 +77,8 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   ] = useState<IManageGlobalConditionTypes[]>([]);
   const [manageGlobalConditionTopicData, setManageGlobalConditionTopicData] =
     useState<IManageGlobalConditionLogicExtendTypes[]>([]);
-  console.log(manageGlobalConditionTopicData);
+  const [attrMaxId, setAttrMaxId] = useState<number>();
+  const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
   // Fetch Manage Global Conditions
   const fetchManageGlobalConditions = async () => {
     try {
@@ -150,8 +156,6 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         ...item,
         ...(attributesMap.get(item.manage_global_condition_logic_id) || {}),
       }));
-
-      console.log(logicsRes, attributesRes, "mergedData");
       const filteredData = mergedData.filter(
         (item) => item.manage_global_condition_id === filterId
       );
@@ -160,7 +164,6 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         const sortedData = filteredData.sort(
           (a, b) => Number(a.widget_position) - Number(b.widget_position)
         );
-        console.log(sortedData, "sortedData");
         return sortedData as IManageGlobalConditionLogicExtendTypes[];
       }
     } catch (error) {
@@ -169,6 +172,24 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    const maxId = async () => {
+      const result = await axios.get(
+        "http://localhost:3000/manage-global-condition-logic-attributes"
+      );
+      const maxId = Math.max(
+        ...result.data.map(
+          (data: IManageGlobalConditionLogicExtendTypes) => data.id
+        )
+      );
+      if (result.data.length > 0) {
+        setAttrMaxId(maxId);
+      } else {
+        setAttrMaxId(0);
+      }
+    };
+    maxId();
+  }, [isActionLoading, stateChange]);
 
   const deleteLogicAndAttributeData = async (
     logicId: number,
@@ -193,6 +214,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   const value = {
     isLoading,
     setIsLoading,
+    setStateChange,
     stateChange,
     isEditModalOpen,
     setIsEditModalOpen,
@@ -206,6 +228,9 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     fetchManageGlobalConditionLogics,
     manageGlobalConditionTopicData,
     setManageGlobalConditionTopicData,
+    attrMaxId,
+    isActionLoading,
+    setIsActionLoading,
     deleteLogicAndAttributeData,
   };
   return <AACContext.Provider value={value}>{children}</AACContext.Provider>;

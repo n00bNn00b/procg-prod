@@ -20,8 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { IManageGlobalConditionTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { FC } from "react";
-import { Textarea } from "@/components/ui/textarea";
-import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import { ring } from "ldrs";
 import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
 interface IManageGlobalConditionProps {

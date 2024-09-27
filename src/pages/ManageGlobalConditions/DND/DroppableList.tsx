@@ -5,7 +5,7 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Maximize, Minimize, Trash } from "lucide-react";
+import { ArrowDown, Maximize, Minimize, Trash } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,27 +31,35 @@ import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessC
 
 const DroppableList: FC<DroppableListProps> = ({ id, items, setItems }) => {
   const { setNodeRef } = useDroppable({ id });
+
   return (
     <SortableContext
       id={id}
       items={items.map((item) => item.manage_global_condition_logic_id)}
       strategy={verticalListSortingStrategy}
     >
-      <div className="flex flex-col gap-4 p-4 " ref={setNodeRef}>
+      <div className="flex flex-col gap-2 p-4 " ref={setNodeRef}>
         {items.length === 0 && (
           <p className="text-center font-semibold text-winter-500 p-9">
             Drop here
           </p>
         )}
         {items.map((item, index) => (
-          <DroppableItem
-            key={item.manage_global_condition_logic_id}
-            id={item.manage_global_condition_logic_id.toString()}
-            item={item}
-            items={items}
-            index={index}
-            setItems={setItems}
-          />
+          <div key={item.manage_global_condition_logic_id}>
+            <DroppableItem
+              id={item.manage_global_condition_logic_id.toString()}
+              item={item}
+              items={items}
+              index={index}
+              setItems={setItems}
+            />
+            {/* Arrow Down Icon */}
+            {items.map((item) => (
+              <div key={item.manage_global_condition_logic_id}>
+                <div className="w-3 mt-4 mx-auto"></div>
+              </div>
+            ))}
+          </div>
         ))}
       </div>
     </SortableContext>
@@ -81,7 +89,7 @@ export const DroppableItem: FC<DroppableItemProps> = ({
     transition,
   } = useSortable({ id: item.manage_global_condition_logic_id });
 
-  const { deleteLogicAndAttributeData } = useAACContext();
+  const { deleteLogicAndAttributeData, setIsActionLoading } = useAACContext();
 
   // const { deleteUser } = useSqliteAuthContext();
 
@@ -95,35 +103,39 @@ export const DroppableItem: FC<DroppableItemProps> = ({
   const handleDelete = async (id: number, logicId: number, attrId: number) => {
     // check if logicId and attrId exist in the database
     const res = await deleteLogicAndAttributeData(logicId, attrId);
-    console.log(res);
-    if (res === 200) {
-      Promise.all([
-        axios.delete(
-          `http://localhost:3000/manage-global-condition-logics/${logicId}`
-        ),
-        axios.delete(
-          `http://localhost:3000/manage-global-condition-logic-attributes/${attrId}`
-        ),
-      ])
-        .then(([logicResult, attributeResult]) => {
-          console.log("Logic Result:", logicResult);
-          console.log("Attribute Result:", attributeResult);
-        })
-        .catch((error) => {
-          console.error("Error occurred:", error);
-        });
-    } else {
+    try {
+      if (res === 200) {
+        Promise.all([
+          axios.delete(
+            `http://localhost:3000/manage-global-condition-logics/${logicId}`
+          ),
+          axios.delete(
+            `http://localhost:3000/manage-global-condition-logic-attributes/${attrId}`
+          ),
+        ])
+          // .then(([logicResult, attributeResult]) => {
+          //   console.log("Logic Result:", logicResult);
+          //   console.log("Attribute Result:", attributeResult);
+          // })
+          .catch((error) => {
+            console.error("Error occurred:", error);
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
       // delete Data from the array but not database
       const remainingUser = items.filter(
         (item) => item.manage_global_condition_logic_id !== id
       );
       setItems(remainingUser);
+      toast({
+        title: "Message",
+        description: "Delete data successfully.",
+      });
+      // Change the state
+      setIsActionLoading(true);
     }
-
-    toast({
-      title: "Message",
-      description: "Delete data successfully.",
-    });
   };
 
   const handleChange = (
@@ -131,7 +143,7 @@ export const DroppableItem: FC<DroppableItemProps> = ({
     field: string,
     value: string | number
   ) => {
-    console.log(index, field, value);
+    // console.log(index, field, value);
     if (index !== undefined) {
       setItems((prevItems) =>
         prevItems.map((item, i) =>
@@ -140,130 +152,141 @@ export const DroppableItem: FC<DroppableItemProps> = ({
       );
     }
   };
+  const maxPosition = Math.max(
+    ...items.map(
+      (data: IManageGlobalConditionLogicExtendTypes) => data.widget_position
+    )
+  );
   return (
-    <div
-      style={style}
-      {...attributes}
-      {...listeners}
-      ref={setNodeRef}
-      className="bg-gray-300 shadow-lg border border-sky-500 rounded-lg cursor-pointer shadow-slate-400 hover:shadow-sky-500 hover:shadow-lg hover:duration-500"
-    >
-      <div className="flex justify-between bg-sky-500 rounded-t-lg px-2 text-white items-center">
-        <span>{index}</span>
-        <div className="flex text-xs duration-700">
-          {item.widget_state === 1 ? (
-            <Minimize
-              size={30}
-              onClick={() => handleChange(index, "widget_state", 0)}
-              className="p-1 cursor-pointer hover:text-slate-800"
-            />
-          ) : (
-            <Maximize
-              size={30}
-              onClick={() => handleChange(index, "widget_state", 1)}
-              className="p-1 cursor-pointer hover:text-slate-800"
-            />
-          )}
+    <div>
+      <div
+        style={style}
+        {...attributes}
+        {...listeners}
+        ref={setNodeRef}
+        className="bg-gray-300 shadow-lg border border-sky-500 rounded-lg cursor-pointer shadow-slate-400 hover:shadow-sky-500 hover:shadow-lg hover:duration-500"
+      >
+        <div className="flex justify-between bg-sky-500 rounded-t-lg px-2 text-white items-center">
+          <span>{index}</span>
+          <div className="flex text-xs duration-700">
+            {item.widget_state === 1 ? (
+              <Minimize
+                size={30}
+                onClick={() => handleChange(index, "widget_state", 0)}
+                className="p-1 cursor-pointer hover:text-slate-800"
+              />
+            ) : (
+              <Maximize
+                size={30}
+                onClick={() => handleChange(index, "widget_state", 1)}
+                className="p-1 cursor-pointer hover:text-slate-800"
+              />
+            )}
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <div className="hover:text-white rounded-md">
-                <Trash
-                  size={30}
-                  className="p-1 cursor-pointer hover:text-red-600"
-                />
-              </div>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  Really Want To <span className="text-red-600">Delete</span> ?
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently{" "}
-                  <span className="text-red-600">delete</span> from database and{" "}
-                  <span className="text-red-600">remove</span> your data from
-                  our servers.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel className="bg-sky-700 text-white">
-                  Cancel
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-red-600"
-                  onClick={() =>
-                    handleDelete(
-                      item.id,
-                      item.manage_global_condition_logic_id,
-                      item.id
-                    )
-                  }
-                >
-                  Confirm
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      </div>
-      <div className="p-3">
-        {/* 1st row */}
-        <div className="grid grid-cols-4 gap-4">
-          <div className="flex flex-col  ">
-            <label htmlFor={`object-${index}`}>Object</label>
-            <input
-              className="px-2 rounded"
-              type="text"
-              id={`object-${index}`}
-              name={`object-${index}`}
-              value={item.object}
-              onChange={(e) => handleChange(index, "object", e.target.value)}
-            />
-          </div>
-          <div className="flex flex-col ">
-            <label htmlFor={`attribute-${index}`}>Attribute</label>
-            <input
-              className="px-2 rounded"
-              type="text"
-              id={`attribute-${index}`}
-              name={`attribute-${index}`}
-              value={item.attribute}
-              onChange={(e) => handleChange(index, "attribute", e.target.value)}
-            />
-          </div>
-          <div className="flex flex-col ">
-            <label htmlFor={`condition-${index}`}>Condition</label>
-            <input
-              className="px-2 rounded"
-              type="text"
-              id={`condition-${index}`}
-              name={`condition-${index}`}
-              value={item.condition}
-              onChange={(e) => handleChange(index, "condition", e.target.value)}
-            />
-          </div>
-          <div className="flex flex-col ">
-            <label htmlFor={`value-${index}`}>Value</label>
-            <input
-              className="px-2 rounded"
-              type="text"
-              id={`value-${index}`}
-              name={`value-${index}`}
-              value={item.value}
-              onChange={(e) => handleChange(index, "value", e.target.value)}
-            />
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <div className="hover:text-white rounded-md">
+                  <Trash
+                    size={30}
+                    className="p-1 cursor-pointer hover:text-red-600"
+                  />
+                </div>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Really Want To <span className="text-red-600">Delete</span>{" "}
+                    ?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently{" "}
+                    <span className="text-red-600">delete</span> from database
+                    and <span className="text-red-600">remove</span> your data
+                    from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="bg-sky-700 text-white">
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-red-600"
+                    onClick={() =>
+                      handleDelete(
+                        item.id,
+                        item.manage_global_condition_logic_id,
+                        item.id
+                      )
+                    }
+                  >
+                    Confirm
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
-        {/* 2nd row */}
-        {item.widget_state === 1 && (
-          <div
-            className={`flex gap-3 my-1 ease-in ${
-              item.widget_state === 1 ? "duration-700" : "duration-700"
-            }`}
-          >
-            <h5 className="font-bold mt-2">Advance Option</h5>
-            {/* <div className="flex flex-col w-[25%]">
+        <div className="p-3">
+          {/* 1st row */}
+          <div className="grid grid-cols-4 gap-4">
+            <div className="flex flex-col  ">
+              <label htmlFor={`object-${index}`}>Object</label>
+              <input
+                className="px-2 rounded"
+                type="text"
+                id={`object-${index}`}
+                name={`object-${index}`}
+                value={item.object}
+                onChange={(e) => handleChange(index, "object", e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col ">
+              <label htmlFor={`attribute-${index}`}>Attribute</label>
+              <input
+                className="px-2 rounded"
+                type="text"
+                id={`attribute-${index}`}
+                name={`attribute-${index}`}
+                value={item.attribute}
+                onChange={(e) =>
+                  handleChange(index, "attribute", e.target.value)
+                }
+              />
+            </div>
+            <div className="flex flex-col ">
+              <label htmlFor={`condition-${index}`}>Condition</label>
+              <input
+                className="px-2 rounded"
+                type="text"
+                id={`condition-${index}`}
+                name={`condition-${index}`}
+                value={item.condition}
+                onChange={(e) =>
+                  handleChange(index, "condition", e.target.value)
+                }
+              />
+            </div>
+            <div className="flex flex-col ">
+              <label htmlFor={`value-${index}`}>Value</label>
+              <input
+                className="px-2 rounded"
+                type="text"
+                id={`value-${index}`}
+                name={`value-${index}`}
+                value={item.value}
+                onChange={(e) => handleChange(index, "value", e.target.value)}
+              />
+            </div>
+          </div>
+          {/* 2nd row */}
+          {item.widget_state === 1 && (
+            <div
+              className={`flex gap-3 my-1 ease-in ${
+                item.widget_state === 1 ? "duration-700" : "duration-700"
+              }`}
+            >
+              <h5 className="font-bold mt-2">Advance Option</h5>
+              {/* <div className="flex flex-col w-[25%]">
               <label htmlFor={`user_name-${index}`}>User Name</label>
               <input
                 className="px-2 rounded"
@@ -330,10 +353,21 @@ export const DroppableItem: FC<DroppableItemProps> = ({
                 <option value="4">4</option>
               </select>
             </div> */}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="w-6 mx-auto mt-6">
+        <ArrowDown
+          className={`${
+            items.length > 1 && item.widget_position < maxPosition
+              ? "visible"
+              : "hidden"
+          } `}
+        />
       </div>
     </div>
   );
 };
+
 export default DroppableList;

@@ -27,14 +27,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  ChevronDown,
-  FileEdit,
-  Filter,
-  Plus,
-  Trash,
-} from "lucide-react";
+import { ArrowUpDown, ChevronDown, FileEdit, Plus, Trash } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -53,20 +46,15 @@ import {
 } from "@/components/ui/table";
 
 import Pagination from "@/components/Pagination/Pagination";
-import {
-  IManageGlobalConditionLogicExtendTypes,
-  IManageGlobalConditionTypes,
-} from "@/types/interfaces/ManageAccessEntitlements.interface";
+import { IManageGlobalConditionTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
 
 const ManageGlobalConditionsTable = () => {
+  const { deleteManageAccessEntitlement } =
+    useManageAccessEntitlementsContext();
   const {
-    setSelectedManageAccessEntitlements,
-    save,
-    deleteManageAccessEntitlement,
-  } = useManageAccessEntitlementsContext();
-  const {
+    isLoading,
     stateChange,
     setIsEditModalOpen,
     setIsOpenManageGlobalConditionModal,
@@ -77,11 +65,12 @@ const ManageGlobalConditionsTable = () => {
     fetchManageGlobalConditionLogics,
     setManageGlobalConditionTopicData,
   } = useAACContext();
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   // const [save, setSave] = React.useState<number>(0);
   // Fetch Data
   React.useEffect(() => {
     fetchManageGlobalConditions();
+    table.getRowModel().rows.map((row) => row.toggleSelected(false));
+    setSelectedManageGlobalConditionItem([]);
   }, [stateChange]);
   // loader
   tailspin.register();
@@ -218,16 +207,6 @@ const ManageGlobalConditionsTable = () => {
       <div className="flex gap-3 items-center py-2">
         <div className="flex gap-3">
           <div className="flex gap-3 items-center px-4 py-2 border rounded">
-            <div>
-              {selectedManageGlobalConditionItem.length === 1 ? (
-                <Filter
-                  className="cursor-pointer"
-                  // onClick={handleFetchAccessPoints}
-                />
-              ) : (
-                <Filter className="cursor-not-allowed text-slate-200" />
-              )}
-            </div>
             <div>
               {selectedManageGlobalConditionItem.length === 1 ? (
                 <FileEdit
