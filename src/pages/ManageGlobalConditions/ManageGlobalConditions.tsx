@@ -1,5 +1,5 @@
 import ManageGlobalConditionsTable from "./ManageGlobalConditionsTable";
-import { FileEdit, X } from "lucide-react";
+import { X } from "lucide-react";
 import ManageGlobalConditionsModal from "./ManageGlobalConditionsModal";
 import CustomModal2 from "@/components/CustomModal/CustomModal2";
 import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
@@ -10,22 +10,18 @@ import DND from "./DND/DND";
 const ManageGlobalConditions = () => {
   const {
     isEditModalOpen,
-    setIsEditModalOpen,
     isOpenManageGlobalConditionModal,
     setIsOpenManageGlobalConditionModal,
   } = useAACContext();
-  console.log(isOpenManageGlobalConditionModal);
+  // console.log(isOpenManageGlobalConditionModal);
   return (
     <div>
       <ManageGlobalConditionsTable />
       <div>
         {isEditModalOpen && (
           <CustomModal2>
-            <div className="flex justify-between p-2 bg-slate-300 rounded-t-lg">
-              <h2 className="font-bold">Edit Access Global Conditions</h2>
-            </div>
             {/* Card start */}
-            <div className="p-2 h-[94%] overflow-y-auto">
+            <div className="h-full overflow-y-auto">
               <DND />
             </div>
           </CustomModal2>

@@ -89,7 +89,9 @@ const ManageGlobalConditionUpdate: FC<IManageGlobalConditionProps> = ({
                   <FormControl className="px-1 h-6">
                     <SelectTrigger>
                       <SelectValue>
-                        {field.value || "Select a status"}
+                        {field.value === "active"
+                          ? "Active"
+                          : "Inactive" || "Select a status"}
                       </SelectValue>
                     </SelectTrigger>
                   </FormControl>
