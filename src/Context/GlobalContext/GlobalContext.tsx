@@ -13,14 +13,15 @@ import {
   IAddUserTypes,
   ITenantsTypes,
 } from "@/types/interfaces/users.interface";
-import socket from "@/Socket/Socket";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { ManageAccessEntitlementsProvider } from "../ManageAccessEntitlements/ManageAccessEntitlementsContext";
+import { io } from "socket.io-client";
 import {
   AACContextProvider,
 } from "../ManageAccessEntitlements/AdvanceAccessControlsContext";
+
 
 interface GlobalContextProviderProps {
   children: ReactNode;
@@ -33,6 +34,9 @@ interface GlobalContex {
   setToken: React.Dispatch<React.SetStateAction<Token>>;
   users: Users[];
   messages: Message[];
+  handlesendMessage: (data: Message) => void;
+  handleDisconnect: () => void;
+  handleRead: (id: string) => void;
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   socketMessage: Message[];
   setSocketMessages: React.Dispatch<React.SetStateAction<Message[]>>;
@@ -75,28 +79,46 @@ export function GlobalContextProvider({
   const [messages, setMessages] = useState<Message[]>([]);
   const [socketMessage, setSocketMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const user = token?.user_name;
   const url = import.meta.env.VITE_API_URL;
+  const user = token.user_name;
 
-  useEffect(() => {
-    socket.emit("register", user);
-  }, [user]);
+  const socket = io(`${url}`, {
+    query: {
+      key: user
+    }
+  });
 
-  useEffect(() => {
-    socket.on("message", (data) => {
-      setSocketMessages((prevArray) => [data, ...prevArray]);
-      setMessages((prev) => [data, ...prev]);
-    });
+  const handlesendMessage = (data: Message) => {
+    socket.emit("sendMessage", data)
+  }
 
-    socket.on("offlineMessage", (data) => {
-      setSocketMessages(data);
-    });
+  const handleDisconnect = () => {
+    socket.disconnect();
+  }
+
+  const handleRead = (id: string) => {
+    socket.emit("read", {id, user})
+  }
+
+ useEffect(() => {
+    
+    if(socket) {
+      socket.on("message", (data) => {
+        setSocketMessages((prevArray) => [data, ...prevArray]);
+        setMessages((prev) => [data, ...prev]);
+      });
+
+      socket.on("sync", (id) => {
+        const synedSocketMessages = socketMessage.filter(msg => msg.parentid !== id);
+        setSocketMessages(synedSocketMessages);
+      })
+  
+    }
 
     return () => {
-      socket.off("message");
-      socket.off("offlineMessage");
+      socket.disconnect();
     };
-  }, [socketMessage, messages]);
+  }, [socketMessage, messages, socket]);
   console.log(socketMessage);
   console.log(messages);
 
@@ -330,6 +352,9 @@ export function GlobalContextProvider({
         token,
         setToken,
         users,
+        handlesendMessage,
+        handleDisconnect,
+        handleRead,
         messages,
         setMessages,
         socketMessage,

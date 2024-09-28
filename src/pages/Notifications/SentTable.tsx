@@ -84,7 +84,7 @@ const SentTable = ({path, person, sentMessages}: SentTableProps) => {
                     </TableCell>
                     <TableCell className="w-[115px]">{convertDate(msg.date)}</TableCell>
                     <TableCell className="flex gap-2 h-full items-center">
-                      <View onClick={()=>handleNavigate(msg.id)} color="#044BD9" className="cursor-pointer"/>
+                      <View onClick={()=>handleNavigate(msg.parentid)} color="#044BD9" className="cursor-pointer"/>
                       
                       <AlertDialog>
                         <AlertDialogTrigger>

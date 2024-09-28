@@ -26,6 +26,8 @@ export interface Message {
   body: string;
   date: Date;
   status: string;
+  parentid: string;
+  involvedusers: string[];
 }
 export interface IAddUserTypes {
   user_type: string;

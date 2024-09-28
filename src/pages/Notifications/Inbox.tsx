@@ -6,8 +6,6 @@ import NotificationTable from "./NotificationTable";
 const Inbox = () => {
   const { token, messages} = useGlobalContext();
   
-
-
   const user = token.user_name;
   const totalSentMessages = messages.filter(msg => msg.status === "Sent");
   const totalDraftMessages = messages.filter(msg => msg.status === "Draft");

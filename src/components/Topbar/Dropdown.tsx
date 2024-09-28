@@ -12,13 +12,15 @@ import { LogOut, Settings, ShieldBan, User } from "lucide-react"
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext"
 
 const Dropdown = () => {
-    const {token, setToken} = useGlobalContext();
+    const {token, setToken, handleDisconnect} = useGlobalContext();
     const navigate = useNavigate();
    
     const handleSignOut = () => {
         localStorage.setItem('token', JSON.stringify({access_token: ""}));
+        localStorage.setItem('user_name', "");
         setToken({access_token: "", user_name: ""});
         navigate('/');
+        handleDisconnect();
     }
 
   return (
