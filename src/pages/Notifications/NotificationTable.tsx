@@ -33,17 +33,16 @@ import { useNavigate } from "react-router-dom";
   }
 
 const NotificationTable = ({path, person, recievedMessages}: NotificationTableProps) => {
-  const {socketMessage, setSocketMessages, messages, setMessages} = useGlobalContext();
+  const {socketMessage, messages, setMessages, handleRead} = useGlobalContext();
   const { toast } = useToast();
   const navigate = useNavigate();
   const url = import.meta.env.VITE_API_URL;
   
   const uniquMessagesIds = socketMessage.map(msg => (msg.id));
     
-  const handleUniqueMessages = (id: string) => {
-      const newArray = socketMessage.filter(msg => msg.id !== id);
-      setSocketMessages(newArray)
-      navigate(`/notifications/inbox/${id}`)
+  const handleUniqueMessages = (parentid: string) => {
+      handleRead(parentid);
+      navigate(`/notifications/inbox/${parentid}`)
   }
 
   const handleDelete = async (id: string) => {
@@ -89,7 +88,7 @@ const NotificationTable = ({path, person, recievedMessages}: NotificationTablePr
                     </TableCell>
                     <TableCell className="w-[115px]">{convertDate(msg.date)}</TableCell>
                     <TableCell className="flex gap-2">
-                      <View onClick={()=>handleUniqueMessages(msg.id)} color="#044BD9" className="cursor-pointer"/>
+                      <View onClick={()=>handleUniqueMessages(msg.parentid)} color="#044BD9" className="cursor-pointer"/>
                       <AlertDialog>
                         <AlertDialogTrigger>
                         <Trash2 color="#E60B0B"/>

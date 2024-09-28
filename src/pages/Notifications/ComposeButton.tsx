@@ -16,17 +16,15 @@ import { ChangeEvent, useState } from "react";
 import { Check} from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import axios from "axios";
-import { useToast } from "@/components/ui/use-toast"
-import socket from "@/Socket/Socket";
+import { useToast } from "@/components/ui/use-toast";
 import ButtonSpinner from "@/components/Spinner/ButtonSpinner";
 import { v4 as uuidv4 } from "uuid"
 
 
 const ComposeButton = () => {
-  const { users, token, setMessages} = useGlobalContext();
+  const { users, token, setMessages, handlesendMessage} = useGlobalContext();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
-  
   const [recivers, setRecivers] =useState<string[]>([]);
   const [subject, setSubject] = useState<string>('');
   const [body, setBody] = useState<string>('');
@@ -36,6 +34,9 @@ const ComposeButton = () => {
   const [isAllClicked, setIsAllClicked] = useState(true);
   const sender = token.user_name;
   const id = uuidv4();
+
+  const totalusers = [...recivers, sender];
+  const uniqueUsers = [...new Set(totalusers)];
   
 
 const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -75,10 +76,12 @@ const handleSend = async () => {
     subject,
     body,
     date: new Date(),
-    status: "Sent"
+    status: "Sent",
+    parentid: id,
+    involvedusers: uniqueUsers
   };
   
-  socket.emit("sendMessage", data);
+  handlesendMessage(data);
   setMessages((prev) => [data, ...prev])
   toast({
     title: "Message sent"
@@ -98,7 +101,10 @@ const handleDraft = async () => {
     subject,
     body,
     date: new Date(),
-    status: "Draft"
+    status: "Draft",
+    parentid: id,
+    involvedusers: uniqueUsers
+
   };
   setIsDrafting(true);
   try {
@@ -156,7 +162,7 @@ return (
           <div className="w-[calc(100%-11rem)]">
           <div className="rounded-sm max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1 justify-end">
               {recivers.map(rec => (
-                  <div className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full">
+                  <div key={rec} className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full">
                       <p className="font-semibold">{rec}</p>
                       <div onClick={()=> handleRemoveReciever(rec)} className="flex h-[65%] items-end cursor-pointer">
                           <Delete size={18} />
@@ -176,7 +182,7 @@ return (
         </div>
         <div className="flex flex-col gap-2 w-full text-dark-400">
             <label className="font-semibold">Body</label>
-            <textarea className="rounded-sm outline-none border pl-2 h-24 w-full scrollbar-thin text-sm"
+            <textarea className="rounded-sm outline-none border pl-2 h-40 w-full scrollbar-thin text-sm"
                     value={body}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setBody(e.target.value)} />
         </div>

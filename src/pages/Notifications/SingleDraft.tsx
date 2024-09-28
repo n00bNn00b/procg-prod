@@ -10,8 +10,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { Check} from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import axios from "axios";
-import { useToast } from "@/components/ui/use-toast"
-import socket from "@/Socket/Socket";
+import { useToast } from "@/components/ui/use-toast";
 import ButtonSpinner from "@/components/Spinner/ButtonSpinner";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
@@ -30,7 +29,7 @@ interface Message {
   status: string;
 }
 const SingleDraft = () => {
-  const { users, token, messages, setMessages} = useGlobalContext();
+  const { users, token, messages, setMessages, handlesendMessage} = useGlobalContext();
   const navigate = useNavigate();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
@@ -44,6 +43,9 @@ const SingleDraft = () => {
   const [isAllClicked, setIsAllClicked] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const sender = token.user_name;
+
+  const totalusers = [...recivers, sender];
+  const uniqueUsers = [...new Set(totalusers)];
   
   useEffect(()=> {
     const fetchMessage = async () => {
@@ -94,17 +96,20 @@ const handleSelectAll = ()=>{
 }
 
 const handleSend = async () => {
+  const newID = uuidv4();
   const data = {
-    id: uuidv4(),
+    id: newID,
     sender, 
     recivers,
     subject,
     body,
     date: new Date(),
-    status: "Sent"
+    status: "Sent",
+    parentid: newID,
+    involvedusers: uniqueUsers
   };
+  handlesendMessage(data);
   setIsSending(true);
-  socket.emit("sendMessage", data);
   setMessages((prev) => [data, ...prev])
   toast({
     title: "Message Sent"
@@ -185,7 +190,7 @@ return (
                     <div className="flex gap-2 w-[calc(100%-11rem)] justify-end">
                       <div className="rounded-sm max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1">
                           {recivers.map(rec => (
-                              <div className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full">
+                              <div key={rec} className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full">
                                   <p className="font-semibold">{rec}</p>
                                   <div onClick={()=> handleRemoveReciever(rec)} className="flex h-[65%] items-end cursor-pointer">
                                       <Delete size={18} />
