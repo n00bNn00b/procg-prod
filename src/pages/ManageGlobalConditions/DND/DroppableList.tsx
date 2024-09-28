@@ -89,7 +89,7 @@ export const DroppableItem: FC<DroppableItemProps> = ({
     transition,
   } = useSortable({ id: item.manage_global_condition_logic_id });
 
-  const { deleteLogicAndAttributeData, setIsActionLoading } = useAACContext();
+  const { deleteLogicAndAttributeData } = useAACContext();
 
   // const { deleteUser } = useSqliteAuthContext();
 
