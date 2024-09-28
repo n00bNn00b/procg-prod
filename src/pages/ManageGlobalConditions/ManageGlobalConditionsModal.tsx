@@ -124,12 +124,12 @@ const ManageGlobalConditionsModal: FC<IManageGlobalConditionProps> = () => {
                 <FormLabel>Status</FormLabel>
                 <Select
                   required
-                  defaultValue={field.value}
+                  value={field.value} // Use value instead of defaultValue
                   onValueChange={field.onChange}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a option" />
+                      <SelectValue placeholder="Select an option" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>

@@ -1,4 +1,4 @@
-import * as React from "react";
+// import * as React from "react";
 import { tailspin } from "ldrs";
 
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, FileEdit, Plus, Trash } from "lucide-react";
+import {
+  ArrowUpDown,
+  ChevronDown,
+  Dot,
+  FileEdit,
+  Plus,
+  Trash,
+} from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -46,13 +53,15 @@ import {
 } from "@/components/ui/table";
 
 import Pagination from "@/components/Pagination/Pagination";
-import { IManageGlobalConditionTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
-import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
+import {
+  IManageGlobalConditionLogicExtendTypes,
+  IManageGlobalConditionTypes,
+} from "@/types/interfaces/ManageAccessEntitlements.interface";
+
 import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
+import { useEffect, useState } from "react";
 
 const ManageGlobalConditionsTable = () => {
-  const { deleteManageAccessEntitlement } =
-    useManageAccessEntitlementsContext();
   const {
     isLoading,
     stateChange,
@@ -64,10 +73,13 @@ const ManageGlobalConditionsTable = () => {
     setSelectedManageGlobalConditionItem,
     fetchManageGlobalConditionLogics,
     setManageGlobalConditionTopicData,
+    manageGlobalConditionDeleteCalculate,
+    deleteManageGlobalCondition,
+    deleteLogicAndAttributeData,
   } = useAACContext();
-  // const [save, setSave] = React.useState<number>(0);
+  // const [save, setSave] = useState<number>(0);
   // Fetch Data
-  React.useEffect(() => {
+  useEffect(() => {
     fetchManageGlobalConditions();
     table.getRowModel().rows.map((row) => row.toggleSelected(false));
     setSelectedManageGlobalConditionItem([]);
@@ -75,19 +87,18 @@ const ManageGlobalConditionsTable = () => {
   // loader
   tailspin.register();
   // Shadcn Form
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [pagination, setPagination] = React.useState({
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [pagination, setPagination] = useState({
     pageIndex: 0, //initial page index
-    pageSize: 5, //default page size
+    pageSize: 7, //default page size
   });
-
-  const [isChecked, setIsChecked] = React.useState<boolean>(false);
+  const [willBeDelete, setWillBeDelete] = useState<
+    IManageGlobalConditionLogicExtendTypes[]
+  >([]);
+  const [isChecked, setIsChecked] = useState<boolean>(false);
   // select row
   const handleRowSelection = (rowData: IManageGlobalConditionTypes) => {
     setSelectedManageGlobalConditionItem((prevSelected) => {
@@ -187,13 +198,37 @@ const ManageGlobalConditionsTable = () => {
       pagination,
     },
   });
+  // handle delete Calculate
+  const handleDeleteCalculate = async () => {
+    const res = await manageGlobalConditionDeleteCalculate(
+      selectedManageGlobalConditionItem[0].manage_global_condition_id
+    );
+    setWillBeDelete(res as IManageGlobalConditionLogicExtendTypes[]);
+  };
   const handleDelete = async () => {
-    deleteManageAccessEntitlement(
+    await Promise.all(
+      await willBeDelete.map(async (item) => {
+        const res = await deleteLogicAndAttributeData(
+          item.manage_global_condition_logic_id,
+          item.id
+        );
+        console.log(res, item);
+      })
+    );
+    // for (const item of willBeDelete) {
+    //   await deleteLogicAndAttributeData(
+    //     item.manage_global_condition_logic_id,
+    //     item.id
+    //   );
+    // }
+    await deleteManageGlobalCondition(
       selectedManageGlobalConditionItem[0].manage_global_condition_id
     );
     table.getRowModel().rows.map((row) => row.toggleSelected(false));
     setSelectedManageGlobalConditionItem([]);
+    setWillBeDelete([]);
   };
+
   const handleEditClick = async () => {
     setIsEditModalOpen(true);
     const fetchData = await fetchManageGlobalConditionLogics(
@@ -234,6 +269,7 @@ const ManageGlobalConditionsTable = () => {
                   disabled={selectedManageGlobalConditionItem.length === 0}
                 >
                   <Trash
+                    onClick={handleDeleteCalculate}
                     className={`${
                       selectedManageGlobalConditionItem.length === 0 ||
                       selectedManageGlobalConditionItem.length > 1
@@ -244,17 +280,41 @@ const ManageGlobalConditionsTable = () => {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>
+                    <AlertDialogTitle className="text-red-500">
                       Are you absolutely sure?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
+                      <span>
+                        <span>
+                          NAME : {selectedManageGlobalConditionItem[0]?.name}
+                        </span>
+                        <br />
+                        {willBeDelete.map((item) => (
+                          <span
+                            key={item.id}
+                            className=" flex items-center text-red-500"
+                          >
+                            <Dot size={30} /> {item.object} {item.attribute}
+                            {item.value}
+                            {item.condition}
+                          </span>
+                        ))}
+                      </span>
+                      <span>
+                        Note: This action cannot be undone. This will
+                        permanently delete your account and remove your data
+                        from our servers.
+                      </span>
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
+                    <AlertDialogCancel onClick={() => setWillBeDelete([])}>
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      className="bg-red-500 hover:bg-red-600 text-white"
+                    >
                       Continue
                     </AlertDialogAction>
                   </AlertDialogFooter>

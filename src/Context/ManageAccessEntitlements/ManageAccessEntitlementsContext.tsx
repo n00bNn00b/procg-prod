@@ -262,7 +262,7 @@ export const ManageAccessEntitlementsProvider = ({
       if (res.status === 200) {
         toast({
           title: "Success",
-          description: `Deleted successfully.`,
+          description: `Data deleted successfully.`,
         });
       }
       setSave((prevSave) => prevSave + 1);
