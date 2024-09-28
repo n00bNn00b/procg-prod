@@ -21,15 +21,20 @@ import { toast } from "@/components/ui/use-toast";
 export interface DroppableListProps {
   id: string;
   items: IManageGlobalConditionLogicExtendTypes[];
+  originalData: IManageGlobalConditionLogicExtendTypes[];
   setItems: Dispatch<SetStateAction<IManageGlobalConditionLogicExtendTypes[]>>;
 }
 import { FC } from "react";
 import { IManageGlobalConditionLogicExtendTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useDroppable } from "@dnd-kit/core";
-import axios from "axios";
 import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
 
-const DroppableList: FC<DroppableListProps> = ({ id, items, setItems }) => {
+const DroppableList: FC<DroppableListProps> = ({
+  id,
+  items,
+  originalData,
+  setItems,
+}) => {
   const { setNodeRef } = useDroppable({ id });
 
   return (
@@ -50,6 +55,7 @@ const DroppableList: FC<DroppableListProps> = ({ id, items, setItems }) => {
               id={item.manage_global_condition_logic_id.toString()}
               item={item}
               items={items}
+              originalData={originalData}
               index={index}
               setItems={setItems}
             />
@@ -70,6 +76,7 @@ interface DroppableItemProps {
   id: string;
   item: IManageGlobalConditionLogicExtendTypes;
   items: IManageGlobalConditionLogicExtendTypes[];
+  originalData: IManageGlobalConditionLogicExtendTypes[];
   index: number;
   setItems: Dispatch<SetStateAction<IManageGlobalConditionLogicExtendTypes[]>>;
 }
@@ -77,6 +84,7 @@ interface DroppableItemProps {
 export const DroppableItem: FC<DroppableItemProps> = ({
   item,
   items,
+  originalData,
   index,
   setItems,
 }) => {
@@ -102,38 +110,29 @@ export const DroppableItem: FC<DroppableItemProps> = ({
 
   const handleDelete = async (id: number, logicId: number, attrId: number) => {
     // check if logicId and attrId exist in the database
-    const res = await deleteLogicAndAttributeData(logicId, attrId);
-    try {
-      if (res === 200) {
-        Promise.all([
-          axios.delete(
-            `http://localhost:3000/manage-global-condition-logics/${logicId}`
-          ),
-          axios.delete(
-            `http://localhost:3000/manage-global-condition-logic-attributes/${attrId}`
-          ),
-        ])
-          // .then(([logicResult, attributeResult]) => {
-          //   console.log("Logic Result:", logicResult);
-          //   console.log("Attribute Result:", attributeResult);
-          // })
-          .catch((error) => {
-            console.error("Error occurred:", error);
-          });
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      // delete Data from the array but not database
-      const remainingUser = items.filter(
-        (item) => item.manage_global_condition_logic_id !== id
-      );
-      setItems(remainingUser);
-      toast({
-        title: "Message",
-        description: "Delete data successfully.",
-      });
+
+    const res = items.filter(
+      (item) =>
+        !originalData?.some(
+          (ori) =>
+            ori.manage_global_condition_logic_id ===
+            item.manage_global_condition_logic_id
+        )
+    );
+    if (res.length === 0) {
+      // check if logicId and attrId exist in the database
+      await deleteLogicAndAttributeData(logicId, attrId);
     }
+
+    // delete Data from the array but not database
+    const remainingUser = items.filter(
+      (item) => item.manage_global_condition_logic_id !== id
+    );
+    setItems(remainingUser);
+    toast({
+      title: "Message",
+      description: "Delete data successfully.",
+    });
   };
 
   const handleChange = (
