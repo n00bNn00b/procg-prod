@@ -20,7 +20,7 @@ import { ring } from "ldrs";
 import { arrayMove } from "@dnd-kit/sortable";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
-import { FileEdit, X } from "lucide-react";
+import { Save, X } from "lucide-react";
 import DragOverlayComponent from "./DragOverlayComponent";
 
 const DND: FC = () => {
@@ -153,7 +153,7 @@ const DND: FC = () => {
     ) {
       return "right";
     }
-    return id;// important for find Container where DND item
+    return id; // important for find Container where DND item
   };
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
@@ -330,7 +330,6 @@ const DND: FC = () => {
       console.error("Error saving data:", error);
     }
   };
-
   return (
     <div>
       <div className="flex justify-between sticky top-0 p-2 bg-slate-300  ">
@@ -347,7 +346,7 @@ const DND: FC = () => {
               />
             </div>
           ) : (
-            <FileEdit
+            <Save
               onClick={
                 items.length > 0 || isChangedAccessGlobalCondition
                   ? handleSave
@@ -406,6 +405,7 @@ const DND: FC = () => {
                   <DroppableList
                     id="right"
                     items={rightWidgets}
+                    originalData={originalData}
                     setItems={setRightWidgets}
                   />
                 )}
