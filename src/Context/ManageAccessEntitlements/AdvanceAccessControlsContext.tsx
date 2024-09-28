@@ -45,6 +45,10 @@ interface IAACContextTypes {
   attrMaxId: number | undefined;
   isActionLoading: boolean;
   setIsActionLoading: Dispatch<SetStateAction<boolean>>;
+  manageGlobalConditionDeleteCalculate: (
+    id: number
+  ) => Promise<IManageGlobalConditionLogicExtendTypes[] | undefined>;
+  deleteManageGlobalCondition: (id: number) => Promise<void>;
   deleteLogicAndAttributeData: (
     logicId: number,
     attrId: number
@@ -190,17 +194,43 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     };
     maxId();
   }, [isActionLoading, stateChange]);
-
+  const manageGlobalConditionDeleteCalculate = async (id: number) => {
+    try {
+      const result = await fetchManageGlobalConditionLogics(id);
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // Manage Global Condition Delete
+  const deleteManageGlobalCondition = async (id: number) => {
+    axios
+      .delete(`${url}/manage-global-conditions/${id}`)
+      .then((res) => {
+        if (res.status === 200) {
+          toast({
+            title: "Success",
+            description: `Data deleted successfully.`,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setStateChange((prev) => prev + 1);
+      });
+  };
   const deleteLogicAndAttributeData = async (
     logicId: number,
     attrId: number
   ) => {
     try {
       const [isExistLogicId, isExistAttrId] = await Promise.all([
-        axios.get(
+        axios.delete(
           `http://localhost:3000/manage-global-condition-logics/${logicId}`
         ),
-        axios.get(
+        axios.delete(
           `http://localhost:3000/manage-global-condition-logic-attributes/${attrId}`
         ),
       ]);
@@ -231,6 +261,8 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     attrMaxId,
     isActionLoading,
     setIsActionLoading,
+    manageGlobalConditionDeleteCalculate,
+    deleteManageGlobalCondition,
     deleteLogicAndAttributeData,
   };
   return <AACContext.Provider value={value}>{children}</AACContext.Provider>;
