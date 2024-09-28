@@ -10,14 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  Check,
-  ChevronDown,
-  X,
-} from "lucide-react";
-
-import { Button } from "@/components/ui/button";
+import { ArrowUpDown, Check, ChevronDown, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -34,14 +27,41 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
-import { IAccessPointsEntitlementTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import {
+  ICreateAccessPointsElementTypes,
+  IFetchAccessPointsElementTypes,
+} from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import Pagination from "@/components/Pagination/Pagination";
-const AccessPointsEntitleTable = () => {
-  const { filteredData: data, isLoading } =
-    useManageAccessEntitlementsContext();
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-  const columns: ColumnDef<IAccessPointsEntitlementTypes>[] = [
+import { Button } from "@/components/ui/button";
+
+const AccessPointsEntitleTable = () => {
+  const {
+    filteredData: data,
+    isLoading,
+    isOpenModal,
+    setIsOpenModal,
+    selectedManageAccessEntitlements,
+    deleteAccessPointsElement,
+    fetchAccessPointsEntitlement,
+  } = useManageAccessEntitlementsContext();
+  const [selectedRow, setSelectedRow] = useState<
+    ICreateAccessPointsElementTypes[]
+  >([]);
+  console.log(selectedRow);
+  const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -67,52 +87,52 @@ const AccessPointsEntitleTable = () => {
     },
 
     {
-      accessorKey: "entitlement_name",
+      accessorKey: "element_name",
       header: ({ column }) => {
         return (
           <div
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Entitlement Name
+            Element Name
             <ArrowUpDown className="ml-2 h-4 w-4 inline-block" />
           </div>
         );
       },
       cell: ({ row }) => (
-        <div className="lowercase">{row.getValue("entitlement_name")}</div>
+        <div className="lowercase">{row.getValue("element_name")}</div>
       ),
     },
     {
       accessorKey: "description",
-      header: "description",
+      header: "Description",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("description")}</div>
       ),
     },
     {
       accessorKey: "datasource",
-      header: "datasource",
+      header: "Datasource",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("datasource")}</div>
       ),
     },
     {
       accessorKey: "platform",
-      header: "platform",
+      header: "Platform",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("platform")}</div>
       ),
     },
     {
       accessorKey: "element_type",
-      header: "element_type",
+      header: "Element Type",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("element_type")}</div>
       ),
     },
     {
       accessorKey: "access_control",
-      header: "access_control",
+      header: "Access Control",
       cell: ({ row }) => (
         <div className="capitalize">
           {row.getValue("access_control") === "true" ? <Check /> : <X />}
@@ -121,14 +141,14 @@ const AccessPointsEntitleTable = () => {
     },
     {
       accessorKey: "change_control",
-      header: "change_control",
+      header: "Change Control",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("change_control")}</div>
       ),
     },
     {
       accessorKey: "audit",
-      header: "audit",
+      header: "Audit",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("audit")}</div>
       ),
@@ -138,7 +158,7 @@ const AccessPointsEntitleTable = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-
+  console.log(rowSelection, "rowSelection");
   const table = useReactTable({
     data,
     columns,
@@ -157,24 +177,88 @@ const AccessPointsEntitleTable = () => {
       rowSelection,
     },
   });
+  const handleRowSelected = (rowData: ICreateAccessPointsElementTypes) => {
+    setSelectedRow((prev) => {
+      if (prev.includes(rowData)) {
+        return prev.filter((item) => item !== rowData);
+      } else {
+        return [...prev, rowData];
+      }
+    });
+  };
+  const handleDelete = async () => {
+    const res = await deleteAccessPointsElement(selectedRow[0]?.id || 0);
+    table.getRowModel().rows.map((row) => row.toggleSelected(false));
+
+    if (res === 200) {
+      if (selectedManageAccessEntitlements) {
+        fetchAccessPointsEntitlement(selectedManageAccessEntitlements);
+      }
+    }
+  };
+  console.log(selectedManageAccessEntitlements);
   return (
-    <div className="px-3">
+    <div className="">
       <div className="w-full">
-        <div className="flex items-center py-4">
+        <div className="flex items-center justify-between py-4">
           <div className="flex gap-2">
-            <div className="px-4 py-2 border rounded shadow cursor-pointer hover:bg-slate-200 hover:shadow-md">
+            <div className="px-4 py-2 border rounded shadow text-slate-300">
               <h3>Access Points</h3>
             </div>
-            <div className="px-4 py-2 border rounded shadow cursor-pointer hover:bg-slate-200 hover:shadow-md">
-              <h3>Create Access Point</h3>
+            <div
+              className={`px-4 py-2 border rounded shadow  ${
+                selectedManageAccessEntitlements?.entitlement_id
+                  ? "bg-slate-400  hover:shadow-md hover:bg-slate-500"
+                  : "bg-slate-200 text-slate-400"
+              }`}
+            >
+              <button
+                disabled={!selectedManageAccessEntitlements?.entitlement_id}
+                onClick={() => setIsOpenModal(!isOpenModal)}
+              >
+                Create Access Point
+              </button>
             </div>
-            <div className="px-4 py-2 border rounded shadow cursor-pointer hover:bg-slate-200 hover:shadow-md">
-              <h3>Delete</h3>
+            <div className="px-4 py-2 border rounded shadow ">
+              <AlertDialog>
+                <AlertDialogTrigger
+                  className={`${
+                    selectedRow.length > 1 ? "text-slate-300" : "text-slate-800"
+                  } `}
+                  disabled={selectedRow.length > 1}
+                >
+                  Delete
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your account and remove your data from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
+          </div>
+          <div>
+            {selectedManageAccessEntitlements && (
+              <h3 className="font-bold ">
+                {selectedManageAccessEntitlements?.entitlement_name}
+              </h3>
+            )}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
+              <Button variant="outline" className="">
                 Columns <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -199,7 +283,7 @@ const AccessPointsEntitleTable = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded-md border ">
+        <div className="rounded-md border">
           <Table className="">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -248,11 +332,11 @@ const AccessPointsEntitleTable = () => {
                         {index === 0 ? (
                           <Checkbox
                             className="m-1"
-                            checked={row.getIsSelected()}
+                            checked={row.getIsSelected() || false} // Ensure checked is always a boolean
                             onCheckedChange={(value) =>
                               row.toggleSelected(!!value)
                             }
-                            // onClick={() => handleRowSelection(row.original)}
+                            onClick={() => handleRowSelected(row.original)}
                           />
                         ) : (
                           flexRender(

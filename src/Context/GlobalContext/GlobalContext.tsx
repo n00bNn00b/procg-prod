@@ -18,6 +18,9 @@ import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { ManageAccessEntitlementsProvider } from "../ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import { io } from "socket.io-client";
+import {
+  AACContextProvider,
+} from "../ManageAccessEntitlements/AdvanceAccessControlsContext";
 
 
 interface GlobalContextProviderProps {
@@ -134,7 +137,7 @@ export function GlobalContextProvider({
   }, [url]);
 
   //Fetch Messages
-  useEffect(()=> {
+  useEffect(() => {
     const fetchMessages = async () => {
       try {
         const response = await axios.get<Message[]>(`${url}/messages`);
@@ -146,7 +149,7 @@ export function GlobalContextProvider({
     };
 
     fetchMessages();
-  }, [url])
+  }, [url]);
 
   //Fetch DataSources
   const fetchDataSources = async () => {
@@ -288,7 +291,9 @@ export function GlobalContextProvider({
     try {
       const res = await axios.get<ITenantsTypes[]>(`${url}/tenants`);
       return res.data;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
   // Create User
   const createUser = async (postData: IAddUserTypes) => {
@@ -320,7 +325,6 @@ export function GlobalContextProvider({
         job_title,
         password,
       });
-      setIsLoading(false);
       if (res.status === 201) {
         toast({
           title: "Success",
@@ -335,6 +339,8 @@ export function GlobalContextProvider({
         });
       }
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -365,8 +371,10 @@ export function GlobalContextProvider({
       }}
     >
       <ManageAccessEntitlementsProvider>
-        <Toaster />
-        {children}
+        <AACContextProvider>
+          <Toaster />
+          {children}
+        </AACContextProvider>
       </ManageAccessEntitlementsProvider>
     </GlobalContex.Provider>
   );

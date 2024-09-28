@@ -9,9 +9,11 @@ import SingleDraft from "@/pages/Notifications/SingleDraft";
 import Tasks from "@/pages/Tasks/Tasks";
 import Home from "@/pages/Home/Home";
 import SingleSent from "@/pages/Notifications/SingleSent";
-import DataSources from "@/pages/DataSources/DataSources";
+import DataSources from "@/pages/ManageDataSources/DataSources";
 import ManageAccessEntitlements from "@/pages/ManageAccessEntitlements/ManageAccessEntitlements";
 import SetupAndAdministration from "@/pages/SetupAndAdministration/SetupAndAdministration";
+import ManageGlobaConditions from "@/pages/ManageGlobalConditions/ManageGlobalConditions";
+import ManageLocalConditions from "@/pages/ManageLocalConditions/ManageLocalConditions";
 
 const routes = createBrowserRouter([
   {
@@ -74,6 +76,14 @@ const routes = createBrowserRouter([
           {
             path: "manage-access-entitlements",
             element: <ManageAccessEntitlements />,
+          },
+          {
+            path: "manage-global-conditions",
+            element: <ManageGlobaConditions />,
+          },
+          {
+            path: "manage-local-conditions",
+            element: <ManageLocalConditions />,
           },
         ],
       },
