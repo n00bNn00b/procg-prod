@@ -133,8 +133,6 @@ export const DroppableItem: FC<DroppableItemProps> = ({
         title: "Message",
         description: "Delete data successfully.",
       });
-      // Change the state
-      setIsActionLoading(true);
     }
   };
 

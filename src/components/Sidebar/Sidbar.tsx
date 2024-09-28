@@ -45,7 +45,7 @@ const Sidbar = () => {
       <Menu>
         {menuData.map((menu) => (
           <SubMenu
-            className={getSubMenuStyle(menu.paths)}
+            className={getSubMenuStyle(menu.menuItems.map((item) => item.path))}
             key={menu.submenu}
             label={menu.submenu}
             icon={<img src={menu.submenuIcon} className="w-[20px] h-[20px]" />}
