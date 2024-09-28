@@ -76,6 +76,11 @@
         "name": "Manage Local Conditions",
         "icon": "sidebar/setup-and-administration.svg",
         "path": "/tools/manage-local-conditions"
+      },
+      {
+        "name": "Manage Access Models",
+        "icon": "sidebar/setup-and-administration.svg",
+        "path": "/tools/manage-access-models"
       }
     ]
   },

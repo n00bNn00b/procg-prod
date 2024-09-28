@@ -14,6 +14,7 @@ import ManageAccessEntitlements from "@/pages/ManageAccessEntitlements/ManageAcc
 import SetupAndAdministration from "@/pages/SetupAndAdministration/SetupAndAdministration";
 import ManageGlobaConditions from "@/pages/ManageGlobalConditions/ManageGlobalConditions";
 import ManageLocalConditions from "@/pages/ManageLocalConditions/ManageLocalConditions";
+import ManageAccessModels from "@/pages/ManageAccessModels/ManageAccessModels";
 
 const routes = createBrowserRouter([
   {
@@ -84,6 +85,10 @@ const routes = createBrowserRouter([
           {
             path: "manage-local-conditions",
             element: <ManageLocalConditions />,
+          },
+          {
+            path: "manage-access-models",
+            element: <ManageAccessModels />,
           },
         ],
       },
