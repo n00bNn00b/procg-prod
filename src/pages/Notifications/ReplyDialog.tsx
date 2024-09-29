@@ -42,6 +42,8 @@ const ReplyDialog = ({parrentid, involvedUsers, setTotalMessages}: ReplyDialogPr
     };
 
     handlesendMessage(data);
+    setBody("");
+    setSubject("");
     toast({
       title: "Message sent"
     })
