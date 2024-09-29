@@ -42,7 +42,7 @@ const Sidbar = () => {
       className="h-[calc(100vh-3rem)] text-[13px] bg-white z-40"
       style={{ position: "fixed" }}
     >
-      <Menu>
+      <Menu className="font-lora font-semibold">
         {menuData.map((menu) => (
           <SubMenu
             className={getSubMenuStyle(menu.menuItems.map((item) => item.path))}
