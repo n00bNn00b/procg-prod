@@ -17,6 +17,10 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        lora: ['Lora', 'sans-serif'],
+        dmSans: ['DM Sans', 'sans-serif']
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

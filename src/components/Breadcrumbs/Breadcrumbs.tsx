@@ -6,7 +6,7 @@ const Breadcurmbs = () => {
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
   return (
-    <div className="py-3 sticky top-[48px] overflow-hidden z-10 bg-white mb-2">
+    <div className="py-3 sticky top-[48px] overflow-hidden z-10 bg-white mb-2 font-lora font-semibold">
       {/* <div className="py-2 sticky top-[7.9%] backdrop-blur-xl overflow-hidden"> */}
       <nav>
         <ul className="flex ">

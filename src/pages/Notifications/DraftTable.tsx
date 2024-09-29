@@ -61,7 +61,7 @@ const DraftTable = ({path, person, sentMessages}: DraftTableProps) => {
 
   return (
     <div className="ml-[11rem] border rounded-md shadow-sm p-4">
-        <h1 className="text-lg font-bold mb-6">{path}</h1>
+        <h1 className="text-lg font-bold mb-6 font-lora">{path}</h1>
         <Table>
             <TableHeader>
                 <TableRow>
