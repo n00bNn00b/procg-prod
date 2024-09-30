@@ -152,7 +152,7 @@ return (
              <l-tailspin size="80" stroke="5" speed="2" color="#68788C"></l-tailspin>
            </div>   
           ) : (
-            <Card className="w-[600px]">
+            <Card className="w-full mb-4">
             <CardHeader>
                 <div className="flex text-dark-400">
                   <Link to="/notifications/draft" className="p-1 rounded-md hover:bg-winter-100/50">
@@ -162,13 +162,13 @@ return (
                     <Trash2 size={20}/>
                   </button>
                 </div>
-                <CardTitle>Draft Message</CardTitle>
+                <CardTitle className="font-lora font-bold">Draft Message</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col gap-4">
                   <div className="flex gap-4 justify-between">
                       <DropdownMenu>
-                      <DropdownMenuTrigger className="bg-dark-100 text-white w-44 h-8 rounded-sm font-semibold">Select Recipients</DropdownMenuTrigger>
+                      <DropdownMenuTrigger className="bg-dark-100 text-white w-44 h-8 rounded-sm font-semibold font-lora">Select Recipients</DropdownMenuTrigger>
                       <DropdownMenuContent className="w-44 max-h-[255px] overflow-auto scrollbar-thin">
                       <input type="text" 
                               className="w-full bg-light-100 border-b border-light-400 outline-none pl-2"
@@ -191,7 +191,7 @@ return (
                       <div className="rounded-sm max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1">
                           {recivers.map(rec => (
                               <div key={rec} className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full">
-                                  <p className="font-semibold">{rec}</p>
+                                  <p className="font-semibold font-lora">{rec}</p>
                                   <div onClick={()=> handleRemoveReciever(rec)} className="flex h-[65%] items-end cursor-pointer">
                                       <Delete size={18} />
                                   </div>
@@ -201,15 +201,15 @@ return (
                     </div>
                   </div>
                   <div className="flex flex-col gap-2 w-full text-dark-400">
-                      <label className="font-semibold">Subject</label>
+                      <label className="font-semibold font-lora">Subject</label>
                       <input type="text" 
                           className="rounded-sm outline-none border pl-2 h-8 w-full text-sm"
                           value={subject}
                           onChange={(e: ChangeEvent<HTMLInputElement>) => setSubject(e.target.value)} />
                   </div>
                   <div className="flex flex-col gap-2 w-full text-dark-400">
-                      <label className="font-semibold">Body</label>
-                      <textarea className="rounded-sm outline-none border pl-2 h-24 w-full scrollbar-thin text-sm"
+                      <label className="font-semibold font-lora">Body</label>
+                      <textarea className="rounded-sm outline-none border pl-2 h-36 w-full scrollbar-thin text-sm"
                               value={body}
                               onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setBody(e.target.value)} />
                   </div>
@@ -219,7 +219,7 @@ return (
                 {recivers.length === 0 || body === "" ? null : 
                 <button onClick={handleSend} className="flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md bg-dark-100 text-white hover:scale-95 duration-300">
                     {isSending? <ButtonSpinner/>: <Send size={18}/>}
-                    <p className="font-semibold">Send</p>
+                    <p className="font-semibold font-lora">Send</p>
                 </button> }
             </CardFooter>
         </Card>

@@ -12,7 +12,7 @@ const Topbar = () => {
       index === socketMessage.findIndex((obj) => obj.date === item.date)
   );
   return (
-    <div className="flex justify-between items-center h-[3rem] w-[100vw] px-8 bg-white shadow-md fixed z-40">
+    <div className="flex justify-between items-center h-[3rem] w-[100vw] px-8 bg-white shadow-md fixed z-40 font-lora">
       <div className="flex gap-2 items-center">
         {open ? (
           <button className="bg-winter-100 w-8 h-8 rounded-full hover:rotate-[360deg] duration-500 flex justify-center items-center">
