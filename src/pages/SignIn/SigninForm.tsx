@@ -63,7 +63,7 @@ const SignInForm = ({setIsWrongCredential}: SignInFormProps) => {
             name="email"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel className="text-dark-400 font-lora">Email</FormLabel>
+                <FormLabel className="text-dark-400 font-montserrat">Email</FormLabel>
                 <FormControl>
                   <input
                     type="text"
@@ -80,7 +80,7 @@ const SignInForm = ({setIsWrongCredential}: SignInFormProps) => {
             name="password"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel className="text-dark-400 font-lora">Password</FormLabel>
+                <FormLabel className="text-dark-400 font-montserrat">Password</FormLabel>
                 <FormControl>
                   <input
                     type="password"
@@ -94,7 +94,7 @@ const SignInForm = ({setIsWrongCredential}: SignInFormProps) => {
           />
           <button
             type="submit"
-            className="w-full py-2 rounded-md bg-Red-200 hover:bg-Red-200/90 text-white font-lora"
+            className="w-full py-2 rounded-md bg-Red-200 hover:bg-Red-200/90 text-white font-montserrat"
           >
             {isLoading ? (
               <l-tailspin size="15" stroke="3" speed="0.9" color="white" />

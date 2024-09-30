@@ -18,8 +18,8 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        lora: ['Lora', 'sans-serif'],
-        dmSans: ['DM Sans', 'sans-serif']
+        montserrat: ['Montserrat', 'sans-serif'],
+        hind: ['Hind', 'sans-serif']
       },
       colors: {
         border: "hsl(var(--border))",

@@ -58,17 +58,17 @@ const ReplyDialog = ({parrentid, involvedUsers, setTotalMessages}: ReplyDialogPr
         </DialogTrigger>
         <DialogContent>
             <DialogHeader>
-              <DialogTitle className="font-lora font-bold">Reply</DialogTitle>
+              <DialogTitle className="font-montserrat font-bold">Reply</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-2 w-full text-dark-400">
-              <label className="font-semibold font-lora">Subject</label>
+              <label className="font-semibold font-montserrat">Subject</label>
               <input type="text" 
                     className="rounded-sm outline-none border pl-2 h-8 w-full text-sm"
                     value={subject}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setSubject(e.target.value)} />
             </div>
             <div className="flex flex-col gap-2 w-full text-dark-400">
-              <label className="font-semibold font-lora">Body</label>
+              <label className="font-semibold font-montserrat">Body</label>
               <textarea className="rounded-sm outline-none border pl-2 h-40 w-full scrollbar-thin text-sm"
                       value={body}
                       onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setBody(e.target.value)} />
@@ -76,7 +76,7 @@ const ReplyDialog = ({parrentid, involvedUsers, setTotalMessages}: ReplyDialogPr
             <DialogFooter>
               <button onClick={handleSend} className="flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md bg-dark-100 text-white hover:scale-95 duration-300">
                   <Reply size={18}/>  
-                  <p className="font-semibold font-lora">Reply</p>
+                  <p className="font-semibold font-montserrat">Reply</p>
               </button>
             </DialogFooter>
         </DialogContent>
