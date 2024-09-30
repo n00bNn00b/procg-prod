@@ -130,17 +130,17 @@ return (
       <DialogTrigger asChild>
         <button className="flex gap-2 items-center px-5 py-2 rounded-xl bg-dark-100 text-white hover:scale-95 duration-300 fixed bottom-4">
             <MailPlus size={18}/>
-            <p className="font-semibold font-lora">Compose</p>
+            <p className="font-semibold ">Compose</p>
         </button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-lora font-bold">New Message</DialogTitle>
+          <DialogTitle className=" font-bold">New Message</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <DropdownMenu>
-            <DropdownMenuTrigger className="bg-dark-100 text-white w-44 h-8 rounded-sm font-semibold font-lora">Select Recipients</DropdownMenuTrigger>
+            <DropdownMenuTrigger className="bg-dark-100 text-white w-44 h-8 rounded-sm font-semibold ">Select Recipients</DropdownMenuTrigger>
             <DropdownMenuContent className="w-44 max-h-[255px] overflow-auto scrollbar-thin">
             <input type="text" 
                     className="w-full bg-light-100 border-b border-light-400 outline-none pl-2"
@@ -163,7 +163,7 @@ return (
           <div className="rounded-sm max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1 justify-end">
               {recivers.map(rec => (
                   <div key={rec} className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full">
-                      <p className="font-semibold font-lora">{rec}</p>
+                      <p className="font-semibold ">{rec}</p>
                       <div onClick={()=> handleRemoveReciever(rec)} className="flex h-[65%] items-end cursor-pointer">
                           <Delete size={18} />
                       </div>
@@ -174,14 +174,14 @@ return (
           </div>
         
         <div className="flex flex-col gap-2 w-full text-dark-400">
-            <label className="font-semibold font-lora">Subject</label>
+            <label className="font-semibold ">Subject</label>
             <input type="text" 
                    className="rounded-sm outline-none border pl-2 h-8 w-full text-sm"
                    value={subject}
                    onChange={(e: ChangeEvent<HTMLInputElement>) => setSubject(e.target.value)} />
         </div>
         <div className="flex flex-col gap-2 w-full text-dark-400">
-            <label className="font-semibold font-lora">Body</label>
+            <label className="font-semibold ">Body</label>
             <textarea className="rounded-sm outline-none border pl-2 h-40 w-full scrollbar-thin text-sm"
                     value={body}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setBody(e.target.value)} />
@@ -191,12 +191,12 @@ return (
             {recivers.length === 0 || body === "" ? null : 
             <button onClick={handleDraft} className="flex gap-1 items-center px-5 py-2 rounded-l-full rounded-r-md bg-dark-300 text-white hover:scale-95 duration-300">
                 {isDrafting? <ButtonSpinner/>: <Paperclip size={18}/>}
-                <p className="font-semibold font-lora">Draft</p>
+                <p className="font-semibold ">Draft</p>
             </button>}
             {recivers.length === 0 || body === "" ? null : 
             <button onClick={handleSend} className="flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md bg-dark-100 text-white hover:scale-95 duration-300">
                 {isSending? <ButtonSpinner/>: <Send size={18}/>}
-                <p className="font-semibold font-lora">Send</p>
+                <p className="font-semibold ">Send</p>
             </button> }
         </DialogFooter>
       </DialogContent>

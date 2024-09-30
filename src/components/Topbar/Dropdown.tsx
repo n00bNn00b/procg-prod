@@ -32,31 +32,31 @@ const Dropdown = () => {
             </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-40">
-            <DropdownMenuLabel className="font-lora font-bold text-lg">{token.user_name}</DropdownMenuLabel>
+            <DropdownMenuLabel className=" font-bold text-lg">{token.user_name}</DropdownMenuLabel>
             <DropdownMenuSeparator /> 
             <DropdownMenuItem>
                 <NavLink to='/profile' className={({isActive}) => isActive? "flex gap-2 items-center w-full text-Red-400": "flex gap-2 items-center w-full text-winter-500"}>
                     <User size={18}/>
-                    <p className="font-semibold font-dmSans text-md">Profile</p>
+                    <p className="font-semibold text-md">Profile</p>
                 </NavLink>
             </DropdownMenuItem>
             <DropdownMenuItem>
                 <NavLink to='/security' className={({isActive}) => isActive? "flex gap-2 items-center w-full text-Red-400": "flex gap-2 items-center w-full text-winter-500"}>
                     <ShieldBan size={18}/>
-                    <p className="font-semibold font-dmSans text-md">Security</p>
+                    <p className="font-semibold text-md">Security</p>
                 </NavLink>
             </DropdownMenuItem>
             <DropdownMenuItem>
                 <NavLink to='/settings' className={({isActive}) => isActive? "flex gap-2 items-center w-full text-Red-400": "flex gap-2 items-center w-full text-winter-500"}>
                     <Settings size={18}/>
-                    <p className="font-semibold font-dmSans text-md">Settings</p>
+                    <p className="font-semibold text-md">Settings</p>
                 </NavLink>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem >
                 <button onClick={handleSignOut} className="flex gap-2 items-center w-full text-Red-200">
                     <LogOut size={18}/>
-                    <p className="font-semibold font-dmSans text-md">Logout</p>
+                    <p className="font-semibold text-md">Logout</p>
                 </button>
             </DropdownMenuItem>
         </DropdownMenuContent>

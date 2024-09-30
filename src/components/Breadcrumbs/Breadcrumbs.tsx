@@ -6,11 +6,11 @@ const Breadcurmbs = () => {
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
   return (
-    <div className="py-3 sticky top-[48px] overflow-hidden z-10 bg-white mb-2 font-lora font-semibold">
+    <div className="py-3 sticky top-[48px] overflow-hidden z-10 bg-white mb-2">
       {/* <div className="py-2 sticky top-[7.9%] backdrop-blur-xl overflow-hidden"> */}
       <nav>
         <ul className="flex ">
-          <li className="text-blue-500 underline font-bold ">
+          <li className="text-blue-600 underline">
             <Link to="/" className="flex gap-1">
               <span>Home</span>
             </Link>
@@ -22,7 +22,7 @@ const Breadcurmbs = () => {
             return (
               <li key={to} className="flex">
                 <span className="mx-2">
-                  <ChevronRight />
+                  <ChevronRight strokeWidth={1} />
                 </span>
                 {last ? (
                   <span>{title}</span>

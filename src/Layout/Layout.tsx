@@ -21,7 +21,7 @@ const Layout = () => {
   return (
     <>
       {token?.access_token ? (
-        <div className="font-dmSans">
+        <div className="font-openSans">
           <Topbar />
           <div className="flex gap-4 pt-[3rem]">
             <Sidbar />
