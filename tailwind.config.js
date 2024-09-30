@@ -19,7 +19,9 @@ module.exports = {
     extend: {
       fontFamily: {
         montserrat: ['Montserrat', 'sans-serif'],
-        hind: ['Hind', 'sans-serif']
+        hind: ['Hind', 'sans-serif'],
+        lato: ['Lato', 'sans-serif'],
+        openSans: ['Open Sans', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

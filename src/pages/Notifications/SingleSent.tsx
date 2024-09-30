@@ -132,17 +132,17 @@ const totalInvolvedUsers = parrentMessage.involvedusers;
                     </button>
                     <ReplyDialog parrentid={parrentMessage.id} involvedUsers={totalInvolvedUsers} setTotalMessages={setTotalMessages}/>
                   </div>
-                  <CardTitle className="font-montserrat">{`${message.subject}`}</CardTitle>
+                  <CardTitle className="text-blue-600">{`${message.subject}`}</CardTitle>
                   <p className="my-4 text-dark-400">{convertDate(message.date)}</p>
                   <div className="flex justify-between">
                       <div className="flex flex-col text-dark-400">
-                        <p className="text-black font-montserrat font-semibold">From</p>
+                        <p className="text-blue-600  font-semibold">From</p>
                         <p>{message.sender}</p>
                           <img src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
                               alt="img" className="w-10 h-10 rounded-full object-cover object-center"/>
                       </div>
                       <div className="flex flex-col text-dark-400">
-                        <p className="text-black font-montserrat font-semibold text-right">To</p>
+                        <p className="text-blue-600  font-semibold text-right">To</p>
                         <div className="flex gap-2 max-w-[400px]">
                         {message.recivers.map(rcvr => (
                           <div className="flex flex-col text-dark-400">

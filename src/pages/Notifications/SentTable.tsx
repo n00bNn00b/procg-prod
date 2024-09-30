@@ -63,7 +63,7 @@ const SentTable = ({path, person, sentMessages}: SentTableProps) => {
 
   return (
     <div className="ml-[11rem] border rounded-md shadow-sm p-4">
-        <h1 className="text-lg font-bold mb-6 font-montserrat">{path}</h1>
+        <h1 className="text-lg font-bold mb-6 ">{path}</h1>
         <Table>
             <TableHeader>
                 <TableRow>
