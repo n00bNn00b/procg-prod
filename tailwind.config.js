@@ -22,6 +22,8 @@ module.exports = {
         hind: ['Hind', 'sans-serif'],
         lato: ['Lato', 'sans-serif'],
         openSans: ['Open Sans', 'sans-serif'],
+        workSans: ['Work Sans', 'sans-serif'],
+        josefinSans: ['Josefin Sans', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
