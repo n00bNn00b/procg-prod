@@ -25,13 +25,13 @@ const Sidbar = () => {
 
   const getMenuitemStyle = (path: string) => {
     if (pathname === path) {
-      return "text-rose-600";
+      return "text-red-600";
     }
   };
 
   const getSubMenuStyle = (paths: string[]) => {
     if (paths.includes(pathname)) {
-      return "bg-blue-100 border-l-4 border-red-600";
+      return "bg-winter-100 border-l-4 border-red-600";
     }
   };
 
@@ -42,10 +42,10 @@ const Sidbar = () => {
       className="h-[calc(100vh-3rem)] text-[13px] bg-white z-40"
       style={{ position: "fixed" }}
     >
-      <Menu className="">
+      <Menu>
         {menuData.map((menu) => (
           <SubMenu
-            className={getSubMenuStyle(menu.menuItems.map((item) => item.path))}
+            className={getSubMenuStyle(menu.paths)}
             key={menu.submenu}
             label={menu.submenu}
             icon={<img src={menu.submenuIcon} className="w-[20px] h-[20px]" />}

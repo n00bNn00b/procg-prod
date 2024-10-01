@@ -49,7 +49,7 @@
     "submenu": "Tools",
     "submenuIcon": "/sidebar/tools.svg",
     "paths": [
-      "/setup-and-administration"
+      "/tools/setup-and-administration", "/tools/datasources", "/tools/manage-access-entitlements", "/tools/manage-global-conditions", "/tools/manage-global-conditions", "/tools/manage-local-conditions", "/tools/manage-access-models"
     ],
     "menuItems": [
       {
