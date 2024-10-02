@@ -16,10 +16,7 @@ const ManageAccessModels = () => {
   useEffect(() => {
     const fetch = async () => {
       const res = await fetchManageAccessModels();
-      const sortedData = res?.sort(
-        (a, b) => b.manage_access_model_id - a.manage_access_model_id
-      );
-      setManageAccessModels(sortedData as IManageAccessModelsTypes[]);
+      setManageAccessModels(res ?? []);
     };
     fetch();
   }, [stateChange]);
