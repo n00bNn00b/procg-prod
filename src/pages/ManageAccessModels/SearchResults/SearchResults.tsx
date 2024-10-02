@@ -235,17 +235,18 @@ const SearchResults: React.FC<IManageAccessModelProps> = ({ items: data }) => {
               }`}
             />
             <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline">
-                  <Trash
-                    className={`hover:scale-110 duration-300 cursor-pointer ${
-                      selectedAccessModelItem.length > 0
-                        ? "text-red-500 "
-                        : "text-slate-200"
-                    }`}
-                  />
-                </Button>
+              <AlertDialogTrigger
+                disabled={selectedAccessModelItem.length === 0}
+              >
+                <Trash
+                  className={`${
+                    selectedAccessModelItem.length === 0
+                      ? "text-slate-200 cursor-not-allowed"
+                      : "text-red-500 cursor-pointer"
+                  }`}
+                />
               </AlertDialogTrigger>
+
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
