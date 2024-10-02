@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, Dot, Edit, Plus, Trash } from "lucide-react";
+import { ArrowUpDown, ChevronDown, Edit, Plus, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -250,12 +250,12 @@ const SearchResults: React.FC<IManageAccessModelProps> = ({ items: data }) => {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    {selectedAccessModelItem.map((item) => (
+                    {selectedAccessModelItem.map((item, index) => (
                       <span
                         key={item.manage_access_model_id}
                         className="capitalize flex items-center text-red-500"
                       >
-                        <Dot size={30} /> {item.model_name}
+                        {index + 1}. {item.model_name}
                       </span>
                     ))}
                     This action cannot be undone. This will permanently delete
