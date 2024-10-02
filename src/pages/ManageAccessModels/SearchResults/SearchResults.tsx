@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, Dot, Edit, Plus, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,9 +19,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -33,60 +30,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@gmail.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@gmail.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@gmail.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-  {
-    id: "bhqecjss",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-  {
-    id: "bhqesa4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-];
-
-export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
-export const columns: ColumnDef<Payment>[] = [
+import { IManageAccessModelsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import AddModel from "./AddModel";
+import EditModel from "./EditModel";
+import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+interface IManageAccessModelProps {
+  items: IManageAccessModelsTypes[];
+}
+export const columns: ColumnDef<IManageAccessModelsTypes>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -110,73 +72,95 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "email",
+    accessorKey: "model_name",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Email
+          Model Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue("model_name")}</div>
+    ),
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("description")}</div>
+    ),
   },
   {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    accessorKey: "type",
+    header: "Type",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("type")}</div>,
+  },
+  {
+    accessorKey: "run_status",
+    header: "Run Status",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("run_status")}</div>
+    ),
+  },
+  {
+    accessorKey: "last_run_date",
+    header: "Last Run Date",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("last_run_date")}</div>
+    ),
+  },
+  {
+    accessorKey: "created_by",
+    header: "Created By",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("created_by")}</div>
+    ),
+  },
+  {
+    accessorKey: "last_updated_by",
+    header: "Last Updated By",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("last_updated_by")}</div>
+    ),
+  },
+  {
+    accessorKey: "last_updated_date",
+    header: "Last Updated Date",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("last_updated_date")}</div>
+    ),
+  },
+  {
+    accessorKey: "revision",
+    header: "Revision",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("revision")}</div>
+    ),
+  },
+  {
+    accessorKey: "revision_date",
+    header: "Revision Date",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("revision_date")}</div>
+    ),
   },
 ];
-const SearchResults = () => {
+
+const SearchResults: React.FC<IManageAccessModelProps> = ({ items: data }) => {
+  const {
+    selectedAccessModelItem,
+    setSelectedAccessModelItem,
+    deleteManageAccessModel,
+  } = useAACContext();
+  const [isOpenAddModal, setIsOpenAddModal] = React.useState<boolean>(false);
+  const [isOpenEditModal, setIsOpenEditModal] = React.useState<boolean>(false);
+
+  // form
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -186,7 +170,7 @@ const SearchResults = () => {
   const [rowSelection, setRowSelection] = React.useState({});
   const [pagination, setPagination] = React.useState({
     pageIndex: 0, //initial page index
-    pageSize: 4, //default page size
+    pageSize: 10, //default page size
   });
   const table = useReactTable({
     data,
@@ -209,15 +193,91 @@ const SearchResults = () => {
       pagination,
     },
   });
+  const handleRowSelection = (rowData: IManageAccessModelsTypes) => {
+    setSelectedAccessModelItem((prevSelected) => {
+      if (prevSelected.includes(rowData)) {
+        // If the id is already selected, remove it
+        return prevSelected.filter((selectedId) => selectedId !== rowData);
+      } else {
+        // If the id is not selected, add it
+        return [...prevSelected, rowData];
+      }
+    });
+  };
+  const handleDelete = () => {
+    deleteManageAccessModel(selectedAccessModelItem);
+    setSelectedAccessModelItem([]);
+    table.getRowModel().rows.map((row) => row.toggleSelected(false));
+  };
   return (
     <div>
       <div className="w-full">
+        {isOpenAddModal && (
+          <AddModel items={data} setOpenModal={setIsOpenAddModal} />
+        )}
+        {isOpenEditModal && <EditModel setOpenModal={setIsOpenEditModal} />}
+
         <div className="flex items-center py-4">
+          <div className="flex gap-2 items-center mx-2 border p-1 rounded-md">
+            <Plus
+              onClick={() => setIsOpenAddModal(true)}
+              className="hover:scale-110 duration-300 hover:text-green-500 cursor-pointer"
+            />
+
+            <Edit
+              onClick={() =>
+                selectedAccessModelItem.length > 0 && setIsOpenEditModal(true)
+              }
+              className={`hover:scale-110 duration-300 cursor-pointer ${
+                selectedAccessModelItem.length === 1
+                  ? "text-green-500 "
+                  : "text-slate-200"
+              }`}
+            />
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline">
+                  <Trash
+                    className={`hover:scale-110 duration-300 cursor-pointer ${
+                      selectedAccessModelItem.length > 0
+                        ? "text-red-500 "
+                        : "text-slate-200"
+                    }`}
+                  />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {selectedAccessModelItem.map((item) => (
+                      <span
+                        key={item.manage_access_model_id}
+                        className="capitalize flex items-center text-red-500"
+                      >
+                        <Dot size={30} /> {item.model_name}
+                      </span>
+                    ))}
+                    This action cannot be undone. This will permanently delete
+                    your account and remove your data from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete}>
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
           <Input
-            placeholder="Filter emails..."
-            value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+            placeholder="Filter by model name..."
+            value={
+              (table.getColumn("model_name")?.getFilterValue() as string) ?? ""
+            }
             onChange={(event) =>
-              table.getColumn("email")?.setFilterValue(event.target.value)
+              table.getColumn("model_name")?.setFilterValue(event.target.value)
             }
             className="max-w-sm h-8"
           />
@@ -275,11 +335,22 @@ const SearchResults = () => {
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                   >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="py-0">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
+                    {row.getVisibleCells().map((cell, index) => (
+                      <TableCell key={cell.id} className="py-2">
+                        {index === 0 ? (
+                          <Checkbox
+                            className="m-1"
+                            checked={row.getIsSelected()}
+                            onCheckedChange={(value) =>
+                              row.toggleSelected(!!value)
+                            }
+                            onClick={() => handleRowSelection(row.original)}
+                          />
+                        ) : (
+                          flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )
                         )}
                       </TableCell>
                     ))}

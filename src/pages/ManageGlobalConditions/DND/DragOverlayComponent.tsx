@@ -37,6 +37,7 @@ const DragOverlayComponent: FC<DroppableItemProps> = ({
   index,
   setItems,
 }) => {
+  const url = import.meta.env.VITE_API_URL;
   const {
     attributes,
     isDragging,
@@ -63,11 +64,9 @@ const DragOverlayComponent: FC<DroppableItemProps> = ({
     try {
       if (res === 200) {
         Promise.all([
+          axios.delete(`${url}/manage-global-condition-logics/${logicId}`),
           axios.delete(
-            `http://localhost:3000/manage-global-condition-logics/${logicId}`
-          ),
-          axios.delete(
-            `http://localhost:3000/manage-global-condition-logic-attributes/${attrId}`
+            `${url}/manage-global-condition-logic-attributes/${attrId}`
           ),
         ])
           // .then(([logicResult, attributeResult]) => {
