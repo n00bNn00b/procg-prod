@@ -2,11 +2,28 @@ import { ring } from "ldrs";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import SearchModels from "./SearchModels/SearchModels";
 import SearchResults from "./SearchResults/SearchResults";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
+import { IManageAccessModelsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 
 const ManageAccessModels = () => {
+  const { fetchManageAccessModels, stateChange } = useAACContext();
   const [isSearchModelsOpen, setIsSearchModelsOpen] = useState(false);
   const [isSearchResultsOpen, setIsSearchResultsOpen] = useState(false);
+  const [manageAccessModels, setManageAccessModels] = useState<
+    IManageAccessModelsTypes[]
+  >([]);
+  useEffect(() => {
+    const fetch = async () => {
+      const res = await fetchManageAccessModels();
+      const sortedData = res?.sort(
+        (a, b) => b.manage_access_model_id - a.manage_access_model_id
+      );
+      setManageAccessModels(sortedData as IManageAccessModelsTypes[]);
+    };
+    fetch();
+  }, [stateChange]);
+  const manageAccessModelsData = [...manageAccessModels];
   ring.register();
   return (
     <div className="bg-slate-100 p-2">
@@ -34,7 +51,7 @@ const ManageAccessModels = () => {
         <h4 className="font-semibold ml-2">Manage Models</h4>
         <div className="p-2 border rounded-md bg-white">
           <div className="flex gap-2 items-center my-1">
-            {isSearchModelsOpen ? (
+            {isSearchResultsOpen ? (
               <ChevronUp
                 onClick={() => setIsSearchResultsOpen(!isSearchResultsOpen)}
                 className="border bg-slate-100 rounded cursor-pointer"
@@ -47,7 +64,9 @@ const ManageAccessModels = () => {
             )}
             <h4>Serach Results</h4>
           </div>
-          {isSearchResultsOpen && <SearchResults />}
+          {isSearchResultsOpen && (
+            <SearchResults items={manageAccessModelsData} />
+          )}
         </div>
       </div>
     </div>

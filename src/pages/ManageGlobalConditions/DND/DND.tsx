@@ -36,6 +36,7 @@ const DND: FC = () => {
     setIsActionLoading,
   } = useAACContext();
   // console.log(attrMaxId, "attrMaxId");
+  const url = import.meta.env.VITE_API_URL;
   const iniLeftWidget = [
     {
       id: attrMaxId ? attrMaxId + 1 : 1,
@@ -279,7 +280,7 @@ const DND: FC = () => {
       if (isChangedAccessGlobalCondition) {
         axios
           .put(
-            `http://localhost:3000/manage-global-conditions/${selectedItem[0].manage_global_condition_id}`,
+            `${url}/manage-global-conditions/${selectedItem[0].manage_global_condition_id}`,
             changedAccessGlobalCondition
           )
           .then((logicResult) => {
@@ -300,14 +301,12 @@ const DND: FC = () => {
       }
       if (items.length > 0) {
         Promise.all([
-          axios.post(
-            `http://localhost:3000/manage-global-condition-logics/upsert`,
-            { upsertLogics }
-          ),
-          axios.post(
-            `http://localhost:3000/manage-global-condition-logic-attributes/upsert`,
-            { upsertAttributes }
-          ),
+          axios.post(`${url}/manage-global-condition-logics/upsert`, {
+            upsertLogics,
+          }),
+          axios.post(`${url}/manage-global-condition-logic-attributes/upsert`, {
+            upsertAttributes,
+          }),
         ])
           .then(([logicResult, attributeResult]) => {
             if (logicResult.status === 200 && attributeResult.status === 200) {

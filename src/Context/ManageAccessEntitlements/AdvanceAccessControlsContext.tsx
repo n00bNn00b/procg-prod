@@ -1,5 +1,6 @@
 import { toast } from "@/components/ui/use-toast";
 import {
+  IManageAccessModelsTypes,
   IManageGlobalConditionLogicAttributesTypes,
   IManageGlobalConditionLogicExtendTypes,
   IManageGlobalConditionLogicTypes,
@@ -53,6 +54,18 @@ interface IAACContextTypes {
     logicId: number,
     attrId: number
   ) => Promise<number | undefined>;
+  fetchManageAccessModels: () => Promise<
+    IManageAccessModelsTypes[] | undefined
+  >;
+
+  selectedAccessModelItem: IManageAccessModelsTypes[];
+  setSelectedAccessModelItem: Dispatch<
+    SetStateAction<IManageAccessModelsTypes[]>
+  >;
+  createManageAccessModel: (
+    postData: IManageAccessModelsTypes
+  ) => Promise<void>;
+  deleteManageAccessModel: (items: IManageAccessModelsTypes[]) => Promise<void>;
 }
 export const AACContext = createContext<IAACContextTypes | null>(null);
 
@@ -83,6 +96,9 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     useState<IManageGlobalConditionLogicExtendTypes[]>([]);
   const [attrMaxId, setAttrMaxId] = useState<number>();
   const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
+  const [selectedAccessModelItem, setSelectedAccessModelItem] = useState<
+    IManageAccessModelsTypes[]
+  >([]);
   // Fetch Manage Global Conditions
   const fetchManageGlobalConditions = async () => {
     try {
@@ -179,7 +195,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   useEffect(() => {
     const maxId = async () => {
       const result = await axios.get(
-        "http://localhost:3000/manage-global-condition-logic-attributes"
+        `${url}/manage-global-condition-logic-attributes`
       );
       const maxId = Math.max(
         ...result.data.map(
@@ -221,17 +237,16 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         setStateChange((prev) => prev + 1);
       });
   };
+  // delete Logic And Attribute Data
   const deleteLogicAndAttributeData = async (
     logicId: number,
     attrId: number
   ) => {
     try {
       const [isExistLogicId, isExistAttrId] = await Promise.all([
+        axios.delete(`${url}/manage-global-condition-logics/${logicId}`),
         axios.delete(
-          `http://localhost:3000/manage-global-condition-logics/${logicId}`
-        ),
-        axios.delete(
-          `http://localhost:3000/manage-global-condition-logic-attributes/${attrId}`
+          `${url}/manage-global-condition-logic-attributes/${attrId}`
         ),
       ]);
       if (isExistLogicId.status === 200 && isExistAttrId.status === 200) {
@@ -239,6 +254,62 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       }
     } catch (error: any) {
       return error.response.status;
+    }
+  };
+
+  // fetch Manage Access Models
+  const fetchManageAccessModels = async () => {
+    try {
+      const response = await axios.get<IManageAccessModelsTypes[]>(
+        `${url}/manage-access-models`
+      );
+      return response.data ?? [];
+    } catch (error) {}
+  };
+  const createManageAccessModel = async (
+    postData: IManageAccessModelsTypes
+  ) => {
+    try {
+      setIsLoading(true);
+      const { model_name, description, type, state } = postData;
+      const res = await axios.post(`${url}/manage-access-models`, {
+        model_name,
+        description,
+        type,
+        state,
+      });
+      if (res.status === 201) {
+        setStateChange((prev) => prev + 1);
+        toast({
+          title: "Success",
+          description: `Added successfully.`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const deleteManageAccessModel = async (items: IManageAccessModelsTypes[]) => {
+    for (const item of items) {
+      const { manage_access_model_id: id } = item;
+      axios
+        .delete(`${url}/manage-access-models/${id}`)
+        .then((res) => {
+          if (res.status === 200) {
+            toast({
+              title: "Success",
+              description: `Data deleted successfully.`,
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          setStateChange((prev) => prev + 1);
+        });
     }
   };
   const value = {
@@ -264,6 +335,11 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     manageGlobalConditionDeleteCalculate,
     deleteManageGlobalCondition,
     deleteLogicAndAttributeData,
+    fetchManageAccessModels,
+    selectedAccessModelItem,
+    setSelectedAccessModelItem,
+    createManageAccessModel,
+    deleteManageAccessModel,
   };
   return <AACContext.Provider value={value}>{children}</AACContext.Provider>;
 };
