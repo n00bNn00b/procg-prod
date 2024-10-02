@@ -263,7 +263,9 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       const response = await axios.get<IManageAccessModelsTypes[]>(
         `${url}/manage-access-models`
       );
-      return response.data ?? [];
+      if (response) {
+        return response.data ?? [];
+      }
     } catch (error) {}
   };
   const createManageAccessModel = async (
