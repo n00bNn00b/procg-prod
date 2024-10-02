@@ -260,13 +260,21 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   // fetch Manage Access Models
   const fetchManageAccessModels = async () => {
     try {
+      setIsLoading(true);
       const response = await axios.get<IManageAccessModelsTypes[]>(
         `${url}/manage-access-models`
       );
       if (response) {
-        return response.data ?? [];
+        const sortedData = response.data.sort(
+          (a, b) => b.manage_access_model_id - a.manage_access_model_id
+        );
+        return sortedData ?? [];
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   const createManageAccessModel = async (
     postData: IManageAccessModelsTypes
