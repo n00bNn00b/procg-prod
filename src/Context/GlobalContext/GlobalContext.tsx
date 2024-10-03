@@ -101,19 +101,20 @@ export function GlobalContextProvider({
   }
 
  useEffect(() => {
-    
-    if(socket) {
-      socket.on("message", (data) => {
-        setSocketMessages((prevArray) => [data, ...prevArray]);
-        setMessages((prev) => [data, ...prev]);
-      });
+  socket.on("message", (data) => {
+    setSocketMessages((prevArray) => [data, ...prevArray]);
+    setMessages((prev) => [data, ...prev]);
+  });
 
-      socket.on("sync", (id) => {
-        const synedSocketMessages = socketMessage.filter(msg => msg.parentid !== id);
-        setSocketMessages(synedSocketMessages);
-      })
-  
-    }
+  socket.on("offlineMessage", (data) => {
+    setSocketMessages((prevArray) => [data, ...prevArray]);
+    setMessages((prev) => [data, ...prev]);
+  })
+
+  socket.on("sync", (id) => {
+    const synedSocketMessages = socketMessage.filter(msg => msg.parentid !== id);
+    setSocketMessages(synedSocketMessages);
+  })
 
     return () => {
       socket.disconnect();
