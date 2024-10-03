@@ -13,7 +13,7 @@ const Inbox = () => {
   const sentMessages = totalSentMessages.filter(msg => msg.sender === user);
   const draftMessages = totalDraftMessages.filter(msg => msg.sender === user);
 
-  return (
+ return (
     
     <>
       <NotificationCard recievedMessages={recievedMessages} sentMessages={sentMessages} draftMessages={draftMessages}/>

@@ -37,6 +37,8 @@ const NotificationTable = ({path, person, recievedMessages}: NotificationTablePr
   const { toast } = useToast();
   const navigate = useNavigate();
   const url = import.meta.env.VITE_API_URL;
+
+  
   
   const uniquMessagesIds = socketMessage.map(msg => (msg.id));
     
