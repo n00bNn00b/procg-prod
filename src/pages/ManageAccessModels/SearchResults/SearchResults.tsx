@@ -30,7 +30,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IManageAccessModelsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import {
+  IManageAccessModelLogicExtendTypes,
+  IManageAccessModelsTypes,
+} from "@/types/interfaces/ManageAccessEntitlements.interface";
 import AddModel from "./AddModel";
 import EditModel from "./EditModel";
 import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
@@ -156,9 +159,14 @@ const SearchResults: React.FC<IManageAccessModelProps> = ({ items: data }) => {
     selectedAccessModelItem,
     setSelectedAccessModelItem,
     deleteManageAccessModel,
+    manageAccessModelLogicsDeleteCalculate,
+    deleteManageModelLogicAndAttributeData,
   } = useAACContext();
   const [isOpenAddModal, setIsOpenAddModal] = React.useState<boolean>(false);
   const [isOpenEditModal, setIsOpenEditModal] = React.useState<boolean>(false);
+  const [willBeDelete, setWillBeDelete] = React.useState<
+    IManageAccessModelLogicExtendTypes[]
+  >([]);
 
   // form
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -204,18 +212,40 @@ const SearchResults: React.FC<IManageAccessModelProps> = ({ items: data }) => {
       }
     });
   };
-  const handleDelete = () => {
-    deleteManageAccessModel(selectedAccessModelItem);
+  const handleDeleteCalculate = async () => {
+    const res = await manageAccessModelLogicsDeleteCalculate(
+      selectedAccessModelItem[0].manage_access_model_id
+    );
+    setWillBeDelete(res as IManageAccessModelLogicExtendTypes[]);
+  };
+  const handleDelete = async () => {
+    await Promise.all(
+      await willBeDelete.map(async (item) => {
+        const res = await deleteManageModelLogicAndAttributeData(
+          item.manage_access_model_logic_id,
+          item.id
+        );
+        console.log(res, item);
+      })
+    );
+    await deleteManageAccessModel(selectedAccessModelItem);
     setSelectedAccessModelItem([]);
     table.getRowModel().rows.map((row) => row.toggleSelected(false));
+    setSelectedAccessModelItem([]);
+    setWillBeDelete([]);
   };
   return (
     <div>
       <div className="w-full">
         {isOpenAddModal && (
-          <AddModel items={data} setOpenModal={setIsOpenAddModal} />
+          <AddModel items={data} setOpenAddModal={setIsOpenAddModal} />
         )}
-        {isOpenEditModal && <EditModel setOpenModal={setIsOpenEditModal} />}
+        {isOpenEditModal && (
+          <EditModel
+            setOpenEditModal={setIsOpenEditModal}
+            isOpenEditModal={isOpenEditModal}
+          />
+        )}
 
         <div className="flex items-center py-4">
           <div className="flex gap-2 items-center mx-2 border p-1 rounded-md">
@@ -239,6 +269,7 @@ const SearchResults: React.FC<IManageAccessModelProps> = ({ items: data }) => {
                 disabled={selectedAccessModelItem.length === 0}
               >
                 <Trash
+                  onClick={handleDeleteCalculate}
                   className={`${
                     selectedAccessModelItem.length === 0
                       ? "text-slate-200 cursor-not-allowed"
@@ -251,12 +282,12 @@ const SearchResults: React.FC<IManageAccessModelProps> = ({ items: data }) => {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    {selectedAccessModelItem.map((item, index) => (
+                    {willBeDelete.map((item, index) => (
                       <span
-                        key={item.manage_access_model_id}
+                        key={index}
                         className="capitalize flex items-center text-red-500"
                       >
-                        {index + 1}. {item.model_name}
+                        {index + 1}. {item.object}
                       </span>
                     ))}
                     This action cannot be undone. This will permanently delete

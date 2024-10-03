@@ -1,5 +1,8 @@
 import { toast } from "@/components/ui/use-toast";
 import {
+  IManageAccessModelLogicAttributesTypes,
+  IManageAccessModelLogicExtendTypes,
+  IManageAccessModelLogicsTypes,
   IManageAccessModelsTypes,
   IManageGlobalConditionLogicAttributesTypes,
   IManageGlobalConditionLogicExtendTypes,
@@ -54,6 +57,7 @@ interface IAACContextTypes {
     logicId: number,
     attrId: number
   ) => Promise<number | undefined>;
+
   fetchManageAccessModels: () => Promise<
     IManageAccessModelsTypes[] | undefined
   >;
@@ -66,6 +70,17 @@ interface IAACContextTypes {
     postData: IManageAccessModelsTypes
   ) => Promise<void>;
   deleteManageAccessModel: (items: IManageAccessModelsTypes[]) => Promise<void>;
+  fetchManageAccessModelLogics: (
+    filterId: number
+  ) => Promise<IManageAccessModelLogicExtendTypes[] | undefined>;
+  manageAccessModelAttrMaxId: number | undefined;
+  manageAccessModelLogicsDeleteCalculate: (
+    id: number
+  ) => Promise<IManageAccessModelLogicExtendTypes[] | undefined>;
+  deleteManageModelLogicAndAttributeData: (
+    logicId: number,
+    attrId: number
+  ) => Promise<number | undefined>;
 }
 export const AACContext = createContext<IAACContextTypes | null>(null);
 
@@ -94,7 +109,10 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   ] = useState<IManageGlobalConditionTypes[]>([]);
   const [manageGlobalConditionTopicData, setManageGlobalConditionTopicData] =
     useState<IManageGlobalConditionLogicExtendTypes[]>([]);
-  const [attrMaxId, setAttrMaxId] = useState<number>();
+  const [globalConditionAttrMaxId, setGlobalConditionAttrMaxId] =
+    useState<number>();
+  const [manageAccessModelAttrMaxId, setManageAccessModelAttrMaxId] =
+    useState<number>();
   const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
   const [selectedAccessModelItem, setSelectedAccessModelItem] = useState<
     IManageAccessModelsTypes[]
@@ -194,18 +212,29 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   };
   useEffect(() => {
     const maxId = async () => {
-      const result = await axios.get(
-        `${url}/manage-global-condition-logic-attributes`
-      );
-      const maxId = Math.max(
-        ...result.data.map(
-          (data: IManageGlobalConditionLogicExtendTypes) => data.id
+      const [resGlobalCondition, resManageAccessModel] = await Promise.all([
+        axios.get(`${url}/manage-global-condition-logic-attributes`),
+        axios.get(`${url}/manage-access-model-logic-attributes`),
+      ]);
+      const maxIdGlobalCondition = Math.max(
+        ...resGlobalCondition.data.map(
+          (data: IManageGlobalConditionLogicAttributesTypes) => data.id
         )
       );
-      if (result.data.length > 0) {
-        setAttrMaxId(maxId);
+      const maxIdManageAccessModel = Math.max(
+        ...resManageAccessModel.data.map(
+          (data: IManageAccessModelLogicAttributesTypes) => data.id
+        )
+      );
+      if (resGlobalCondition.data.length > 0) {
+        setGlobalConditionAttrMaxId(maxIdGlobalCondition);
       } else {
-        setAttrMaxId(0);
+        setGlobalConditionAttrMaxId(0);
+      }
+      if (resManageAccessModel.data.length > 0) {
+        setManageAccessModelAttrMaxId(maxIdManageAccessModel);
+      } else {
+        setManageAccessModelAttrMaxId(0);
       }
     };
     maxId();
@@ -244,10 +273,8 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   ) => {
     try {
       const [isExistLogicId, isExistAttrId] = await Promise.all([
-        axios.delete(`${url}/manage-global-condition-logics/${logicId}`),
-        axios.delete(
-          `${url}/manage-global-condition-logic-attributes/${attrId}`
-        ),
+        axios.delete(`${url}/manage-access-model-logics/${logicId}`),
+        axios.delete(`${url}/manage-access-model-logic-attributes/${attrId}`),
       ]);
       if (isExistLogicId.status === 200 && isExistAttrId.status === 200) {
         return isExistLogicId.status;
@@ -281,12 +308,31 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   ) => {
     try {
       setIsLoading(true);
-      const { model_name, description, type, state } = postData;
+      const {
+        model_name,
+        description,
+        type,
+        state,
+        run_status,
+        last_run_date,
+        created_by,
+        last_updated_by,
+        last_updated_date,
+        revision,
+        revision_date,
+      } = postData;
       const res = await axios.post(`${url}/manage-access-models`, {
         model_name,
         description,
         type,
         state,
+        run_status,
+        last_run_date,
+        created_by,
+        last_updated_by,
+        last_updated_date,
+        revision,
+        revision_date,
       });
       if (res.status === 201) {
         setStateChange((prev) => prev + 1);
@@ -322,6 +368,67 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         });
     }
   };
+  const fetchManageAccessModelLogics = async (filterId: number) => {
+    try {
+      setIsLoading(true);
+      const [logicsRes, attributesRes] = await Promise.all([
+        axios.get<IManageAccessModelLogicsTypes[]>(
+          `${url}/manage-access-model-logics`
+        ),
+        axios.get<IManageAccessModelLogicAttributesTypes[]>(
+          `${url}/manage-access-model-logic-attributes`
+        ),
+      ]);
+      const attributesMap = new Map(
+        attributesRes.data.map((attr) => [
+          attr.manage_access_model_logic_id,
+          attr,
+        ])
+      );
+      const mergedData = logicsRes.data.map((item) => ({
+        ...item,
+        ...(attributesMap.get(item.manage_access_model_logic_id) || {}),
+      }));
+      const filteredData = mergedData.filter(
+        (item) => item.manage_access_model_id === filterId
+      );
+      // return (filteredData as IManageGlobalConditionLogicExtendTypes[]) ?? [];
+      if (filteredData) {
+        const sortedData = filteredData.sort(
+          (a, b) => Number(a.widget_position) - Number(b.widget_position)
+        );
+        return sortedData as IManageAccessModelLogicExtendTypes[];
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const manageAccessModelLogicsDeleteCalculate = async (id: number) => {
+    try {
+      const result = await fetchManageAccessModelLogics(id);
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const deleteManageModelLogicAndAttributeData = async (
+    logicId: number,
+    attrId: number
+  ) => {
+    try {
+      const [isExistLogicId, isExistAttrId] = await Promise.all([
+        axios.delete(`${url}/manage-access-model-logics/${logicId}`),
+        axios.delete(`${url}/manage-access-model-logic-attributes/${attrId}`),
+      ]);
+      if (isExistLogicId.status === 200 && isExistAttrId.status === 200) {
+        return isExistLogicId.status;
+      }
+    } catch (error: any) {
+      return error.response.status;
+    }
+  };
   const value = {
     isLoading,
     setIsLoading,
@@ -339,7 +446,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     fetchManageGlobalConditionLogics,
     manageGlobalConditionTopicData,
     setManageGlobalConditionTopicData,
-    attrMaxId,
+    attrMaxId: globalConditionAttrMaxId,
     isActionLoading,
     setIsActionLoading,
     manageGlobalConditionDeleteCalculate,
@@ -350,6 +457,10 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     setSelectedAccessModelItem,
     createManageAccessModel,
     deleteManageAccessModel,
+    fetchManageAccessModelLogics,
+    manageAccessModelAttrMaxId,
+    manageAccessModelLogicsDeleteCalculate,
+    deleteManageModelLogicAndAttributeData,
   };
   return <AACContext.Provider value={value}>{children}</AACContext.Provider>;
 };

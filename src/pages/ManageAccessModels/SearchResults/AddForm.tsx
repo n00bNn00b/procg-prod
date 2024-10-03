@@ -57,16 +57,18 @@ const AddForm: FC<IManageAccessEntitlementsProps> = ({ items }) => {
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const dateToday = new Date().toLocaleDateString("en-CA");
+    const id = items.length > 0 ? maxId + 1 : 1;
+    console.log(token.user_name);
     const postData = {
-      manage_access_model_id: items.length > 0 ? maxId + 1 : 1,
+      manage_access_model_id: id,
       model_name: data.model_name,
       description: data.description,
       type: data.type,
       state: data.state,
       run_status: "",
       last_run_date: dateToday,
-      created_by: token.user_name,
-      last_updated_by: token.user_name,
+      created_by: token?.user_name,
+      last_updated_by: token?.user_name,
       last_updated_date: dateToday,
       revision: 0,
       revision_date: dateToday,
