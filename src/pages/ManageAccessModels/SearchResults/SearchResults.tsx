@@ -48,8 +48,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { ring } from "ldrs";
 interface IManageAccessModelProps {
-  items: IManageAccessModelsTypes[];
+  // items: IManageAccessModelsTypes[];
 }
 export const columns: ColumnDef<IManageAccessModelsTypes>[] = [
   {
@@ -154,14 +155,25 @@ export const columns: ColumnDef<IManageAccessModelsTypes>[] = [
   },
 ];
 
-const SearchResults: React.FC<IManageAccessModelProps> = ({ items: data }) => {
+const SearchResults: React.FC<IManageAccessModelProps> = () => {
   const {
+    isLoading,
     selectedAccessModelItem,
     setSelectedAccessModelItem,
+    stateChange,
+    fetchManageAccessModels,
+    manageAccessModels: data,
     deleteManageAccessModel,
     manageAccessModelLogicsDeleteCalculate,
     deleteManageModelLogicAndAttributeData,
   } = useAACContext();
+  React.useEffect(() => {
+    fetchManageAccessModels();
+    table.getRowModel().rows.map((row) => row.toggleSelected(false));
+    setSelectedAccessModelItem([]);
+  }, [stateChange]);
+  // const data = manageAccessModels ? [...manageAccessModels] : [];
+  ring.register();
   const [isOpenAddModal, setIsOpenAddModal] = React.useState<boolean>(false);
   const [isOpenEditModal, setIsOpenEditModal] = React.useState<boolean>(false);
   const [willBeDelete, setWillBeDelete] = React.useState<
@@ -281,17 +293,36 @@ const SearchResults: React.FC<IManageAccessModelProps> = ({ items: data }) => {
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {willBeDelete.map((item, index) => (
-                      <span
-                        key={index}
-                        className="capitalize flex items-center text-red-500"
-                      >
-                        {index + 1}. {item.object}
+                  <AlertDialogDescription className="text-red-500">
+                    <span>
+                      ACCESS_MODEL_NAME :{" "}
+                      {selectedAccessModelItem[0]?.model_name}{" "}
+                    </span>
+                    {isLoading ? (
+                      <span className="block">
+                        <l-tailspin
+                          size="40"
+                          stroke="5"
+                          speed="0.9"
+                          color="black"
+                        ></l-tailspin>
                       </span>
-                    ))}
-                    This action cannot be undone. This will permanently delete
-                    your account and remove your data from our servers.
+                    ) : (
+                      <span>
+                        {willBeDelete.map((item, index) => (
+                          <span
+                            key={index}
+                            className="capitalize flex items-center text-red-500"
+                          >
+                            {index + 1}. {item.object}
+                          </span>
+                        ))}
+                      </span>
+                    )}
+                    <span className="block mt-3 text-neutral-500">
+                      This action cannot be undone. This will permanently delete
+                      your account and remove your data from our servers.
+                    </span>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -347,7 +378,10 @@ const SearchResults: React.FC<IManageAccessModelProps> = ({ items: data }) => {
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
-                      <TableHead key={header.id}>
+                      <TableHead
+                        key={header.id}
+                        className="border border-slate-400 bg-slate-200 p-1 w-fit"
+                      >
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -361,14 +395,28 @@ const SearchResults: React.FC<IManageAccessModelProps> = ({ items: data }) => {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    <l-tailspin
+                      size="40"
+                      stroke="5"
+                      speed="0.9"
+                      color="black"
+                    ></l-tailspin>
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell, index) => (
-                      <TableCell key={cell.id} className="py-2">
+                      <TableCell key={cell.id} className="border p-1 w-fit">
                         {index === 0 ? (
                           <Checkbox
                             className="m-1"
@@ -388,6 +436,20 @@ const SearchResults: React.FC<IManageAccessModelProps> = ({ items: data }) => {
                     ))}
                   </TableRow>
                 ))
+              ) : isLoading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    <l-tailspin
+                      size="40"
+                      stroke="5"
+                      speed="0.9"
+                      color="black"
+                    ></l-tailspin>
+                  </TableCell>
+                </TableRow>
               ) : (
                 <TableRow>
                   <TableCell

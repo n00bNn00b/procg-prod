@@ -2,25 +2,12 @@ import { ring } from "ldrs";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import SearchModels from "./SearchModels/SearchModels";
 import SearchResults from "./SearchResults/SearchResults";
-import { useEffect, useState } from "react";
-import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
-import { IManageAccessModelsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import { useState } from "react";
 
 const ManageAccessModels = () => {
-  const { fetchManageAccessModels, stateChange } = useAACContext();
-  const [isSearchModelsOpen, setIsSearchModelsOpen] = useState(false);
-  const [isSearchResultsOpen, setIsSearchResultsOpen] = useState(false);
-  const [manageAccessModels, setManageAccessModels] = useState<
-    IManageAccessModelsTypes[]
-  >([]);
-  useEffect(() => {
-    const fetch = async () => {
-      const res = await fetchManageAccessModels();
-      setManageAccessModels(res ?? []);
-    };
-    fetch();
-  }, [stateChange]);
-  const manageAccessModelsData = [...manageAccessModels];
+  const [isSearchModelsOpen, setIsSearchModelsOpen] = useState(true);
+  const [isSearchResultsOpen, setIsSearchResultsOpen] = useState(true);
+
   ring.register();
   return (
     <div className="bg-slate-100 p-2">
@@ -39,11 +26,7 @@ const ManageAccessModels = () => {
 
         <h4>Serach Models</h4>
       </div>
-      <div className="grid grid-cols-2">
-        {isSearchModelsOpen && <SearchModels />}
-
-        <div></div>
-      </div>
+      <div className=" ">{isSearchModelsOpen && <SearchModels />}</div>
       <div className="my-4">
         <h4 className="font-semibold ml-2">Manage Models</h4>
         <div className="p-2 border rounded-md bg-white">
@@ -61,9 +44,7 @@ const ManageAccessModels = () => {
             )}
             <h4>Serach Results</h4>
           </div>
-          {isSearchResultsOpen && (
-            <SearchResults items={manageAccessModelsData} />
-          )}
+          {isSearchResultsOpen && <SearchResults />}
         </div>
       </div>
     </div>

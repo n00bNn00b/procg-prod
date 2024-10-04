@@ -224,6 +224,17 @@ export const DroppableItem: FC<DroppableItemProps> = ({
           </div>
         </div>
         <div className="p-3">
+          <div className="flex flex-col  ">
+            <label htmlFor={`filter-${index}`}>Filter</label>
+            <input
+              className="px-2 rounded"
+              type="text"
+              id={`filter-${index}`}
+              name={`filter-${index}`}
+              value={item.filter}
+              onChange={(e) => handleChange(index, "filter", e.target.value)}
+            />
+          </div>
           {/* 1st row */}
           <div className="grid grid-cols-4 gap-4">
             <div className="flex flex-col  ">

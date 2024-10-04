@@ -3,6 +3,7 @@ import {
   IManageAccessModelLogicAttributesTypes,
   IManageAccessModelLogicExtendTypes,
   IManageAccessModelLogicsTypes,
+  IManageAccessModelSearchFilterTypes,
   IManageAccessModelsTypes,
   IManageGlobalConditionLogicAttributesTypes,
   IManageGlobalConditionLogicExtendTypes,
@@ -59,9 +60,9 @@ interface IAACContextTypes {
   ) => Promise<number | undefined>;
 
   fetchManageAccessModels: () => Promise<
-    IManageAccessModelsTypes[] | undefined
+    IManageAccessModelsTypes[] | [] | undefined
   >;
-
+  manageAccessModels: IManageAccessModelsTypes[] | [];
   selectedAccessModelItem: IManageAccessModelsTypes[];
   setSelectedAccessModelItem: Dispatch<
     SetStateAction<IManageAccessModelsTypes[]>
@@ -81,6 +82,7 @@ interface IAACContextTypes {
     logicId: number,
     attrId: number
   ) => Promise<number | undefined>;
+  searchFilter: (data: IManageAccessModelSearchFilterTypes) => Promise<void>;
 }
 export const AACContext = createContext<IAACContextTypes | null>(null);
 
@@ -115,6 +117,9 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     useState<number>();
   const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
   const [selectedAccessModelItem, setSelectedAccessModelItem] = useState<
+    IManageAccessModelsTypes[]
+  >([]);
+  const [manageAccessModels, setManageAccessModels] = useState<
     IManageAccessModelsTypes[]
   >([]);
   // Fetch Manage Global Conditions
@@ -295,6 +300,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         const sortedData = response.data.sort(
           (a, b) => b.manage_access_model_id - a.manage_access_model_id
         );
+        setManageAccessModels(sortedData ?? []);
         return sortedData ?? [];
       }
     } catch (error) {
@@ -429,6 +435,37 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       return error.response.status;
     }
   };
+  const searchFilter = async (data: IManageAccessModelSearchFilterTypes) => {
+    const allAccessModel = await fetchManageAccessModels();
+
+    const filterResult = allAccessModel?.filter((item) => {
+      setIsLoading(true);
+      // Check if each filter condition is satisfied
+      const matchesModelName =
+        data.model_name.length === 0 ||
+        item.model_name.toLowerCase().includes(data.model_name.toLowerCase());
+      const matchesCreatedBy =
+        data.created_by.length === 0 ||
+        item.created_by.toLowerCase().includes(data.created_by.toLowerCase());
+      const matchesState =
+        data.state.length === 0 ||
+        item.state.toLowerCase().includes(data.state.toLowerCase());
+      const matchesDate =
+        data.last_run_date.length === 0 ||
+        item.last_run_date.includes(data.last_run_date);
+      // console.log(matchesModelName);
+      // console.log(matchesDate);
+      setIsLoading(false);
+      // Return true only if all conditions are met
+      return (
+        matchesModelName && matchesCreatedBy && matchesState && matchesDate
+      );
+    });
+
+    setManageAccessModels(filterResult ?? []);
+    // return filterResult ?? [];
+  };
+
   const value = {
     isLoading,
     setIsLoading,
@@ -452,6 +489,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     manageGlobalConditionDeleteCalculate,
     deleteManageGlobalCondition,
     deleteLogicAndAttributeData,
+    manageAccessModels,
     fetchManageAccessModels,
     selectedAccessModelItem,
     setSelectedAccessModelItem,
@@ -461,6 +499,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     manageAccessModelAttrMaxId,
     manageAccessModelLogicsDeleteCalculate,
     deleteManageModelLogicAndAttributeData,
+    searchFilter,
   };
   return <AACContext.Provider value={value}>{children}</AACContext.Provider>;
 };

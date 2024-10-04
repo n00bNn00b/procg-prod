@@ -113,3 +113,10 @@ export interface IManageAccessModelLogicExtendTypes
   widget_position: number;
   widget_state: number;
 }
+export interface IManageAccessModelSearchFilterTypes {
+  match: string;
+  created_by: string;
+  model_name: string;
+  state: string;
+  last_run_date: string;
+}
