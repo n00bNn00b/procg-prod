@@ -106,9 +106,12 @@ export function GlobalContextProvider({
     setMessages((prev) => [data, ...prev]);
   });
 
-  socket.on("offlineMessage", (data) => {
+  socket.on("offlineMessage", (data: Message) => {
     setSocketMessages((prevArray) => [data, ...prevArray]);
-    setMessages((prev) => [data, ...prev]);
+    const duplicate = messages.find(msg => msg.id === data.id);
+    if(!duplicate) {
+      setMessages((prev) => [data, ...prev]);
+    }
   })
 
   socket.on("sync", (id) => {
