@@ -37,6 +37,7 @@ const DND: FC<IManageAccessModelDNDProps> = ({
     manageAccessModelAttrMaxId,
     isActionLoading,
     setIsActionLoading,
+    setStateChange,
   } = useAACContext();
   // console.log(attrMaxId, "attrMaxId");
   const url = import.meta.env.VITE_API_URL;
@@ -367,7 +368,7 @@ const DND: FC<IManageAccessModelDNDProps> = ({
             onClick={() => {
               setOpenEditModal(!isOpenEditModal);
               // Change the state
-              // setStateChange((prev) => prev + 1);
+              setStateChange((prev) => prev + 1);
             }}
             className="cursor-pointer hover:text-white bg-red-300 hover:bg-red-500  rounded p-1 hover:scale-110 duration-300 z-50"
           />
