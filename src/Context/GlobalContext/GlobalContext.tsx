@@ -72,7 +72,7 @@ export function GlobalContextProvider({
   
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const url = import.meta.env.VITE_API_URL;
-  const user = token.user_name;
+  const user = token?.user_name;
 
   
  //Fetch Users
