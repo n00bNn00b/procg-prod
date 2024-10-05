@@ -77,7 +77,7 @@ interface IAACContextTypes {
   manageAccessModelAttrMaxId: number | undefined;
   manageAccessModelLogicsDeleteCalculate: (
     id: number
-  ) => Promise<IManageAccessModelLogicExtendTypes[] | undefined>;
+  ) => Promise<IManageAccessModelLogicExtendTypes[] | [] | undefined>;
   deleteManageModelLogicAndAttributeData: (
     logicId: number,
     attrId: number
@@ -414,7 +414,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   const manageAccessModelLogicsDeleteCalculate = async (id: number) => {
     try {
       const result = await fetchManageAccessModelLogics(id);
-      return result;
+      return result ?? [];
     } catch (error) {
       console.log(error);
     }
