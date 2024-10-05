@@ -1,8 +1,9 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { io } from "socket.io-client";
 import { useGlobalContext } from "../GlobalContext/GlobalContext";
 import { Message } from "@/types/interfaces/users.interface";
 import axios from "axios";
+import { io } from "socket.io-client";
+
 
 interface SocketContextProps {
     children: ReactNode;
@@ -16,6 +17,7 @@ interface SocketContext {
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   socketMessage: Message[];
   setSocketMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  
 }
 
 const SocketContext = createContext({} as SocketContext);
@@ -29,13 +31,14 @@ export function SocketContextProvider({children}: SocketContextProps) {
     const [socketMessage, setSocketMessages] = useState<Message[]>([]);
     const url = import.meta.env.VITE_API_URL;
     const {user} = useGlobalContext();
-    
-    const socket = io(`${url}`, {
-        query: {
-          key: user
-        }
-      });
 
+    const socket = io(url, {
+        query: {
+            key: user
+        }
+    })
+    
+    
       const handlesendMessage = (data: Message) => {
         socket.emit("sendMessage", data)
       }
@@ -89,7 +92,8 @@ export function SocketContextProvider({children}: SocketContextProps) {
 
     return (
         <SocketContext.Provider value={
-            {handlesendMessage,
+            {
+            handlesendMessage,
             handleDisconnect,
             handleRead,
             messages,
