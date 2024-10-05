@@ -55,16 +55,7 @@ interface IManageAccessModelProps {
 export const columns: ColumnDef<IManageAccessModelsTypes>[] = [
   {
     id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
+
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
@@ -190,7 +181,7 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
   const [rowSelection, setRowSelection] = React.useState({});
   const [pagination, setPagination] = React.useState({
     pageIndex: 0, //initial page index
-    pageSize: 10, //default page size
+    pageSize: 2, //default page size
   });
   const table = useReactTable({
     data,
@@ -225,19 +216,35 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
     });
   };
   const handleDeleteCalculate = async () => {
-    const res = await manageAccessModelLogicsDeleteCalculate(
-      selectedAccessModelItem[0].manage_access_model_id
-    );
-    setWillBeDelete(res as IManageAccessModelLogicExtendTypes[]);
+    const results: IManageAccessModelLogicExtendTypes[] = [];
+
+    try {
+      const deletePromises = selectedAccessModelItem.map((item) =>
+        manageAccessModelLogicsDeleteCalculate(item.manage_access_model_id)
+      );
+
+      const responses = await Promise.all(deletePromises);
+
+      responses.forEach((res) => {
+        if (Array.isArray(res)) {
+          results.push(...res);
+        } else if (res) {
+          results.push(res);
+        }
+      });
+      setWillBeDelete((prev) => [...prev, ...results]);
+    } catch (error) {
+      console.error("Error deleting access model items:", error);
+    }
   };
+
   const handleDelete = async () => {
     await Promise.all(
       await willBeDelete.map(async (item) => {
-        const res = await deleteManageModelLogicAndAttributeData(
+        await deleteManageModelLogicAndAttributeData(
           item.manage_access_model_logic_id,
           item.id
         );
-        console.log(res, item);
       })
     );
     await deleteManageAccessModel(selectedAccessModelItem);
@@ -294,31 +301,43 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription className="text-red-500">
-                    <span>
-                      ACCESS_MODEL_NAME :{" "}
-                      {selectedAccessModelItem[0]?.model_name}{" "}
-                    </span>
-                    {isLoading ? (
-                      <span className="block">
-                        <l-tailspin
-                          size="40"
-                          stroke="5"
-                          speed="0.9"
-                          color="black"
-                        ></l-tailspin>
+                    {selectedAccessModelItem.map((modelItem) => (
+                      <span key={modelItem.manage_access_model_id}>
+                        <span className="capitalize mt-3 font-bold block">
+                          ACCESS_MODEL_NAME : {modelItem.model_name}
+                        </span>
+                        <span>
+                          {isLoading ? (
+                            <span className="block">
+                              <l-tailspin
+                                size="40"
+                                stroke="5"
+                                speed="0.9"
+                                color="black"
+                              ></l-tailspin>
+                            </span>
+                          ) : (
+                            <span>
+                              {willBeDelete
+                                .filter(
+                                  (item) =>
+                                    item.manage_access_model_id ===
+                                    modelItem.manage_access_model_id
+                                )
+                                .map((item, index) => (
+                                  <span
+                                    key={index}
+                                    className="capitalize flex items-center text-red-500"
+                                  >
+                                    {index + 1}. Object - {item.object},
+                                    Attribute - {item.attribute}
+                                  </span>
+                                ))}
+                            </span>
+                          )}
+                        </span>
                       </span>
-                    ) : (
-                      <span>
-                        {willBeDelete.map((item, index) => (
-                          <span
-                            key={index}
-                            className="capitalize flex items-center text-red-500"
-                          >
-                            {index + 1}. {item.object}
-                          </span>
-                        ))}
-                      </span>
-                    )}
+                    ))}
                     <span className="block mt-3 text-neutral-500">
                       This action cannot be undone. This will permanently delete
                       your account and remove your data from our servers.
@@ -388,6 +407,30 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
                               header.column.columnDef.header,
                               header.getContext()
                             )}
+                        {/* Example: Checkbox for selecting all rows */}
+                        {header.id === "select" && (
+                          <Checkbox
+                            checked={
+                              table.getIsAllPageRowsSelected() ||
+                              (table.getIsSomePageRowsSelected() &&
+                                "indeterminate")
+                            }
+                            onCheckedChange={(value) => {
+                              // Toggle all page rows selected
+                              table.toggleAllPageRowsSelected(!!value);
+
+                              // Use a timeout to log the selected data
+                              setTimeout(() => {
+                                const selectedRows = table
+                                  .getSelectedRowModel()
+                                  .rows.map((row) => row.original);
+                                // console.log(selectedRows);
+                                setSelectedAccessModelItem(selectedRows);
+                              }, 0);
+                            }}
+                            aria-label="Select all"
+                          />
+                        )}
                       </TableHead>
                     );
                   })}

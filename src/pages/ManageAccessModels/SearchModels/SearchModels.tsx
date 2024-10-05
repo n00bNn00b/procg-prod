@@ -20,8 +20,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
 const SearchModels = () => {
+  const { users } = useGlobalContext();
   const { searchFilter, fetchManageAccessModels } = useAACContext();
   const FormSchema = z.object({
     match: z.string(),
@@ -44,6 +46,7 @@ const SearchModels = () => {
     console.log(data);
     searchFilter(data);
   }
+  users.map((user) => <h5>{user.user_name}</h5>);
   return (
     <div className="bg-slate-100 px-4">
       <Form {...form}>
@@ -94,8 +97,15 @@ const SearchModels = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
+                        {users.map((user, index) => (
+                          <SelectItem
+                            value={user.user_name}
+                            key={index}
+                            className="capitalize"
+                          >
+                            {user.user_name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
