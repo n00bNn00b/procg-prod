@@ -2,7 +2,6 @@ import {
     Card,
     CardTitle,
   } from "@/components/ui/card";
-import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import axios from "axios";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -10,11 +9,12 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { tailspin } from "ldrs";
 import ReplyDialog from "./ReplyDialog";
 import { Message } from "@/types/interfaces/users.interface";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 tailspin.register();
 
 const SingleMessage = () => {
-    const {messages, setMessages} = useGlobalContext();
+    const {messages, setMessages} = useSocketContext();
     const [isLoading, setIsLoading] = useState(true);
     
     const navigate = useNavigate();

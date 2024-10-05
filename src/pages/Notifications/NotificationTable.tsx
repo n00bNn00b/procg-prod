@@ -21,8 +21,8 @@ import { Message } from "@/types/interfaces/users.interface";
 import axios from "axios";
 import { Check, Trash2, View, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast"
-import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useNavigate } from "react-router-dom";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 
   interface NotificationTableProps {
@@ -33,12 +33,12 @@ import { useNavigate } from "react-router-dom";
   }
 
 const NotificationTable = ({path, person, recievedMessages}: NotificationTableProps) => {
-  const {socketMessage, messages, setMessages, handleRead} = useGlobalContext();
+  const {socketMessage, messages, setMessages, handleRead} = useSocketContext();
   const { toast } = useToast();
   const navigate = useNavigate();
   const url = import.meta.env.VITE_API_URL;
 
-  
+  const displayedMessages = recievedMessages.slice(0, 50);
   
   const uniquMessagesIds = socketMessage.map(msg => (msg.id));
     
@@ -68,9 +68,9 @@ const NotificationTable = ({path, person, recievedMessages}: NotificationTablePr
   }
 
   return (
-    <div className="ml-[11rem] border rounded-md shadow-sm p-4">
+    <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
         <h1 className="text-lg font-bold mb-6 ">{path}</h1>
-        <Table>
+        <Table >
             <TableHeader>
                 <TableRow>
                 <TableHead className="font-bold">{person}</TableHead>
@@ -80,7 +80,7 @@ const NotificationTable = ({path, person, recievedMessages}: NotificationTablePr
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {recievedMessages.map(msg => (
+                {displayedMessages.map(msg => (
                   <TableRow key={msg.id} className={uniquMessagesIds.includes(msg.id) ? "bg-winter-100/30" : "mt-0"}>
                     <TableCell>{msg.sender}</TableCell>
                     <TableCell>
