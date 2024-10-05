@@ -3,9 +3,11 @@ import logo from "@/Image/logo-2.png";
 import { Link, NavLink } from "react-router-dom";
 import Dropdown from "./Dropdown";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 const Topbar = () => {
-  const { open, setOpen, socketMessage } = useGlobalContext();
+  const { open, setOpen } = useGlobalContext();
+  const {socketMessage} = useSocketContext();
 
   const uniquMessages = socketMessage.filter(
     (item, index) =>

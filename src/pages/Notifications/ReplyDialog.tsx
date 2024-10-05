@@ -8,6 +8,7 @@ import {
   } from "@/components/ui/dialog"
 import { useToast } from "@/components/ui/use-toast";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { Message } from "@/types/interfaces/users.interface";
 import { MessageCircleReply, Reply } from "lucide-react"
 import { ChangeEvent, useState } from "react";
@@ -20,7 +21,8 @@ interface ReplyDialogProps {
 }
   
 const ReplyDialog = ({parrentid, involvedUsers, setTotalMessages}: ReplyDialogProps) => {
-  const {token, handlesendMessage, setMessages} = useGlobalContext();
+  const {token} = useGlobalContext();
+  const {handlesendMessage, setMessages} = useSocketContext();
   const { toast } = useToast();
   const [subject, setSubject] = useState<string>('');
   const [body, setBody] = useState<string>('');

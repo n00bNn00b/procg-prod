@@ -19,10 +19,12 @@ import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import ButtonSpinner from "@/components/Spinner/ButtonSpinner";
 import { v4 as uuidv4 } from "uuid"
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 
 const ComposeButton = () => {
-  const { users, token, setMessages, handlesendMessage} = useGlobalContext();
+  const { users, token, user} = useGlobalContext();
+  const {setMessages, handlesendMessage} = useSocketContext()
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
   const [recivers, setRecivers] =useState<string[]>([]);
@@ -37,13 +39,14 @@ const ComposeButton = () => {
 
   const totalusers = [...recivers, sender];
   const uniqueUsers = [...new Set(totalusers)];
+  const actualUsers = users.filter(usr => usr.user_name !== user);
   
 
 const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
   setQuery(e.target.value);
 }
 
-const filterdUser = users.filter((user) => user.user_name.toLowerCase().includes(query.toLowerCase()));
+const filterdUser = actualUsers.filter((user) => user.user_name.toLowerCase().includes(query.toLowerCase()));
 
 const handleReciever = (reciever: string) => {
   if(isAllClicked){

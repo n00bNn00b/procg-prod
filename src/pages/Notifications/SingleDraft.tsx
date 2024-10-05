@@ -17,6 +17,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { tailspin } from "ldrs";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 tailspin.register();
 
@@ -29,7 +30,8 @@ interface Message {
   status: string;
 }
 const SingleDraft = () => {
-  const { users, token, messages, setMessages, handlesendMessage} = useGlobalContext();
+  const { users, token} = useGlobalContext();
+  const {messages, setMessages, handlesendMessage} = useSocketContext();
   const navigate = useNavigate();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;

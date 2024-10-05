@@ -21,8 +21,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { Message } from "@/types/interfaces/users.interface";
 import axios from "axios";
 import { Check, Trash2, View, X } from "lucide-react";
-import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useNavigate } from "react-router-dom";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 interface SentTableProps {
     path: string;
@@ -32,10 +32,13 @@ interface SentTableProps {
   }
 
 const SentTable = ({path, person, sentMessages}: SentTableProps) => {
-  const {messages, setMessages} = useGlobalContext();
+  const {messages, setMessages} = useSocketContext();
   const navigate = useNavigate();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
+
+  const displayedMessages = sentMessages.slice(0, 50);
+
   const handleDelete = async (id: string) => {
     try {
       const response = await axios.delete(`${url}/messages/${id}`);
@@ -62,7 +65,7 @@ const SentTable = ({path, person, sentMessages}: SentTableProps) => {
   }
 
   return (
-    <div className="ml-[11rem] border rounded-md shadow-sm p-4">
+    <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
         <h1 className="text-lg font-bold mb-6 ">{path}</h1>
         <Table>
             <TableHeader>
@@ -74,7 +77,7 @@ const SentTable = ({path, person, sentMessages}: SentTableProps) => {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {sentMessages.map(msg => (
+                {displayedMessages.map(msg => (
                   <TableRow key={msg.id}>
                     <TableCell>{msg.recivers.join(', ')}</TableCell>
                     <TableCell>

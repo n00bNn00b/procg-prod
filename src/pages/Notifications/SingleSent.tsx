@@ -10,11 +10,13 @@ import { Link, useParams } from "react-router-dom";
 import { tailspin } from "ldrs";
 import ReplyDialog from "./ReplyDialog";
 import { Message } from "@/types/interfaces/users.interface";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 tailspin.register();
 
 const SingleSent = () => {
-    const {token, messages, setMessages} = useGlobalContext();
+    const {token} = useGlobalContext();
+    const {messages, setMessages} = useSocketContext();
     const [isLoading, setIsLoading] = useState(true);
     const url = import.meta.env.VITE_API_URL;
     const user = token.user_name;

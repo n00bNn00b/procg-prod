@@ -9,7 +9,6 @@ import axios from "axios";
 import {
   Token,
   Users,
-  Message,
   IAddUserTypes,
   ITenantsTypes,
 } from "@/types/interfaces/users.interface";
@@ -17,10 +16,10 @@ import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { ManageAccessEntitlementsProvider } from "../ManageAccessEntitlements/ManageAccessEntitlementsContext";
-import { io } from "socket.io-client";
 import {
   AACContextProvider,
 } from "../ManageAccessEntitlements/AdvanceAccessControlsContext";
+import { SocketContextProvider } from "../SocketContext/SocketContext";
 
 
 interface GlobalContextProviderProps {
@@ -31,15 +30,9 @@ interface GlobalContex {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   token: Token;
+  user: string;
   setToken: React.Dispatch<React.SetStateAction<Token>>;
   users: Users[];
-  messages: Message[];
-  handlesendMessage: (data: Message) => void;
-  handleDisconnect: () => void;
-  handleRead: (id: string) => void;
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  socketMessage: Message[];
-  setSocketMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   fetchDataSources: () => Promise<IDataSourceTypes[] | undefined>;
   fetchDataSource: (id: number) => Promise<IDataSourceTypes>;
   isLoading: boolean;
@@ -76,57 +69,13 @@ export function GlobalContextProvider({
   });
 
   const [users, setUsers] = useState<Users[]>([]);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [socketMessage, setSocketMessages] = useState<Message[]>([]);
+  
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const url = import.meta.env.VITE_API_URL;
-  const user = token?.user_name;
+  const user = token.user_name;
 
-  const socket = io(`${url}`, {
-    query: {
-      key: user
-    }
-  });
-
-  const handlesendMessage = (data: Message) => {
-    socket.emit("sendMessage", data)
-  }
-
-  const handleDisconnect = () => {
-    socket.disconnect();
-  }
-
-  const handleRead = (id: string) => {
-    socket.emit("read", {id, user})
-  }
-
- useEffect(() => {
-  socket.on("message", (data) => {
-    setSocketMessages((prevArray) => [data, ...prevArray]);
-    setMessages((prev) => [data, ...prev]);
-  });
-
-  socket.on("offlineMessage", (data: Message) => {
-    setSocketMessages((prevArray) => [data, ...prevArray]);
-    const duplicate = messages.find(msg => msg.id === data.id);
-    if(!duplicate) {
-      setMessages((prev) => [data, ...prev]);
-    }
-  })
-
-  socket.on("sync", (id) => {
-    const synedSocketMessages = socketMessage.filter(msg => msg.parentid !== id);
-    setSocketMessages(synedSocketMessages);
-  })
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [socketMessage, messages, socket]);
-  console.log(socketMessage);
-  console.log(messages);
-
-  //Fetch Users
+  
+ //Fetch Users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -140,20 +89,7 @@ export function GlobalContextProvider({
     fetchUsers();
   }, [url]);
 
-  //Fetch Messages
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await axios.get<Message[]>(`${url}/messages`);
-        setMessages(response.data);
-      } catch (error) {
-        console.log(error);
-        return [];
-      }
-    };
-
-    fetchMessages();
-  }, [url]);
+  
 
   //Fetch DataSources
   const fetchDataSources = async () => {
@@ -354,15 +290,9 @@ export function GlobalContextProvider({
         open,
         setOpen,
         token,
+        user,
         setToken,
         users,
-        handlesendMessage,
-        handleDisconnect,
-        handleRead,
-        messages,
-        setMessages,
-        socketMessage,
-        setSocketMessages,
         fetchDataSources,
         fetchDataSource,
         isLoading,
@@ -374,12 +304,14 @@ export function GlobalContextProvider({
         fetchTenants,
       }}
     >
+      <SocketContextProvider>
       <ManageAccessEntitlementsProvider>
         <AACContextProvider>
           <Toaster />
           {children}
         </AACContextProvider>
       </ManageAccessEntitlementsProvider>
+      </SocketContextProvider>
     </GlobalContex.Provider>
   );
 }
