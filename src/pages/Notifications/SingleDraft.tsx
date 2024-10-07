@@ -18,17 +18,11 @@ import { tailspin } from "ldrs";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
+import { Message } from "@/types/interfaces/users.interface";
 
 tailspin.register();
 
-interface Message {
-  sender: string;
-  recivers: string[];
-  subject: string;
-  body: string;
-  date: string;
-  status: string;
-}
+
 const SingleDraft = () => {
   const { users, token} = useGlobalContext();
   const {messages, setMessages, handlesendMessage} = useSocketContext();
@@ -108,7 +102,8 @@ const handleSend = async () => {
     date: new Date(),
     status: "Sent",
     parentid: newID,
-    involvedusers: uniqueUsers
+    involvedusers: uniqueUsers,
+    readers: recivers
   };
   handlesendMessage(data);
   setIsSending(true);

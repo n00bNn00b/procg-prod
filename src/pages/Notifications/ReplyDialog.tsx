@@ -40,7 +40,8 @@ const ReplyDialog = ({parrentid, involvedUsers, setTotalMessages}: ReplyDialogPr
       date: new Date(),
       status: "Sent",
       parentid: parrentid,
-      involvedusers: involvedUsers
+      involvedusers: involvedUsers,
+      readers: recivers
     };
 
     handlesendMessage(data);

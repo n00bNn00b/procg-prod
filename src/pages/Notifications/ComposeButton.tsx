@@ -81,7 +81,8 @@ const handleSend = async () => {
     date: new Date(),
     status: "Sent",
     parentid: id,
-    involvedusers: uniqueUsers
+    involvedusers: uniqueUsers,
+    readers: recivers
   };
   
   handlesendMessage(data);

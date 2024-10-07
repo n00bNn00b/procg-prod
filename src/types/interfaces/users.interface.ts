@@ -28,6 +28,7 @@ export interface Message {
   status: string;
   parentid: string;
   involvedusers: string[];
+  readers?: string[]; 
 }
 export interface IAddUserTypes {
   user_type: string;
