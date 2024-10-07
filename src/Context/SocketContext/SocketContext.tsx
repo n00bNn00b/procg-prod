@@ -57,14 +57,6 @@ export function SocketContextProvider({children}: SocketContextProps) {
         setMessages((prev) => [data, ...prev]);
       });
     
-      socket.on("offlineMessage", (data: Message) => {
-        setSocketMessages((prevArray) => [data, ...prevArray]);
-        const duplicate = messages.find(msg => msg.id === data.id);
-        if(!duplicate) {
-          setMessages((prev) => [data, ...prev]);
-        }
-      })
-    
       socket.on("sync", (id) => {
         const synedSocketMessages = socketMessage.filter(msg => msg.parentid !== id);
         setSocketMessages(synedSocketMessages);
@@ -80,7 +72,13 @@ export function SocketContextProvider({children}: SocketContextProps) {
     const fetchMessages = async () => {
       try {
         const response = await axios.get<Message[]>(`${url}/messages`);
-        setMessages(response.data);
+        const result = response.data;
+        setMessages(result);
+        const recievedMessages = result.filter(message => message.recivers.includes(user));
+        console.log(recievedMessages)
+        const notificationMessages = recievedMessages.filter(msg => msg.readers?.includes(user));
+        console.log(notificationMessages);
+        setSocketMessages(notificationMessages);
       } catch (error) {
         console.log(error);
         return [];
@@ -88,7 +86,9 @@ export function SocketContextProvider({children}: SocketContextProps) {
     };
 
     fetchMessages();
-  }, [url]);
+  }, [url, user]);
+
+  console.log(socketMessage);
 
     return (
         <SocketContext.Provider value={
