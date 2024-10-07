@@ -80,7 +80,7 @@ export const columns: ColumnDef<IManageAccessModelsTypes>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("model_name")}</div>
+      <div className="capitalize">{row.getValue("model_name")}</div>
     ),
   },
   {
@@ -181,7 +181,7 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
   const [rowSelection, setRowSelection] = React.useState({});
   const [pagination, setPagination] = React.useState({
     pageIndex: 0, //initial page index
-    pageSize: 2, //default page size
+    pageSize: 5, //default page size
   });
   const table = useReactTable({
     data,
@@ -289,7 +289,7 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
               >
                 <Trash
                   onClick={handleDeleteCalculate}
-                  className={`${
+                  className={`hover:scale-110 duration-300 ${
                     selectedAccessModelItem.length === 0
                       ? "text-slate-200 cursor-not-allowed"
                       : "text-red-500 cursor-pointer"

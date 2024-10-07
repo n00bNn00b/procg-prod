@@ -38,7 +38,7 @@ const ManageAccessModelUpdate: FC<IManageGlobalConditionProps> = ({ form }) => {
             control={form.control}
             name="description"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="col-span-3">
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Input

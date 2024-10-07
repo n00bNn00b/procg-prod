@@ -9,12 +9,27 @@ import SingleDraft from "@/pages/Notifications/SingleDraft";
 import Tasks from "@/pages/Tasks/Tasks";
 import Home from "@/pages/Home/Home";
 import SingleSent from "@/pages/Notifications/SingleSent";
-import DataSources from "@/pages/ManageDataSources/DataSources";
-import ManageAccessEntitlements from "@/pages/ManageAccessEntitlements/ManageAccessEntitlements";
-import SetupAndAdministration from "@/pages/SetupAndAdministration/SetupAndAdministration";
-import ManageGlobaConditions from "@/pages/ManageGlobalConditions/ManageGlobalConditions";
-import ManageLocalConditions from "@/pages/ManageLocalConditions/ManageLocalConditions";
-import ManageAccessModels from "@/pages/ManageAccessModels/ManageAccessModels";
+import DataSources from "@/pages/Tools/ManageDataSources/DataSources";
+import SetupAndAdministration from "@/pages/Tools/SetupAndAdministration/SetupAndAdministration";
+import ManageGlobaConditions from "@/pages/ManageAdministration/ManageGlobalConditions/ManageGlobalConditions";
+import ManageLocalConditions from "@/pages/ManageAdministration/ManageLocalConditions/ManageLocalConditions";
+import Alerts from "@/pages/Alerts/Alerts";
+import Error from "@/pages/Error/Error";
+import RiskManagement from "@/pages/Finance/RiskManagement/RiskManagement";
+import ControlManagement from "@/pages/Finance/ControlManagement/ControlManagement";
+import IssueManagement from "@/pages/Finance/IssueManagement/IssueManagement";
+import ResultManagement from "@/pages/ContinuousMonitoring/ResultManagement/ResultManagement";
+import ContinuousControlManagement from "@/pages/ContinuousMonitoring/ContinuousControlManagement/ContinuousControlManagement";
+import ManageControls from "@/pages/Controls/ManageControls/ManageControls";
+import CreateAccessModels from "@/pages/AccessModels/CreateAccessModels/CreateAccessModels";
+import CreateAccessGlobalConditions from "@/pages/ManageAdministration/CreateAccessGlobalConditions/CreateAccessGlobalConditions";
+import ManageAccessPathConditions from "@/pages/ManageAdministration/ManageAccessPathConditions/ManageAccessPathConditions";
+import ManageUserDefinedObjects from "@/pages/ManageAdministration/ManageUserDefinedObjects/ManageUserDefinedObjects";
+import ManageCCMJobs from "@/pages/ManageAdministration/ManageCCMJobs/ManageCCMJobs";
+import ManageAccessModels from "@/pages/AccessModels/ManageAccessModels/ManageAccessModels";
+import ManageAccessEntitlements from "@/pages/ManageAdministration/ManageAccessEntitlements/ManageAccessEntitlements";
+import Security from "@/pages/Security/Security";
+import Settings from "@/pages/Settings/Settings";
 
 const routes = createBrowserRouter([
   {
@@ -26,12 +41,24 @@ const routes = createBrowserRouter([
         element: <Home />,
       },
       {
+        path: "alerts",
+        element: <Alerts />,
+      },
+      {
         path: "profile",
         element: <Profile />,
       },
       {
         path: "tasks",
         element: <Tasks />,
+      },
+      {
+        path: "security",
+        element: <Security />,
+      },
+      {
+        path: "settings",
+        element: <Settings />,
       },
 
       {
@@ -64,6 +91,36 @@ const routes = createBrowserRouter([
         ],
       },
       {
+        path: "finance",
+        children: [
+          {
+            path: "risk-management",
+            element: <RiskManagement />,
+          },
+          {
+            path: "control-management",
+            element: <ControlManagement />,
+          },
+          {
+            path: "issue-management",
+            element: <IssueManagement />,
+          },
+        ],
+      },
+      {
+        path: "continuous-monitoring",
+        children: [
+          {
+            path: "continuous-control-management",
+            element: <ContinuousControlManagement />,
+          },
+          {
+            path: "result-management",
+            element: <ResultManagement />,
+          },
+        ],
+      },
+      {
         path: "tools",
         children: [
           {
@@ -74,25 +131,68 @@ const routes = createBrowserRouter([
             path: "datasources",
             element: <DataSources />,
           },
+        ],
+      },
+      {
+        path: "controls",
+        children: [
+          {
+            path: "manage-controls",
+            element: <ManageControls />,
+          },
+        ],
+      },
+      {
+        path: "access-models",
+        children: [
+          {
+            path: "manage-access-models",
+            element: <ManageAccessModels />,
+          },
+          {
+            path: "create-access-model",
+            element: <CreateAccessModels />,
+          },
+        ],
+      },
+      {
+        path: "manage-administration",
+        children: [
           {
             path: "manage-access-entitlements",
             element: <ManageAccessEntitlements />,
           },
           {
-            path: "manage-global-conditions",
+            path: "manage-access-global-conditions",
             element: <ManageGlobaConditions />,
+          },
+          {
+            path: "create-access-global-conditions",
+            element: <CreateAccessGlobalConditions />,
+          },
+          {
+            path: "manage-access-path-conditions",
+            element: <ManageAccessPathConditions />,
+          },
+          {
+            path: "manage-user-defined-objects",
+            element: <ManageUserDefinedObjects />,
+          },
+          {
+            path: "manage-ccm-jobs",
+            element: <ManageCCMJobs />,
           },
           {
             path: "manage-local-conditions",
             element: <ManageLocalConditions />,
           },
-          {
-            path: "manage-access-models",
-            element: <ManageAccessModels />,
-          },
         ],
       },
     ],
+  },
+  {
+    path: "*",
+    element: <Error />,
   },
 ]);
 

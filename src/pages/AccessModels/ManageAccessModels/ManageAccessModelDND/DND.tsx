@@ -296,7 +296,15 @@ const DND: FC<IManageAccessModelDNDProps> = ({
             // console.log("Logic Result:", logicResult);
           })
           .catch((error) => {
-            console.error("Error occurred:", error);
+            if (error.response.status === 408) {
+              toast({
+                title: "Message",
+                variant: "destructive",
+                description: "Name Already Exists.",
+              });
+            } else {
+              console.error("Error occurred:", error);
+            }
           })
           .finally(() => {
             setIsActionLoading(false);
@@ -328,6 +336,7 @@ const DND: FC<IManageAccessModelDNDProps> = ({
             setIsActionLoading(false);
           });
       }
+      // setItems([]);
     } catch (error) {
       console.error("Error saving data:", error);
     }
