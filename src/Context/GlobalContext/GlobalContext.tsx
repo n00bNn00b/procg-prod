@@ -78,20 +78,24 @@ export function GlobalContextProvider({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const [users, person] = await Promise.all([
-          axios.get<Users[]>(`${url}/users`),
-          axios.get<IPersonsTypes>(`${url}/persons/${token?.user_id}`),
-        ]);
-
+        const users = await axios.get<Users[]>(`${url}/users`);
+        if (token?.user_id) {
+          const res = async () => {
+            const person = await axios.get<IPersonsTypes>(
+              `${url}/persons/${token?.user_id}`
+            );
+            setPerson(person?.data);
+          };
+          res();
+        }
         setUsers(users.data);
-        setPerson(person.data);
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchUsers();
-  }, [url]);
+  }, [url, token?.user_id]);
 
   //Fetch DataSources
   const fetchDataSources = async () => {
