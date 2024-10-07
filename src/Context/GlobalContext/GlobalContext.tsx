@@ -11,16 +11,14 @@ import {
   Users,
   IAddUserTypes,
   ITenantsTypes,
+  IPersonsTypes,
 } from "@/types/interfaces/users.interface";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { ManageAccessEntitlementsProvider } from "../ManageAccessEntitlements/ManageAccessEntitlementsContext";
-import {
-  AACContextProvider,
-} from "../ManageAccessEntitlements/AdvanceAccessControlsContext";
+import { AACContextProvider } from "../ManageAccessEntitlements/AdvanceAccessControlsContext";
 import { SocketContextProvider } from "../SocketContext/SocketContext";
-
 
 interface GlobalContextProviderProps {
   children: ReactNode;
@@ -42,6 +40,7 @@ interface GlobalContex {
   deleteDataSource: (id: number) => Promise<void>;
   createUser: (postData: IAddUserTypes) => void;
   fetchTenants: () => Promise<ITenantsTypes[] | undefined>;
+  person: IPersonsTypes | undefined;
 }
 
 const GlobalContex = createContext({} as GlobalContex);
@@ -69,18 +68,23 @@ export function GlobalContextProvider({
   });
 
   const [users, setUsers] = useState<Users[]>([]);
-  
+  const [person, setPerson] = useState<IPersonsTypes>();
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const url = import.meta.env.VITE_API_URL;
   const user = token?.user_name;
 
-  
- //Fetch Users
+  //Fetch Users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get<Users[]>(`${url}/users`);
-        setUsers(response.data);
+        const [users, person] = await Promise.all([
+          axios.get<Users[]>(`${url}/users`),
+          axios.get<IPersonsTypes>(`${url}/persons/${token?.user_id}`),
+        ]);
+
+        setUsers(users.data);
+        setPerson(person.data);
       } catch (error) {
         console.log(error);
       }
@@ -88,8 +92,6 @@ export function GlobalContextProvider({
 
     fetchUsers();
   }, [url]);
-
-  
 
   //Fetch DataSources
   const fetchDataSources = async () => {
@@ -153,7 +155,7 @@ export function GlobalContextProvider({
       });
       // for sync data call fetch data source
       console.log(res.status);
-      if (res.status === 200) {
+      if (res.status === 201) {
         toast({
           title: "Success",
           description: `Data added successfully.`,
@@ -283,7 +285,6 @@ export function GlobalContextProvider({
       setIsLoading(false);
     }
   };
-
   return (
     <GlobalContex.Provider
       value={{
@@ -302,15 +303,16 @@ export function GlobalContextProvider({
         deleteDataSource,
         createUser,
         fetchTenants,
+        person,
       }}
     >
       <SocketContextProvider>
-      <ManageAccessEntitlementsProvider>
-        <AACContextProvider>
-          <Toaster />
-          {children}
-        </AACContextProvider>
-      </ManageAccessEntitlementsProvider>
+        <ManageAccessEntitlementsProvider>
+          <AACContextProvider>
+            <Toaster />
+            {children}
+          </AACContextProvider>
+        </ManageAccessEntitlementsProvider>
       </SocketContextProvider>
     </GlobalContex.Provider>
   );

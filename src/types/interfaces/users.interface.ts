@@ -28,7 +28,7 @@ export interface Message {
   status: string;
   parentid: string;
   involvedusers: string[];
-  readers?: string[]; 
+  readers?: string[];
 }
 export interface IAddUserTypes {
   user_type: string;
@@ -46,4 +46,11 @@ export interface IAddUserTypes {
 export interface ITenantsTypes {
   tenant_id: number;
   tenant_name: string;
+}
+export interface IPersonsTypes {
+  user_id: number;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  job_title: string;
 }

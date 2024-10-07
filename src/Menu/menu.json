@@ -3,25 +3,25 @@
     "submenu": "Finance",
     "submenuIcon": "/sidebar/finance.svg",
     "paths": [
-      "/risk-management",
-      "/control-management",
-      "/issue-management"
+      "/finance/risk-management",
+      "/finance/control-management",
+      "/finance/issue-management"
     ],
     "menuItems": [
       {
         "name": "Risk Management",
         "icon": "sidebar/risk-management.png",
-        "path": "/risk-management"
+        "path": "/finance/risk-management"
       },
       {
         "name": "Control Management",
         "icon": "sidebar/control-management.svg",
-        "path": "/control-management"
+        "path": "/finance/control-management"
       },
       {
         "name": "Issue Management",
         "icon": "sidebar/issue-management.svg",
-        "path": "/issue-management"
+        "path": "/finance/issue-management"
       }
     ]
   },
@@ -29,19 +29,19 @@
     "submenu": "Continuous Monitoring",
     "submenuIcon": "/sidebar/continuous-monitoring.svg",
     "paths": [
-      "/continuous-control-management",
-      "/result-management"
+      "/continuous-monitoring/continuous-control-management",
+      "/continuous-monitoring/result-management"
     ],
     "menuItems": [
       {
         "name": "Continuous Control Management",
         "icon": "sidebar/continuous-control-management.svg",
-        "path": "/continuous-control-management"
+        "path": "/continuous-monitoring/continuous-control-management"
       },
       {
         "name": "Result Management",
         "icon": "sidebar/result-management.svg",
-        "path": "/result-management"
+        "path": "/continuous-monitoring/result-management"
       }
     ]
   },
@@ -49,7 +49,8 @@
     "submenu": "Tools",
     "submenuIcon": "/sidebar/tools.svg",
     "paths": [
-      "/tools/setup-and-administration", "/tools/datasources", "/tools/manage-access-entitlements", "/tools/manage-global-conditions", "/tools/manage-global-conditions", "/tools/manage-local-conditions", "/tools/manage-access-models"
+      "/tools/setup-and-administration",
+      "/tools/datasources"
     ],
     "menuItems": [
       {
@@ -61,26 +62,6 @@
         "name": "Data Sources",
         "icon": "sidebar/setup-and-administration.svg",
         "path": "/tools/datasources"
-      },
-      {
-        "name": "Manage Access Entitlements",
-        "icon": "sidebar/setup-and-administration.svg",
-        "path": "/tools/manage-access-entitlements"
-      },
-      {
-        "name": "Manage Global Conditions",
-        "icon": "sidebar/setup-and-administration.svg",
-        "path": "/tools/manage-global-conditions"
-      },
-      {
-        "name": "Manage Local Conditions",
-        "icon": "sidebar/setup-and-administration.svg",
-        "path": "/tools/manage-local-conditions"
-      },
-      {
-        "name": "Manage Access Models",
-        "icon": "sidebar/setup-and-administration.svg",
-        "path": "/tools/manage-access-models"
       }
     ]
   },
@@ -88,13 +69,13 @@
     "submenu": "Controls",
     "submenuIcon": "/sidebar/controls.png",
     "paths": [
-      "/manage-controls"
+      "/controls/manage-controls"
     ],
     "menuItems": [
       {
         "name": "Manage Controls",
         "icon": "sidebar/manage-controls.png",
-        "path": "/manage-controls"
+        "path": "/controls/manage-controls"
       }
     ]
   },
@@ -102,19 +83,19 @@
     "submenu": "Access Models",
     "submenuIcon": "/sidebar/access-model.png",
     "paths": [
-      "/manage-access-models",
-      "/create-access-model"
+      "/access-models/manage-access-models",
+      "/access-models/create-access-model"
     ],
     "menuItems": [
       {
         "name": "Manage Access Models",
         "icon": "sidebar/manage-access-models.png",
-        "path": "/manage-access-models"
+        "path": "/access-models/manage-access-models"
       },
       {
         "name": "Create Access Model",
         "icon": "sidebar/create-access-model.png",
-        "path": "/create-access-model"
+        "path": "/access-models/create-access-model"
       }
     ]
   },
@@ -122,43 +103,49 @@
     "submenu": "Manage Administration",
     "submenuIcon": "/sidebar/manage-administration.png",
     "paths": [
-      "/manage-access-entitlements",
-      "/manage-access-global-conditions",
-      "/create-access-global-conditions",
-      "/manage-access-path-conditions",
-      "/manage-user-defined-objects",
-      "/manage-ccm-jobs"
+      "/manage-administration/manage-access-entitlements",
+      "/manage-administration/manage-access-global-conditions",
+      "/manage-administration/create-access-global-conditions",
+      "/manage-administration/manage-access-path-conditions",
+      "/manage-administration/manage-user-defined-objects",
+      "/manage-administration/manage-ccm-jobs",
+      "/manage-administration/manage-local-conditions"
     ],
     "menuItems": [
       {
         "name": "Manage Access Entitlements",
         "icon": "sidebar/risk-management.png",
-        "path": "/manage-access-entitlements"
+        "path": "/manage-administration/manage-access-entitlements"
       },
       {
         "name": "Manage Access Global Conditions",
         "icon": "sidebar/continuous-control-management.svg",
-        "path": "/manage-access-global-conditions"
+        "path": "/manage-administration/manage-access-global-conditions"
       },
       {
         "name": "Create Access Global Conditions",
         "icon": "sidebar/result-management.svg",
-        "path": "/create-access-global-conditions"
+        "path": "/manage-administration/create-access-global-conditions"
       },
       {
         "name": "Manage Access Path Conditions",
         "icon": "sidebar/result-management.svg",
-        "path": "/manage-access-path-conditions"
+        "path": "/manage-administration/manage-access-path-conditions"
       },
       {
         "name": "Manage User Defined Objects",
         "icon": "sidebar/result-management.svg",
-        "path": "/manage-user-defined-objects"
+        "path": "/manage-administration/manage-user-defined-objects"
       },
       {
         "name": "Manage CCM Jobs",
         "icon": "sidebar/result-management.svg",
-        "path": "/manage-ccm-jobs"
+        "path": "/manage-administration/manage-ccm-jobs"
+      },
+      {
+        "name": "Manage Local Conditions",
+        "icon": "sidebar/setup-and-administration.svg",
+        "path": "/manage-administration/manage-local-conditions"
       }
     ]
   }

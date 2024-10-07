@@ -19,8 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import UserTypes from "@/pages/SetupAndAdministration/user_type.json";
-import JobTitleTypes from "@/pages/SetupAndAdministration/job_title.json";
+import UserTypes from "@/pages/Tools/SetupAndAdministration/user_type.json";
+import JobTitleTypes from "@/pages/Tools/SetupAndAdministration/job_title.json";
 import {
   IAddUserTypes,
   ITenantsTypes,
@@ -46,7 +46,6 @@ const AddUser = () => {
     };
     fetchTenantsData();
   }, []);
-  console.log(token);
   const FormSchema = z
     .object({
       user_type: z.string(),
@@ -155,7 +154,7 @@ const AddUser = () => {
                         setUserType(value);
                         field.onChange(value);
                       }}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -204,7 +203,7 @@ const AddUser = () => {
                     <Select
                       required
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
