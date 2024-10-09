@@ -69,13 +69,19 @@
     "submenu": "Controls",
     "submenuIcon": "/sidebar/controls.png",
     "paths": [
-      "/controls/manage-controls"
+      "/controls/manage-controls",
+      "/controls/manage-results"
     ],
     "menuItems": [
       {
         "name": "Manage Controls",
         "icon": "sidebar/manage-controls.png",
         "path": "/controls/manage-controls"
+      },
+      {
+        "name": "Manage Results",
+        "icon": "sidebar/manage-controls.png",
+        "path": "/controls/manage-results"
       }
     ]
   },

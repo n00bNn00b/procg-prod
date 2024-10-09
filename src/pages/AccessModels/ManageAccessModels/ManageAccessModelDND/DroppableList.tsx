@@ -43,7 +43,10 @@ const DroppableList: FC<DroppableListProps> = ({
       items={items.map((item) => item.manage_access_model_logic_id)}
       strategy={verticalListSortingStrategy}
     >
-      <div className="flex flex-col gap-2 p-4 " ref={setNodeRef}>
+      <div
+        className="flex flex-col gap-2 p-4 "
+        ref={items.length === 0 ? setNodeRef : null}
+      >
         {items.length === 0 && (
           <p className="text-center font-semibold text-winter-500 p-9">
             Drop here
@@ -97,7 +100,8 @@ export const DroppableItem: FC<DroppableItemProps> = ({
     transition,
   } = useSortable({ id: item.manage_access_model_logic_id });
 
-  const { deleteLogicAndAttributeData } = useAACContext();
+  const { deleteLogicAndAttributeData, setDeleteAndSaveState } =
+    useAACContext();
 
   // const { deleteUser } = useSqliteAuthContext();
 
@@ -133,6 +137,7 @@ export const DroppableItem: FC<DroppableItemProps> = ({
       title: "Message",
       description: "Delete data successfully.",
     });
+    setDeleteAndSaveState((prev) => prev + 1);
   };
 
   const handleChange = (

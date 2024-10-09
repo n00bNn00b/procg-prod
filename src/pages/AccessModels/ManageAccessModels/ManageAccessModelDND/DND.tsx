@@ -343,7 +343,7 @@ const DND: FC<IManageAccessModelDNDProps> = ({
   };
   return (
     <div>
-      <div className="flex justify-between sticky top-0 p-2 bg-slate-300  ">
+      <div className="flex justify-between sticky top-0 p-2 bg-slate-300 z-50 overflow-hidden">
         <h2 className="font-bold">Edit Access Global Conditions</h2>
         <div className="flex gap-2 rounded-lg ">
           {isActionLoading ? (
