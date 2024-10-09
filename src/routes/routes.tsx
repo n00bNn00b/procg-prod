@@ -30,6 +30,7 @@ import ManageAccessModels from "@/pages/AccessModels/ManageAccessModels/ManageAc
 import ManageAccessEntitlements from "@/pages/ManageAdministration/ManageAccessEntitlements/ManageAccessEntitlements";
 import Security from "@/pages/Security/Security";
 import Settings from "@/pages/Settings/Settings";
+import ManageResults from "@/pages/Controls/ManageResults/ManageResults";
 
 const routes = createBrowserRouter([
   {
@@ -139,6 +140,10 @@ const routes = createBrowserRouter([
           {
             path: "manage-controls",
             element: <ManageControls />,
+          },
+          {
+            path: "manage-results",
+            element: <ManageResults />,
           },
         ],
       },

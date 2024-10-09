@@ -297,7 +297,7 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
                 />
               </AlertDialogTrigger>
 
-              <AlertDialogContent>
+              <AlertDialogContent className="overflow-y-auto max-h-[90%]">
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription className="text-red-500">
@@ -344,8 +344,10 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
                     </span>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogFooter className="sticky -bottom-2 right-0 mt-4">
+                  <AlertDialogCancel onClick={() => setWillBeDelete([])}>
+                    Cancel
+                  </AlertDialogCancel>
                   <AlertDialogAction onClick={handleDelete}>
                     Continue
                   </AlertDialogAction>

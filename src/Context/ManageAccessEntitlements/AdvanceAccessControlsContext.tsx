@@ -83,6 +83,8 @@ interface IAACContextTypes {
     attrId: number
   ) => Promise<number | undefined>;
   searchFilter: (data: IManageAccessModelSearchFilterTypes) => Promise<void>;
+  deleteAndSaveState: number;
+  setDeleteAndSaveState: Dispatch<SetStateAction<number>>;
 }
 export const AACContext = createContext<IAACContextTypes | null>(null);
 
@@ -122,6 +124,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   const [manageAccessModels, setManageAccessModels] = useState<
     IManageAccessModelsTypes[]
   >([]);
+  const [deleteAndSaveState, setDeleteAndSaveState] = useState<number>(0);
   // Fetch Manage Global Conditions
   const fetchManageGlobalConditions = async () => {
     try {
@@ -500,6 +503,8 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     manageAccessModelLogicsDeleteCalculate,
     deleteManageModelLogicAndAttributeData,
     searchFilter,
+    deleteAndSaveState,
+    setDeleteAndSaveState,
   };
   return <AACContext.Provider value={value}>{children}</AACContext.Provider>;
 };
