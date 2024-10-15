@@ -68,9 +68,15 @@ const SingleMessage = () => {
 }, [id, url]);
 
 const totalInvolvedUsers = parrentMessage.involvedusers;
+const colors = ["text-[#5D3CA6]", "text-[#BF0436]", "text-[#078C03]", "text-[#040FD9]", "text-[#1B3940]", "text-[#A6495A]", "text-[#305473]", "text-[#0F8C5E]", "text-[#D95829]", "text-[#8C2B2B]"];
 
-  
-  const handleDelete = async () => {
+const getUniqueColor = (user: string) => {
+  const indexOfUser = totalInvolvedUsers.indexOf(user);
+  const realIndex = indexOfUser % colors.length;
+  return `${colors[realIndex]} font-semibold`;
+}
+
+const handleDelete = async () => {
       try {
         const response = await axios.delete(`${url}/messages/${id}`);
         console.log('Resource deleted:', response.data);
@@ -135,21 +141,21 @@ const totalInvolvedUsers = parrentMessage.involvedusers;
                 </button>
                 <ReplyDialog parrentid={parrentMessage.id} involvedUsers={totalInvolvedUsers} setTotalMessages={setTotalMessages}/>
               </div>
-              <CardTitle className="text-blue-600">{`${message.subject}`}</CardTitle>
+              <CardTitle>{`${message.subject}`}</CardTitle>
               <p className="my-4 text-dark-400">{convertDate(message.date)}</p>
               <div className="flex justify-between">
                 <div className="flex flex-col text-dark-400">
-                  <p className="text-blue-600  font-semibold">From</p>
-                  <p>{message.sender}</p>
+                  <p>From</p>
+                  <p className={getUniqueColor(message.sender)}>{message.sender}</p>
                     <img src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
                         alt="img" className="w-10 h-10 rounded-full object-cover object-center"/>
                 </div>
                 <div className="flex flex-col text-dark-400">
-                  <p className="text-blue-600  font-semibold text-right">To</p>
+                  <p className="text-right">To</p>
                   <div className="flex gap-2 max-w-[400px]">
                   {message.recivers.map(rcvr => (
                     <div key={rcvr} className="flex flex-col text-dark-400">
-                    <p>{rcvr}</p>
+                    <p className={getUniqueColor(message.sender)}>{rcvr}</p>
                     <img src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
                         alt="img" className="w-10 h-10 rounded-full object-cover object-center"/>
                     </div>
