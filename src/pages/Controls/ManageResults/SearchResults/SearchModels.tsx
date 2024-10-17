@@ -19,34 +19,32 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
-import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { useControlsContext } from "@/Context/ManageAccessEntitlements/ManageControlsContext";
 
 const SearchModels = () => {
-  const { users } = useGlobalContext();
-  const { searchFilter, fetchManageAccessModels } = useAACContext();
+  const { searchFilter, fetchControls } = useControlsContext();
   const FormSchema = z.object({
     match: z.string(),
-    created_by: z.string(),
-    model_name: z.string(),
-    state: z.string(),
-    last_run_date: z.string(),
+    control_name: z.string(),
+    control_type: z.string(),
+    priority: z.string(),
+    datasources: z.string(),
   });
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       match: "all",
-      created_by: "",
-      model_name: "",
-      state: "",
-      last_run_date: "",
+      control_name: "",
+      control_type: "",
+      priority: "",
+      datasources: "",
     },
   });
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(data);
     searchFilter(data);
   }
-  users.map((user) => <h5>{user.user_name}</h5>);
+
   return (
     <div className="bg-slate-100 px-4">
       <Form {...form}>
@@ -86,42 +84,14 @@ const SearchModels = () => {
 
               <FormField
                 control={form.control}
-                name="created_by"
+                name="control_name"
                 render={({ field }) => (
                   <FormItem className="grid grid-cols-2 gap-2 items-center">
-                    <FormLabel className="mt-2">Created By</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <FormControl className="w-[50%] p-1 h-7 m-0">
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a option" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {users.map((user, index) => (
-                          <SelectItem
-                            value={user.user_name}
-                            key={index}
-                            className="capitalize"
-                          >
-                            {user.user_name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="model_name"
-                render={({ field }) => (
-                  <FormItem className="grid grid-cols-2 gap-2 items-center">
-                    <FormLabel className="mt-2">Model Name</FormLabel>
+                    <FormLabel className="mt-2">Control Name</FormLabel>
                     <FormControl>
                       <Input
                         className="w-[50%] p-1 h-7 "
-                        placeholder="Model Name"
+                        placeholder="Control Name"
                         {...field}
                       />
                     </FormControl>
@@ -132,10 +102,10 @@ const SearchModels = () => {
 
               <FormField
                 control={form.control}
-                name="state"
+                name="control_type"
                 render={({ field }) => (
                   <FormItem className="grid grid-cols-2 gap-2 items-center">
-                    <FormLabel className="mt-2">State</FormLabel>
+                    <FormLabel className="mt-2">Control Type</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl className="w-[50%] p-1 h-7 m-0">
                         <SelectTrigger>
@@ -143,7 +113,7 @@ const SearchModels = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="approved">Approved</SelectItem>
+                        <SelectItem value="access">Approved</SelectItem>
                         <SelectItem value="disapproved">Disapproved</SelectItem>
                       </SelectContent>
                     </Select>
@@ -153,13 +123,30 @@ const SearchModels = () => {
               />
               <FormField
                 control={form.control}
-                name="last_run_date"
+                name="priority"
                 render={({ field }) => (
                   <FormItem className="grid grid-cols-2 gap-2 items-center">
-                    <FormLabel className="mt-2">Last Run Date</FormLabel>
+                    <FormLabel className="mt-2">Priority</FormLabel>
                     <FormControl>
                       <Input
-                        type="date"
+                        type="text"
+                        className="w-[50%] p-1 h-7 "
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="datasources"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-2 gap-2 items-center">
+                    <FormLabel className="mt-2">Datasources</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
                         className="w-[50%] p-1 h-7 "
                         {...field}
                       />
@@ -178,7 +165,7 @@ const SearchModels = () => {
                 type="button"
                 onClick={() => {
                   form.reset();
-                  fetchManageAccessModels();
+                  fetchControls();
                 }}
               >
                 Reset

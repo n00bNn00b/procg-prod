@@ -7,11 +7,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
 import { FC } from "react";
 interface IManageGlobalConditionProps {
   form: any;
 }
 const ManageAccessModelUpdate: FC<IManageGlobalConditionProps> = ({ form }) => {
+  const { dataSources } = useAACContext();
   return (
     <Form {...form}>
       <form>
@@ -38,7 +47,7 @@ const ManageAccessModelUpdate: FC<IManageGlobalConditionProps> = ({ form }) => {
             control={form.control}
             name="description"
             render={({ field }) => (
-              <FormItem className="col-span-3">
+              <FormItem className="col-span-2">
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <Input
@@ -70,31 +79,40 @@ const ManageAccessModelUpdate: FC<IManageGlobalConditionProps> = ({ form }) => {
             )}
           />
 
+           */}
           <FormField
             control={form.control}
-            name="status"
+            name="datasource"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl className="px-1 h-6">
-                    <SelectTrigger>
-                      <SelectValue>
-                        {field.value === "active"
-                          ? "Active"
-                          : "Inactive" || "Select a status"}
-                      </SelectValue>
+                <FormLabel>Datasource</FormLabel>
+                <Select
+                  required
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <FormControl>
+                    <SelectTrigger className="px-1 h-6">
+                      <SelectValue placeholder="Select a option" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
+                    {dataSources.map((data) => (
+                      <SelectItem
+                        key={data.data_source_id}
+                        value={data.datasource_name}
+                      >
+                        {data.datasource_name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+                <FormMessage />
               </FormItem>
             )}
-          /> */}
+          />
         </div>
+        "data sources if resume clear this field (work only data fetching)"
       </form>
     </Form>
   );

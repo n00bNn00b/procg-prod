@@ -1,13 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { IManageAccessModelsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import { IControlsTypes } from "@/types/interfaces/manageControls.interface";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
-const columns: ColumnDef<IManageAccessModelsTypes>[] = [
+const columns: ColumnDef<IControlsTypes>[] = [
   {
     id: "select",
-
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
@@ -19,20 +17,20 @@ const columns: ColumnDef<IManageAccessModelsTypes>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "model_name",
+    accessorKey: "control_name",
     header: ({ column }) => {
       return (
         <div
           className="flex items-center"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Model Name
+          Control Name
           <ArrowUpDown className="ml-2 h-4 w-4 hover:text-slate-800 cursor-pointer" />
         </div>
       );
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("model_name")}</div>
+      <div className="capitalize">{row.getValue("control_name")}</div>
     ),
   },
   {
@@ -43,117 +41,85 @@ const columns: ColumnDef<IManageAccessModelsTypes>[] = [
     ),
   },
   {
-    accessorKey: "type",
-    header: "Type",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("type")}</div>,
-  },
-  {
-    accessorKey: "run_status",
-    header: "Run Status",
+    accessorKey: "pending_results_count",
+    header: "Pending Results Count",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("run_status")}</div>
+      <div className="capitalize">{row.getValue("pending_results_count")}</div>
     ),
   },
   {
-    accessorKey: "last_run_date",
+    accessorKey: "control_type",
+    header: "Control Type",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("control_type")}</div>
+    ),
+  },
+  {
+    accessorKey: "priority",
     header: ({ column }) => {
       return (
         <div
           className="flex items-center"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Last Run Date
+          Priority
           <ArrowUpDown className="ml-2 h-4 w-4 hover:text-slate-800 cursor-pointer" />
         </div>
       );
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("last_run_date")}</div>
+      <div className="capitalize">{row.getValue("priority")}</div>
     ),
   },
   {
-    accessorKey: "created_by",
+    accessorKey: "datasources",
     header: ({ column }) => {
       return (
         <div
           className="flex items-center"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Created By
+          Datasources
           <ArrowUpDown className="ml-2 h-4 w-4 hover:text-slate-800 cursor-pointer" />
         </div>
       );
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("created_by")}</div>
+      <div className="capitalize">{row.getValue("datasources")}</div>
     ),
   },
   {
-    accessorKey: "last_updated_by",
+    accessorKey: "control_last_run",
     header: ({ column }) => {
       return (
         <div
           className="flex items-center"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Last Updated By
+          Control Last Run
           <ArrowUpDown className="ml-2 h-4 w-4 hover:text-slate-800 cursor-pointer" />
         </div>
       );
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("last_updated_by")}</div>
+      <div className="capitalize">{row.getValue("control_last_run")}</div>
     ),
   },
   {
-    accessorKey: "last_updated_date",
+    accessorKey: "control_last_updated",
     header: ({ column }) => {
       return (
         <div
           className="flex items-center"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Last Updated Date
+          Control Last Updated
           <ArrowUpDown className="ml-2 h-4 w-4 hover:text-slate-800 cursor-pointer" />
         </div>
       );
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("last_updated_date")}</div>
-    ),
-  },
-  {
-    accessorKey: "revision",
-    header: ({ column }) => {
-      return (
-        <div
-          className="flex items-center"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Revision
-          <ArrowUpDown className="ml-2 h-4 w-4 hover:text-slate-800 cursor-pointer" />
-        </div>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("revision")}</div>
-    ),
-  },
-  {
-    accessorKey: "revision_date",
-    header: ({ column }) => {
-      return (
-        <div
-          className="flex items-center"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Revision Date
-          <ArrowUpDown className="ml-2 h-4 w-4 hover:text-slate-800 cursor-pointer" />
-        </div>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("revision_date")}</div>
+      <div className="capitalize">{row.getValue("control_last_updated")}</div>
     ),
   },
 ];

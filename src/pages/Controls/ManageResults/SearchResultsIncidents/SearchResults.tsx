@@ -29,27 +29,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IManageAccessModelsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
 import { ring } from "ldrs";
 import Pagination2 from "@/components/Pagination/Pagination2";
 import columns from "./Columns";
-interface IManageAccessModelProps {
-  // items: IManageAccessModelsTypes[];
-}
+import { useControlsContext } from "@/Context/ManageAccessEntitlements/ManageControlsContext";
+import { IControlsTypes } from "@/types/interfaces/manageControls.interface";
 
-const SearchResults: React.FC<IManageAccessModelProps> = () => {
+const SearchResults = () => {
   const {
-    isLoading,
-    setSelectedAccessModelItem,
-    stateChange,
-    fetchManageAccessModels,
-    manageAccessModels: data,
-  } = useAACContext();
+    setSelectedControl,
+    fetchControls,
+    controlsData: data,
+  } = useControlsContext();
+  const { isLoading, stateChange } = useAACContext();
   React.useEffect(() => {
-    fetchManageAccessModels();
+    fetchControls();
     table.getRowModel().rows.map((row) => row.toggleSelected(false));
-    setSelectedAccessModelItem([]);
+    setSelectedControl([]);
   }, [stateChange]);
   // const data = manageAccessModels ? [...manageAccessModels] : [];
   ring.register();
@@ -87,8 +84,8 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
       pagination,
     },
   });
-  const handleRowSelection = (rowData: IManageAccessModelsTypes) => {
-    setSelectedAccessModelItem((prevSelected) => {
+  const handleRowSelection = (rowData: IControlsTypes) => {
+    setSelectedControl((prevSelected) => {
       if (prevSelected.includes(rowData)) {
         // If the id is already selected, remove it
         return prevSelected.filter((selectedId) => selectedId !== rowData);
@@ -102,12 +99,12 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter by model name..."
+          placeholder="Filter by Control name..."
           value={
-            (table.getColumn("model_name")?.getFilterValue() as string) ?? ""
+            (table.getColumn("control_name")?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table.getColumn("model_name")?.setFilterValue(event.target.value)
+            table.getColumn("control_name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm h-8"
         />
@@ -174,7 +171,7 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
                                 .getSelectedRowModel()
                                 .rows.map((row) => row.original);
                               // console.log(selectedRows);
-                              setSelectedAccessModelItem(selectedRows);
+                              setSelectedControl(selectedRows);
                             }, 0);
                           }}
                           aria-label="Select all"

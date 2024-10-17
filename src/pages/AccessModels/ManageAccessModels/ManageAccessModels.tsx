@@ -2,11 +2,16 @@ import { ring } from "ldrs";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import SearchModels from "./SearchModels/SearchModels";
 import SearchResults from "./SearchResults/SearchResults";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessControlsContext";
 
 const ManageAccessModels = () => {
+  const { fetchDataSource } = useAACContext();
   const [isSearchModelsOpen, setIsSearchModelsOpen] = useState(true);
   const [isSearchResultsOpen, setIsSearchResultsOpen] = useState(true);
+  useEffect(() => {
+    fetchDataSource();
+  }, []);
 
   ring.register();
   return (
