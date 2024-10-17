@@ -19,6 +19,8 @@ import {
   useEffect,
   useState,
 } from "react";
+import { ControlsContextProvider } from "./ManageControlsContext";
+import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 interface IAACContextProviderProps {
   children: React.ReactNode;
 }
@@ -85,6 +87,8 @@ interface IAACContextTypes {
   searchFilter: (data: IManageAccessModelSearchFilterTypes) => Promise<void>;
   deleteAndSaveState: number;
   setDeleteAndSaveState: Dispatch<SetStateAction<number>>;
+  fetchDataSource: () => Promise<void>;
+  dataSources: IDataSourceTypes[];
 }
 export const AACContext = createContext<IAACContextTypes | null>(null);
 
@@ -125,6 +129,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     IManageAccessModelsTypes[]
   >([]);
   const [deleteAndSaveState, setDeleteAndSaveState] = useState<number>(0);
+  const [dataSources, setDataSources] = useState<IDataSourceTypes[]>([]);
   // Fetch Manage Global Conditions
   const fetchManageGlobalConditions = async () => {
     try {
@@ -468,7 +473,13 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     setManageAccessModels(filterResult ?? []);
     // return filterResult ?? [];
   };
-
+  const fetchDataSource = async () => {
+    await axios.get<IDataSourceTypes[]>(`${url}/data-sources`).then((res) => {
+      if (res.status === 200) {
+        setDataSources(res.data);
+      }
+    });
+  };
   const value = {
     isLoading,
     setIsLoading,
@@ -505,6 +516,12 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     searchFilter,
     deleteAndSaveState,
     setDeleteAndSaveState,
+    fetchDataSource,
+    dataSources,
   };
-  return <AACContext.Provider value={value}>{children}</AACContext.Provider>;
+  return (
+    <AACContext.Provider value={value}>
+      <ControlsContextProvider>{children}</ControlsContextProvider>
+    </AACContext.Provider>
+  );
 };
