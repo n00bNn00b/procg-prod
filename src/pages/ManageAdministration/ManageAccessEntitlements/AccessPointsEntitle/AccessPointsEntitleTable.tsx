@@ -1,5 +1,4 @@
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -10,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, Check, ChevronDown, X } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -26,13 +25,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
-import {
-  ICreateAccessPointsElementTypes,
-  IFetchAccessPointsElementTypes,
-} from "@/types/interfaces/ManageAccessEntitlements.interface";
+import { useEffect, useState } from "react";
+import { ICreateAccessPointsElementTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
-import Pagination from "@/components/Pagination/Pagination";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,8 +39,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
+import columns from "./Columns";
 import { Button } from "@/components/ui/button";
+import Pagination2 from "@/components/Pagination/Pagination2";
 
 const AccessPointsEntitleTable = () => {
   const {
@@ -54,106 +50,21 @@ const AccessPointsEntitleTable = () => {
     isOpenModal,
     setIsOpenModal,
     selectedManageAccessEntitlements,
-    deleteAccessPointsElement,
     fetchAccessPointsEntitlement,
+    selected,
+    save2,
+    deleteAccessEntitlementElement,
   } = useManageAccessEntitlementsContext();
+
   const [selectedRow, setSelectedRow] = useState<
     ICreateAccessPointsElementTypes[]
   >([]);
   console.log(selectedRow);
-  const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="py-1"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
+  const [pagination, setPagination] = useState({
+    pageIndex: 0, //initial page index
+    pageSize: 4, //default page size
+  });
 
-    {
-      accessorKey: "element_name",
-      header: ({ column }) => {
-        return (
-          <div
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Element Name
-            <ArrowUpDown className="ml-2 h-4 w-4 inline-block" />
-          </div>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="lowercase">{row.getValue("element_name")}</div>
-      ),
-    },
-    {
-      accessorKey: "description",
-      header: "Description",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("description")}</div>
-      ),
-    },
-    {
-      accessorKey: "datasource",
-      header: "Datasource",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("datasource")}</div>
-      ),
-    },
-    {
-      accessorKey: "platform",
-      header: "Platform",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("platform")}</div>
-      ),
-    },
-    {
-      accessorKey: "element_type",
-      header: "Element Type",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("element_type")}</div>
-      ),
-    },
-    {
-      accessorKey: "access_control",
-      header: "Access Control",
-      cell: ({ row }) => (
-        <div className="capitalize">
-          {row.getValue("access_control") === "true" ? <Check /> : <X />}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "change_control",
-      header: "Change Control",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("change_control")}</div>
-      ),
-    },
-    {
-      accessorKey: "audit",
-      header: "Audit",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("audit")}</div>
-      ),
-    },
-  ];
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -170,11 +81,13 @@ const AccessPointsEntitleTable = () => {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination,
     },
   });
   const handleRowSelected = (rowData: ICreateAccessPointsElementTypes) => {
@@ -186,14 +99,29 @@ const AccessPointsEntitleTable = () => {
       }
     });
   };
+  useEffect(() => {
+    if (selected) {
+      fetchAccessPointsEntitlement(selected[0]);
+    }
+  }, [save2]);
+  console.log(selectedRow, "selectedRow");
   const handleDelete = async () => {
-    const res = await deleteAccessPointsElement(selectedRow[0]?.id || 0);
-    table.getRowModel().rows.map((row) => row.toggleSelected(false));
-
-    if (res === 200) {
-      if (selectedManageAccessEntitlements) {
-        fetchAccessPointsEntitlement(selectedManageAccessEntitlements);
+    if (selectedRow.length > 0) {
+      // const res = await deleteAccessPointsElement(
+      //   selectedRow[0]?.access_point_id || 0
+      // );
+      for (const element of selectedRow) {
+        deleteAccessEntitlementElement(
+          selected[0]?.entitlement_id || 0,
+          element?.access_point_id || 0
+        );
       }
+
+      table.getRowModel().rows.map((row) => row.toggleSelected(false));
+      setSelectedRow([]);
+      // if (selectedManageAccessEntitlements) {
+      //   fetchAccessPointsEntitlement(selectedManageAccessEntitlements);
+      // }
     }
   };
   console.log(selectedManageAccessEntitlements);
@@ -223,9 +151,8 @@ const AccessPointsEntitleTable = () => {
               <AlertDialog>
                 <AlertDialogTrigger
                   className={`${
-                    selectedRow.length > 1 ? "text-slate-300" : "text-slate-800"
+                    selectedRow.length < 1 ? "text-slate-300" : "text-slate-800"
                   } `}
-                  disabled={selectedRow.length > 1}
                 >
                   Delete
                 </AlertDialogTrigger>
@@ -300,6 +227,31 @@ const AccessPointsEntitleTable = () => {
                               header.column.columnDef.header,
                               header.getContext()
                             )}
+                        {/* Example: Checkbox for selecting all rows */}
+                        {header.id === "select" && (
+                          <Checkbox
+                            checked={
+                              table.getIsAllPageRowsSelected() ||
+                              (table.getIsSomePageRowsSelected() &&
+                                "indeterminate")
+                            }
+                            onCheckedChange={(value) => {
+                              // Toggle all page rows selected
+                              table.toggleAllPageRowsSelected(!!value);
+
+                              // Use a timeout to log the selected data
+                              setTimeout(() => {
+                                const selectedRows = table
+                                  .getSelectedRowModel()
+                                  .rows.map((row) => row.original);
+                                // console.log(selectedRows);
+                                setSelectedRow(selectedRows);
+                              }, 0);
+                            }}
+                            className=""
+                            aria-label="Select all"
+                          />
+                        )}
                       </TableHead>
                     );
                   })}
@@ -331,7 +283,7 @@ const AccessPointsEntitleTable = () => {
                       <TableCell key={cell.id} className="border p-1 w-fit">
                         {index === 0 ? (
                           <Checkbox
-                            className="m-1"
+                            className=" "
                             checked={row.getIsSelected() || false} // Ensure checked is always a boolean
                             onCheckedChange={(value) =>
                               row.toggleSelected(!!value)
@@ -374,7 +326,9 @@ const AccessPointsEntitleTable = () => {
               )}
             </TableBody>
           </Table>
-          <Pagination table={table} />
+          <div className=" pt-2">
+            <Pagination2 table={table} />
+          </div>
         </div>
       </div>
     </div>

@@ -9,7 +9,10 @@ import { ChevronDown } from "lucide-react";
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { AlertDialogCancel } from "../ui/alert-dialog";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
+import {
+  IDataSourcePostTypes,
+  IDataSourceTypes,
+} from "@/types/interfaces/datasource.interface";
 
 interface IDataSourceAddDataTypes {
   props: string;
@@ -21,7 +24,6 @@ interface IDataSourceAddDataTypes {
 }
 const DataSourceDataAdd: FC<IDataSourceAddDataTypes> = ({
   props,
-  maxID = 0,
   selected,
   editAble,
   setSave,
@@ -88,23 +90,12 @@ const DataSourceDataAdd: FC<IDataSourceAddDataTypes> = ({
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     setRowSelection({});
-    const time = new Date().toLocaleTimeString();
-    const currentDate = new Date().toLocaleDateString();
-    const date = `${currentDate}, ${time}`;
-    const postData: IDataSourceTypes = {
-      data_source_id:
-        props === "add"
-          ? maxID + 1
-          : props === "update"
-          ? selected[0].data_source_id
-          : 0,
+    const postData: IDataSourcePostTypes = {
       datasource_name: data.datasource_name,
       description: data.description,
       application_type: "EBS",
       application_type_version: "R12",
-      last_access_synchronization_date: date,
       last_access_synchronization_status: "COMPLETED",
-      last_transaction_synchronization_date: date,
       last_transaction_synchronization_status: "COMPLETED",
       default_datasource: data.default_datasource,
     };

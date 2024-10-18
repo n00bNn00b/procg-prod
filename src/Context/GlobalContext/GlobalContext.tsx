@@ -13,7 +13,10 @@ import {
   ITenantsTypes,
   IPersonsTypes,
 } from "@/types/interfaces/users.interface";
-import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
+import {
+  IDataSourcePostTypes,
+  IDataSourceTypes,
+} from "@/types/interfaces/datasource.interface";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { ManageAccessEntitlementsProvider } from "../ManageAccessEntitlements/ManageAccessEntitlementsContext";
@@ -35,8 +38,11 @@ interface GlobalContex {
   fetchDataSource: (id: number) => Promise<IDataSourceTypes>;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  createDataSource: (postData: IDataSourceTypes) => Promise<void>;
-  updateDataSource: (id: number, postData: IDataSourceTypes) => Promise<void>;
+  createDataSource: (postData: IDataSourcePostTypes) => Promise<void>;
+  updateDataSource: (
+    id: number,
+    postData: IDataSourcePostTypes
+  ) => Promise<void>;
   deleteDataSource: (id: number) => Promise<void>;
   createUser: (postData: IAddUserTypes) => void;
   fetchTenants: () => Promise<ITenantsTypes[] | undefined>;
@@ -131,29 +137,23 @@ export function GlobalContextProvider({
     }
   };
   // Create Data Source
-  const createDataSource = async (postData: IDataSourceTypes) => {
+  const createDataSource = async (postData: IDataSourcePostTypes) => {
     const {
-      data_source_id,
       datasource_name,
       description,
       application_type,
       application_type_version,
-      last_access_synchronization_date,
       last_access_synchronization_status,
-      last_transaction_synchronization_date,
       last_transaction_synchronization_status,
       default_datasource,
     } = postData;
     try {
       const res = await axios.post<IDataSourceTypes>(`${url}/data-sources`, {
-        data_source_id,
         datasource_name,
         description,
         application_type,
         application_type_version,
-        last_access_synchronization_date,
         last_access_synchronization_status,
-        last_transaction_synchronization_date,
         last_transaction_synchronization_status,
         default_datasource,
       });
@@ -166,7 +166,7 @@ export function GlobalContextProvider({
         });
       }
     } catch (error: any) {
-      if (error.response.status) {
+      if (error.response.status === 408) {
         toast({
           title: "Info !!!",
           description: `Can't add data already exist !.`,
@@ -176,9 +176,12 @@ export function GlobalContextProvider({
     }
   };
   // Update Data Source
-  const updateDataSource = async (id: number, postData: IDataSourceTypes) => {
+  const updateDataSource = async (
+    id: number,
+    postData: IDataSourcePostTypes
+  ) => {
     try {
-      const res = await axios.put<IDataSourceTypes>(
+      const res = await axios.put<IDataSourcePostTypes>(
         `${url}/data-sources/${id}`,
         {
           data_source_id: id,
@@ -186,12 +189,8 @@ export function GlobalContextProvider({
           description: postData.description,
           application_type: postData.application_type,
           application_type_version: postData.application_type_version,
-          last_access_synchronization_date:
-            postData.last_access_synchronization_date,
           last_access_synchronization_status:
             postData.last_access_synchronization_status,
-          last_transaction_synchronization_date:
-            postData.last_transaction_synchronization_date,
           last_transaction_synchronization_status:
             postData.last_transaction_synchronization_status,
           default_datasource: postData.default_datasource,
@@ -205,7 +204,7 @@ export function GlobalContextProvider({
         });
       }
     } catch (error: any) {
-      if (error.response.status) {
+      if (error.response.status == 408) {
         toast({
           title: "Info !!!",
           description: `Can't change data already exist !.`,

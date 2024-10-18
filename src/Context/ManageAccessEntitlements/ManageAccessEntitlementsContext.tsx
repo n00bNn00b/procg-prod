@@ -2,6 +2,7 @@ import { toast } from "@/components/ui/use-toast";
 import {
   ICreateAccessPointsElementTypes,
   IFetchAccessPointsElementTypes,
+  IFetchAccessPointsEntitlementElementsTypes,
   IManageAccessEntitlementsTypes,
 } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import axios from "axios";
@@ -35,7 +36,6 @@ interface IContextTypes {
   createAccessPointsEntitlement: (
     postData: ICreateAccessPointsElementTypes
   ) => Promise<number | undefined>;
-  accessPointsEntitleMaxId: number | undefined;
   editManageAccessEntitlement: boolean;
   setEditManageAccessEntitlement: Dispatch<SetStateAction<boolean>>;
   mangeAccessEntitlementAction: string;
@@ -50,9 +50,16 @@ interface IContextTypes {
   deleteManageAccessEntitlement: (id: number) => Promise<void>;
   save: number;
   setSave: Dispatch<SetStateAction<number>>;
+  save2: number;
+  setSave2: Dispatch<SetStateAction<number>>;
   table: any;
   setTable: Dispatch<React.SetStateAction<any>>;
   deleteAccessPointsElement: (id: number) => Promise<number | undefined>;
+  createAccessEntitlementElements: (entitlement_id: number) => Promise<void>;
+  deleteAccessEntitlementElement: (
+    entitlementId: number,
+    accessPointId: number
+  ) => Promise<void>;
 }
 export const ManageAccessEntitlements = createContext<IContextTypes | null>(
   null
@@ -76,9 +83,6 @@ export const ManageAccessEntitlementsProvider = ({
     IFetchAccessPointsElementTypes[]
   >([]);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
-  const [accessPointsEntitleMaxId, setAccessPointsEntitleMaxId] = useState<
-    number | undefined
-  >();
 
   const [
     selectedManageAccessEntitlements,
@@ -91,6 +95,7 @@ export const ManageAccessEntitlementsProvider = ({
   const [manageAccessEntitlementsMaxId, setManageAccessEntitlementsMaxId] =
     useState<number | undefined>(undefined);
   const [save, setSave] = useState<number>(0);
+  const [save2, setSave2] = useState<number>(0);
   const [table, setTable] = useState();
   //Fetch Manage Access Entitlements
   const fetchManageAccessEntitlements = async () => {
@@ -111,30 +116,42 @@ export const ManageAccessEntitlementsProvider = ({
       setIsLoading(false);
     }
   };
+  console.log(selected, "selected");
   // Fetch Access Points Entitlement
   const fetchAccessPointsEntitlement = async (
     fetchData: IManageAccessEntitlementsTypes
   ) => {
     setIsLoading(true);
     try {
-      const response = await axios.get<IFetchAccessPointsElementTypes[]>(
-        `${url}/access-points-element`
-      );
-      const sortingData = response.data.sort((a, b) => b?.id - a?.id);
-
-      const filterData = sortingData.filter(
-        (data) => data.entitlement_id === fetchData.entitlement_id
-      );
-      if (filterData.length > 0) {
-        setFilteredData(filterData);
-        setAccessPointsEntitleMaxId(
-          Math.max(...filterData.map((item) => item.id))
+      if (fetchData) {
+        const response = await axios.get<
+          IFetchAccessPointsEntitlementElementsTypes[]
+        >(`${url}/access-entitlement-elements/${fetchData.entitlement_id}`);
+        const accessPointsId = response.data.map(
+          (data) => data.access_point_id
         );
-      } else {
-        setFilteredData([]);
+        console.log(accessPointsId, "accessPointsId");
+
+        //fetch access points data
+        const accessPointsData = await Promise.all(
+          accessPointsId.map(async (id) => {
+            const response = await axios.get<IFetchAccessPointsElementTypes>(
+              `${url}/access-points-element/${id}`
+            );
+            return response.data;
+          })
+        );
+        if (accessPointsData.length > 0) {
+          const sortingData = accessPointsData.sort(
+            (a, b) => b?.access_point_id - a?.access_point_id
+          );
+          setFilteredData(sortingData);
+        } else {
+          setFilteredData([]);
+        }
       }
-    } catch (error) {
-      console.error("Error fetching access points entitlement:", error);
+    } catch (error: any) {
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -258,6 +275,19 @@ export const ManageAccessEntitlementsProvider = ({
   };
   const deleteManageAccessEntitlement = async (id: number) => {
     try {
+      //fetch access entitlements
+      const response = await axios.get(
+        `${url}/access-entitlement-elements/${id}`
+      );
+      console.log(response.data, "response");
+      if (response.data.length > 0) {
+        for (const element of response.data) {
+          await deleteAccessEntitlementElement(
+            element.entitlement_id,
+            element.access_point_id
+          );
+        }
+      }
       const res = await axios.delete(`${url}/manage-access-entitlements/${id}`);
       if (res.status === 200) {
         toast({
@@ -271,11 +301,10 @@ export const ManageAccessEntitlementsProvider = ({
     }
   };
   // create access-points-element
-  const createAccessPointsElement = async (
+  const createAccessPointsEntitlement = async (
     postData: ICreateAccessPointsElementTypes
   ) => {
     const {
-      entitlement_id,
       element_name,
       description,
       datasource,
@@ -286,10 +315,10 @@ export const ManageAccessEntitlementsProvider = ({
       audit,
     } = postData;
     try {
+      setIsLoading(true);
       const res = await axios.post<ICreateAccessPointsElementTypes>(
         `${url}/access-points-element`,
         {
-          entitlement_id,
           element_name,
           description,
           datasource,
@@ -306,6 +335,7 @@ export const ManageAccessEntitlementsProvider = ({
           title: "Success",
           description: `Add successfully.`,
         });
+        setSave2((prevSave) => prevSave + 1);
       }
       return res.status;
     } catch (error: any) {
@@ -318,6 +348,7 @@ export const ManageAccessEntitlementsProvider = ({
       console.log(error);
     } finally {
       setIsLoading(false);
+      setSave2((prevSave) => prevSave + 1);
     }
   };
   // delete access-points-element
@@ -336,6 +367,58 @@ export const ManageAccessEntitlementsProvider = ({
       console.log(error);
     }
   };
+  //create access entitlement elements
+  const createAccessEntitlementElements = async (entitlement_id: number) => {
+    //get max access point id
+    const res = await axios.get(`${url}/access-points-element`);
+    const accessPointsMaxId =
+      res.data.length > 0
+        ? Math.max(
+            ...res.data.map(
+              (data: IFetchAccessPointsElementTypes) => data.access_point_id
+            )
+          )
+        : 1;
+    console.log(
+      entitlement_id,
+      accessPointsMaxId,
+      "entitlement_id,accessPointsMaxId"
+    );
+    //post data
+    await axios
+      .post<IFetchAccessPointsEntitlementElementsTypes>(
+        `${url}/access-entitlement-elements`,
+        {
+          entitlement_id: entitlement_id,
+          access_point_id: accessPointsMaxId,
+        }
+      )
+      .catch((error) => {
+        console.log(error);
+      });
+    fetchAccessPointsEntitlement(selected[0]);
+  };
+  const deleteAccessEntitlementElement = async (
+    entitlementId: number,
+    accessPointId: number
+  ) => {
+    await Promise.all([
+      await axios
+        .delete(`${url}/access-entitlement-elements`, {
+          data: { entitlementId, accessPointId },
+        })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          fetchAccessPointsEntitlement(selected[0]);
+        }),
+      await axios.delete(`${url}/access-points-element/${accessPointId}`),
+    ]);
+  };
   const value = {
     fetchManageAccessEntitlements,
     setSelected,
@@ -347,8 +430,7 @@ export const ManageAccessEntitlementsProvider = ({
     setIsOpenModal,
     selectedManageAccessEntitlements,
     setSelectedManageAccessEntitlements,
-    createAccessPointsEntitlement: createAccessPointsElement,
-    accessPointsEntitleMaxId,
+    createAccessPointsEntitlement,
     editManageAccessEntitlement,
     setEditManageAccessEntitlement,
     mangeAccessEntitlementAction,
@@ -358,9 +440,13 @@ export const ManageAccessEntitlementsProvider = ({
     deleteManageAccessEntitlement,
     save,
     setSave,
+    save2,
+    setSave2,
     table,
     setTable,
     deleteAccessPointsElement,
+    createAccessEntitlementElements,
+    deleteAccessEntitlementElement,
   };
 
   return (
