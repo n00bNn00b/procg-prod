@@ -15,7 +15,6 @@ const ManageAccessEntitlements = () => {
     selectedManageAccessEntitlements: selectedItem,
     mangeAccessEntitlementAction,
   } = useManageAccessEntitlementsContext();
-  console.log(selectedItem);
   return (
     <div>
       <ManageAccessEntitlementsTable />
@@ -49,7 +48,9 @@ const ManageAccessEntitlements = () => {
             <div className="flex justify-between p-2 bg-slate-300 rounded-t-lg">
               <h2 className="text-lg font-bold">Create Access Points</h2>
               <X
-                onClick={() => setIsOpenModal(false)}
+                onClick={() => {
+                  setIsOpenModal(false);
+                }}
                 className="cursor-pointer"
               />
             </div>

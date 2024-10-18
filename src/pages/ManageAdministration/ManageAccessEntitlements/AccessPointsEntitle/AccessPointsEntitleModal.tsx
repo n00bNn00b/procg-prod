@@ -25,8 +25,7 @@ const AccessPointsEntitleModal = () => {
     selectedManageAccessEntitlements,
     createAccessPointsEntitlement,
     isLoading,
-    fetchAccessPointsEntitlement,
-    setIsOpenModal,
+    createAccessEntitlementElements,
   } = useManageAccessEntitlementsContext();
   const FormSchema = z.object({
     element_name: z.string(),
@@ -54,9 +53,6 @@ const AccessPointsEntitleModal = () => {
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const postData = {
-      entitlement_id: selectedManageAccessEntitlements?.entitlement_id
-        ? selectedManageAccessEntitlements.entitlement_id
-        : 0,
       element_name: data.element_name,
       description: data.description,
       datasource: data.datasource,
@@ -67,15 +63,25 @@ const AccessPointsEntitleModal = () => {
       audit: data.audit,
     };
     const postAccessPointsElement = async () => {
-      const res = await createAccessPointsEntitlement(postData);
-      if (res === 201) {
-        if (selectedManageAccessEntitlements) {
-          fetchAccessPointsEntitlement(selectedManageAccessEntitlements);
-        }
-      }
+      await createAccessPointsEntitlement(postData)
+        .then((res) => {
+          if (res === 201) {
+            createAccessEntitlementElements(
+              selectedManageAccessEntitlements?.entitlement_id
+                ? selectedManageAccessEntitlements.entitlement_id
+                : 0
+            );
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          form.reset();
+          // await fetchAccessPointsEntitlement(selected[0]);
+        });
     };
     postAccessPointsElement();
-    setIsOpenModal(false);
   }
   ring.register();
   return (
@@ -153,7 +159,11 @@ const AccessPointsEntitleModal = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Access Control</FormLabel>
-                <Select required onValueChange={field.onChange}>
+                <Select
+                  required
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a option" />

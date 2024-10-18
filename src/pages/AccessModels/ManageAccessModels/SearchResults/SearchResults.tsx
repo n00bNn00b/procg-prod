@@ -49,6 +49,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ring } from "ldrs";
+import Pagination from "@/components/Pagination/Pagination";
 interface IManageAccessModelProps {
   // items: IManageAccessModelsTypes[];
 }
@@ -430,6 +431,7 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
                                 setSelectedAccessModelItem(selectedRows);
                               }, 0);
                             }}
+                            className="m-1"
                             aria-label="Select all"
                           />
                         )}
@@ -509,30 +511,7 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
           </Table>
         </div>
         {/* Start Pagination */}
-        <div className="flex items-center justify-end space-x-2 pt-2">
-          <div className="flex-1 text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
-          <div className="space-x-2 ">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+        <Pagination table={table} />
       </div>
     </div>
   );

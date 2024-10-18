@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -27,14 +26,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  ChevronDown,
-  FileEdit,
-  Filter,
-  Plus,
-  Trash,
-} from "lucide-react";
+import { ChevronDown, Dot, FileEdit, Filter, Plus, Trash } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -52,10 +44,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import Pagination from "@/components/Pagination/Pagination";
 import { IManageAccessEntitlementsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
-
+import Pagination2 from "@/components/Pagination/Pagination2";
+import columns from "./Columns";
 const ManageAccessEntitlementsTable = () => {
   const {
     fetchManageAccessEntitlements,
@@ -68,10 +60,10 @@ const ManageAccessEntitlementsTable = () => {
     setMangeAccessEntitlementAction,
     deleteManageAccessEntitlement,
     setTable,
+    filteredData,
   } = useManageAccessEntitlementsContext();
   const [data, setData] = React.useState<IManageAccessEntitlementsTypes[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  // const [save, setSave] = React.useState<number>(0);
   // Fetch Data
   React.useEffect(() => {
     // setSelected([]);
@@ -104,7 +96,6 @@ const ManageAccessEntitlementsTable = () => {
     pageSize: 5, //default page size
   });
 
-  const [isChecked, setIsChecked] = React.useState<boolean>(false);
   // select row
   const handleRowSelection = (rowData: IManageAccessEntitlementsTypes) => {
     setSelected((prevSelected) => {
@@ -120,134 +111,8 @@ const ManageAccessEntitlementsTable = () => {
   const handleFetchAccessPoints = () => {
     fetchAccessPointsEntitlement(selected[0]);
     setSelectedManageAccessEntitlements(selected[0]);
-    console.log(selected[0].entitlement_id, "test now");
   };
 
-  const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
-    {
-      id: "select",
-      header: ({ table }) => {
-        return (
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) => {
-              table.toggleAllPageRowsSelected(!!value);
-              setIsChecked(!isChecked);
-            }}
-            aria-label="Select all"
-            className="pl-1 m-1"
-          />
-        );
-      },
-      // cell: ({ row }) => (
-      //   <Checkbox
-      //     checked={row.getIsSelected()}
-      //     // onClick={() => handleRowSelection(row.original)}
-      //     onCheckedChange={(value) => row.toggleSelected(!!value)}
-      //     aria-label="Select row"
-      //   />
-      // ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
-      accessorKey: "entitlement_id",
-      header: "Entitlement ID",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("entitlement_id")}</div>
-      ),
-    },
-    {
-      accessorKey: "entitlement_name",
-      header: ({ column }) => {
-        return (
-          <div
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            * Entitlement Name{" "}
-            <ArrowUpDown className="ml-2 h-4 w-4 cursor-pointer inline-block" />
-          </div>
-        );
-      },
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("entitlement_name")}</div>
-      ),
-    },
-    {
-      accessorKey: "description",
-      header: "Description",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("description")}</div>
-      ),
-    },
-    {
-      accessorKey: "comments",
-      header: "Comments",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("comments")}</div>
-      ),
-    },
-    {
-      accessorKey: "status",
-      header: "*Status",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("status")}</div>
-      ),
-    },
-    {
-      accessorKey: "effective_date",
-      header: "Effective Date",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("effective_date")}</div>
-      ),
-    },
-    {
-      accessorKey: "revison",
-      header: "Revison",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("revison")}</div>
-      ),
-    },
-    {
-      accessorKey: "revision_date",
-      header: "Revision Date",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("revision_date")}</div>
-      ),
-    },
-    {
-      accessorKey: "created_on",
-      header: "Created On",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("created_on")}</div>
-      ),
-    },
-    {
-      accessorKey: "last_updated_on",
-      header: "Last Updated On",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("last_updated_on")}</div>
-      ),
-    },
-    {
-      accessorKey: "last_updated_by",
-      header: "Last Updated By",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("last_updated_by")}</div>
-      ),
-    },
-    {
-      accessorKey: "created_by",
-      header: "Created By",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("created_by")}</div>
-      ),
-    },
-  ];
-  //
   const table = useReactTable({
     data,
     columns,
@@ -270,7 +135,9 @@ const ManageAccessEntitlementsTable = () => {
     },
   });
   const handleDelete = async () => {
-    deleteManageAccessEntitlement(selected[0].entitlement_id);
+    for (const element of selected) {
+      await deleteManageAccessEntitlement(element.entitlement_id);
+    }
     table.getRowModel().rows.map((row) => row.toggleSelected(false));
     setSelected([]);
   };
@@ -329,6 +196,7 @@ const ManageAccessEntitlementsTable = () => {
                         ? "text-slate-200 cursor-not-allowed"
                         : "text-red-500 cursor-pointer"
                     }`}
+                    onClick={handleFetchAccessPoints}
                   />
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -337,6 +205,29 @@ const ManageAccessEntitlementsTable = () => {
                       Are you absolutely sure?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
+                      <span className="block">
+                        {selected.map((item) => (
+                          <span
+                            className="block text-red-500"
+                            key={item.entitlement_id}
+                          >
+                            <span className="block font-bold">
+                              {item.entitlement_name}
+                            </span>
+                            <span>
+                              {filteredData.map((item) => (
+                                <span
+                                  className=" flex items-center"
+                                  key={item.access_point_id}
+                                >
+                                  <Dot />
+                                  {item.element_name}
+                                </span>
+                              ))}
+                            </span>
+                          </span>
+                        ))}
+                      </span>
                       This action cannot be undone. This will permanently delete
                       your account and remove your data from our servers.
                     </AlertDialogDescription>
@@ -411,6 +302,29 @@ const ManageAccessEntitlementsTable = () => {
                             header.column.columnDef.header,
                             header.getContext()
                           )}
+                      {/* Example: Checkbox for selecting all rows */}
+                      {header.id === "select" && (
+                        <Checkbox
+                          checked={
+                            table.getIsAllPageRowsSelected() ||
+                            (table.getIsSomePageRowsSelected() &&
+                              "indeterminate")
+                          }
+                          onCheckedChange={(value) => {
+                            // Toggle all page rows selected
+                            table.toggleAllPageRowsSelected(!!value);
+                            setTimeout(() => {
+                              const selectedRows = table
+                                .getSelectedRowModel()
+                                .rows.map((row) => row.original);
+                              console.log(selectedRows);
+                              setSelected(selectedRows);
+                            }, 0);
+                          }}
+                          className="mr-1"
+                          aria-label="Select all"
+                        />
+                      )}
                     </TableHead>
                   );
                 })}
@@ -442,7 +356,7 @@ const ManageAccessEntitlementsTable = () => {
                     <TableCell key={cell.id} className="border p-1 w-fit">
                       {index === 0 ? (
                         <Checkbox
-                          className="m-1"
+                          className=""
                           checked={row.getIsSelected()}
                           onCheckedChange={(value) =>
                             row.toggleSelected(!!value)
@@ -485,7 +399,9 @@ const ManageAccessEntitlementsTable = () => {
             )}
           </TableBody>
         </Table>
-        <Pagination table={table} />
+        <div className=" pt-2">
+          <Pagination2 table={table} />
+        </div>
       </div>
       {/* Start Pagination */}
     </div>

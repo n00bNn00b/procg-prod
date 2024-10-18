@@ -3,14 +3,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import {
-  IAddUserTypes,
-  ITenantsTypes,
-} from "@/types/interfaces/users.interface";
-import { useEffect, useState } from "react";
 import { hourglass } from "ldrs";
 import AddForm from "./AddForm";
-import { IControlsTypes } from "@/types/interfaces/manageControls.interface";
 import { useControlsContext } from "@/Context/ManageAccessEntitlements/ManageControlsContext";
 
 const AddControl = () => {
