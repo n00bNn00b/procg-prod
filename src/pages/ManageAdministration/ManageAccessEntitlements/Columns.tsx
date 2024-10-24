@@ -50,6 +50,7 @@ const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
     header: ({ column }) => {
       return (
         <div
+          className="min-w-max"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           * Entitlement Name
@@ -127,7 +128,9 @@ const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
       );
     },
     cell: ({ row }) => {
-      const sliceDate = String(row.getValue("effective_date")).slice(0, 10);
+      const sliceDate = String(row.getValue("effective_date"))
+        .toString()
+        .slice(0, 10);
       return <div className="capitalize min-w-max">{sliceDate}</div>;
     },
   },
@@ -160,7 +163,9 @@ const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
       );
     },
     cell: ({ row }) => {
-      const sliceDate = String(row.getValue("revision_date")).slice(0, 10);
+      const sliceDate = String(row.getValue("revision_date"))
+        .toString()
+        .slice(0, 10);
       return <div className="capitalize min-w-max">{sliceDate}</div>;
     },
   },
@@ -177,7 +182,9 @@ const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
       );
     },
     cell: ({ row }) => {
-      const sliceDate = String(row.getValue("created_on")).slice(0, 10);
+      const sliceDate = String(row.getValue("created_on"))
+        .toString()
+        .slice(0, 10);
       return <div className="capitalize min-w-max">{sliceDate}</div>;
     },
   },
@@ -210,7 +217,9 @@ const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
       );
     },
     cell: ({ row }) => {
-      const sliceDate = String(row.getValue("last_updated_on")).slice(0, 10);
+      const sliceDate = String(row.getValue("last_updated_on"))
+        .toString()
+        .slice(0, 10);
       return <div className="capitalize min-w-max">{sliceDate}</div>;
     },
   },
