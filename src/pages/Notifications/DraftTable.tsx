@@ -60,6 +60,11 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
     (_, i) => i + 1
   );
   let startNumber = 0;
+  let endNumber = curretPage * totalDisplayedMessages;
+
+  if (endNumber > totalDraftMessages) {
+    endNumber = totalDraftMessages;
+  }
 
   if (curretPage > 1) {
     const page = curretPage - 1;
@@ -139,9 +144,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
         <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
           <div className="flex justify-between">
             <h1 className="text-lg font-bold mb-6 ">{path}</h1>
-            <p>{`${startNumber}-${
-              curretPage * totalDisplayedMessages
-            } of ${totalDraftMessages}`}</p>
+            <p>{`${startNumber}-${endNumber} of ${totalDraftMessages}`}</p>
           </div>
           <Table>
             <TableHeader>

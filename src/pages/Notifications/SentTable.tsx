@@ -61,6 +61,11 @@ const SentTable = ({ path, person }: SentTableProps) => {
     (_, i) => i + 1
   );
   let startNumber = 0;
+  let endNumber = curretPage * totalDisplayedMessages;
+
+  if (endNumber > totalSentMessages) {
+    endNumber = totalSentMessages;
+  }
 
   if (curretPage > 1) {
     const page = curretPage - 1;
@@ -141,9 +146,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
         <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
           <div className="flex justify-between">
             <h1 className="text-lg font-bold mb-6 ">{path}</h1>
-            <p>{`${startNumber}-${
-              curretPage * totalDisplayedMessages
-            } of ${totalSentMessages}`}</p>
+            <p>{`${startNumber}-${endNumber} of ${totalSentMessages}`}</p>
           </div>
           <Table>
             <TableHeader>
