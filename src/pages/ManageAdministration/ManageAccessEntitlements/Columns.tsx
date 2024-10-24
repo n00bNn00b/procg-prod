@@ -1,8 +1,6 @@
 import { IManageAccessEntitlementsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
-
 const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
   {
     id: "select",
@@ -14,7 +12,6 @@ const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
           aria-label="Select all"
-          className=" "
         />
       );
     },
@@ -31,9 +28,21 @@ const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
   },
   {
     accessorKey: "entitlement_id",
-    header: "Entitlement ID",
+    header: ({ column }) => {
+      return (
+        <div
+          className="min-w-max"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Entitlement ID
+        </div>
+      );
+    },
+    // header: "Datasource Name",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("entitlement_id")}</div>
+      <div className="capitalize min-w-max">
+        {row.getValue("entitlement_id")}
+      </div>
     ),
   },
   {
@@ -41,85 +50,195 @@ const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
     header: ({ column }) => {
       return (
         <div
+          className="min-w-max"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          * Entitlement Name{" "}
-          <ArrowUpDown className="ml-2 h-4 w-4 cursor-pointer inline-block" />
+          * Entitlement Name
         </div>
       );
     },
+    // header: "Datasource Name",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("entitlement_name")}</div>
+      <div className="capitalize min-w-max">
+        {row.getValue("entitlement_name")}
+      </div>
     ),
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: ({ column }) => {
+      return (
+        <div
+          className="min-w-[30rem]"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Description
+        </div>
+      );
+    },
+    // header: "Datasource Name",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("description")}</div>
+      <div className="capitalize min-w-max">{row.getValue("description")}</div>
     ),
   },
   {
     accessorKey: "comments",
-    header: "Comments",
+    header: ({ column }) => {
+      return (
+        <div
+          className="min-w-max"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Comments
+        </div>
+      );
+    },
+    // header: "Datasource Name",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("comments")}</div>
+      <div className="capitalize min-w-max">{row.getValue("comments")}</div>
     ),
   },
   {
     accessorKey: "status",
-    header: "*Status",
+    header: ({ column }) => {
+      return (
+        <div
+          className="min-w-max"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+        </div>
+      );
+    },
+    // header: "Datasource Name",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
+      <div className="capitalize min-w-max">{row.getValue("status")}</div>
     ),
   },
   {
     accessorKey: "effective_date",
-    header: "Effective Date",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("effective_date")}</div>
-    ),
+    header: ({ column }) => {
+      return (
+        <div
+          className="min-w-max"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Effective Date
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      const sliceDate = String(row.getValue("effective_date"))
+        .toString()
+        .slice(0, 10);
+      return <div className="capitalize min-w-max">{sliceDate}</div>;
+    },
   },
   {
     accessorKey: "revison",
-    header: "Revison",
+    header: ({ column }) => {
+      return (
+        <div
+          className="min-w-max"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Revison
+        </div>
+      );
+    },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("revison")}</div>
+      <div className="capitalize min-w-max">{row.getValue("revison")}</div>
     ),
   },
   {
     accessorKey: "revision_date",
-    header: "Revision Date",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("revision_date")}</div>
-    ),
+    header: ({ column }) => {
+      return (
+        <div
+          className="min-w-max"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Revision Date
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      const sliceDate = String(row.getValue("revision_date"))
+        .toString()
+        .slice(0, 10);
+      return <div className="capitalize min-w-max">{sliceDate}</div>;
+    },
   },
   {
     accessorKey: "created_on",
-    header: "Created On",
+    header: ({ column }) => {
+      return (
+        <div
+          className="min-w-max"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Created On
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      const sliceDate = String(row.getValue("created_on"))
+        .toString()
+        .slice(0, 10);
+      return <div className="capitalize min-w-max">{sliceDate}</div>;
+    },
+  },
+  {
+    accessorKey: "created_by",
+    header: ({ column }) => {
+      return (
+        <div
+          className="min-w-max"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Created By
+        </div>
+      );
+    },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("created_on")}</div>
+      <div className="capitalize min-w-max">{row.getValue("created_by")}</div>
     ),
   },
   {
     accessorKey: "last_updated_on",
-    header: "Last Updated On",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("last_updated_on")}</div>
-    ),
+    header: ({ column }) => {
+      return (
+        <div
+          className="min-w-max"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Last Updated On
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      const sliceDate = String(row.getValue("last_updated_on"))
+        .toString()
+        .slice(0, 10);
+      return <div className="capitalize min-w-max">{sliceDate}</div>;
+    },
   },
   {
     accessorKey: "last_updated_by",
-    header: "Last Updated By",
+    header: ({ column }) => {
+      return (
+        <div
+          className="min-w-max"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Last Updated By
+        </div>
+      );
+    },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("last_updated_by")}</div>
-    ),
-  },
-  {
-    accessorKey: "created_by",
-    header: "Created By",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("created_by")}</div>
+      <div className="capitalize min-w-max">
+        {row.getValue("last_updated_by")}
+      </div>
     ),
   },
 ];

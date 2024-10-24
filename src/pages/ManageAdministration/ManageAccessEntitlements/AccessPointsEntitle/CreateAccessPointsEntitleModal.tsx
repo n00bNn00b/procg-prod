@@ -20,17 +20,33 @@ import {
 import { Input } from "@/components/ui/input";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import { ring } from "ldrs";
+import { useEffect, useState } from "react";
+import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import axios from "axios";
+import { IFetchAccessPointsElementTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 const AccessPointsEntitleModal = () => {
   const {
     selectedManageAccessEntitlements,
     createAccessPointsEntitlement,
     isLoading,
     createAccessEntitlementElements,
+    accessPointStatus,
   } = useManageAccessEntitlementsContext();
+  const { fetchDataSources, token } = useGlobalContext();
+  const [dataSources, setDataSources] = useState<IDataSourceTypes[]>([]);
+  useEffect(() => {
+    const res = async () => {
+      const res = await fetchDataSources();
+      setDataSources(res ?? []);
+    };
+    res();
+  }, []);
+
   const FormSchema = z.object({
     element_name: z.string(),
     description: z.string(),
-    datasource: z.string(),
+    data_source_id: z.string(),
     platform: z.string(),
     element_type: z.string(),
     access_control: z.string(),
@@ -42,7 +58,7 @@ const AccessPointsEntitleModal = () => {
     defaultValues: {
       element_name: "",
       description: "",
-      datasource: "",
+      data_source_id: "",
       platform: "",
       element_type: "",
       access_control: "",
@@ -53,24 +69,44 @@ const AccessPointsEntitleModal = () => {
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     const postData = {
+      data_source_id: Number(data.data_source_id),
       element_name: data.element_name,
       description: data.description,
-      datasource: data.datasource,
       platform: data.platform,
       element_type: data.element_type,
       access_control: data.access_control,
       change_control: data.change_control,
       audit: data.audit,
+      created_by: token.user_name,
+      last_updated_by: token.user_name,
     };
+    console.log(postData, selectedManageAccessEntitlements);
+    console.log(data.data_source_id, "datasource");
+    console.log(typeof data.data_source_id, "datasource");
     const postAccessPointsElement = async () => {
+      const url = import.meta.env.VITE_API_URL;
+      //get max access point id
+      const res = await axios.get(`${url}/access-points-element`);
+      const accessPointsMaxId =
+        res.data.length > 0
+          ? Math.max(
+              ...res.data.map(
+                (data: IFetchAccessPointsElementTypes) => data.access_point_id
+              )
+            ) + 1
+          : 1;
+
       await createAccessPointsEntitlement(postData)
         .then((res) => {
-          if (res === 201) {
-            createAccessEntitlementElements(
-              selectedManageAccessEntitlements?.entitlement_id
-                ? selectedManageAccessEntitlements.entitlement_id
-                : 0
-            );
+          if (accessPointStatus === "createWithEntitlementId") {
+            if (res === 201) {
+              createAccessEntitlementElements(
+                selectedManageAccessEntitlements?.entitlement_id
+                  ? selectedManageAccessEntitlements.entitlement_id
+                  : 0,
+                [accessPointsMaxId]
+              );
+            }
           }
         })
         .catch((err) => {
@@ -116,14 +152,37 @@ const AccessPointsEntitleModal = () => {
           />
           <FormField
             control={form.control}
-            name="datasource"
+            name="data_source_id"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Datasource</FormLabel>
-                <FormControl>
-                  <Input placeholder="Datasource" {...field} />
-                </FormControl>
-                <FormMessage />
+                <Select
+                  required
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a option" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {dataSources.length > 0 ? (
+                      <>
+                        {dataSources.map((datasource) => (
+                          <SelectItem
+                            key={datasource.data_source_id}
+                            value={String(datasource.data_source_id)}
+                          >
+                            {datasource.datasource_name}
+                          </SelectItem>
+                        ))}
+                      </>
+                    ) : (
+                      <span className="mx-2">No Item Found !!</span>
+                    )}
+                  </SelectContent>
+                </Select>
               </FormItem>
             )}
           />

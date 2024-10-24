@@ -10,9 +10,12 @@ import {
 import { useEffect, useState } from "react";
 import { hourglass } from "ldrs";
 import AddForm from "./AddForm";
+import { X } from "lucide-react";
+import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 
 const AddUser = () => {
   const { createUser, token, fetchTenants, isLoading } = useGlobalContext();
+  const { setIsOpenModal } = useManageAccessEntitlementsContext();
   const [userType, setUserType] = useState<string>("person");
   const [tenants, setTenants] = useState<ITenantsTypes[] | undefined>([]);
   hourglass.register();
@@ -101,11 +104,12 @@ const AddUser = () => {
   };
   console.log(userType);
   return (
-    <div className="border bg-slate-300 w-[50%] mx-auto rounded shadow-xl p-2">
-      <div className="w-[50%] py-2 mx-auto text-center font-bold text-2xl">
+    <div className="border rounded shadow-xl">
+      <div className="p-2 bg-slate-300 rounded-t mx-auto text-center font-bold flex justify-between">
         <h1>Create An Account</h1>
+        <X onClick={() => setIsOpenModal(0)} className="cursor-pointer" />
       </div>
-      <div className="flex items-center justify-center ">
+      <div className="flex items-center justify-center p-2">
         <AddForm
           form={form}
           isLoading={isLoading}

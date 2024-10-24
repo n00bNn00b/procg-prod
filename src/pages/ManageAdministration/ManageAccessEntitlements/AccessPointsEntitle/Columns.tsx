@@ -1,7 +1,10 @@
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { IFetchAccessPointsElementTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Check, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
   {
@@ -31,58 +34,84 @@ const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("element_name")}</div>
+      <div className="capitalize">{row.getValue("element_name")}</div>
     ),
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: () => {
+      return <div className="capitalize min-w-[30rem]">Description</div>;
+    },
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("description")}</div>
     ),
   },
   {
-    accessorKey: "datasource",
+    accessorKey: "data_source_id",
     header: "Datasource",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("datasource")}</div>
-    ),
+    cell: ({ row }) => {
+      const { fetchDataSource } = useGlobalContext();
+      const [datasources, setDatasources] = useState<IDataSourceTypes>();
+      useEffect(() => {
+        const res = async () => {
+          const id = row.getValue("data_source_id");
+          const res = await fetchDataSource(id as number);
+          return setDatasources(res);
+        };
+        res();
+      }, []);
+      return (
+        <div className="capitalize min-w-max">
+          {datasources?.datasource_name}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "platform",
     header: "Platform",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("platform")}</div>
+      <div className="capitalize min-w-max">{row.getValue("platform")}</div>
     ),
   },
   {
     accessorKey: "element_type",
-    header: "Element Type",
+    header: () => {
+      return <div className="capitalize min-w-max">Element Type</div>;
+    },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("element_type")}</div>
+      <div className="capitalize min-w-max">{row.getValue("element_type")}</div>
     ),
   },
   {
     accessorKey: "access_control",
-    header: "Access Control",
+    header: () => {
+      return <div className="capitalize min-w-max">Access Control</div>;
+    },
     cell: ({ row }) => (
-      <div className="capitalize">
+      <div className="capitalize min-w-max">
         {row.getValue("access_control") === "true" ? <Check /> : <X />}
       </div>
     ),
   },
   {
     accessorKey: "change_control",
-    header: "Change Control",
+    header: () => {
+      return <div className="capitalize min-w-max">Change Control</div>;
+    },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("change_control")}</div>
+      <div className="capitalize min-w-max">
+        {row.getValue("change_control")}
+      </div>
     ),
   },
   {
     accessorKey: "audit",
-    header: "Audit",
+    header: () => {
+      return <div className="capitalize min-w-max">Audit</div>;
+    },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("audit")}</div>
+      <div className="capitalize min-w-max">{row.getValue("audit")}</div>
     ),
   },
 ];
