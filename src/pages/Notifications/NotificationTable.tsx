@@ -32,6 +32,9 @@ import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useEffect, useState } from "react";
 import { Message } from "@/types/interfaces/users.interface";
+import { tailspin } from "ldrs";
+
+tailspin.register();
 
 interface NotificationTableProps {
   path: string;
@@ -50,13 +53,18 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
   } = useSocketContext();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [curretPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsloading] = useState(false);
   const url = import.meta.env.VITE_API_URL;
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
     totalReceivedMessages / totalDisplayedMessages
   );
+  const paginationArray = Array.from(
+    { length: totalPageNumbers },
+    (_, i) => i + 1
+  );
   let startNumber = 0;
-  const [curretPage, setCurrentPage] = useState(1);
 
   if (curretPage > 1) {
     const page = curretPage - 1;
@@ -67,6 +75,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
   useEffect(() => {
     const fetchReceivedMessages = async () => {
       try {
+        setIsloading(true);
         const response = await axios.get<Message[]>(
           `${url}/messages/received/${user}/${curretPage}`
         );
@@ -75,6 +84,8 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
       } catch (error) {
         console.log(error);
         return [];
+      } finally {
+        setIsloading(false);
       }
     };
 
@@ -123,96 +134,126 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
   };
 
   return (
-    <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
-      <div className="flex justify-between">
-        <h1 className="text-lg font-bold mb-6 ">{path}</h1>
-        <div className="flex gap-4 items-center">
-          <button
-            onClick={handlePrevious}
-            className="p-1 rounded-md hover:bg-winter-100/30"
-          >
-            <ChevronLeft />
-          </button>
-          <p>{`${startNumber}-${
-            curretPage * totalDisplayedMessages
-          } of ${totalReceivedMessages}`}</p>
-          <button
-            onClick={handleNext}
-            className="p-1 rounded-md hover:bg-winter-100/30"
-          >
-            <ChevronRight />
-          </button>
+    <>
+      {isLoading ? (
+        <div className="flex w-[100vw] h-[50vh] justify-center items-center">
+          <l-tailspin
+            size="80"
+            stroke="5"
+            speed="2"
+            color="#68788C"
+          ></l-tailspin>
         </div>
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="font-bold">{person}</TableHead>
-            <TableHead className="font-bold">
-              <span>Subject/</span>Body
-            </TableHead>
-            <TableHead className="w-[115px] font-bold">Date</TableHead>
-            <TableHead className="font-bold">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {receivedMessages.map((msg) => (
-            <TableRow
-              key={msg.id}
-              className={
-                uniquMessagesIds.includes(msg.id) ? "bg-winter-100/30" : "mt-0"
-              }
-            >
-              <TableCell>{msg.sender}</TableCell>
-              <TableCell>
-                <span className="font-medium mr-1">{msg.subject}</span>
-                <span className="text-dark-400 mr-1">
-                  {msg.body?.slice(0, 60)}
-                </span>
-                <span>...</span>
-              </TableCell>
-              <TableCell className="w-[115px]">
-                {convertDate(msg.date)}
-              </TableCell>
-              <TableCell className="flex gap-2">
-                <View
-                  onClick={() => handleUniqueMessages(msg.parentid)}
-                  color="#044BD9"
-                  className="cursor-pointer"
-                />
-                <AlertDialog>
-                  <AlertDialogTrigger>
-                    <Trash2 color="#E60B0B" />
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                    </AlertDialogHeader>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      from both side.
-                    </AlertDialogDescription>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
-                        <X />
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        className="bg-green-600 text-white flex justify-center items-center"
-                        onClick={() => handleDelete(msg.id)}
-                      >
-                        <Check />
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+      ) : (
+        <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
+          <div className="flex justify-between">
+            <h1 className="text-lg font-bold mb-6 ">{path}</h1>
+            <p>{`${startNumber}-${
+              curretPage * totalDisplayedMessages
+            } of ${totalReceivedMessages}`}</p>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="font-bold">{person}</TableHead>
+                <TableHead className="font-bold">
+                  <span>Subject/</span>Body
+                </TableHead>
+                <TableHead className="w-[115px] font-bold">Date</TableHead>
+                <TableHead className="font-bold">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {receivedMessages.map((msg) => (
+                <TableRow
+                  key={msg.id}
+                  className={
+                    uniquMessagesIds.includes(msg.id)
+                      ? "bg-winter-100/30"
+                      : "mt-0"
+                  }
+                >
+                  <TableCell>{msg.sender}</TableCell>
+                  <TableCell>
+                    <span className="font-medium mr-1">{msg.subject}</span>
+                    <span className="text-dark-400 mr-1">
+                      {msg.body?.slice(0, 60)}
+                    </span>
+                    <span>...</span>
+                  </TableCell>
+                  <TableCell className="w-[115px]">
+                    {convertDate(msg.date)}
+                  </TableCell>
+                  <TableCell className="flex gap-2">
+                    <View
+                      onClick={() => handleUniqueMessages(msg.parentid)}
+                      color="#044BD9"
+                      className="cursor-pointer"
+                    />
+                    <AlertDialog>
+                      <AlertDialogTrigger>
+                        <Trash2 color="#E60B0B" />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
+                        </AlertDialogHeader>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete from both side.
+                        </AlertDialogDescription>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
+                            <X />
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-green-600 text-white flex justify-center items-center"
+                            onClick={() => handleDelete(msg.id)}
+                          >
+                            <Check />
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <div className="flex w-full justify-center">
+            <div className="flex gap-4 items-center">
+              <button
+                onClick={handlePrevious}
+                className="p-1 rounded-md bg-winter-100"
+              >
+                <ChevronLeft />
+              </button>
+              {paginationArray.map((item) => (
+                <button
+                  className={
+                    curretPage === item
+                      ? "bg-dark-400 text-white px-4 py-1 rounded-md"
+                      : "bg-winter-100 px-4 py-1 rounded-md"
+                  }
+                  onClick={() => setCurrentPage(item)}
+                  key={item}
+                >
+                  {item}
+                </button>
+              ))}
+              <button
+                onClick={handleNext}
+                className="p-1 rounded-md bg-winter-100"
+              >
+                <ChevronRight />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
