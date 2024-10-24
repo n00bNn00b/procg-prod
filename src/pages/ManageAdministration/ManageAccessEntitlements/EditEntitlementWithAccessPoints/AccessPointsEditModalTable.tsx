@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   ColumnFiltersState,
   SortingState,
@@ -9,14 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -25,46 +19,41 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useEffect, useState } from "react";
-import { ICreateAccessPointsElementTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import columns from "./Columns";
-import { Button } from "@/components/ui/button";
 import Pagination2 from "@/components/Pagination/Pagination2";
+import RelationAccessPoint from "./RelationAccessPoint";
 
-const AccessPointsEntitleTable = () => {
+const AccessPointsEditModal = () => {
   const {
     filteredData: data,
     isLoading,
-    setIsOpenModal,
-    selectedManageAccessEntitlements,
-    fetchAccessPointsEntitlement,
-    selected,
-    save2,
-    setSelectedRow,
-    setAccessPointStatus,
+    setSelectedAccessEntitlementElements,
   } = useManageAccessEntitlementsContext();
-  const [pagination, setPagination] = useState({
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [pagination, setPagination] = React.useState({
     pageIndex: 0, //initial page index
-    pageSize: 5, //default page size
+    pageSize: 6, //default page size
   });
-
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
   const table = useReactTable({
     data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
@@ -73,102 +62,27 @@ const AccessPointsEntitleTable = () => {
       pagination,
     },
   });
-  const handleRowSelected = (rowData: ICreateAccessPointsElementTypes) => {
-    setSelectedRow((prev) => {
-      if (prev.includes(rowData)) {
-        return prev.filter((item) => item !== rowData);
+  const handleSelectItem = (accessPointIds: number) => {
+    //set number of selected rows
+    setSelectedAccessEntitlementElements((prev) => {
+      if (prev.find((item) => item === accessPointIds)) {
+        return prev.filter((item) => item !== accessPointIds);
       } else {
-        return [...prev, rowData];
+        return [...prev, accessPointIds];
       }
     });
   };
-  useEffect(() => {
-    if (selected) {
-      fetchAccessPointsEntitlement(selected[0]);
-    }
-  }, [save2]);
-  // const handleDelete = async () => {
-  //   if (selectedRow.length > 0) {
-  //     // const res = await deleteAccessPointsElement(
-  //     //   selectedRow[0]?.access_point_id || 0
-  //     // );
-  //     for (const element of selectedRow) {
-  //       deleteAccessEntitlementElement(
-  //         selected[0]?.entitlement_id || 0,
-  //         element?.access_point_id || 0
-  //       );
-  //     }
-
-  //     table.getRowModel().rows.map((row) => row.toggleSelected(false));
-  //     setSelectedRow([]);
-  //     // if (selectedManageAccessEntitlements) {
-  //     //   fetchAccessPointsEntitlement(selectedManageAccessEntitlements);
-  //     // }
-  //   }
-  // };
+  const tableRow = () => {
+    table.toggleAllPageRowsSelected(false);
+  };
   return (
     <div className="">
       <div className="w-full">
-        <div className="flex items-center justify-between py-4">
-          <div className="flex gap-2">
-            <div>
-              <Button
-                className="px-4 py-2 border rounded shadow"
-                onClick={() => setIsOpenModal(3)}
-                disabled={!selectedManageAccessEntitlements?.entitlement_id}
-              >
-                <h3>Access Points</h3>
-              </Button>
-            </div>
-            <div>
-              <Button
-                onClick={() => {
-                  setIsOpenModal(2);
-                  setAccessPointStatus("create");
-                }}
-              >
-                Create Access Point
-              </Button>
-            </div>
-          </div>
-          <div>
-            {selectedManageAccessEntitlements && (
-              <h3 className="font-bold capitalize">
-                {selectedManageAccessEntitlements?.entitlement_id &&
-                  "Entitlement Name : "}
-                {selectedManageAccessEntitlements?.entitlement_name}
-              </h3>
-            )}
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="mb-4">
+          <RelationAccessPoint tableRow={tableRow} />
         </div>
         <div className="rounded-md border">
-          <Table className="">
+          <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -176,7 +90,7 @@ const AccessPointsEntitleTable = () => {
                     return (
                       <TableHead
                         key={header.id}
-                        className="border border-slate-400 bg-slate-200 p-1 w-fit h-11"
+                        className="border border-slate-400 bg-slate-200 p-1 w-fit"
                       >
                         {header.isPlaceholder
                           ? null
@@ -202,7 +116,12 @@ const AccessPointsEntitleTable = () => {
                                   .getSelectedRowModel()
                                   .rows.map((row) => row.original);
                                 // console.log(selectedRows);
-                                setSelectedRow(selectedRows);
+                                const ids = selectedRows.map(
+                                  (row) => row?.access_point_id
+                                );
+                                setSelectedAccessEntitlementElements(
+                                  ids as number[]
+                                );
                               }, 0);
                             }}
                             className=""
@@ -234,21 +153,23 @@ const AccessPointsEntitleTable = () => {
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
+                    data-state={row.getIsSelected() ? "selected" : undefined}
                   >
                     {row.getVisibleCells().map((cell, index) => (
-                      <TableCell
-                        key={cell.id}
-                        className="border py-0 px-1 w-fit"
-                      >
+                      <TableCell key={cell.id} className="border p-1 w-fit">
                         {index === 0 ? (
                           <Checkbox
-                            className="my-2"
-                            checked={row.getIsSelected() || false} // Ensure checked is always a boolean
-                            onCheckedChange={(value) =>
-                              row.toggleSelected(!!value)
+                            className=""
+                            checked={row.getIsSelected() || false}
+                            onCheckedChange={(value) => {
+                              row.toggleSelected(!!value);
+                            }}
+                            onClick={() =>
+                              handleSelectItem(
+                                row.original.access_point_id as number
+                              )
                             }
-                            onClick={() => handleRowSelected(row.original)}
+                            aria-label="Select row"
                           />
                         ) : (
                           flexRender(
@@ -286,7 +207,7 @@ const AccessPointsEntitleTable = () => {
               )}
             </TableBody>
           </Table>
-          <div className=" pt-2">
+          <div className="">
             <Pagination2 table={table} />
           </div>
         </div>
@@ -294,4 +215,4 @@ const AccessPointsEntitleTable = () => {
     </div>
   );
 };
-export default AccessPointsEntitleTable;
+export default AccessPointsEditModal;

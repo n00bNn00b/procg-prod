@@ -14,29 +14,40 @@ export interface IManageAccessEntitlementsTypes {
 }
 export interface IFetchAccessPointsElementTypes {
   access_point_id: number;
+  data_source_id: number;
   element_name: string;
   description: string;
-  datasource: string;
   platform: string;
   element_type: string;
   access_control: string;
   change_control: string;
   audit: string;
+  created_by: string;
+  created_on: string;
+  last_updated_by: string;
+  last_updated_on: string;
 }
-export interface IFetchAccessPointsEntitlementElementsTypes {
+export interface IManageEntitlementElementDataDeleteTypes {
+  entitlement_id: number;
+  res: IFetchAccessPointsElementTypes[] | undefined;
+}
+export interface IFetchAccessEntitlementElementsTypes {
   entitlement_id: number;
   access_point_id: number;
 }
 export interface ICreateAccessPointsElementTypes {
   access_point_id?: number;
+  data_source_id: number;
   element_name: string;
   description: string;
-  datasource: string;
   platform: string;
   element_type: string;
   access_control: string;
   change_control: string;
   audit: string;
+  created_by: string;
+  last_updated_by: string;
+  // [key: string]: any;
 }
 export interface IManageLocalConditonsType {
   id: string;

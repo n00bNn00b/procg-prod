@@ -1,37 +1,55 @@
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import CustomModal from "@/components/CustomModal/CustomModal";
 
-import AccessPointsEntitleModal from "./AccessPointsEntitleModal";
+import AccessPointsEntitleModal from "./CreateAccessPointsEntitleModal";
 import AccessPointsEntitleTable from "./AccessPointsEntitleTable";
 import { X } from "lucide-react";
+import AccessPointsEditModal from "../EditEntitlementWithAccessPoints/AccessPointsEditModalTable";
+import CustomModal2 from "@/components/CustomModal/CustomModal2";
 
 const AccessPointsEntitle = () => {
-  const {
-    isOpenModal,
-    setIsOpenModal,
-    selected,
-    fetchAccessPointsEntitlement,
-  } = useManageAccessEntitlementsContext();
-  console.log(isOpenModal);
-  const handleClose = () => {
-    setIsOpenModal(false);
-    fetchAccessPointsEntitlement(selected[0]);
-  };
+  const { isOpenModal, setIsOpenModal, selectedManageAccessEntitlements } =
+    useManageAccessEntitlementsContext();
+  // const handleClose = () => {
+  //   setIsOpenModal(false);
+  //   fetchAccessPointsEntitlement(selected[0]);
+  // };
   return (
     <div className="px-3">
       <div className="w-full">
         <AccessPointsEntitleTable />
         {/* Modal */}
         <div>
-          {isOpenModal && (
-            <CustomModal>
+          {isOpenModal === 3 && (
+            <CustomModal2>
               <div className="flex justify-between p-2 bg-slate-300 rounded-t-lg">
-                <h2 className="text-lg font-bold text-red-500">
-                  Create Access Points 11
+                <h2 className="text-lg font-bold capitalize">
+                  Entitlement Name :{" "}
+                  {selectedManageAccessEntitlements?.entitlement_name}
                 </h2>
                 <X
-                  color="red"
-                  onClick={() => handleClose}
+                  onClick={() => {
+                    setIsOpenModal(0);
+                  }}
+                  className="cursor-pointer"
+                />
+              </div>
+              {/* Card start */}
+              <div className="p-2">
+                <AccessPointsEditModal />
+              </div>
+            </CustomModal2>
+          )}
+        </div>
+        <div>
+          {isOpenModal === 2 && (
+            <CustomModal>
+              <div className="flex justify-between p-2 bg-slate-300 rounded-t-lg">
+                <h2 className="text-lg font-bold">Create Access Point</h2>
+                <X
+                  onClick={() => {
+                    setIsOpenModal(0);
+                  }}
                   className="cursor-pointer"
                 />
               </div>
