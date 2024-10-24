@@ -1,4 +1,4 @@
-import { MailPlus, Paperclip, Send, Delete } from "lucide-react";
+import { MailPlus, Send, Delete, Save } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,7 @@ import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 const ComposeButton = () => {
   const { users, token, user } = useGlobalContext();
-  const { setMessages, handlesendMessage } = useSocketContext();
+  const { handlesendMessage, handleDraftMessage } = useSocketContext();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
   const [recivers, setRecivers] = useState<string[]>([]);
@@ -84,17 +84,22 @@ const ComposeButton = () => {
       involvedusers: uniqueUsers,
       readers: recivers,
     };
-
-    handlesendMessage(data);
-    setMessages((prev) => [data, ...prev]);
-    toast({
-      title: "Message sent",
-    });
     setIsSending(true);
+    handlesendMessage(data);
+    try {
+      const response = await axios.post(`${url}/messages`, data);
+      console.log("Response:", response.data);
+      toast({
+        title: "Message Sent",
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsSending(false);
+    }
     setRecivers([]);
     setSubject("");
     setBody("");
-    setIsSending(false);
   };
 
   const handleDraft = async () => {
@@ -108,8 +113,10 @@ const ComposeButton = () => {
       status: "Draft",
       parentid: id,
       involvedusers: uniqueUsers,
+      readers: recivers,
     };
     setIsDrafting(true);
+    handleDraftMessage(data);
     try {
       const response = await axios.post(`${url}/messages`, data);
       console.log("Response:", response.data);
@@ -118,12 +125,12 @@ const ComposeButton = () => {
       });
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setIsDrafting(false);
     }
     setRecivers([]);
     setSubject("");
     setBody("");
-    setIsDrafting(false);
-    setMessages((prev) => [data, ...prev]);
   };
 
   return (
@@ -221,8 +228,8 @@ const ComposeButton = () => {
               onClick={handleDraft}
               className="flex gap-1 items-center px-5 py-2 rounded-l-full rounded-r-md bg-dark-300 text-white hover:scale-95 duration-300"
             >
-              {isDrafting ? <ButtonSpinner /> : <Paperclip size={18} />}
-              <p className="font-semibold ">Draft</p>
+              {isDrafting ? <ButtonSpinner /> : <Save size={18} />}
+              <p className="font-semibold ">Save as draft</p>
             </button>
           )}
           {recivers.length === 0 || body === "" ? null : (
