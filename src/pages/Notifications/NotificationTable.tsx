@@ -65,6 +65,11 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     (_, i) => i + 1
   );
   let startNumber = 0;
+  let endNumber = curretPage * totalDisplayedMessages;
+
+  if (endNumber > totalReceivedMessages) {
+    endNumber = totalReceivedMessages;
+  }
 
   if (curretPage > 1) {
     const page = curretPage - 1;
@@ -148,9 +153,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
         <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
           <div className="flex justify-between">
             <h1 className="text-lg font-bold mb-6 ">{path}</h1>
-            <p>{`${startNumber}-${
-              curretPage * totalDisplayedMessages
-            } of ${totalReceivedMessages}`}</p>
+            <p>{`${startNumber}-${endNumber} of ${totalReceivedMessages}`}</p>
           </div>
           <Table>
             <TableHeader>
