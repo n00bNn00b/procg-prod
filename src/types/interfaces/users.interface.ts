@@ -54,3 +54,4 @@ export interface IPersonsTypes {
   last_name: string;
   job_title: string;
 }
+export interface IUsersInfoTypes extends Users, IPersonsTypes {}

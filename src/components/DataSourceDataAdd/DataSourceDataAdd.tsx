@@ -29,7 +29,7 @@ const DataSourceDataAdd: FC<IDataSourceAddDataTypes> = ({
   setSave,
   setRowSelection,
 }) => {
-  const { fetchDataSource, createDataSource, updateDataSource } =
+  const { fetchDataSource, createDataSource, updateDataSource, token } =
     useGlobalContext();
   const [open, setOpen] = useState<boolean>(false);
 
@@ -98,6 +98,8 @@ const DataSourceDataAdd: FC<IDataSourceAddDataTypes> = ({
       last_access_synchronization_status: "COMPLETED",
       last_transaction_synchronization_status: "COMPLETED",
       default_datasource: data.default_datasource,
+      created_by: token.user_name,
+      last_updated_by: token.user_name,
     };
     const submitAction =
       props === "add"

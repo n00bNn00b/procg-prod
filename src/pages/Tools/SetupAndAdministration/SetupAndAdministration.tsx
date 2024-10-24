@@ -1,9 +1,10 @@
-import AddUser from "@/components/AddUser/AddUser";
+import { UsersTable } from "./UsersTable/UsersTable";
 
 const SetupAndAdministration = () => {
   return (
     <div>
-      <AddUser />
+      <UsersTable />
+      {/* <AddUser /> */}
     </div>
   );
 };

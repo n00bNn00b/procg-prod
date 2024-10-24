@@ -45,9 +45,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import DataSourceDataAdd from "@/components/DataSourceDataAdd/DataSourceDataAdd";
-import Pagination from "../../../components/Pagination/Pagination";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import Pagination2 from "@/components/Pagination/Pagination2";
 
 const DataSources = () => {
   const { fetchDataSources, deleteDataSource } = useGlobalContext();
@@ -143,6 +143,7 @@ const DataSources = () => {
       header: ({ column }) => {
         return (
           <div
+            className="min-w-max"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Datasource Name{" "}
@@ -159,19 +160,25 @@ const DataSources = () => {
       accessorKey: "description",
       header: "Description",
       cell: ({ row }) => (
-        <div className="capitalize w-48">{row.getValue("description")}</div>
+        <div className="capitalize min-w-[20rem]">
+          {row.getValue("description")}
+        </div>
       ),
     },
     {
       accessorKey: "application_type",
-      header: "Application Type",
+      header: () => {
+        return <div className="min-w-max">Application Type</div>;
+      },
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("application_type")}</div>
       ),
     },
     {
       accessorKey: "application_type_version",
-      header: "Application Type Version",
+      header: () => {
+        return <div className="min-w-max">Application Type Version</div>;
+      },
       cell: ({ row }) => (
         <div className="capitalize">
           {row.getValue("application_type_version")}
@@ -180,16 +187,25 @@ const DataSources = () => {
     },
     {
       accessorKey: "last_access_synchronization_date",
-      header: "Last Access Synchronization Date",
-      cell: ({ row }) => (
-        <div className="capitalize">
-          {row.getValue("last_access_synchronization_date")}
-        </div>
-      ),
+      header: () => {
+        return (
+          <div className="min-w-max">Last Access Synchronization Date</div>
+        );
+      },
+      cell: ({ row }) => {
+        const sliceDate = String(
+          row.getValue("last_access_synchronization_date")
+        ).slice(0, 10);
+        return <div className="capitalize">{sliceDate}</div>;
+      },
     },
     {
       accessorKey: "last_access_synchronization_status",
-      header: "Last Access Synchronization Status",
+      header: () => {
+        return (
+          <div className="min-w-max">Last Access Synchronization Status</div>
+        );
+      },
       cell: ({ row }) => (
         <div className="capitalize">
           {row.getValue("last_access_synchronization_status")}
@@ -198,16 +214,27 @@ const DataSources = () => {
     },
     {
       accessorKey: "last_transaction_synchronization_date",
-      header: "Last Transaction Synchronization Date",
-      cell: ({ row }) => (
-        <div className="capitalize">
-          {row.getValue("last_transaction_synchronization_date")}
-        </div>
-      ),
+      header: () => {
+        return (
+          <div className="min-w-max">Last Transaction Synchronization Date</div>
+        );
+      },
+      cell: ({ row }) => {
+        const sliceDate = String(
+          row.getValue("last_transaction_synchronization_date")
+        ).slice(0, 10);
+        return <div className="capitalize">{sliceDate}</div>;
+      },
     },
     {
       accessorKey: "last_transaction_synchronization_status",
-      header: "Last Transaction Synchronization Status",
+      header: () => {
+        return (
+          <div className="min-w-max">
+            Last Transaction Synchronization Status
+          </div>
+        );
+      },
       cell: ({ row }) => (
         <div className="capitalize">
           {row.getValue("last_transaction_synchronization_status")}
@@ -216,7 +243,9 @@ const DataSources = () => {
     },
     {
       accessorKey: "default_datasource",
-      header: "Default Datasource",
+      header: () => {
+        return <div className="min-w-max">Default Datasource</div>;
+      },
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("default_datasource")}</div>
       ),
@@ -521,7 +550,7 @@ const DataSources = () => {
             )}
           </TableBody>
         </Table>
-        <Pagination table={table} />
+        <Pagination2 table={table} />
       </div>
       {/* Start Pagination */}
     </div>
