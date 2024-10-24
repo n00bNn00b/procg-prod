@@ -195,7 +195,9 @@ const DataSources = () => {
       cell: ({ row }) => {
         const sliceDate = String(
           row.getValue("last_access_synchronization_date")
-        ).slice(0, 10);
+        )
+          .toString()
+          .slice(0, 10);
         return <div className="capitalize">{sliceDate}</div>;
       },
     },
@@ -222,7 +224,9 @@ const DataSources = () => {
       cell: ({ row }) => {
         const sliceDate = String(
           row.getValue("last_transaction_synchronization_date")
-        ).slice(0, 10);
+        )
+          .toString()
+          .slice(0, 10);
         return <div className="capitalize">{sliceDate}</div>;
       },
     },
