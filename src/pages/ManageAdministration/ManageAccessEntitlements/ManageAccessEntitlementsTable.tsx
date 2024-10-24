@@ -61,13 +61,19 @@ const ManageAccessEntitlementsTable = () => {
     deleteManageAccessEntitlement,
     setTable,
     filteredData,
+    setFilteredData,
   } = useManageAccessEntitlementsContext();
   const [data, setData] = React.useState<IManageAccessEntitlementsTypes[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   // Fetch Data
   React.useEffect(() => {
-    // setSelected([]);
+    // if first time fetch empty array
+    if (filteredData.length > 0) {
+      setFilteredData([]);
+    }
     setSelectedManageAccessEntitlements(Object());
+    setSelected([]);
+    table.getRowModel().rows.map((row) => row.toggleSelected(false));
     const fetchData = async () => {
       setIsLoading(true);
       try {
@@ -93,7 +99,7 @@ const ManageAccessEntitlementsTable = () => {
   const [rowSelection, setRowSelection] = React.useState({});
   const [pagination, setPagination] = React.useState({
     pageIndex: 0, //initial page index
-    pageSize: 5, //default page size
+    pageSize: 3, //default page size
   });
 
   // select row
@@ -183,6 +189,11 @@ const ManageAccessEntitlementsTable = () => {
                 onClick={() => {
                   setEditManageAccessEntitlement(true);
                   setSelectedManageAccessEntitlements(Object());
+                  setFilteredData([]);
+                  setSelected([]);
+                  table
+                    .getRowModel()
+                    .rows.map((row) => row.toggleSelected(false));
                   setMangeAccessEntitlementAction("add");
                 }}
               />
@@ -294,7 +305,7 @@ const ManageAccessEntitlementsTable = () => {
                   return (
                     <TableHead
                       key={header.id}
-                      className="border border-slate-400 bg-slate-200 p-1 w-fit"
+                      className="border px-2 border-slate-400 bg-slate-200"
                     >
                       {header.isPlaceholder
                         ? null
@@ -321,7 +332,6 @@ const ManageAccessEntitlementsTable = () => {
                               setSelected(selectedRows);
                             }, 0);
                           }}
-                          className="mr-1"
                           aria-label="Select all"
                         />
                       )}
@@ -349,14 +359,15 @@ const ManageAccessEntitlementsTable = () => {
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
+                  className=""
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell, index) => (
-                    <TableCell key={cell.id} className="border p-1 w-fit">
+                    <TableCell key={cell.id} className="border py-0 px-1">
                       {index === 0 ? (
                         <Checkbox
-                          className=""
+                          className="my-2"
                           checked={row.getIsSelected()}
                           onCheckedChange={(value) =>
                             row.toggleSelected(!!value)
@@ -399,9 +410,8 @@ const ManageAccessEntitlementsTable = () => {
             )}
           </TableBody>
         </Table>
-        <div className=" pt-2">
-          <Pagination2 table={table} />
-        </div>
+
+        <Pagination2 table={table} />
       </div>
       {/* Start Pagination */}
     </div>

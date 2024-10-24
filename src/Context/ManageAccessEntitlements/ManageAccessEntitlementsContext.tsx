@@ -2,7 +2,7 @@ import { toast } from "@/components/ui/use-toast";
 import {
   ICreateAccessPointsElementTypes,
   IFetchAccessPointsElementTypes,
-  IFetchAccessPointsEntitlementElementsTypes,
+  IFetchAccessEntitlementElementsTypes,
   IManageAccessEntitlementsTypes,
 } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import axios from "axios";
@@ -13,6 +13,7 @@ import {
   useContext,
   useState,
 } from "react";
+import { useGlobalContext } from "../GlobalContext/GlobalContext";
 interface IManageAccessEntitlementsProviderProps {
   children: React.ReactNode;
 }
@@ -26,9 +27,14 @@ interface IContextTypes {
     fetchData: IManageAccessEntitlementsTypes
   ) => Promise<void>;
   filteredData: IFetchAccessPointsElementTypes[];
+  setFilteredData: Dispatch<
+    SetStateAction<IFetchAccessPointsElementTypes[] | []>
+  >;
   isLoading: boolean;
-  isOpenModal: boolean;
-  setIsOpenModal: Dispatch<SetStateAction<boolean>>;
+  isOpenModal: number;
+  selectedRow: ICreateAccessPointsElementTypes[];
+  setSelectedRow: Dispatch<SetStateAction<ICreateAccessPointsElementTypes[]>>;
+  setIsOpenModal: Dispatch<SetStateAction<number>>;
   selectedManageAccessEntitlements: IManageAccessEntitlementsTypes | undefined;
   setSelectedManageAccessEntitlements: Dispatch<
     SetStateAction<IManageAccessEntitlementsTypes | undefined>
@@ -55,11 +61,27 @@ interface IContextTypes {
   table: any;
   setTable: Dispatch<React.SetStateAction<any>>;
   deleteAccessPointsElement: (id: number) => Promise<number | undefined>;
-  createAccessEntitlementElements: (entitlement_id: number) => Promise<void>;
+  createAccessEntitlementElements: (
+    entitlement_id: number,
+    accessPointsMaxId: (number | undefined)[]
+  ) => Promise<void>;
   deleteAccessEntitlementElement: (
     entitlementId: number,
     accessPointId: number
   ) => Promise<void>;
+  editAccessPoint: boolean;
+  setEditAccessPoint: Dispatch<SetStateAction<boolean>>;
+  accessPointStatus: string;
+  setAccessPointStatus: Dispatch<SetStateAction<string>>;
+  fetchAccessPointsData: () => Promise<
+    IFetchAccessPointsElementTypes[] | undefined
+  >;
+  fetchAccessEtitlementElenents: () => Promise<
+    IFetchAccessEntitlementElementsTypes[] | [] | undefined
+  >;
+  accessPoints: ICreateAccessPointsElementTypes[] | undefined;
+  selectedAccessEntitlementElements: number[];
+  setSelectedAccessEntitlementElements: Dispatch<SetStateAction<number[] | []>>;
 }
 export const ManageAccessEntitlements = createContext<IContextTypes | null>(
   null
@@ -75,15 +97,18 @@ export const ManageAccessEntitlementsProvider = ({
   children,
 }: IManageAccessEntitlementsProviderProps) => {
   const url = import.meta.env.VITE_API_URL;
+  const { token } = useGlobalContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selected, setSelected] = useState<IManageAccessEntitlementsTypes[]>(
     []
   );
   const [filteredData, setFilteredData] = useState<
-    IFetchAccessPointsElementTypes[]
+    IFetchAccessPointsElementTypes[] | []
   >([]);
-  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
-
+  const [isOpenModal, setIsOpenModal] = useState<number>(0);
+  const [selectedRow, setSelectedRow] = useState<
+    ICreateAccessPointsElementTypes[]
+  >([]);
   const [
     selectedManageAccessEntitlements,
     setSelectedManageAccessEntitlements,
@@ -97,6 +122,15 @@ export const ManageAccessEntitlementsProvider = ({
   const [save, setSave] = useState<number>(0);
   const [save2, setSave2] = useState<number>(0);
   const [table, setTable] = useState();
+  const [editAccessPoint, setEditAccessPoint] = useState<boolean>(false);
+  const [accessPointStatus, setAccessPointStatus] = useState<string>("");
+  const [accessPoints, setAccessPoints] = useState<
+    ICreateAccessPointsElementTypes[] | undefined
+  >([]);
+  const [
+    selectedAccessEntitlementElements,
+    setSelectedAccessEntitlementElements,
+  ] = useState<number[]>([]);
   //Fetch Manage Access Entitlements
   const fetchManageAccessEntitlements = async () => {
     setIsLoading(true);
@@ -116,7 +150,18 @@ export const ManageAccessEntitlementsProvider = ({
       setIsLoading(false);
     }
   };
-  console.log(selected, "selected");
+  // fetch access points element data
+  const fetchAccessPointsData = async () => {
+    try {
+      const response = await axios.get<IFetchAccessPointsElementTypes[]>(
+        `${url}/access-points-element`
+      );
+      setAccessPoints(response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // Fetch Access Points Entitlement
   const fetchAccessPointsEntitlement = async (
     fetchData: IManageAccessEntitlementsTypes
@@ -125,12 +170,11 @@ export const ManageAccessEntitlementsProvider = ({
     try {
       if (fetchData) {
         const response = await axios.get<
-          IFetchAccessPointsEntitlementElementsTypes[]
+          IFetchAccessEntitlementElementsTypes[]
         >(`${url}/access-entitlement-elements/${fetchData.entitlement_id}`);
         const accessPointsId = response.data.map(
           (data) => data.access_point_id
         );
-        console.log(accessPointsId, "accessPointsId");
 
         //fetch access points data
         const accessPointsData = await Promise.all(
@@ -305,28 +349,32 @@ export const ManageAccessEntitlementsProvider = ({
     postData: ICreateAccessPointsElementTypes
   ) => {
     const {
+      data_source_id,
       element_name,
       description,
-      datasource,
       platform,
       element_type,
       access_control,
       change_control,
       audit,
+      created_by,
+      last_updated_by,
     } = postData;
     try {
       setIsLoading(true);
       const res = await axios.post<ICreateAccessPointsElementTypes>(
         `${url}/access-points-element`,
         {
+          data_source_id,
           element_name,
           description,
-          datasource,
           platform,
           element_type,
           access_control,
           change_control,
           audit,
+          created_by,
+          last_updated_by,
         }
       );
       // setSave((prevSave) => prevSave + 1);
@@ -367,35 +415,35 @@ export const ManageAccessEntitlementsProvider = ({
       console.log(error);
     }
   };
-  //create access entitlement elements
-  const createAccessEntitlementElements = async (entitlement_id: number) => {
-    //get max access point id
-    const res = await axios.get(`${url}/access-points-element`);
-    const accessPointsMaxId =
-      res.data.length > 0
-        ? Math.max(
-            ...res.data.map(
-              (data: IFetchAccessPointsElementTypes) => data.access_point_id
-            )
-          )
-        : 1;
-    console.log(
-      entitlement_id,
-      accessPointsMaxId,
-      "entitlement_id,accessPointsMaxId"
+  //fetch access entitlement elements
+  const fetchAccessEtitlementElenents = async () => {
+    const res = await axios.get<IFetchAccessEntitlementElementsTypes[]>(
+      `${url}/access-entitlement-elements`
     );
+    return res.data;
+  };
+  //create access entitlement elements
+  const createAccessEntitlementElements = async (
+    entitlement_id: number,
+    accessPointsMaxId: (number | undefined)[]
+  ) => {
     //post data
-    await axios
-      .post<IFetchAccessPointsEntitlementElementsTypes>(
-        `${url}/access-entitlement-elements`,
-        {
-          entitlement_id: entitlement_id,
-          access_point_id: accessPointsMaxId,
-        }
-      )
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      for (const id of accessPointsMaxId) {
+        await axios.post<IFetchAccessEntitlementElementsTypes>(
+          `${url}/access-entitlement-elements`,
+          {
+            entitlement_id: entitlement_id,
+            access_point_id: id,
+            created_by: token.user_name,
+            last_updated_by: token.user_name,
+          }
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
     fetchAccessPointsEntitlement(selected[0]);
   };
   const deleteAccessEntitlementElement = async (
@@ -416,7 +464,7 @@ export const ManageAccessEntitlementsProvider = ({
         .finally(() => {
           fetchAccessPointsEntitlement(selected[0]);
         }),
-      await axios.delete(`${url}/access-points-element/${accessPointId}`),
+      // await axios.delete(`${url}/access-points-element/${accessPointId}`),
     ]);
   };
   const value = {
@@ -425,8 +473,11 @@ export const ManageAccessEntitlementsProvider = ({
     selected,
     fetchAccessPointsEntitlement,
     filteredData,
+    setFilteredData,
     isLoading,
     isOpenModal,
+    selectedRow,
+    setSelectedRow,
     setIsOpenModal,
     selectedManageAccessEntitlements,
     setSelectedManageAccessEntitlements,
@@ -447,6 +498,15 @@ export const ManageAccessEntitlementsProvider = ({
     deleteAccessPointsElement,
     createAccessEntitlementElements,
     deleteAccessEntitlementElement,
+    editAccessPoint,
+    setEditAccessPoint,
+    accessPointStatus,
+    setAccessPointStatus,
+    fetchAccessPointsData,
+    fetchAccessEtitlementElenents,
+    accessPoints,
+    selectedAccessEntitlementElements,
+    setSelectedAccessEntitlementElements,
   };
 
   return (

@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   ChevronFirst,
   ChevronLast,
@@ -17,7 +16,7 @@ const Pagination2: React.FC<PaginationProps> = ({ table }) => {
   const totalPages = table.getPageCount();
 
   return (
-    <div className="flex items-center justify-end space-x-4 px-2 py-2 bottom-0 bg-white border-t">
+    <div className="flex items-center justify-end space-x-4 px-2 py-1 bottom-0 bg-white border-t">
       {/* Selected Rows Info */}
       <div className="flex-1 text-sm text-gray-600">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
@@ -26,27 +25,27 @@ const Pagination2: React.FC<PaginationProps> = ({ table }) => {
 
       {/* Pagination Controls */}
       <div className="flex items-center space-x-2">
-        {/* First Page Button */}
-        <Button
-          variant="outline"
-          size="sm"
+        {/* First Page button */}
+        <button
           onClick={() => table.setPageIndex(0)}
           disabled={!canPreviousPage}
-          className="bg-slate-300"
+          className={`p-1 rounded ${
+            !canPreviousPage ? "text-slate-400 bg-slate-200" : " bg-slate-300"
+          }`}
         >
-          <ChevronFirst />
-        </Button>
+          <ChevronFirst size={15} />
+        </button>
 
-        {/* Previous Page Button */}
-        <Button
-          variant="outline"
-          size="sm"
+        {/* Previous Page button */}
+        <button
           onClick={() => table.previousPage()}
           disabled={!canPreviousPage}
-          className="bg-slate-300"
+          className={`p-1 rounded ${
+            !canPreviousPage ? "text-slate-400 bg-slate-200" : " bg-slate-300"
+          }`}
         >
-          <ChevronLeft />
-        </Button>
+          <ChevronLeft size={15} />
+        </button>
 
         {/* Page Number Input */}
         <span className="text-sm">Page</span>
@@ -63,27 +62,27 @@ const Pagination2: React.FC<PaginationProps> = ({ table }) => {
           of {totalPages} ({pageIndex} of {totalPages} pages)
         </span>
 
-        {/* Next Page Button */}
-        <Button
-          variant="outline"
-          size="sm"
+        {/* Next Page button */}
+        <button
           onClick={() => table.nextPage()}
           disabled={!canNextPage}
-          className="bg-slate-300"
+          className={`p-1 rounded ${
+            !canNextPage ? "text-slate-400 bg-slate-200" : " bg-slate-300"
+          }`}
         >
-          <ChevronRight />
-        </Button>
+          <ChevronRight size={15} />
+        </button>
 
-        {/* Last Page Button */}
-        <Button
-          variant="outline"
-          size="sm"
+        {/* Last Page button */}
+        <button
           onClick={() => table.setPageIndex(totalPages - 1)}
           disabled={!canNextPage}
-          className="bg-slate-300"
+          className={`p-1 rounded ${
+            !canNextPage ? "text-slate-400 bg-slate-200" : " bg-slate-300"
+          }`}
         >
-          <ChevronLast />
-        </Button>
+          <ChevronLast size={15} />
+        </button>
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import {
   IAddUserTypes,
   ITenantsTypes,
   IPersonsTypes,
+  IUsersInfoTypes,
 } from "@/types/interfaces/users.interface";
 import {
   IDataSourcePostTypes,
@@ -47,6 +48,8 @@ interface GlobalContex {
   createUser: (postData: IAddUserTypes) => void;
   fetchTenants: () => Promise<ITenantsTypes[] | undefined>;
   person: IPersonsTypes | undefined;
+  usersInfo: IUsersInfoTypes[];
+  fetchUsersAndPersons: () => Promise<void>;
 }
 
 const GlobalContex = createContext({} as GlobalContex);
@@ -75,6 +78,7 @@ export function GlobalContextProvider({
 
   const [users, setUsers] = useState<Users[]>([]);
   const [person, setPerson] = useState<IPersonsTypes>();
+  const [usersInfo, setUsersInfo] = useState<IUsersInfoTypes[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const url = import.meta.env.VITE_API_URL;
@@ -102,7 +106,27 @@ export function GlobalContextProvider({
 
     fetchUsers();
   }, [url, token?.user_id]);
+  // fetch Users and Persons at the same time and merge
+  const fetchUsersAndPersons = async () => {
+    try {
+      const [users, persons] = await Promise.all([
+        await axios.get<Users[]>(`${url}/users`),
+        await axios.get<Users[]>(`${url}/persons`),
+      ]);
+      //merge users and persons
+      const attributesMap = new Map(
+        persons.data.map((attr) => [attr.user_id, attr])
+      );
+      const mergedData = users.data.map((item) => ({
+        ...item,
+        ...(attributesMap.get(item.user_id) || {}),
+      }));
 
+      setUsersInfo(mergedData as IUsersInfoTypes[]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   //Fetch DataSources
   const fetchDataSources = async () => {
     try {
@@ -146,6 +170,8 @@ export function GlobalContextProvider({
       last_access_synchronization_status,
       last_transaction_synchronization_status,
       default_datasource,
+      created_by,
+      last_updated_by,
     } = postData;
     try {
       const res = await axios.post<IDataSourceTypes>(`${url}/data-sources`, {
@@ -156,6 +182,8 @@ export function GlobalContextProvider({
         last_access_synchronization_status,
         last_transaction_synchronization_status,
         default_datasource,
+        created_by,
+        last_updated_by,
       });
       // for sync data call fetch data source
       console.log(res.status);
@@ -194,6 +222,8 @@ export function GlobalContextProvider({
           last_transaction_synchronization_status:
             postData.last_transaction_synchronization_status,
           default_datasource: postData.default_datasource,
+          created_by: postData.created_by,
+          last_updated_by: postData.last_updated_by,
         }
       );
       // for sync data call fetch data source
@@ -227,8 +257,14 @@ export function GlobalContextProvider({
         });
       }
       console.log(res);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      if (error?.status === 500) {
+        toast({
+          title: "Successfully Deleted",
+          description: `DataSource Name : ${error.message}`,
+        });
+      }
     }
   };
   // Tenant IDs
@@ -286,6 +322,7 @@ export function GlobalContextProvider({
       console.log(error);
     } finally {
       setIsLoading(false);
+      fetchUsersAndPersons();
     }
   };
   return (
@@ -307,6 +344,8 @@ export function GlobalContextProvider({
         createUser,
         fetchTenants,
         person,
+        usersInfo,
+        fetchUsersAndPersons,
       }}
     >
       <SocketContextProvider>
