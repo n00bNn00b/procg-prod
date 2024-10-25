@@ -60,10 +60,9 @@ export const columns: ColumnDef<Users>[] = [
   {
     accessorKey: "last_name",
     header: "Last Name",
-    cell: ({ row }) => {
-      const lastUpdatedOn: string = row.getValue("last_name");
-      return <div className="capitalize">{lastUpdatedOn.split(",")[0]}</div>;
-    },
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("last_name")}</div>
+    ),
   },
   {
     accessorKey: "job_title",
