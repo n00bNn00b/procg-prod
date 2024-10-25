@@ -4,6 +4,7 @@ import {
   IFetchAccessPointsElementTypes,
   IFetchAccessEntitlementElementsTypes,
   IManageAccessEntitlementsTypes,
+  IManageAccessEntitlementsPerPageTypes,
 } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import axios from "axios";
 import {
@@ -20,9 +21,10 @@ interface IManageAccessEntitlementsProviderProps {
 interface IContextTypes {
   selected: IManageAccessEntitlementsTypes[];
   setSelected: Dispatch<SetStateAction<IManageAccessEntitlementsTypes[]>>;
-  fetchManageAccessEntitlements: () => Promise<
-    IManageAccessEntitlementsTypes[] | undefined
-  >;
+  fetchManageAccessEntitlements: (
+    page: number,
+    limit: number
+  ) => Promise<IManageAccessEntitlementsPerPageTypes | undefined>;
   fetchAccessPointsEntitlement: (
     fetchData: IManageAccessEntitlementsTypes
   ) => Promise<void>;
@@ -82,6 +84,13 @@ interface IContextTypes {
   accessPoints: ICreateAccessPointsElementTypes[] | undefined;
   selectedAccessEntitlementElements: number[];
   setSelectedAccessEntitlementElements: Dispatch<SetStateAction<number[] | []>>;
+  //lazy loading
+  page: number;
+  setPage: (number: number) => void;
+  totalPage: number;
+  currentPage: number;
+  limit: number;
+  setLimit: (number: number) => void;
 }
 export const ManageAccessEntitlements = createContext<IContextTypes | null>(
   null
@@ -117,8 +126,6 @@ export const ManageAccessEntitlementsProvider = ({
     useState(false);
   const [mangeAccessEntitlementAction, setMangeAccessEntitlementAction] =
     useState<string>("");
-  const [manageAccessEntitlementsMaxId, setManageAccessEntitlementsMaxId] =
-    useState<number | undefined>(undefined);
   const [save, setSave] = useState<number>(0);
   const [save2, setSave2] = useState<number>(0);
   const [table, setTable] = useState();
@@ -132,18 +139,17 @@ export const ManageAccessEntitlementsProvider = ({
     setSelectedAccessEntitlementElements,
   ] = useState<number[]>([]);
   //Fetch Manage Access Entitlements
-  const fetchManageAccessEntitlements = async () => {
+  const fetchManageAccessEntitlements = async (page: number, limit: number) => {
     setIsLoading(true);
     try {
-      const response = await axios.get<IManageAccessEntitlementsTypes[]>(
-        `${url}/manage-access-entitlements`
+      const response = await axios.get<IManageAccessEntitlementsPerPageTypes>(
+        `${url}/manage-access-entitlements/p?page=${page}&limit=${limit}`
       );
-      const sortingData = response.data.sort(
-        (a, b) => b.entitlement_id - a.entitlement_id
-      );
-      const maxID = Math.max(...sortingData.map((data) => data.entitlement_id));
-      setManageAccessEntitlementsMaxId(maxID);
-      return sortingData ?? [];
+      // const sortingData = response.data.sort(
+      //   (a, b) => b.entitlement_id - a.entitlement_id
+      // );
+      const sortingData = response.data;
+      return sortingData ?? {};
     } catch (error) {
       console.log(error);
     } finally {
@@ -158,6 +164,26 @@ export const ManageAccessEntitlementsProvider = ({
       );
       setAccessPoints(response.data);
       return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(3);
+  const [totalPage, setTotalPage] = useState<number>(Number());
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  // access entitlement elements lazy loading
+  const fetchAccessEtitlementElenentsLazyLoading = async (
+    data: IFetchAccessPointsElementTypes[]
+  ) => {
+    try {
+      const totalCount = data.length;
+      const offset = (page - 1) * limit;
+      const results = data.slice(offset, offset + limit);
+      const totalPages = Math.ceil(totalCount / limit);
+      setFilteredData(results);
+      setTotalPage(totalPages);
+      setCurrentPage(page);
     } catch (error) {
       console.log(error);
     }
@@ -189,7 +215,7 @@ export const ManageAccessEntitlementsProvider = ({
           const sortingData = accessPointsData.sort(
             (a, b) => b?.access_point_id - a?.access_point_id
           );
-          setFilteredData(sortingData);
+          fetchAccessEtitlementElenentsLazyLoading(sortingData);
         } else {
           setFilteredData([]);
         }
@@ -209,11 +235,6 @@ export const ManageAccessEntitlementsProvider = ({
       description,
       comments,
       status,
-      effective_date,
-      revison,
-      revision_date,
-      created_on,
-      last_updated_on,
       last_updated_by,
       created_by,
     } = postData;
@@ -222,18 +243,10 @@ export const ManageAccessEntitlementsProvider = ({
       const res = await axios.post<IManageAccessEntitlementsTypes>(
         `${url}/manage-access-entitlements`,
         {
-          entitlement_id: manageAccessEntitlementsMaxId
-            ? manageAccessEntitlementsMaxId + 1
-            : 0 + 1,
           entitlement_name,
           description,
           comments,
           status,
-          effective_date,
-          revison,
-          revision_date,
-          created_on,
-          last_updated_on,
           last_updated_by,
           created_by,
         }
@@ -270,11 +283,6 @@ export const ManageAccessEntitlementsProvider = ({
       description,
       comments,
       status,
-      effective_date,
-      revison,
-      revision_date,
-      created_on,
-      last_updated_on,
       last_updated_by,
       created_by,
     } = putData;
@@ -287,11 +295,6 @@ export const ManageAccessEntitlementsProvider = ({
           description,
           comments,
           status,
-          effective_date,
-          revison,
-          revision_date,
-          created_on,
-          last_updated_on,
           last_updated_by,
           created_by,
         }
@@ -507,6 +510,12 @@ export const ManageAccessEntitlementsProvider = ({
     accessPoints,
     selectedAccessEntitlementElements,
     setSelectedAccessEntitlementElements,
+    page,
+    setPage,
+    totalPage,
+    currentPage,
+    limit,
+    setLimit,
   };
 
   return (

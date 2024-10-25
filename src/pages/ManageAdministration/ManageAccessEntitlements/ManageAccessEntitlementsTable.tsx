@@ -46,8 +46,8 @@ import {
 
 import { IManageAccessEntitlementsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
-import Pagination2 from "@/components/Pagination/Pagination2";
 import columns from "./Columns";
+import Pagination3 from "@/components/Pagination/Pagination3";
 const ManageAccessEntitlementsTable = () => {
   const {
     fetchManageAccessEntitlements,
@@ -62,9 +62,14 @@ const ManageAccessEntitlementsTable = () => {
     setTable,
     filteredData,
     setFilteredData,
+    setLimit,
   } = useManageAccessEntitlementsContext();
   const [data, setData] = React.useState<IManageAccessEntitlementsTypes[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [page, setPage] = React.useState<number>(1);
+  const limit = 3;
+  const [totalPage, setTotalPage] = React.useState<number | undefined>();
+  const [currentPage, setCurrentPage] = React.useState<number | undefined>();
   // Fetch Data
   React.useEffect(() => {
     // if first time fetch empty array
@@ -77,8 +82,13 @@ const ManageAccessEntitlementsTable = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const result = await fetchManageAccessEntitlements();
-        setData(result ?? []);
+        const result = await fetchManageAccessEntitlements(page, limit);
+        setTotalPage(result?.totalPages);
+        setCurrentPage(result?.currentPage);
+        const sortedData = result?.results.sort(
+          (a, b) => b.entitlement_id - a.entitlement_id
+        );
+        setData(sortedData ?? []);
       } catch (error) {
         console.error("Error fetching data sources:", error);
       } finally {
@@ -86,7 +96,7 @@ const ManageAccessEntitlementsTable = () => {
       }
     };
     fetchData();
-  }, [save]);
+  }, [save, page]);
   // loader
   tailspin.register();
   // Shadcn Form
@@ -117,6 +127,7 @@ const ManageAccessEntitlementsTable = () => {
   const handleFetchAccessPoints = () => {
     fetchAccessPointsEntitlement(selected[0]);
     setSelectedManageAccessEntitlements(selected[0]);
+    setLimit(5);
   };
 
   const table = useReactTable({
@@ -411,7 +422,13 @@ const ManageAccessEntitlementsTable = () => {
           </TableBody>
         </Table>
 
-        <Pagination2 table={table} />
+        <Pagination3
+          setPage={setPage}
+          page={page}
+          totalPage={totalPage}
+          table={table}
+          currentPage={currentPage}
+        />
       </div>
       {/* Start Pagination */}
     </div>
