@@ -160,18 +160,20 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
             <TableBody>
               {draftMessages.map((msg) => (
                 <TableRow key={msg.id}>
-                  <TableCell>{msg.recivers.slice(0, 4).join(", ")}</TableCell>
-                  <TableCell>
+                  <TableCell className="py-2">
+                    {msg.recivers.slice(0, 4).join(", ")}
+                  </TableCell>
+                  <TableCell className="py-2">
                     <span className="font-medium mr-1">{msg.subject}</span>
                     <span className="text-dark-400 mr-1">
                       {msg.body?.slice(0, 60)}
                     </span>
                     <span>...</span>
                   </TableCell>
-                  <TableCell className="w-[115px]">
+                  <TableCell className="w-[115px] py-2">
                     {convertDate(msg.date)}
                   </TableCell>
-                  <TableCell className="flex gap-2 h-full items-center">
+                  <TableCell className="flex gap-2 h-full items-center py-2">
                     <View
                       onClick={() => handleNavigate(msg.id)}
                       color="#044BD9"
