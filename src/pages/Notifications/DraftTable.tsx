@@ -59,7 +59,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
     { length: totalPageNumbers },
     (_, i) => i + 1
   );
-  let startNumber = 0;
+  let startNumber = 1;
   let endNumber = curretPage * totalDisplayedMessages;
 
   if (endNumber > totalDraftMessages) {
