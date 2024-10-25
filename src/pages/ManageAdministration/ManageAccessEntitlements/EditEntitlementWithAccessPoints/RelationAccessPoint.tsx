@@ -181,8 +181,8 @@ const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
           </div>
         </div>
         {/* w-[calc(100%-11rem)] */}
-        <div className="w-[calc(100%-11rem)] overflow-auto scrollbar-thin border rounded-sm p-3">
-          <div className="rounded-sm max-h-[10rem] scrollbar-thin overflow-auto flex flex-wrap gap-1 justify-end">
+        <div className="w-[calc(100%-11rem)] scrollbar-thin border rounded-sm p-3">
+          <div className="rounded-sm max-h-[10rem] scrollbar-thin flex flex-wrap gap-1 justify-end">
             {selectedItem?.map((rec) => (
               <div
                 key={rec.access_point_id}

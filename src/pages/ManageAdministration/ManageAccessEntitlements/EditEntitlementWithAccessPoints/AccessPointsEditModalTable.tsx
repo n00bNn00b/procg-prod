@@ -21,14 +21,20 @@ import {
 } from "@/components/ui/table";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import columns from "./Columns";
-import Pagination2 from "@/components/Pagination/Pagination2";
 import RelationAccessPoint from "./RelationAccessPoint";
+import Pagination3 from "@/components/Pagination/Pagination3";
 
 const AccessPointsEditModal = () => {
   const {
     filteredData: data,
     isLoading,
     setSelectedAccessEntitlementElements,
+    page,
+    setPage,
+    totalPage,
+    currentPage,
+    limit,
+    setLimit,
   } = useManageAccessEntitlementsContext();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -41,6 +47,10 @@ const AccessPointsEditModal = () => {
     pageIndex: 0, //initial page index
     pageSize: 6, //default page size
   });
+  React.useEffect(() => {
+    setLimit(10);
+  }, [page, limit]);
+
   const table = useReactTable({
     data,
     columns,
@@ -207,8 +217,14 @@ const AccessPointsEditModal = () => {
               )}
             </TableBody>
           </Table>
-          <div className="">
-            <Pagination2 table={table} />
+          <div>
+            <Pagination3
+              setPage={setPage}
+              page={page}
+              totalPage={totalPage}
+              table={table}
+              currentPage={currentPage}
+            />
           </div>
         </div>
       </div>

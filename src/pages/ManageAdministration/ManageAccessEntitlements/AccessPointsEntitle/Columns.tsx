@@ -14,7 +14,6 @@ const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
-        className=" "
       />
     ),
     enableSorting: false,
@@ -26,6 +25,7 @@ const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
     header: ({ column }) => {
       return (
         <div
+          className="min-w-max"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Element Name
@@ -33,9 +33,13 @@ const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
         </div>
       );
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("element_name")}</div>
-    ),
+    cell: ({ row }) => {
+      return (
+        <div className="capitalize min-w-max">
+          {row.getValue("element_name")}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "description",
@@ -43,12 +47,14 @@ const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
       return <div className="capitalize min-w-[30rem]">Description</div>;
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("description")}</div>
+      <div className="capitalize min-w-max">{row.getValue("description")}</div>
     ),
   },
   {
     accessorKey: "data_source_id",
-    header: "Datasource",
+    header: () => {
+      return <div className="capitalize min-w-max">Data Source</div>;
+    },
     cell: ({ row }) => {
       const { fetchDataSource } = useGlobalContext();
       const [datasources, setDatasources] = useState<IDataSourceTypes>();
@@ -69,7 +75,9 @@ const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
   },
   {
     accessorKey: "platform",
-    header: "Platform",
+    header: () => {
+      return <div className="capitalize min-w-max">Platform</div>;
+    },
     cell: ({ row }) => (
       <div className="capitalize min-w-max">{row.getValue("platform")}</div>
     ),

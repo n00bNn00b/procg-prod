@@ -10,6 +10,11 @@ export interface IDataSourceTypes {
   last_transaction_synchronization_status: string;
   default_datasource: string;
 }
+export interface IManageAccessEntitlementsPerPageTypes {
+  results: IDataSourceTypes[];
+  totalPages: number;
+  currentPage: number;
+}
 export interface IDataSourcePostTypes {
   data_source_id?: number;
   datasource_name: string;

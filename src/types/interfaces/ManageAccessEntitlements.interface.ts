@@ -12,6 +12,11 @@ export interface IManageAccessEntitlementsTypes {
   last_updated_by: string;
   created_by: string;
 }
+export interface IManageAccessEntitlementsPerPageTypes {
+  results: IManageAccessEntitlementsTypes[];
+  totalPages: number;
+  currentPage: number;
+}
 export interface IFetchAccessPointsElementTypes {
   access_point_id: number;
   data_source_id: number;

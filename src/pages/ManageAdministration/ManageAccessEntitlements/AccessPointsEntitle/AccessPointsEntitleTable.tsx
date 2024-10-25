@@ -30,7 +30,7 @@ import { ICreateAccessPointsElementTypes } from "@/types/interfaces/ManageAccess
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import columns from "./Columns";
 import { Button } from "@/components/ui/button";
-import Pagination2 from "@/components/Pagination/Pagination2";
+import Pagination3 from "@/components/Pagination/Pagination3";
 
 const AccessPointsEntitleTable = () => {
   const {
@@ -43,7 +43,14 @@ const AccessPointsEntitleTable = () => {
     save2,
     setSelectedRow,
     setAccessPointStatus,
+    page,
+    setPage,
+    totalPage,
+    currentPage,
+    limit,
+    setLimit,
   } = useManageAccessEntitlementsContext();
+
   const [pagination, setPagination] = useState({
     pageIndex: 0, //initial page index
     pageSize: 5, //default page size
@@ -86,7 +93,8 @@ const AccessPointsEntitleTable = () => {
     if (selected) {
       fetchAccessPointsEntitlement(selected[0]);
     }
-  }, [save2]);
+    setLimit(5);
+  }, [save2, page, limit]);
   // const handleDelete = async () => {
   //   if (selectedRow.length > 0) {
   //     // const res = await deleteAccessPointsElement(
@@ -108,13 +116,16 @@ const AccessPointsEntitleTable = () => {
   // };
   return (
     <div className="">
-      <div className="w-full">
+      <div>
         <div className="flex items-center justify-between py-4">
           <div className="flex gap-2">
             <div>
               <Button
                 className="px-4 py-2 border rounded shadow"
-                onClick={() => setIsOpenModal(3)}
+                onClick={() => {
+                  setIsOpenModal(3);
+                  setLimit(10);
+                }}
                 disabled={!selectedManageAccessEntitlements?.entitlement_id}
               >
                 <h3>Access Points</h3>
@@ -286,8 +297,14 @@ const AccessPointsEntitleTable = () => {
               )}
             </TableBody>
           </Table>
-          <div className=" pt-2">
-            <Pagination2 table={table} />
+          <div>
+            <Pagination3
+              setPage={setPage}
+              page={page}
+              totalPage={totalPage}
+              table={table}
+              currentPage={currentPage}
+            />
           </div>
         </div>
       </div>

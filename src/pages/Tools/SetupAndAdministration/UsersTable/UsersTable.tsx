@@ -31,16 +31,20 @@ import {
 } from "@/components/ui/table";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import columns from "./Columns";
-import Pagination2 from "@/components/Pagination/Pagination2";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import CustomModal from "@/components/CustomModal/CustomModal";
 import AddUser from "@/components/AddUser/AddUser";
+import Pagination3 from "@/components/Pagination/Pagination3";
 
 export function UsersTable() {
   const {
     isLoading,
     fetchUsersAndPersons,
     usersInfo: data,
+    page,
+    setPage,
+    totalPage,
+    currentPage,
   } = useGlobalContext();
   const { isOpenModal, setIsOpenModal } = useManageAccessEntitlementsContext();
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -77,7 +81,7 @@ export function UsersTable() {
   });
   React.useEffect(() => {
     fetchUsersAndPersons();
-  }, []);
+  }, [page]);
 
   return (
     <div className="px-3">
@@ -254,8 +258,14 @@ export function UsersTable() {
             )}
           </TableBody>
         </Table>
-        <div className=" pt-2">
-          <Pagination2 table={table} />
+        <div>
+          <Pagination3
+            setPage={setPage}
+            page={page}
+            totalPage={totalPage}
+            table={table}
+            currentPage={currentPage}
+          />
         </div>
       </div>
       {/* Start Pagination */}

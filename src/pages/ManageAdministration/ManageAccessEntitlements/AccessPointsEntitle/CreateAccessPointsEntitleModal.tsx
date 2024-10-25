@@ -33,12 +33,13 @@ const AccessPointsEntitleModal = () => {
     createAccessEntitlementElements,
     accessPointStatus,
   } = useManageAccessEntitlementsContext();
-  const { fetchDataSources, token } = useGlobalContext();
+  const { token } = useGlobalContext();
   const [dataSources, setDataSources] = useState<IDataSourceTypes[]>([]);
+  const url = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const res = async () => {
-      const res = await fetchDataSources();
-      setDataSources(res ?? []);
+      const res = await axios.get<IDataSourceTypes[]>(`${url}/data-sources`);
+      setDataSources(res.data);
     };
     res();
   }, []);

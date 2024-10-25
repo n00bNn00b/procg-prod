@@ -16,7 +16,7 @@ const AccessPointsEntitle = () => {
   // };
   return (
     <div className="px-3">
-      <div className="w-full">
+      <div>
         <AccessPointsEntitleTable />
         {/* Modal */}
         <div>

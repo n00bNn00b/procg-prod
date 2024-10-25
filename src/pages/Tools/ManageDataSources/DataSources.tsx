@@ -47,20 +47,29 @@ import {
 import DataSourceDataAdd from "@/components/DataSourceDataAdd/DataSourceDataAdd";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import Pagination2 from "@/components/Pagination/Pagination2";
+import Pagination3 from "@/components/Pagination/Pagination3";
 
 const DataSources = () => {
   const { fetchDataSources, deleteDataSource } = useGlobalContext();
   const [data, setData] = React.useState<IDataSourceTypes[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [save, setSave] = React.useState<number>(0);
+  const [page, setPage] = React.useState<number>(1);
+  const limit = 3;
+  const [totalPage, setTotalPage] = React.useState<number | undefined>();
+  const [currentPage, setCurrentPage] = React.useState<number | undefined>();
   // Fetch Data
   React.useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const result = await fetchDataSources();
-        setData(result ?? []);
+        const result = await fetchDataSources(page, limit);
+        setTotalPage(result?.totalPages);
+        setCurrentPage(result?.currentPage);
+        const sortedData = result?.results.sort(
+          (a, b) => b.data_source_id - a.data_source_id
+        );
+        setData(sortedData ?? []);
       } catch (error) {
         console.error("Error fetching data sources:", error);
       } finally {
@@ -69,7 +78,7 @@ const DataSources = () => {
     };
 
     fetchData();
-  }, [save]);
+  }, [save, page]);
   // loader
   tailspin.register();
   // Shadcn Form
@@ -554,7 +563,13 @@ const DataSources = () => {
             )}
           </TableBody>
         </Table>
-        <Pagination2 table={table} />
+        <Pagination3
+          setPage={setPage}
+          page={page}
+          totalPage={totalPage}
+          table={table}
+          currentPage={currentPage}
+        />
       </div>
       {/* Start Pagination */}
     </div>

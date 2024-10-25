@@ -17,6 +17,7 @@ import {
 import {
   IDataSourcePostTypes,
   IDataSourceTypes,
+  IManageAccessEntitlementsPerPageTypes,
 } from "@/types/interfaces/datasource.interface";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -35,7 +36,10 @@ interface GlobalContex {
   user: string;
   setToken: React.Dispatch<React.SetStateAction<Token>>;
   users: Users[];
-  fetchDataSources: () => Promise<IDataSourceTypes[] | undefined>;
+  fetchDataSources: (
+    page: number,
+    limit: number
+  ) => Promise<IManageAccessEntitlementsPerPageTypes | undefined>;
   fetchDataSource: (id: number) => Promise<IDataSourceTypes>;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -50,6 +54,13 @@ interface GlobalContex {
   person: IPersonsTypes | undefined;
   usersInfo: IUsersInfoTypes[];
   fetchUsersAndPersons: () => Promise<void>;
+  //lazy loading
+  page: number;
+  setPage: (number: number) => void;
+  totalPage: number;
+  currentPage: number;
+  limit: number;
+  setLimit: (number: number) => void;
 }
 
 const GlobalContex = createContext({} as GlobalContex);
@@ -106,6 +117,24 @@ export function GlobalContextProvider({
 
     fetchUsers();
   }, [url, token?.user_id]);
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(13);
+  const [totalPage, setTotalPage] = useState<number>(Number());
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  // access entitlement elements lazy loading
+  const fetchUsersAndPersonsLazyLoading = async (data: IUsersInfoTypes[]) => {
+    try {
+      const totalCount = data.length;
+      const offset = (page - 1) * limit;
+      const results = data.slice(offset, offset + limit);
+      const totalPages = Math.ceil(totalCount / limit);
+      setUsersInfo(results);
+      setTotalPage(totalPages);
+      setCurrentPage(page);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // fetch Users and Persons at the same time and merge
   const fetchUsersAndPersons = async () => {
     try {
@@ -122,20 +151,21 @@ export function GlobalContextProvider({
         ...(attributesMap.get(item.user_id) || {}),
       }));
 
-      setUsersInfo(mergedData as IUsersInfoTypes[]);
+      fetchUsersAndPersonsLazyLoading(mergedData as IUsersInfoTypes[]);
     } catch (error) {
       console.log(error);
     }
   };
   //Fetch DataSources
-  const fetchDataSources = async () => {
+  const fetchDataSources = async (page: number, limit: number) => {
     try {
-      const response = await axios.get<IDataSourceTypes[]>(
-        `${url}/data-sources`
+      const response = await axios.get<IManageAccessEntitlementsPerPageTypes>(
+        `${url}/data-sources/p?page=${page}&limit=${limit}`
       );
-      const sortingData = response.data.sort(
-        (a, b) => b.data_source_id - a.data_source_id
-      );
+      // const sortingData = response.data.sort(
+      //   (a, b) => b.data_source_id - a.data_source_id
+      // );
+      const sortingData = response.data;
       return sortingData ?? [];
     } catch (error) {
       console.log(error);
@@ -346,6 +376,12 @@ export function GlobalContextProvider({
         person,
         usersInfo,
         fetchUsersAndPersons,
+        page,
+        setPage,
+        totalPage,
+        currentPage,
+        limit,
+        setLimit,
       }}
     >
       <SocketContextProvider>
