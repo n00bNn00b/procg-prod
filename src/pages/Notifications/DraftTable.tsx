@@ -209,7 +209,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
               ))}
             </TableBody>
           </Table>
-          <div className="flex w-full justify-center">
+          <div className="flex w-full justify-center mt-4">
             <div className="flex gap-4 items-center">
               <button
                 onClick={handlePrevious}
