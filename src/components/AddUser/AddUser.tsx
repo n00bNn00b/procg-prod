@@ -109,7 +109,7 @@ const AddUser = () => {
         <h1>Create An Account</h1>
         <X onClick={() => setIsOpenModal(0)} className="cursor-pointer" />
       </div>
-      <div className="flex items-center justify-center p-2">
+      <div className="p-2">
         <AddForm
           form={form}
           isLoading={isLoading}
