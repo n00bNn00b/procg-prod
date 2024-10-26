@@ -125,10 +125,15 @@ export function SocketContextProvider({ children }: SocketContextProps) {
 
   //Listen to socket events
   useEffect(() => {
-    socket.on("message", (data) => {
+    socket.on("receivedMessage", (data) => {
       setSocketMessages((prevArray) => [data, ...prevArray]);
-      setReceivedMessages((prev) => [data, ...prev]);
-      setTotalReceivedMessages((prev) => prev + 1);
+      const receivedMessagesId = receivedMessages.map((msg) => msg.id);
+      if (receivedMessagesId.includes(data.id)) {
+        return;
+      } else {
+        setReceivedMessages((prev) => [data, ...prev]);
+        setTotalReceivedMessages((prev) => prev + 1);
+      }
     });
 
     socket.on("sentMessage", (data) => {
