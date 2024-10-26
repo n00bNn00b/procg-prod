@@ -58,60 +58,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     },
   });
 
-  //Fetch Sent Messages
-  useEffect(() => {
-    const fetchSentMessages = async () => {
-      try {
-        const response = await axios.get<Message[]>(
-          `${url}/messages/sent/${user}`
-        );
-        const result = response.data;
-        setSentMessages(result);
-      } catch (error) {
-        console.log(error);
-        return [];
-      }
-    };
-
-    fetchSentMessages();
-  }, [url, user]);
-
-  //Fetch Received Messages
-  useEffect(() => {
-    const fetchReceivedMessages = async () => {
-      try {
-        const response = await axios.get<Message[]>(
-          `${url}/messages/received/${user}/1`
-        );
-        const result = response.data;
-        setReceivedMessages(result);
-      } catch (error) {
-        console.log(error);
-        return [];
-      }
-    };
-
-    fetchReceivedMessages();
-  }, [url, user]);
-
-  //Fetch Draft Messages
-  useEffect(() => {
-    const fetchDraftMessages = async () => {
-      try {
-        const response = await axios.get<Message[]>(
-          `${url}/messages/draft/${user}`
-        );
-        const result = response.data;
-        setDraftMessages(result);
-      } catch (error) {
-        console.log(error);
-        return [];
-      }
-    };
-
-    fetchDraftMessages();
-  }, [url, user]);
-
   //Fetch Notification Messages
   useEffect(() => {
     const fetchNotificationMessages = async () => {
@@ -130,7 +76,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     fetchNotificationMessages();
   }, [url, user]);
 
-  //Fetch Total Received Messages Number
+  // Fetch Total Received Messages Number
   useEffect(() => {
     const fetchTotalReceivedMessages = async () => {
       try {
@@ -147,7 +93,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     fetchTotalReceivedMessages();
   }, [url, user]);
 
-  //Fetch Total Sent Messages Number
+  // Fetch Total Sent Messages Number
   useEffect(() => {
     const fetchTotalSentMessages = async () => {
       try {
@@ -162,7 +108,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     fetchTotalSentMessages();
   }, [url, user]);
 
-  //Fetch Total Draft Messages Number
+  // Fetch Total Draft Messages Number
   useEffect(() => {
     const fetchTotalDraftMessages = async () => {
       try {
