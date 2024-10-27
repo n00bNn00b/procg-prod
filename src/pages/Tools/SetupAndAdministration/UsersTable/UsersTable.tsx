@@ -153,7 +153,7 @@ export function UsersTable() {
                   return (
                     <TableHead
                       key={header.id}
-                      className="border border-slate-400 bg-slate-200 p-1 w-fit"
+                      className="border border-slate-400 bg-slate-200 p-1 h-9"
                     >
                       {header.isPlaceholder
                         ? null

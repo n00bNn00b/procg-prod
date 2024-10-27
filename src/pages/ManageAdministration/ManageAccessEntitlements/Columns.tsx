@@ -1,20 +1,31 @@
 import { IManageAccessEntitlementsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
-import { Checkbox } from "@radix-ui/react-checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
   {
     id: "select",
-    header: ({ table }) => {
-      return (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          aria-label="Select all"
-        />
-      );
-    },
+    // header: ({ table }) => {
+    //   const { setSelected } = useManageAccessEntitlementsContext();
+    //   return (
+    //     <Checkbox
+    //       checked={
+    //         table.getIsAllPageRowsSelected() ||
+    //         (table.getIsSomePageRowsSelected() && "indeterminate")
+    //       }
+    //       onCheckedChange={(value) => {
+    //         // Toggle all page rows selected
+    //         table.toggleAllPageRowsSelected(!!value);
+    //         setTimeout(() => {
+    //           const selectedRows = table
+    //             .getSelectedRowModel()
+    //             .rows.map((row) => row.original);
+    //           console.log(selectedRows);
+    //           setSelected(selectedRows);
+    //         }, 0);
+    //       }}
+    //       aria-label="Select all"
+    //     />
+    //   );
+    // },
     // cell: ({ row }) => (
     //   <Checkbox
     //     checked={row.getIsSelected()}
@@ -128,9 +139,7 @@ const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
       );
     },
     cell: ({ row }) => {
-      const sliceDate = String(row.getValue("effective_date"))
-        .toString()
-        .slice(0, 10);
+      const sliceDate = String(row.getValue("effective_date")).slice(0, 10);
       return <div className="capitalize min-w-max">{sliceDate}</div>;
     },
   },
@@ -163,9 +172,7 @@ const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
       );
     },
     cell: ({ row }) => {
-      const sliceDate = String(row.getValue("revision_date"))
-        .toString()
-        .slice(0, 10);
+      const sliceDate = String(row.getValue("revision_date")).slice(0, 10);
       return <div className="capitalize min-w-max">{sliceDate}</div>;
     },
   },
@@ -182,9 +189,7 @@ const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
       );
     },
     cell: ({ row }) => {
-      const sliceDate = String(row.getValue("created_on"))
-        .toString()
-        .slice(0, 10);
+      const sliceDate = String(row.getValue("created_on")).slice(0, 10);
       return <div className="capitalize min-w-max">{sliceDate}</div>;
     },
   },
@@ -217,9 +222,7 @@ const columns: ColumnDef<IManageAccessEntitlementsTypes>[] = [
       );
     },
     cell: ({ row }) => {
-      const sliceDate = String(row.getValue("last_updated_on"))
-        .toString()
-        .slice(0, 10);
+      const sliceDate = String(row.getValue("last_updated_on")).slice(0, 10);
       return <div className="capitalize min-w-max">{sliceDate}</div>;
     },
   },

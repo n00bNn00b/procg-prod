@@ -48,13 +48,7 @@ const AccessPointsEntitleTable = () => {
     totalPage,
     currentPage,
     limit,
-    setLimit,
   } = useManageAccessEntitlementsContext();
-
-  const [pagination, setPagination] = useState({
-    pageIndex: 0, //initial page index
-    pageSize: 5, //default page size
-  });
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -71,13 +65,11 @@ const AccessPointsEntitleTable = () => {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination,
     },
   });
   const handleRowSelected = (rowData: ICreateAccessPointsElementTypes) => {
@@ -93,7 +85,7 @@ const AccessPointsEntitleTable = () => {
     if (selected) {
       fetchAccessPointsEntitlement(selected[0]);
     }
-    setLimit(5);
+    // setLimit(5);
   }, [save2, page, limit]);
   // const handleDelete = async () => {
   //   if (selectedRow.length > 0) {
@@ -115,16 +107,16 @@ const AccessPointsEntitleTable = () => {
   //   }
   // };
   return (
-    <div className="">
+    <div className="px-3">
       <div>
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-between py-2">
           <div className="flex gap-2">
             <div>
               <Button
                 className="px-4 py-2 border rounded shadow"
                 onClick={() => {
                   setIsOpenModal(3);
-                  setLimit(10);
+                  // setLimit(10);
                 }}
                 disabled={!selectedManageAccessEntitlements?.entitlement_id}
               >
@@ -179,133 +171,119 @@ const AccessPointsEntitleTable = () => {
           </DropdownMenu>
         </div>
         <div className="rounded-md border">
-          <Table className="">
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead
-                        key={header.id}
-                        className="border border-slate-400 bg-slate-200 p-1 w-fit h-11"
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                        {/* Example: Checkbox for selecting all rows */}
-                        {header.id === "select" && (
-                          <Checkbox
-                            checked={
-                              table.getIsAllPageRowsSelected() ||
-                              (table.getIsSomePageRowsSelected() &&
-                                "indeterminate")
-                            }
-                            onCheckedChange={(value) => {
-                              // Toggle all page rows selected
-                              table.toggleAllPageRowsSelected(!!value);
+          <div className="">
+            <Table className="">
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead
+                          key={header.id}
+                          className="border border-slate-400 bg-slate-200 py-0 px-1 h-9"
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                          {/* Example: Checkbox for selecting all rows */}
+                          {header.id === "select" && (
+                            <Checkbox
+                              className="m-1"
+                              checked={
+                                table.getIsAllPageRowsSelected() ||
+                                (table.getIsSomePageRowsSelected() &&
+                                  "indeterminate")
+                              }
+                              onCheckedChange={(value) => {
+                                // Toggle all page rows selected
+                                table.toggleAllPageRowsSelected(!!value);
 
-                              // Use a timeout to log the selected data
-                              setTimeout(() => {
-                                const selectedRows = table
-                                  .getSelectedRowModel()
-                                  .rows.map((row) => row.original);
-                                // console.log(selectedRows);
-                                setSelectedRow(selectedRows);
-                              }, 0);
-                            }}
-                            className=""
-                            aria-label="Select all"
-                          />
-                        )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    <l-tailspin
-                      size="40"
-                      stroke="5"
-                      speed="0.9"
-                      color="black"
-                    ></l-tailspin>
-                  </TableCell>
-                </TableRow>
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell, index) => (
-                      <TableCell
-                        key={cell.id}
-                        className="border py-0 px-1 w-fit"
-                      >
-                        {index === 0 ? (
-                          <Checkbox
-                            className="my-2"
-                            checked={row.getIsSelected() || false} // Ensure checked is always a boolean
-                            onCheckedChange={(value) =>
-                              row.toggleSelected(!!value)
-                            }
-                            onClick={() => handleRowSelected(row.original)}
-                          />
-                        ) : (
-                          flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )
-                        )}
-                      </TableCell>
-                    ))}
+                                // Use a timeout to log the selected data
+                                setTimeout(() => {
+                                  const selectedRows = table
+                                    .getSelectedRowModel()
+                                    .rows.map((row) => row.original);
+                                  // console.log(selectedRows);
+                                  setSelectedRow(selectedRows);
+                                }, 0);
+                              }}
+                              aria-label="Select all"
+                            />
+                          )}
+                        </TableHead>
+                      );
+                    })}
                   </TableRow>
-                ))
-              ) : isLoading ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    <l-tailspin
-                      size="40"
-                      stroke="5"
-                      speed="0.9"
-                      color="black"
-                    ></l-tailspin>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results found. Select Entitlement ID and filter.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-          <div>
-            <Pagination3
-              setPage={setPage}
-              page={page}
-              totalPage={totalPage}
-              table={table}
-              currentPage={currentPage}
-            />
+                ))}
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-[8.8rem] text-center"
+                    >
+                      <l-tailspin
+                        size="40"
+                        stroke="5"
+                        speed="0.9"
+                        color="black"
+                      ></l-tailspin>
+                    </TableCell>
+                  </TableRow>
+                ) : table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {row.getVisibleCells().map((cell, index) => (
+                        <TableCell
+                          key={cell.id}
+                          className="border py-0 px-1 h-7"
+                        >
+                          {index === 0 ? (
+                            <Checkbox
+                              className="m-1"
+                              checked={row.getIsSelected() || false} // Ensure checked is always a boolean
+                              onCheckedChange={(value) =>
+                                row.toggleSelected(!!value)
+                              }
+                              onClick={() => handleRowSelected(row.original)}
+                            />
+                          ) : (
+                            flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-[8.7rem] text-center"
+                    >
+                      No results found. Select Entitlement ID and filter.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </div>
+          <Pagination3
+            setPage={setPage}
+            page={page}
+            totalPage={totalPage}
+            table={table}
+            currentPage={currentPage}
+          />
         </div>
       </div>
     </div>

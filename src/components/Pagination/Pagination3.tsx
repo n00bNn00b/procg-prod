@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 
 interface PaginationProps {
-  table: any;
+  table: any; // Consider defining a more specific type for `table`
   setPage: (page: number) => void;
   page: number;
   totalPage: number | undefined;
@@ -21,19 +21,25 @@ const Pagination3: React.FC<PaginationProps> = ({
   currentPage,
 }) => {
   const handlePreviousPage = () => {
-    setPage(page - 1);
+    if (page > 1) setPage(page - 1);
   };
+
   const handleLastPrevPage = () => {
     setPage(1);
   };
+
   const handleLastNextPage = () => {
-    setPage(totalPage as number);
+    if (totalPage) setPage(totalPage);
   };
+
   const handleNextPage = () => {
-    setPage(page + 1);
+    if (totalPage && page < totalPage) setPage(page + 1);
   };
+
   const handlePageChange = (page: number) => {
-    setPage(page);
+    if (page > 0 && page <= (totalPage || 1)) {
+      setPage(page);
+    }
   };
 
   return (
@@ -48,10 +54,11 @@ const Pagination3: React.FC<PaginationProps> = ({
       <div className="flex items-center space-x-2">
         {/* First Page button */}
         <button
-          onClick={() => handleLastPrevPage()}
+          onClick={handleLastPrevPage}
           disabled={page === 1}
+          aria-label="First Page"
           className={`p-1 rounded ${
-            page === 1 ? "text-slate-400 bg-slate-200" : " bg-slate-300"
+            page === 1 ? "text-slate-400 bg-slate-200" : "bg-slate-300"
           }`}
         >
           <ChevronFirst size={15} />
@@ -59,10 +66,11 @@ const Pagination3: React.FC<PaginationProps> = ({
 
         {/* Previous Page button */}
         <button
-          onClick={() => handlePreviousPage()}
+          onClick={handlePreviousPage}
           disabled={page === 1}
+          aria-label="Previous Page"
           className={`p-1 rounded ${
-            page === 1 ? "text-slate-400 bg-slate-200" : " bg-slate-300"
+            page === 1 ? "text-slate-400 bg-slate-200" : "bg-slate-300"
           }`}
         >
           <ChevronLeft size={15} />
@@ -73,8 +81,10 @@ const Pagination3: React.FC<PaginationProps> = ({
         <input
           type="number"
           value={page}
+          min={1}
+          max={page + 1}
           className="w-12 text-center border rounded-sm text-sm"
-          onChange={(e) => handlePageChange(parseInt(e.target.value))}
+          onChange={(e) => handlePageChange(Number(e.target.value))}
         />
         <span className="text-sm">
           of {totalPage} ({currentPage} of {totalPage} pages)
@@ -82,10 +92,11 @@ const Pagination3: React.FC<PaginationProps> = ({
 
         {/* Next Page button */}
         <button
-          onClick={() => handleNextPage()}
+          onClick={handleNextPage}
           disabled={totalPage === page}
+          aria-label="Next Page"
           className={`p-1 rounded ${
-            totalPage === page ? "text-slate-400 bg-slate-200" : " bg-slate-300"
+            totalPage === page ? "text-slate-400 bg-slate-200" : "bg-slate-300"
           }`}
         >
           <ChevronRight size={15} />
@@ -93,10 +104,11 @@ const Pagination3: React.FC<PaginationProps> = ({
 
         {/* Last Page button */}
         <button
-          onClick={() => handleLastNextPage()}
+          onClick={handleLastNextPage}
           disabled={totalPage === page}
+          aria-label="Last Page"
           className={`p-1 rounded ${
-            totalPage === page ? "text-slate-400 bg-slate-200" : " bg-slate-300"
+            totalPage === page ? "text-slate-400 bg-slate-200" : "bg-slate-300"
           }`}
         >
           <ChevronLast size={15} />

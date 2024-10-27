@@ -55,7 +55,7 @@ const DataSources = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [save, setSave] = React.useState<number>(0);
   const [page, setPage] = React.useState<number>(1);
-  const limit = 3;
+  const [limit, setLimit] = React.useState(10);
   const [totalPage, setTotalPage] = React.useState<number | undefined>();
   const [currentPage, setCurrentPage] = React.useState<number | undefined>();
   // Fetch Data
@@ -78,7 +78,7 @@ const DataSources = () => {
     };
 
     fetchData();
-  }, [save, page]);
+  }, [save, page, limit]);
   // loader
   tailspin.register();
   // Shadcn Form
@@ -89,14 +89,8 @@ const DataSources = () => {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0, //initial page index
-    pageSize: 5, //default page size
-  });
 
   const [selected, setSelected] = React.useState<IDataSourceTypes[]>([]);
-
-  const [isChecked, setIsChecked] = React.useState<boolean>(false);
   // select row
   const handleRowSelection = (rowData: IDataSourceTypes) => {
     setSelected((prevSelected) => {
@@ -121,21 +115,21 @@ const DataSources = () => {
   const columns: ColumnDef<IDataSourceTypes>[] = [
     {
       id: "select",
-      header: ({ table }) => {
-        return (
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) => {
-              table.toggleAllPageRowsSelected(!!value);
-              setIsChecked(!isChecked);
-            }}
-            aria-label="Select all"
-          />
-        );
-      },
+      // header: ({ table }) => {
+      //   return (
+      //     <Checkbox
+      //       checked={
+      //         table.getIsAllPageRowsSelected() ||
+      //         (table.getIsSomePageRowsSelected() && "indeterminate")
+      //       }
+      //       onCheckedChange={(value) => {
+      //         table.toggleAllPageRowsSelected(!!value);
+      //         setIsChecked(!isChecked);
+      //       }}
+      //       aria-label="Select all"
+      //     />
+      //   );
+      // },
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
@@ -273,7 +267,6 @@ const DataSources = () => {
 
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -283,7 +276,6 @@ const DataSources = () => {
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination,
     },
   });
   // Select for edit, delete
@@ -443,6 +435,18 @@ const DataSources = () => {
           }
           className="max-w-sm px-4 py-2"
         />
+        <div className="flex gap-2 items-center ml-auto">
+          <h3>Rows :</h3>
+          <input
+            type="number"
+            placeholder="Rows"
+            value={limit}
+            min={1}
+            max={20}
+            onChange={(e) => setLimit(Number(e.target.value))}
+            className="w-14 border rounded p-2"
+          />
+        </div>
         {/* Columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -481,7 +485,7 @@ const DataSources = () => {
                   return (
                     <TableHead
                       key={header.id}
-                      className="border border-slate-400 bg-slate-200"
+                      className="border h-9 py-0 px-1 border-slate-400 bg-slate-200"
                     >
                       {header.isPlaceholder
                         ? null
@@ -489,6 +493,28 @@ const DataSources = () => {
                             header.column.columnDef.header,
                             header.getContext()
                           )}
+                      {header.id === "select" && (
+                        <Checkbox
+                          className="m-1"
+                          checked={
+                            table.getIsAllPageRowsSelected() ||
+                            (table.getIsSomePageRowsSelected() &&
+                              "indeterminate")
+                          }
+                          onCheckedChange={(value) => {
+                            // Toggle all page rows selected
+                            table.toggleAllPageRowsSelected(!!value);
+                            setTimeout(() => {
+                              const selectedRows = table
+                                .getSelectedRowModel()
+                                .rows.map((row) => row.original);
+                              console.log(selectedRows);
+                              setSelected(selectedRows);
+                            }, 0);
+                          }}
+                          aria-label="Select all"
+                        />
+                      )}
                     </TableHead>
                   );
                 })}
@@ -517,10 +543,10 @@ const DataSources = () => {
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell, index) => (
-                    <TableCell key={cell.id} className="border py-2">
+                    <TableCell key={cell.id} className="border py-0 px-1">
                       {index === 0 ? (
                         <Checkbox
-                          className="mr-2"
+                          className="m-1"
                           checked={row.getIsSelected()}
                           onCheckedChange={(value) =>
                             row.toggleSelected(!!value)
@@ -563,6 +589,7 @@ const DataSources = () => {
             )}
           </TableBody>
         </Table>
+
         <Pagination3
           setPage={setPage}
           page={page}
