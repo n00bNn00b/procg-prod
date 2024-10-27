@@ -44,7 +44,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { IManageAccessEntitlementsTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import {
+  IFetchAccessPointsElementTypes,
+  IManageAccessEntitlementsTypes,
+} from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import columns from "./Columns";
 import Pagination3 from "@/components/Pagination/Pagination3";
@@ -124,6 +127,7 @@ const ManageAccessEntitlementsTable = () => {
       }
     });
   };
+
   const handleFetchAccessPoints = () => {
     fetchAccessPointsEntitlement(selected[0]);
     setSelectedManageAccessEntitlements(selected[0]);
@@ -151,6 +155,34 @@ const ManageAccessEntitlementsTable = () => {
       pagination,
     },
   });
+  interface IDeleteAccessPointsElementTypes {
+    entitlement_name: string;
+    result: IFetchAccessPointsElementTypes[] | undefined;
+  }
+  const [deleteAccessPointsElement, setDeleteAccessPointsElement] =
+    React.useState<IDeleteAccessPointsElementTypes[]>([]);
+  const [deleteLoading, setDeleteLoading] = React.useState(false);
+  const handleGenerateAccessPointsDelete = async () => {
+    try {
+      setDeleteLoading(true);
+      for (const element of selected) {
+        const result = await fetchAccessPointsEntitlement(element);
+        // Instead of replacing the state, accumulate results
+        setDeleteAccessPointsElement((prev) => [
+          ...prev,
+          {
+            entitlement_name: element.entitlement_name,
+            result,
+          },
+        ]);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+  console.log(deleteAccessPointsElement, "deleteAccessPointsElement");
   const handleDelete = async () => {
     for (const element of selected) {
       await deleteManageAccessEntitlement(element.entitlement_id);
@@ -214,11 +246,11 @@ const ManageAccessEntitlementsTable = () => {
                 <AlertDialogTrigger disabled={selected.length === 0}>
                   <Trash
                     className={`hover:scale-110 duration-300 ${
-                      selected.length === 0 || selected.length > 1
-                        ? "text-slate-200 cursor-not-allowed"
-                        : "text-red-500 cursor-pointer"
+                      selected.length > 0
+                        ? "text-red-500 cursor-pointer"
+                        : "text-slate-200 cursor-not-allowed"
                     }`}
-                    onClick={handleFetchAccessPoints}
+                    onClick={handleGenerateAccessPointsDelete}
                   />
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -226,36 +258,48 @@ const ManageAccessEntitlementsTable = () => {
                     <AlertDialogTitle>
                       Are you absolutely sure?
                     </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      <span className="block">
-                        {selected.map((item) => (
-                          <span
-                            className="block text-red-500"
-                            key={item.entitlement_id}
-                          >
-                            <span className="block font-bold">
-                              {item.entitlement_name}
-                            </span>
-                            <span>
-                              {filteredData.map((item) => (
-                                <span
-                                  className=" flex items-center"
-                                  key={item.access_point_id}
-                                >
-                                  <Dot />
-                                  {item.element_name}
-                                </span>
-                              ))}
-                            </span>
+                    <AlertDialogDescription className="overflow-y-auto text-red-500">
+                      <span className="flex flex-col gap-1">
+                        {deleteLoading ? (
+                          <span className="h-10 w-10 mx-auto p-2">
+                            <l-tailspin
+                              size="30"
+                              stroke="5"
+                              speed="0.9"
+                              color="red"
+                            ></l-tailspin>
                           </span>
-                        ))}
+                        ) : (
+                          deleteAccessPointsElement.map((item, i) => (
+                            <span key={item.entitlement_name}>
+                              <span className="font-bold">
+                                {i + 1}. {item.entitlement_name}
+                              </span>
+                              <span>
+                                {item.result?.map((item) => (
+                                  <span
+                                    key={item.access_point_id}
+                                    className="flex gap-1"
+                                  >
+                                    <Dot /> {item.element_name}
+                                  </span>
+                                ))}
+                              </span>
+                            </span>
+                          ))
+                        )}
+                        {isLoading && <span>loading</span>}
                       </span>
                       This action cannot be undone. This will permanently delete
                       your account and remove your data from our servers.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel
+                      onClick={() => setDeleteAccessPointsElement([])}
+                    >
+                      Cancel
+                    </AlertDialogCancel>
                     <AlertDialogAction onClick={handleDelete}>
                       Continue
                     </AlertDialogAction>
@@ -308,120 +352,119 @@ const ManageAccessEntitlementsTable = () => {
       </div>
       {/* Table */}
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className="border px-2 border-slate-400 bg-slate-200"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                      {/* Example: Checkbox for selecting all rows */}
-                      {header.id === "select" && (
-                        <Checkbox
-                          checked={
-                            table.getIsAllPageRowsSelected() ||
-                            (table.getIsSomePageRowsSelected() &&
-                              "indeterminate")
-                          }
-                          onCheckedChange={(value) => {
-                            // Toggle all page rows selected
-                            table.toggleAllPageRowsSelected(!!value);
-                            setTimeout(() => {
-                              const selectedRows = table
-                                .getSelectedRowModel()
-                                .rows.map((row) => row.original);
-                              console.log(selectedRows);
-                              setSelected(selectedRows);
-                            }, 0);
-                          }}
-                          aria-label="Select all"
-                        />
-                      )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  <l-tailspin
-                    size="40"
-                    stroke="5"
-                    speed="0.9"
-                    color="black"
-                  ></l-tailspin>
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  className=""
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell, index) => (
-                    <TableCell key={cell.id} className="border py-0 px-1">
-                      {index === 0 ? (
-                        <Checkbox
-                          className="my-2"
-                          checked={row.getIsSelected()}
-                          onCheckedChange={(value) =>
-                            row.toggleSelected(!!value)
-                          }
-                          onClick={() => handleRowSelection(row.original)}
-                        />
-                      ) : (
-                        flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )
-                      )}
-                    </TableCell>
-                  ))}
+        <div className="h-[8.5rem]">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className="border h-9 py-0 px-1 border-slate-400 bg-slate-200"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                        {/* Example: Checkbox for selecting all rows */}
+                        {header.id === "select" && (
+                          <Checkbox
+                            className="m-1"
+                            checked={
+                              table.getIsAllPageRowsSelected() ||
+                              (table.getIsSomePageRowsSelected() &&
+                                "indeterminate")
+                            }
+                            onCheckedChange={(value) => {
+                              // Toggle all page rows selected
+                              table.toggleAllPageRowsSelected(!!value);
+                              setTimeout(() => {
+                                const selectedRows = table
+                                  .getSelectedRowModel()
+                                  .rows.map((row) => row.original);
+                                console.log(selectedRows);
+                                setSelected(selectedRows);
+                              }, 0);
+                            }}
+                            aria-label="Select all"
+                          />
+                        )}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
-              ))
-            ) : isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  <l-tailspin
-                    size="40"
-                    stroke="5"
-                    speed="0.9"
-                    color="black"
-                  ></l-tailspin>
-                </TableCell>
-              </TableRow>
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-
+              ))}
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className=" text-center">
+                    <l-tailspin
+                      size="40"
+                      stroke="5"
+                      speed="0.9"
+                      color="black"
+                    ></l-tailspin>
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    className=""
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell, index) => (
+                      <TableCell key={cell.id} className="border py-0 px-1 h-7">
+                        {index === 0 ? (
+                          <Checkbox
+                            className="m-1"
+                            checked={row.getIsSelected()}
+                            onCheckedChange={(value) =>
+                              row.toggleSelected(!!value)
+                            }
+                            onClick={() => handleRowSelection(row.original)}
+                          />
+                        ) : (
+                          flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : isLoading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-[8rem] w-10 mx-auto text-center p-0 m-0"
+                  >
+                    <l-tailspin
+                      size="10"
+                      stroke="5"
+                      speed="0.9"
+                      color="black"
+                    ></l-tailspin>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-[5rem] text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
         <Pagination3
           setPage={setPage}
           page={page}

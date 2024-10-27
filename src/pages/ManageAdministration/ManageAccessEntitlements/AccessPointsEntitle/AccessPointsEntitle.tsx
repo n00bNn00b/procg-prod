@@ -15,7 +15,7 @@ const AccessPointsEntitle = () => {
   //   fetchAccessPointsEntitlement(selected[0]);
   // };
   return (
-    <div className="px-3">
+    <div>
       <div>
         <AccessPointsEntitleTable />
         {/* Modal */}

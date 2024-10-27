@@ -16,6 +16,7 @@ const ManageAccessEntitlements = () => {
     <div>
       <ManageAccessEntitlementsTable />
       <AccessPointsEntitle />
+      {/* <TestTable /> */}
       <div>
         {editManageAccessEntitlement && (
           <CustomModal>
@@ -39,7 +40,6 @@ const ManageAccessEntitlements = () => {
           </CustomModal>
         )}
       </div>
-
     </div>
   );
 };

@@ -47,7 +47,7 @@ const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
       return <div className="capitalize min-w-[30rem]">Description</div>;
     },
     cell: ({ row }) => (
-      <div className="capitalize min-w-max">{row.getValue("description")}</div>
+      <div className="capitalize ">{row.getValue("description")}</div>
     ),
   },
   {

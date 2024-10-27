@@ -27,7 +27,7 @@ interface IContextTypes {
   ) => Promise<IManageAccessEntitlementsPerPageTypes | undefined>;
   fetchAccessPointsEntitlement: (
     fetchData: IManageAccessEntitlementsTypes
-  ) => Promise<void>;
+  ) => Promise<IFetchAccessPointsElementTypes[] | undefined>;
   filteredData: IFetchAccessPointsElementTypes[];
   setFilteredData: Dispatch<
     SetStateAction<IFetchAccessPointsElementTypes[] | []>
@@ -216,6 +216,7 @@ export const ManageAccessEntitlementsProvider = ({
             (a, b) => b?.access_point_id - a?.access_point_id
           );
           fetchAccessEtitlementElenentsLazyLoading(sortingData);
+          return sortingData ?? [];
         } else {
           setFilteredData([]);
         }

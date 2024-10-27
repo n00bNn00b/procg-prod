@@ -34,7 +34,6 @@ const AccessPointsEditModal = () => {
     totalPage,
     currentPage,
     limit,
-    setLimit,
   } = useManageAccessEntitlementsContext();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -48,7 +47,7 @@ const AccessPointsEditModal = () => {
     pageSize: 6, //default page size
   });
   React.useEffect(() => {
-    setLimit(10);
+    // setLimit(10);
   }, [page, limit]);
 
   const table = useReactTable({
