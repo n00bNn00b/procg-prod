@@ -19,19 +19,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
-import {
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Trash2,
-  View,
-  X,
-} from "lucide-react";
+import { Check, Edit, Trash2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useEffect, useState } from "react";
 import { Message } from "@/types/interfaces/users.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import Pagination4 from "@/components/Pagination/Pagination4";
+import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 
 interface DraftTableProps {
   path: string;
@@ -49,7 +44,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsloading] = useState(false);
-  const [curretPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const url = import.meta.env.VITE_API_URL;
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -60,14 +55,14 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
     (_, i) => i + 1
   );
   let startNumber = 1;
-  let endNumber = curretPage * totalDisplayedMessages;
+  let endNumber = currentPage * totalDisplayedMessages;
 
   if (endNumber > totalDraftMessages) {
     endNumber = totalDraftMessages;
   }
 
-  if (curretPage > 1) {
-    const page = curretPage - 1;
+  if (currentPage > 1) {
+    const page = currentPage - 1;
     startNumber = page * totalDisplayedMessages + 1;
   }
 
@@ -77,7 +72,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
       try {
         setIsloading(true);
         const response = await axios.get<Message[]>(
-          `${url}/messages/draft/${user}/${curretPage}`
+          `${url}/messages/draft/${user}/${currentPage}`
         );
         const result = response.data;
         setDraftMessages(result);
@@ -90,7 +85,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
     };
 
     fetchSentMessages();
-  }, [url, user, curretPage, setDraftMessages]);
+  }, [url, user, currentPage, setDraftMessages]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -117,18 +112,6 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
     navigate(`/notifications/draft/${id}`);
   };
 
-  const handleNext = () => {
-    if (totalPageNumbers > curretPage) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (curretPage > 1) {
-      setCurrentPage((prev) => prev - 1);
-    }
-  };
-
   return (
     <>
       {isLoading ? (
@@ -144,7 +127,11 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
         <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
           <div className="flex justify-between">
             <h1 className="text-lg font-bold mb-6 ">{path}</h1>
-            <p>{`${startNumber}-${endNumber} of ${totalDraftMessages}`}</p>
+            <TableRowCounter
+              startNumber={startNumber}
+              endNumber={endNumber}
+              totalNumber={totalDraftMessages}
+            />
           </div>
           <Table>
             <TableHeader>
@@ -174,7 +161,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
                     {convertDate(msg.date)}
                   </TableCell>
                   <TableCell className="flex gap-2 h-full items-center py-2">
-                    <View
+                    <Edit
                       onClick={() => handleNavigate(msg.id)}
                       color="#044BD9"
                       className="cursor-pointer"
@@ -211,34 +198,13 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
               ))}
             </TableBody>
           </Table>
-          <div className="flex w-full justify-center mt-4">
-            <div className="flex gap-4 items-center">
-              <button
-                onClick={handlePrevious}
-                className="p-1 rounded-md bg-winter-100"
-              >
-                <ChevronLeft />
-              </button>
-              {paginationArray.map((item) => (
-                <button
-                  className={
-                    curretPage === item
-                      ? "bg-dark-400 text-white px-4 py-1 rounded-md"
-                      : "bg-winter-100 px-4 py-1 rounded-md"
-                  }
-                  onClick={() => setCurrentPage(item)}
-                  key={item}
-                >
-                  {item}
-                </button>
-              ))}
-              <button
-                onClick={handleNext}
-                className="p-1 rounded-md bg-winter-100"
-              >
-                <ChevronRight />
-              </button>
-            </div>
+          <div className="flex w-full justify-end mt-4">
+            <Pagination4
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              paginationArray={paginationArray}
+              totalPageNumbers={totalDraftMessages}
+            />
           </div>
         </div>
       )}

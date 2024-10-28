@@ -19,19 +19,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
-import {
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Trash2,
-  View,
-  X,
-} from "lucide-react";
+import { Check, Trash2, View, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useEffect, useState } from "react";
 import { Message } from "@/types/interfaces/users.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import Pagination4 from "@/components/Pagination/Pagination4";
+import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 
 interface SentTableProps {
   path: string;
@@ -49,7 +44,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsloading] = useState(false);
-  const [curretPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const url = import.meta.env.VITE_API_URL;
   const totalDisplayedMessages = 5;
@@ -61,14 +56,14 @@ const SentTable = ({ path, person }: SentTableProps) => {
     (_, i) => i + 1
   );
   let startNumber = 1;
-  let endNumber = curretPage * totalDisplayedMessages;
+  let endNumber = currentPage * totalDisplayedMessages;
 
   if (endNumber > totalSentMessages) {
     endNumber = totalSentMessages;
   }
 
-  if (curretPage > 1) {
-    const page = curretPage - 1;
+  if (currentPage > 1) {
+    const page = currentPage - 1;
     startNumber = page * totalDisplayedMessages + 1;
   }
 
@@ -78,7 +73,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
       try {
         setIsloading(true);
         const response = await axios.get<Message[]>(
-          `${url}/messages/sent/${user}/${curretPage}`
+          `${url}/messages/sent/${user}/${currentPage}`
         );
         const result = response.data;
         setSentMessages(result);
@@ -91,7 +86,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
     };
 
     fetchSentMessages();
-  }, [url, user, curretPage, setSentMessages]);
+  }, [url, user, currentPage, setSentMessages]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -119,18 +114,6 @@ const SentTable = ({ path, person }: SentTableProps) => {
     navigate(`/notifications/sent/${id}`);
   };
 
-  const handleNext = () => {
-    if (totalPageNumbers > curretPage) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (curretPage > 1) {
-      setCurrentPage((prev) => prev - 1);
-    }
-  };
-
   return (
     <>
       {isLoading ? (
@@ -146,7 +129,11 @@ const SentTable = ({ path, person }: SentTableProps) => {
         <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
           <div className="flex justify-between">
             <h1 className="text-lg font-bold mb-6 ">{path}</h1>
-            <p>{`${startNumber}-${endNumber} of ${totalSentMessages}`}</p>
+            <TableRowCounter
+              startNumber={startNumber}
+              endNumber={endNumber}
+              totalNumber={totalSentMessages}
+            />
           </div>
           <Table>
             <TableHeader>
@@ -214,34 +201,13 @@ const SentTable = ({ path, person }: SentTableProps) => {
               ))}
             </TableBody>
           </Table>
-          <div className="flex w-full justify-center mt-4">
-            <div className="flex gap-4 items-center">
-              <button
-                onClick={handlePrevious}
-                className="p-1 rounded-md bg-winter-100"
-              >
-                <ChevronLeft />
-              </button>
-              {paginationArray.map((item) => (
-                <button
-                  className={
-                    curretPage === item
-                      ? "bg-dark-400 text-white px-4 py-1 rounded-md"
-                      : "bg-winter-100 px-4 py-1 rounded-md"
-                  }
-                  onClick={() => setCurrentPage(item)}
-                  key={item}
-                >
-                  {item}
-                </button>
-              ))}
-              <button
-                onClick={handleNext}
-                className="p-1 rounded-md bg-winter-100"
-              >
-                <ChevronRight />
-              </button>
-            </div>
+          <div className="flex w-full justify-end mt-4">
+            <Pagination4
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              totalPageNumbers={totalPageNumbers}
+              paginationArray={paginationArray}
+            />
           </div>
         </div>
       )}

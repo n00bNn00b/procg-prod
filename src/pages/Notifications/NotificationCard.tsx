@@ -49,7 +49,7 @@ const NotificationCard = () => {
       >
         <div className="flex gap-1">
           <NotebookPen />
-          <p className="font-semibold">Draft</p>
+          <p className="font-semibold">Drafts</p>
         </div>
         <p className="text-white px-2 rounded-full bg-winter-500 font-semibold">
           {totalDraftMessages}

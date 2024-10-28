@@ -1,12 +1,5 @@
-import Spineer from "@/components/Spinner/Spineer"
-
-
 const Tasks = () => {
-  return (
-    <div>
-      <Spineer/>
-    </div>
-  )
-}
+  return <div>Tasks</div>;
+};
 
-export default Tasks
+export default Tasks;
