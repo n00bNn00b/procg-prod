@@ -3,13 +3,11 @@ import axios from "axios";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { tailspin } from "ldrs";
 import ReplyDialog from "./ReplyDialog";
 import { Message } from "@/types/interfaces/users.interface";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
-
-tailspin.register();
+import Spinner from "@/components/Spinner/Spinner";
 
 const SingleSent = () => {
   const { sentMessages, setSentMessages, setTotalSentMessages } =
@@ -152,12 +150,7 @@ const SingleSent = () => {
     <div className="flex justify-center items-center w-full mb-4">
       {isLoading ? (
         <div className="flex h-[50vh] items-center">
-          <l-tailspin
-            size="80"
-            stroke="5"
-            speed="2"
-            color="#68788C"
-          ></l-tailspin>
+          <Spinner size="80" color="#000000" />
         </div>
       ) : (
         <div className="flex flex-col gap-4 w-full">
