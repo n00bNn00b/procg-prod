@@ -18,14 +18,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import axios from "axios";
-import {
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Trash2,
-  View,
-  X,
-} from "lucide-react";
+import { Check, Trash2, View, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
@@ -33,6 +26,8 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useEffect, useState } from "react";
 import { Message } from "@/types/interfaces/users.interface";
 import { tailspin } from "ldrs";
+import Pagination4 from "@/components/Pagination/Pagination4";
+import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 
 tailspin.register();
 
@@ -53,7 +48,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
   } = useSocketContext();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [curretPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsloading] = useState(false);
   const url = import.meta.env.VITE_API_URL;
   const totalDisplayedMessages = 5;
@@ -65,14 +60,14 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     (_, i) => i + 1
   );
   let startNumber = 1;
-  let endNumber = curretPage * totalDisplayedMessages;
+  let endNumber = currentPage * totalDisplayedMessages;
 
   if (endNumber > totalReceivedMessages) {
     endNumber = totalReceivedMessages;
   }
 
-  if (curretPage > 1) {
-    const page = curretPage - 1;
+  if (currentPage > 1) {
+    const page = currentPage - 1;
     startNumber = page * totalDisplayedMessages + 1;
   }
 
@@ -82,7 +77,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
       try {
         setIsloading(true);
         const response = await axios.get<Message[]>(
-          `${url}/messages/received/${user}/${curretPage}`
+          `${url}/messages/received/${user}/${currentPage}`
         );
         const result = response.data;
         setReceivedMessages(result);
@@ -95,7 +90,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     };
 
     fetchReceivedMessages();
-  }, [url, user, curretPage, setReceivedMessages]);
+  }, [url, user, currentPage, setReceivedMessages]);
 
   const uniquMessagesIds = socketMessage.map((msg) => msg.id);
 
@@ -126,18 +121,6 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     return formattedDate;
   };
 
-  const handleNext = () => {
-    if (totalPageNumbers > curretPage) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (curretPage > 1) {
-      setCurrentPage((prev) => prev - 1);
-    }
-  };
-
   return (
     <>
       {isLoading ? (
@@ -153,7 +136,11 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
         <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
           <div className="flex justify-between">
             <h1 className="text-lg font-bold mb-6 ">{path}</h1>
-            <p>{`${startNumber}-${endNumber} of ${totalReceivedMessages}`}</p>
+            <TableRowCounter
+              startNumber={startNumber}
+              endNumber={endNumber}
+              totalNumber={totalReceivedMessages}
+            />
           </div>
           <Table>
             <TableHeader>
@@ -225,34 +212,13 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
               ))}
             </TableBody>
           </Table>
-          <div className="flex w-full justify-center mt-4">
-            <div className="flex gap-4 items-center">
-              <button
-                onClick={handlePrevious}
-                className="p-1 rounded-md bg-winter-100"
-              >
-                <ChevronLeft />
-              </button>
-              {paginationArray.map((item) => (
-                <button
-                  className={
-                    curretPage === item
-                      ? "bg-dark-400 text-white px-4 py-1 rounded-md"
-                      : "bg-winter-100 px-4 py-1 rounded-md"
-                  }
-                  onClick={() => setCurrentPage(item)}
-                  key={item}
-                >
-                  {item}
-                </button>
-              ))}
-              <button
-                onClick={handleNext}
-                className="p-1 rounded-md bg-winter-100"
-              >
-                <ChevronRight />
-              </button>
-            </div>
+          <div className="flex w-full justify-end mt-4">
+            <Pagination4
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              totalPageNumbers={totalPageNumbers}
+              paginationArray={paginationArray}
+            />
           </div>
         </div>
       )}
