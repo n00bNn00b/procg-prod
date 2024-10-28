@@ -137,13 +137,23 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     });
 
     socket.on("sentMessage", (data) => {
-      setSentMessages((prev) => [data, ...prev]);
-      setTotalSentMessages((prev) => prev + 1);
+      const sentMessagesId = sentMessages.map((msg) => msg.id);
+      if (sentMessagesId.includes(data.id)) {
+        return;
+      } else {
+        setSentMessages((prev) => [data, ...prev]);
+        setTotalSentMessages((prev) => prev + 1);
+      }
     });
 
     socket.on("draftMessage", (data) => {
-      setDraftMessages((prev) => [data, ...prev]);
-      setTotalDraftMessages((prev) => prev + 1);
+      const draftMessagesId = draftMessages.map((msg) => msg.id);
+      if (draftMessagesId.includes(data.id)) {
+        return;
+      } else {
+        setDraftMessages((prev) => [data, ...prev]);
+        setTotalDraftMessages((prev) => prev + 1);
+      }
     });
 
     socket.on("sync", (id) => {
@@ -156,7 +166,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     return () => {
       socket.disconnect();
     };
-  }, [socketMessage, receivedMessages, socket]);
+  }, [socketMessage, receivedMessages, draftMessages, sentMessages, socket]);
 
   const handlesendMessage = (data: Message) => {
     socket.emit("sendMessage", data);

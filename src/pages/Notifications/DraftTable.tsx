@@ -27,6 +27,7 @@ import { Message } from "@/types/interfaces/users.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import Pagination4 from "@/components/Pagination/Pagination4";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
+import Spinner from "@/components/Spinner/Spinner";
 
 interface DraftTableProps {
   path: string;
@@ -116,12 +117,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
     <>
       {isLoading ? (
         <div className="flex w-[100vw] h-[50vh] justify-center items-center">
-          <l-tailspin
-            size="80"
-            stroke="5"
-            speed="2"
-            color="#68788C"
-          ></l-tailspin>
+          <Spinner size="80" color="#000000" />
         </div>
       ) : (
         <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">

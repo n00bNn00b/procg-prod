@@ -17,9 +17,9 @@ import { Check } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
-import ButtonSpinner from "@/components/Spinner/ButtonSpinner";
 import { v4 as uuidv4 } from "uuid";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
+import Spinner from "@/components/Spinner/Spinner";
 
 const ComposeButton = () => {
   const { users, token, user } = useGlobalContext();
@@ -228,7 +228,11 @@ const ComposeButton = () => {
               onClick={handleDraft}
               className="flex gap-1 items-center px-5 py-2 rounded-l-full rounded-r-md bg-dark-300 text-white hover:scale-95 duration-300"
             >
-              {isDrafting ? <ButtonSpinner /> : <Save size={18} />}
+              {isDrafting ? (
+                <Spinner size="20" color="#ffffff" />
+              ) : (
+                <Save size={18} />
+              )}
               <p className="font-semibold ">Save as draft</p>
             </button>
           )}
@@ -237,7 +241,11 @@ const ComposeButton = () => {
               onClick={handleSend}
               className="flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md bg-dark-100 text-white hover:scale-95 duration-300"
             >
-              {isSending ? <ButtonSpinner /> : <Send size={18} />}
+              {isSending ? (
+                <Spinner size="20" color="#ffffff" />
+              ) : (
+                <Send size={18} />
+              )}
               <p className="font-semibold ">Send</p>
             </button>
           )}

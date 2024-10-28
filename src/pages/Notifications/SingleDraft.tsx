@@ -11,10 +11,8 @@ import { Check } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
-import ButtonSpinner from "@/components/Spinner/ButtonSpinner";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { tailspin } from "ldrs";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import {
   DropdownMenuContent,
@@ -22,8 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { Message } from "@/types/interfaces/users.interface";
-
-tailspin.register();
+import Spinner from "@/components/Spinner/Spinner";
 
 const SingleDraft = () => {
   const { users, token } = useGlobalContext();
@@ -160,12 +157,7 @@ const SingleDraft = () => {
     <div className="w-full flex justify-center">
       {isLoading ? (
         <div className="flex h-[50vh] items-center">
-          <l-tailspin
-            size="80"
-            stroke="5"
-            speed="2"
-            color="#68788C"
-          ></l-tailspin>
+          <Spinner size="80" color="#000000" />
         </div>
       ) : (
         <Card className="w-full mb-4">
@@ -270,7 +262,11 @@ const SingleDraft = () => {
                 onClick={handleSend}
                 className="flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md bg-dark-100 text-white hover:scale-95 duration-300"
               >
-                {isSending ? <ButtonSpinner /> : <Send size={18} />}
+                {isSending ? (
+                  <Spinner size="20" color="#ffffff" />
+                ) : (
+                  <Send size={18} />
+                )}
                 <p className="font-semibold ">Send</p>
               </button>
             )}
