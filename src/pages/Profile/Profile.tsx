@@ -10,7 +10,7 @@ const Profile = () => {
         <Avatar>
           <AvatarImage
             className="object-cover object-center w-20 h-20 rounded-full mx-auto border border-8px"
-            src="https://plus.unsplash.com/premium_photo-1689977968861-9c91dbb16049?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src="https://github.com/shadcn.png"
           />
         </Avatar>
         <h4 className="font-bold text-center">

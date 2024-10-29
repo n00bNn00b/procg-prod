@@ -24,6 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import { ring } from "ldrs";
+import Spinner from "@/components/Spinner/Spinner";
 interface IManageAccessEntitlementsProps {
   selectedItem?: IManageAccessEntitlementsTypes;
 }
@@ -179,17 +180,7 @@ const ManageAccessPointsEntitleModal: FC<IManageAccessEntitlementsProps> = ({
           />
         </div>
         <Button className="ml-2" type="submit">
-          {isLoading ? (
-            <l-ring
-              size="20"
-              stroke="5"
-              bg-opacity="0"
-              speed="2"
-              color="white"
-            ></l-ring>
-          ) : (
-            "Submit"
-          )}
+          {isLoading ? <Spinner color="white" size="20" /> : "Submit"}
         </Button>
       </form>
     </Form>

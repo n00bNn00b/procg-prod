@@ -33,7 +33,7 @@ const Pagination3: React.FC<PaginationProps> = ({
   };
 
   const handleNextPage = () => {
-    if (totalPage && page < totalPage) setPage(page + 1);
+    setPage(page + 1);
   };
 
   const handlePageChange = (page: number) => {

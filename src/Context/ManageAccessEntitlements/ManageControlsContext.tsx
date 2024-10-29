@@ -42,11 +42,8 @@ export const ControlsContextProvider = ({
       // setIsLoading(true);
       const response = await axios.get<IControlsTypes[]>(`${url}/controls`);
       if (response) {
-        const sortedData = response.data.sort(
-          (a, b) => b.control_id - a.control_id
-        );
-        setControlsData(sortedData ?? []);
-        return sortedData ?? [];
+        setControlsData(response.data ?? []);
+        return response.data ?? [];
       }
     } catch (error) {
       console.log(error);

@@ -30,12 +30,13 @@ import { ICreateAccessPointsElementTypes } from "@/types/interfaces/ManageAccess
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import columns from "./Columns";
 import { Button } from "@/components/ui/button";
-import Pagination3 from "@/components/Pagination/Pagination3";
+import Pagination4 from "@/components/Pagination/Pagination4";
+import Spinner from "@/components/Spinner/Spinner";
 
 const AccessPointsEntitleTable = () => {
   const {
     filteredData: data,
-    isLoading,
+    isLoadingAccessPoints,
     setIsOpenModal,
     selectedManageAccessEntitlements,
     fetchAccessPointsEntitlement,
@@ -46,8 +47,8 @@ const AccessPointsEntitleTable = () => {
     page,
     setPage,
     totalPage,
-    currentPage,
     limit,
+    isLoading,
   } = useManageAccessEntitlementsContext();
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -86,26 +87,22 @@ const AccessPointsEntitleTable = () => {
       fetchAccessPointsEntitlement(selected[0]);
     }
     // setLimit(5);
-  }, [save2, page, limit]);
-  // const handleDelete = async () => {
-  //   if (selectedRow.length > 0) {
-  //     // const res = await deleteAccessPointsElement(
-  //     //   selectedRow[0]?.access_point_id || 0
-  //     // );
-  //     for (const element of selectedRow) {
-  //       deleteAccessEntitlementElement(
-  //         selected[0]?.entitlement_id || 0,
-  //         element?.access_point_id || 0
-  //       );
-  //     }
+  }, [save2, page, limit, isLoadingAccessPoints]);
 
-  //     table.getRowModel().rows.map((row) => row.toggleSelected(false));
-  //     setSelectedRow([]);
-  //     // if (selectedManageAccessEntitlements) {
-  //     //   fetchAccessPointsEntitlement(selectedManageAccessEntitlements);
-  //     // }
-  //   }
-  // };
+  const [paginationArray, setPaginationArray] = useState<number[]>([]);
+  useEffect(() => {
+    if (selected.length > 0) {
+      const paginationArray = [];
+      for (let i = 1; i <= totalPage; i++) {
+        paginationArray.push(i);
+      }
+      setPaginationArray(paginationArray);
+    } else {
+      setPaginationArray([1]);
+    }
+    //table toggle false
+    table.toggleAllRowsSelected(false);
+  }, [page, totalPage, selected.length]);
   return (
     <div className="px-3">
       <div>
@@ -116,9 +113,15 @@ const AccessPointsEntitleTable = () => {
                 className="px-4 py-2 border rounded shadow"
                 onClick={() => {
                   setIsOpenModal(3);
+                  setPage(1);
                   // setLimit(10);
                 }}
-                disabled={!selectedManageAccessEntitlements?.entitlement_id}
+                disabled={
+                  !selectedManageAccessEntitlements?.entitlement_id ||
+                  selected[0]?.entitlement_id !=
+                    selectedManageAccessEntitlements?.entitlement_id ||
+                  selected.length == 0
+                }
               >
                 <h3>Access Points</h3>
               </Button>
@@ -135,13 +138,15 @@ const AccessPointsEntitleTable = () => {
             </div>
           </div>
           <div>
-            {selectedManageAccessEntitlements && (
-              <h3 className="font-bold capitalize">
-                {selectedManageAccessEntitlements?.entitlement_id &&
-                  "Entitlement Name : "}
-                {selectedManageAccessEntitlements?.entitlement_name}
-              </h3>
-            )}
+            {selectedManageAccessEntitlements &&
+              selected[0]?.entitlement_id ===
+                selectedManageAccessEntitlements?.entitlement_id && (
+                <h3 className="font-bold capitalize">
+                  {selectedManageAccessEntitlements?.entitlement_id &&
+                    "Entitlement Name : "}
+                  {selectedManageAccessEntitlements?.entitlement_name}
+                </h3>
+              )}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -171,7 +176,7 @@ const AccessPointsEntitleTable = () => {
           </DropdownMenu>
         </div>
         <div className="rounded-md border">
-          <div className="">
+          <div className="h-[12rem]">
             <Table className="">
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -220,21 +225,19 @@ const AccessPointsEntitleTable = () => {
                 ))}
               </TableHeader>
               <TableBody>
-                {isLoading ? (
+                {isLoadingAccessPoints ||
+                (isLoading && selected.length === 1) ? (
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
                       className="h-[8.8rem] text-center"
                     >
-                      <l-tailspin
-                        size="40"
-                        stroke="5"
-                        speed="0.9"
-                        color="black"
-                      ></l-tailspin>
+                      <Spinner color="black" size="40" />
                     </TableCell>
                   </TableRow>
-                ) : table.getRowModel().rows?.length ? (
+                ) : table.getRowModel().rows?.length &&
+                  selected[0]?.entitlement_id ===
+                    selectedManageAccessEntitlements?.entitlement_id ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
@@ -277,13 +280,25 @@ const AccessPointsEntitleTable = () => {
               </TableBody>
             </Table>
           </div>
-          <Pagination3
+          {/* <Pagination3
             setPage={setPage}
             page={page}
             totalPage={totalPage}
             table={table}
             currentPage={currentPage}
-          />
+          /> */}
+          <div className="flex justify-between p-1">
+            <div className="flex-1 text-sm text-gray-600">
+              {table.getFilteredSelectedRowModel().rows.length} of{" "}
+              {table.getFilteredRowModel().rows.length} row(s) selected.
+            </div>
+            <Pagination4
+              currentPage={page}
+              setCurrentPage={setPage}
+              totalPageNumbers={totalPage as number}
+              paginationArray={paginationArray}
+            />
+          </div>
         </div>
       </div>
     </div>

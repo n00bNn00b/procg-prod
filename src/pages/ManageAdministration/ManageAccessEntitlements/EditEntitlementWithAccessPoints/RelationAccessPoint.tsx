@@ -5,6 +5,7 @@ import { ICreateAccessPointsElementTypes } from "@/types/interfaces/ManageAccess
 import { Button } from "@/components/ui/button";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import { toast } from "@/components/ui/use-toast";
+import Spinner from "@/components/Spinner/Spinner";
 
 const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
   const {
@@ -12,10 +13,13 @@ const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
     selectedManageAccessEntitlements,
     createAccessEntitlementElements,
     fetchAccessEtitlementElenents,
-    isLoading,
     selectedAccessEntitlementElements,
     setSelectedAccessEntitlementElements,
     deleteAccessEntitlementElement,
+    isLoadingAccessPoints,
+    page,
+    setPage,
+    totalPage,
   } = useManageAccessEntitlementsContext();
   const [unUsedAccessPoints, setUnUsedAccessPoints] = useState<
     ICreateAccessPointsElementTypes[]
@@ -24,31 +28,37 @@ const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
     ICreateAccessPointsElementTypes[]
   >([]);
   const [query, setQuery] = useState<string>("");
-
   useEffect(() => {
     const fetchAccessPoints = async () => {
       setSelectedItem([]);
-      //get Access Points Data
-      const accessPoints = await fetchAccessPointsData();
-      // get access entitlement elements
-      const res = await fetchAccessEtitlementElenents();
-      if (Array.isArray(res) && res.length > 0) {
-        const filterData = await accessPoints?.filter(
-          (item1) =>
-            !res.some(
-              (item2) => item2.access_point_id === item1.access_point_id
-            )
-        );
-        setUnUsedAccessPoints(filterData as ICreateAccessPointsElementTypes[]);
-      } else {
-        setUnUsedAccessPoints(
-          accessPoints as ICreateAccessPointsElementTypes[]
-        );
+      try {
+        //get Access Points Data
+        const accessPoints = await fetchAccessPointsData();
+        // get access entitlement elements
+        const res = await fetchAccessEtitlementElenents();
+        if (Array.isArray(res) && res.length > 0) {
+          const filterData = await accessPoints?.filter(
+            (item1) =>
+              !res.some(
+                (item2) => item2.access_point_id === item1.access_point_id
+              )
+          );
+          setUnUsedAccessPoints(
+            filterData as ICreateAccessPointsElementTypes[]
+          );
+        } else {
+          setUnUsedAccessPoints(
+            accessPoints as ICreateAccessPointsElementTypes[]
+          );
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
       }
     };
 
     fetchAccessPoints();
-  }, [isLoading]);
+  }, [isLoadingAccessPoints]);
 
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -86,17 +96,23 @@ const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
     setSelectedItem([]);
   };
   const handleAdd = async () => {
-    const selectedIds = selectedItem?.map((item) => item.access_point_id);
-    createAccessEntitlementElements(
-      selectedManageAccessEntitlements?.entitlement_id
-        ? selectedManageAccessEntitlements.entitlement_id
-        : 0,
-      selectedIds
-    );
-    toast({
-      title: "Success",
-      description: `Data added successfully to ${selectedManageAccessEntitlements?.entitlement_name}`,
-    });
+    try {
+      const selectedIds = selectedItem?.map((item) => item.access_point_id);
+      createAccessEntitlementElements(
+        selectedManageAccessEntitlements?.entitlement_id
+          ? selectedManageAccessEntitlements.entitlement_id
+          : 0,
+        selectedIds
+      );
+      console.log(selectedIds, "selectedIds");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      toast({
+        title: "Success",
+        description: `Data added successfully to ${selectedManageAccessEntitlements?.entitlement_name}`,
+      });
+    }
   };
   const handleRemoveAccessEntitlementElements = () => {
     for (const item of selectedAccessEntitlementElements) {
@@ -107,12 +123,15 @@ const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
     }
     tableRow();
     setSelectedAccessEntitlementElements([]);
+    if (page > 1 && page === totalPage) {
+      setPage(totalPage - 1);
+    }
   };
 
   return (
     <div>
       <div className="flex gap-4">
-        <div className="h-44 w-80 overflow-y-auto scrollbar-thin border rounded-sm ">
+        <div className="h-[12rem] w-80 overflow-y-auto scrollbar-thin border rounded-sm ">
           <input
             type="text"
             className="sticky top-0 w-full bg-light-100 border-b border-light-400 outline-none px-2 py-1"
@@ -138,25 +157,31 @@ const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
                 ) : null}
               </span>
             )}
-            {isLoading && <p>Loading...</p>}
-            {filterdAccessPoints?.map((item) => (
-              <div
-                onClick={() => handleSelect(item)}
-                key={item.access_point_id}
-                className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer border rounded"
-              >
-                <p>
-                  {item.element_name.slice(0, 20)}
-                  {item.element_name.slice(0, 20).length === 20 && "..."}
-                </p>
-                {selectedItem?.some(
-                  (selected) =>
-                    selected.access_point_id === item.access_point_id
-                ) ? (
-                  <Check size={14} color="#038C5A" />
-                ) : null}
+            {filterdAccessPoints.length === 0 && <div>No data found</div>}
+            {isLoadingAccessPoints ? (
+              <div className="flex justify-center">
+                <Spinner color="black" size="40" />
               </div>
-            ))}
+            ) : (
+              filterdAccessPoints?.map((item) => (
+                <div
+                  onClick={() => handleSelect(item)}
+                  key={item.access_point_id}
+                  className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer border rounded"
+                >
+                  <p className="text-sm">
+                    {item.element_name.slice(0, 23)}
+                    {item.element_name.slice(0, 23).length === 23 && "..."}
+                  </p>
+                  {selectedItem?.some(
+                    (selected) =>
+                      selected.access_point_id === item.access_point_id
+                  ) ? (
+                    <Check size={14} color="#038C5A" />
+                  ) : null}
+                </div>
+              ))
+            )}
           </div>
         </div>
         <div className="flex items-center justify-between py-4">
@@ -181,14 +206,17 @@ const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
           </div>
         </div>
         {/* w-[calc(100%-11rem)] */}
-        <div className="w-[calc(100%-11rem)] scrollbar-thin border rounded-sm p-3">
-          <div className="rounded-sm max-h-[10rem] scrollbar-thin flex flex-wrap gap-1 justify-end">
+        <div className="w-[calc(100%-11rem)] relative scrollbar-thin border rounded-sm p-3 overflow-y-scroll">
+          <div className="rounded-sm h-[10rem] scrollbar-thin flex flex-wrap gap-1 justify-end">
+            <p className="text-sm absolute left-0 top-0 p-1">
+              {selectedItem.length}
+            </p>
             {selectedItem?.map((rec) => (
               <div
                 key={rec.access_point_id}
                 className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full"
               >
-                <p className="font-semibold ">{rec.element_name}</p>
+                <p className="text-sm">{rec.element_name}</p>
                 <div
                   onClick={() => handleRemoveReciever(rec)}
                   className="flex h-[65%] items-end cursor-pointer"

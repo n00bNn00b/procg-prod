@@ -1,4 +1,5 @@
 import {
+  Dispatch,
   ReactNode,
   createContext,
   useContext,
@@ -56,11 +57,11 @@ interface GlobalContex {
   fetchUsersAndPersons: () => Promise<void>;
   //lazy loading
   page: number;
-  setPage: (number: number) => void;
+  setPage: Dispatch<React.SetStateAction<number>>;
   totalPage: number;
   currentPage: number;
   limit: number;
-  setLimit: (number: number) => void;
+  setLimit: Dispatch<React.SetStateAction<number>>;
 }
 
 const GlobalContex = createContext({} as GlobalContex);
@@ -162,9 +163,6 @@ export function GlobalContextProvider({
       const response = await axios.get<IManageAccessEntitlementsPerPageTypes>(
         `${url}/data-sources/p?page=${page}&limit=${limit}`
       );
-      // const sortingData = response.data.sort(
-      //   (a, b) => b.data_source_id - a.data_source_id
-      // );
       const sortingData = response.data;
       return sortingData ?? [];
     } catch (error) {

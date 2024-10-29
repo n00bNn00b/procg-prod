@@ -25,7 +25,7 @@ const AccessEntitlementElemantModal = () => {
               Entitlement Name :{" "}
               {selectedManageAccessEntitlements?.entitlement_name}
             </h2>
-            <X onClick={() => handleCancel()} className="cursor-pointer" />
+            <X onClick={handleCancel} className="cursor-pointer" />
           </div>
           {/* Card start */}
           <div className="p-2">
