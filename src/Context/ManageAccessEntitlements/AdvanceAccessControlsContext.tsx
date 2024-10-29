@@ -138,10 +138,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         `${url}/manage-global-conditions`
       );
       if (response) {
-        const sortedData = response.data.sort(
-          (a, b) => b.manage_global_condition_id - a.manage_global_condition_id
-        );
-        return setManageGlobalConditions(sortedData ?? []);
+        return setManageGlobalConditions(response.data ?? []);
       }
     } catch (error) {
       console.log(error);
@@ -212,10 +209,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       );
       // return (filteredData as IManageGlobalConditionLogicExtendTypes[]) ?? [];
       if (filteredData) {
-        const sortedData = filteredData.sort(
-          (a, b) => Number(a.widget_position) - Number(b.widget_position)
-        );
-        return sortedData as IManageGlobalConditionLogicExtendTypes[];
+        return filteredData as IManageGlobalConditionLogicExtendTypes[];
       }
     } catch (error) {
       console.log(error);
@@ -305,11 +299,8 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         `${url}/manage-access-models`
       );
       if (response) {
-        const sortedData = response.data.sort(
-          (a, b) => b.manage_access_model_id - a.manage_access_model_id
-        );
-        setManageAccessModels(sortedData ?? []);
-        return sortedData ?? [];
+        setManageAccessModels(response.data ?? []);
+        return response.data ?? [];
       }
     } catch (error) {
       console.log(error);
@@ -408,10 +399,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       );
       // return (filteredData as IManageGlobalConditionLogicExtendTypes[]) ?? [];
       if (filteredData) {
-        const sortedData = filteredData.sort(
-          (a, b) => Number(a.widget_position) - Number(b.widget_position)
-        );
-        return sortedData as IManageAccessModelLogicExtendTypes[];
+        return filteredData as IManageAccessModelLogicExtendTypes[];
       }
     } catch (error) {
       console.log(error);

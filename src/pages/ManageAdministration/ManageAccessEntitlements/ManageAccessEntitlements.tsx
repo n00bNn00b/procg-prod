@@ -4,6 +4,7 @@ import ManageAccessEntitlementsTable from "./ManageAccessEntitlementsTable";
 import CustomModal from "@/components/CustomModal/CustomModal";
 import { X } from "lucide-react";
 import ManageAccessPointsEntitleModal from "./ManageAccessPointsEntitleModal";
+// import TestTable from "./testtable";
 
 const ManageAccessEntitlements = () => {
   const {

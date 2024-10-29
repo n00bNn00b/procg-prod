@@ -50,13 +50,15 @@ import {
 } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import columns from "./Columns";
-import Pagination3 from "@/components/Pagination/Pagination3";
+import Pagination4 from "@/components/Pagination/Pagination4";
+import Spinner from "@/components/Spinner/Spinner";
 const ManageAccessEntitlementsTable = () => {
   const {
     fetchManageAccessEntitlements,
     selected,
     setSelected,
     fetchAccessPointsEntitlement,
+    fetchAccessPointsEntitlementForDelete,
     setSelectedManageAccessEntitlements,
     setEditManageAccessEntitlement,
     save,
@@ -66,32 +68,40 @@ const ManageAccessEntitlementsTable = () => {
     filteredData,
     setFilteredData,
     setLimit,
+    setPage: setAccessPointsPage,
   } = useManageAccessEntitlementsContext();
   const [data, setData] = React.useState<IManageAccessEntitlementsTypes[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [page, setPage] = React.useState<number>(1);
   const limit = 3;
   const [totalPage, setTotalPage] = React.useState<number | undefined>();
-  const [currentPage, setCurrentPage] = React.useState<number | undefined>();
+  const [paginationArray, setPaginationArray] = React.useState<number[]>([]);
+  const [currentPage, setCurrentPage] = React.useState<number>(1);
   // Fetch Data
   React.useEffect(() => {
     // if first time fetch empty array
     if (filteredData.length > 0) {
       setFilteredData([]);
     }
-    setSelectedManageAccessEntitlements(Object());
+
     setSelected([]);
     table.getRowModel().rows.map((row) => row.toggleSelected(false));
     const fetchData = async () => {
       setIsLoading(true);
       try {
         const result = await fetchManageAccessEntitlements(page, limit);
+        const num = result?.totalPages || 1;
+        const array = [];
+        for (let i = 1; i <= num; i++) {
+          array.push(i);
+        }
+        setPaginationArray(array);
         setTotalPage(result?.totalPages);
-        setCurrentPage(result?.currentPage);
-        const sortedData = result?.results.sort(
-          (a, b) => b.entitlement_id - a.entitlement_id
-        );
-        setData(sortedData ?? []);
+        setCurrentPage(result?.currentPage ?? 1);
+        setData(result?.results ?? []);
+        if (selected.length === 0) {
+          setPaginationArray([1]);
+        }
       } catch (error) {
         console.error("Error fetching data sources:", error);
       } finally {
@@ -100,6 +110,10 @@ const ManageAccessEntitlementsTable = () => {
     };
     fetchData();
   }, [save, page]);
+  React.useEffect(() => {
+    setSelectedManageAccessEntitlements(Object());
+  }, []);
+
   // loader
   tailspin.register();
   // Shadcn Form
@@ -129,6 +143,8 @@ const ManageAccessEntitlementsTable = () => {
   };
 
   const handleFetchAccessPoints = () => {
+    // if first time fetch empty page
+    setAccessPointsPage(1);
     fetchAccessPointsEntitlement(selected[0]);
     setSelectedManageAccessEntitlements(selected[0]);
     setLimit(5);
@@ -166,7 +182,7 @@ const ManageAccessEntitlementsTable = () => {
     try {
       setDeleteLoading(true);
       for (const element of selected) {
-        const result = await fetchAccessPointsEntitlement(element);
+        const result = await fetchAccessPointsEntitlementForDelete(element);
         // Instead of replacing the state, accumulate results
         setDeleteAccessPointsElement((prev) => [
           ...prev,
@@ -182,7 +198,6 @@ const ManageAccessEntitlementsTable = () => {
       setDeleteLoading(false);
     }
   };
-  console.log(deleteAccessPointsElement, "deleteAccessPointsElement");
   const handleDelete = async () => {
     for (const element of selected) {
       await deleteManageAccessEntitlement(element.entitlement_id);
@@ -190,6 +205,13 @@ const ManageAccessEntitlementsTable = () => {
     table.getRowModel().rows.map((row) => row.toggleSelected(false));
     setSelected([]);
   };
+  React.useEffect(() => {
+    //if seletect more than 1
+
+    setSelectedManageAccessEntitlements(Object());
+    setFilteredData([]);
+  }, [selected.length > 1, page]);
+
   // console.log(table.getRowModel().rows.map((row) => row.toggleSelected(false)));
   return (
     <div className="px-3">
@@ -402,12 +424,7 @@ const ManageAccessEntitlementsTable = () => {
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={columns.length} className=" text-center">
-                    <l-tailspin
-                      size="40"
-                      stroke="5"
-                      speed="0.9"
-                      color="black"
-                    ></l-tailspin>
+                    <Spinner color="black" size="40" />
                   </TableCell>
                 </TableRow>
               ) : table.getRowModel().rows?.length ? (
@@ -465,13 +482,25 @@ const ManageAccessEntitlementsTable = () => {
             </TableBody>
           </Table>
         </div>
-        <Pagination3
+        {/* <Pagination3
           setPage={setPage}
           page={page}
           totalPage={totalPage}
           table={table}
           currentPage={currentPage}
-        />
+        /> */}
+        <div className="flex justify-between p-1">
+          <div className="flex-1 text-sm text-gray-600">
+            {table.getFilteredSelectedRowModel().rows.length} of{" "}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+          <Pagination4
+            currentPage={currentPage}
+            setCurrentPage={setPage}
+            totalPageNumbers={totalPage as number}
+            paginationArray={paginationArray}
+          />
+        </div>
       </div>
       {/* Start Pagination */}
     </div>

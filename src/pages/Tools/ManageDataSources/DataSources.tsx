@@ -47,7 +47,7 @@ import {
 import DataSourceDataAdd from "@/components/DataSourceDataAdd/DataSourceDataAdd";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import Pagination3 from "@/components/Pagination/Pagination3";
+import Pagination4 from "@/components/Pagination/Pagination4";
 
 const DataSources = () => {
   const { fetchDataSources, deleteDataSource } = useGlobalContext();
@@ -57,19 +57,23 @@ const DataSources = () => {
   const [page, setPage] = React.useState<number>(1);
   const [limit, setLimit] = React.useState(10);
   const [totalPage, setTotalPage] = React.useState<number | undefined>();
-  const [currentPage, setCurrentPage] = React.useState<number | undefined>();
+  // const [currentPage, setCurrentPage] = React.useState<number | undefined>();
+  const [paginationArray, setPaginationArray] = React.useState<number[]>([]);
   // Fetch Data
   React.useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
         const result = await fetchDataSources(page, limit);
+        const num = result?.totalPages || 1;
+        const array = [];
+        for (let i = 1; i <= num; i++) {
+          array.push(i);
+        }
+        setPaginationArray(array);
         setTotalPage(result?.totalPages);
-        setCurrentPage(result?.currentPage);
-        const sortedData = result?.results.sort(
-          (a, b) => b.data_source_id - a.data_source_id
-        );
-        setData(sortedData ?? []);
+        // setCurrentPage(result?.currentPage);
+        setData(result?.results ?? []);
       } catch (error) {
         console.error("Error fetching data sources:", error);
       } finally {
@@ -590,13 +594,18 @@ const DataSources = () => {
           </TableBody>
         </Table>
 
-        <Pagination3
-          setPage={setPage}
-          page={page}
-          totalPage={totalPage}
-          table={table}
-          currentPage={currentPage}
-        />
+        <div className="flex justify-between p-1">
+          <div className="flex-1 text-sm text-gray-600">
+            {table.getFilteredSelectedRowModel().rows.length} of{" "}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+          <Pagination4
+            currentPage={page}
+            setCurrentPage={setPage}
+            totalPageNumbers={totalPage as number}
+            paginationArray={paginationArray}
+          />
+        </div>
       </div>
       {/* Start Pagination */}
     </div>

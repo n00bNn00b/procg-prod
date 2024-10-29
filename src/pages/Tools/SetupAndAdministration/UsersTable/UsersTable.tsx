@@ -34,7 +34,7 @@ import columns from "./Columns";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import CustomModal from "@/components/CustomModal/CustomModal";
 import AddUser from "@/components/AddUser/AddUser";
-import Pagination3 from "@/components/Pagination/Pagination3";
+import Pagination4 from "@/components/Pagination/Pagination4";
 
 export function UsersTable() {
   const {
@@ -44,7 +44,6 @@ export function UsersTable() {
     page,
     setPage,
     totalPage,
-    currentPage,
   } = useGlobalContext();
   const { isOpenModal, setIsOpenModal } = useManageAccessEntitlementsContext();
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -79,10 +78,16 @@ export function UsersTable() {
       pagination,
     },
   });
-  React.useEffect(() => {
-    fetchUsersAndPersons();
-  }, [page]);
 
+  const [paginationArray, setPaginationArray] = React.useState<number[]>([]);
+  React.useEffect(() => {
+    const paginationArray = [];
+    for (let i = 1; i <= totalPage; i++) {
+      paginationArray.push(i);
+    }
+    setPaginationArray(paginationArray);
+    fetchUsersAndPersons();
+  }, [page, totalPage]);
   return (
     <div className="px-3">
       {isOpenModal === 4 && (
@@ -258,13 +263,16 @@ export function UsersTable() {
             )}
           </TableBody>
         </Table>
-        <div>
-          <Pagination3
-            setPage={setPage}
-            page={page}
-            totalPage={totalPage}
-            table={table}
-            currentPage={currentPage}
+        <div className="flex justify-between p-1">
+          <div className="flex-1 text-sm text-gray-600">
+            {table.getFilteredSelectedRowModel().rows.length} of{" "}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+          <Pagination4
+            currentPage={page}
+            setCurrentPage={setPage}
+            totalPageNumbers={totalPage as number}
+            paginationArray={paginationArray}
           />
         </div>
       </div>
