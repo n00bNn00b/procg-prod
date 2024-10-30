@@ -221,7 +221,7 @@ export function UsersTable() {
       </div>
       {/* Table */}
       <div className="rounded-md border">
-        <div className="h-[21rem]">
+        <div className="h-[22rem]">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
