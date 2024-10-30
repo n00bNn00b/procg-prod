@@ -2,9 +2,19 @@ import { Delete } from "lucide-react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { ICreateAccessPointsElementTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
-import { toast } from "@/components/ui/use-toast";
 import Spinner from "@/components/Spinner/Spinner";
 
 const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
@@ -58,7 +68,7 @@ const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
     };
 
     fetchAccessPoints();
-  }, [isLoadingAccessPoints]);
+  }, [isLoadingAccessPoints, page, fetchAccessPointsData.length]);
 
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -107,11 +117,6 @@ const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
       console.log(selectedIds, "selectedIds");
     } catch (error) {
       console.log(error);
-    } finally {
-      toast({
-        title: "Success",
-        description: `Data added successfully to ${selectedManageAccessEntitlements?.entitlement_name}`,
-      });
     }
   };
   const handleRemoveAccessEntitlementElements = () => {
@@ -157,7 +162,7 @@ const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
                 ) : null}
               </span>
             )}
-            {filterdAccessPoints.length === 0 && <div>No data found</div>}
+            {filterdAccessPoints.length === 0 && <div>No results.</div>}
             {isLoadingAccessPoints ? (
               <div className="flex justify-center">
                 <Spinner color="black" size="40" />
@@ -196,12 +201,34 @@ const RelationAccessPoint = ({ tableRow }: { tableRow: () => void }) => {
               >
                 <h3>Cancel</h3>
               </Button>
-              <Button
-                disabled={selectedAccessEntitlementElements?.length === 0}
-                onClick={handleRemoveAccessEntitlementElements}
-              >
-                <h3>Remove</h3>
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    disabled={selectedAccessEntitlementElements?.length === 0}
+                  >
+                    Remove
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your account and remove your data from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleRemoveAccessEntitlementElements}
+                    >
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </>
           </div>
         </div>

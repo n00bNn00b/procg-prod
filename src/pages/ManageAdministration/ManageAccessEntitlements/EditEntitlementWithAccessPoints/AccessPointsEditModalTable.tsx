@@ -101,7 +101,6 @@ const AccessPointsEditModal = () => {
     setSelectedAccessEntitlementElements([]);
   }, [page, totalPage, isLoadingAccessPoints, data.length]);
 
-  console.log(paginationArray, "paginationArray");
   return (
     <div className="">
       <div className="w-full">

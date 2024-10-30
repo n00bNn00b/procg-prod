@@ -5,6 +5,7 @@ import {
   IFetchAccessEntitlementElementsTypes,
   IManageAccessEntitlementsTypes,
   IManageAccessEntitlementsPerPageTypes,
+  IFetchCombinedAccessPointsElementAndDatasourceTypes,
 } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import axios from "axios";
 import {
@@ -32,9 +33,9 @@ interface IContextTypes {
   fetchAccessPointsEntitlementForDelete: (
     fetchData: IManageAccessEntitlementsTypes
   ) => Promise<IFetchAccessPointsElementTypes[]>;
-  filteredData: IFetchAccessPointsElementTypes[];
+  filteredData: IFetchCombinedAccessPointsElementAndDatasourceTypes[];
   setFilteredData: Dispatch<
-    SetStateAction<IFetchAccessPointsElementTypes[] | []>
+    SetStateAction<IFetchCombinedAccessPointsElementAndDatasourceTypes[] | []>
   >;
   isLoading: boolean;
   isLoadingAccessPoints: boolean;
@@ -119,7 +120,7 @@ export const ManageAccessEntitlementsProvider = ({
     []
   );
   const [filteredData, setFilteredData] = useState<
-    IFetchAccessPointsElementTypes[] | []
+    IFetchCombinedAccessPointsElementAndDatasourceTypes[] | []
   >([]);
   const [isOpenModal, setIsOpenModal] = useState<number>(0);
   const [selectedRow, setSelectedRow] = useState<
@@ -218,7 +219,7 @@ export const ManageAccessEntitlementsProvider = ({
           setTotalPage(totalPages);
           setCurrentPage(page);
           setFilteredData(
-            filterAccessPointsById.data as IFetchAccessPointsElementTypes[]
+            filterAccessPointsById.data as IFetchCombinedAccessPointsElementAndDatasourceTypes[]
           );
         }
       } catch (error: any) {
@@ -478,6 +479,10 @@ export const ManageAccessEntitlementsProvider = ({
       console.log(error);
     } finally {
       setIsLoadingAccessPoints(false);
+      toast({
+        title: "Success",
+        description: `Data added successfully to ${selectedManageAccessEntitlements?.entitlement_name}`,
+      });
     }
 
     fetchAccessPointsEntitlement(selected[0]);

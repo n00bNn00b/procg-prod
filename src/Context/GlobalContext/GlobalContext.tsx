@@ -13,7 +13,7 @@ import {
   IAddUserTypes,
   ITenantsTypes,
   IPersonsTypes,
-  IUsersInfoTypes,
+  ICombinedUser,
 } from "@/types/interfaces/users.interface";
 import {
   IDataSourcePostTypes,
@@ -53,8 +53,8 @@ interface GlobalContex {
   createUser: (postData: IAddUserTypes) => void;
   fetchTenants: () => Promise<ITenantsTypes[] | undefined>;
   person: IPersonsTypes | undefined;
-  usersInfo: IUsersInfoTypes[];
-  fetchUsersAndPersons: () => Promise<void>;
+  usersInfo: ICombinedUser[];
+  fetchCombinedUser: () => Promise<void>;
   //lazy loading
   page: number;
   setPage: Dispatch<React.SetStateAction<number>>;
@@ -62,6 +62,7 @@ interface GlobalContex {
   currentPage: number;
   limit: number;
   setLimit: Dispatch<React.SetStateAction<number>>;
+  deleteCombinedUser: (user_ids: ICombinedUser[]) => Promise<void>;
 }
 
 const GlobalContex = createContext({} as GlobalContex);
@@ -90,7 +91,7 @@ export function GlobalContextProvider({
 
   const [users, setUsers] = useState<Users[]>([]);
   const [person, setPerson] = useState<IPersonsTypes>();
-  const [usersInfo, setUsersInfo] = useState<IUsersInfoTypes[]>([]);
+  const [usersInfo, setUsersInfo] = useState<ICombinedUser[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const url = import.meta.env.VITE_API_URL;
@@ -119,42 +120,48 @@ export function GlobalContextProvider({
     fetchUsers();
   }, [url, token?.user_id]);
   const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(13);
+  const [limit, setLimit] = useState<number>(10);
   const [totalPage, setTotalPage] = useState<number>(Number());
   const [currentPage, setCurrentPage] = useState<number>(1);
   // access entitlement elements lazy loading
-  const fetchUsersAndPersonsLazyLoading = async (data: IUsersInfoTypes[]) => {
+  const fetchCombinedUser = async () => {
     try {
-      const totalCount = data.length;
-      const offset = (page - 1) * limit;
-      const results = data.slice(offset, offset + limit);
+      setIsLoading(true);
+      const users = await axios.get<Users[]>(`${url}/users`);
+      const res = await axios.get<ICombinedUser[]>(
+        `${url}/combined-user/${page}/${limit}`
+      );
+      const totalCount = users.data.length;
+      console.log(res.data);
       const totalPages = Math.ceil(totalCount / limit);
-      setUsersInfo(results);
+      setUsersInfo(res.data);
       setTotalPage(totalPages);
       setCurrentPage(page);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
-  // fetch Users and Persons at the same time and merge
-  const fetchUsersAndPersons = async () => {
+  const deleteCombinedUser = async (user_ids: ICombinedUser[]) => {
+    setIsLoading(true);
     try {
-      const [users, persons] = await Promise.all([
-        await axios.get<Users[]>(`${url}/users`),
-        await axios.get<Users[]>(`${url}/persons`),
-      ]);
-      //merge users and persons
-      const attributesMap = new Map(
-        persons.data.map((attr) => [attr.user_id, attr])
-      );
-      const mergedData = users.data.map((item) => ({
-        ...item,
-        ...(attributesMap.get(item.user_id) || {}),
-      }));
-
-      fetchUsersAndPersonsLazyLoading(mergedData as IUsersInfoTypes[]);
+      for (const id of user_ids) {
+        await Promise.all([
+          axios.delete(`${url}/users/${id.user_id}`),
+          axios.delete(`${url}/persons/${id.user_id}`),
+          axios.delete(`${url}/user-credentials/${id.user_id}`),
+        ]);
+      }
+      fetchCombinedUser();
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
+      toast({
+        title: "Success",
+        description: `Delete successfully.`,
+      });
     }
   };
   //Fetch DataSources
@@ -350,7 +357,7 @@ export function GlobalContextProvider({
       console.log(error);
     } finally {
       setIsLoading(false);
-      fetchUsersAndPersons();
+      fetchCombinedUser();
     }
   };
   return (
@@ -373,13 +380,14 @@ export function GlobalContextProvider({
         fetchTenants,
         person,
         usersInfo,
-        fetchUsersAndPersons,
+        fetchCombinedUser,
         page,
         setPage,
         totalPage,
         currentPage,
         limit,
         setLimit,
+        deleteCombinedUser,
       }}
     >
       <SocketContextProvider>
