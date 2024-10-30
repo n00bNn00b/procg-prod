@@ -281,7 +281,7 @@ const AddForm: FC<AddFormProps> = ({
             className="w-full bg-red-300 hover:bg-red-500"
             onClick={handleReset}
           >
-            Reset
+            Reset Form
           </Button>
           <Button className="w-full" type="submit">
             {isLoading ? (

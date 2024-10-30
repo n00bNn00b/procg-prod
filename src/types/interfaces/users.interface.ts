@@ -17,6 +17,9 @@ export interface Users {
   last_updated_on?: string;
   tenant_id?: number;
 }
+export interface ICombinedUser extends Users {
+  person: IPersonsTypes;
+}
 
 export interface Message {
   id: string;

@@ -25,5 +25,7 @@ export interface IDataSourcePostTypes {
   last_transaction_synchronization_status: string;
   default_datasource: string;
   created_by: string;
+  created_on?: Date;
   last_updated_by: string;
+  last_updated_on?: Date;
 }

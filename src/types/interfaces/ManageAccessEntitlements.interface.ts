@@ -1,3 +1,5 @@
+import { IDataSourcePostTypes } from "./datasource.interface";
+
 export interface IManageAccessEntitlementsTypes {
   entitlement_id: number;
   entitlement_name: string;
@@ -31,6 +33,10 @@ export interface IFetchAccessPointsElementTypes {
   created_on: string;
   last_updated_by: string;
   last_updated_on: string;
+}
+export interface IFetchCombinedAccessPointsElementAndDatasourceTypes
+  extends IFetchAccessPointsElementTypes {
+  dataSource: IDataSourcePostTypes;
 }
 export interface IManageEntitlementElementDataDeleteTypes {
   entitlement_id: number;

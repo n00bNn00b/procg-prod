@@ -1,10 +1,8 @@
-import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { IFetchAccessPointsElementTypes } from "@/types/interfaces/ManageAccessEntitlements.interface";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Check, X } from "lucide-react";
-import { useEffect, useState } from "react";
 
 const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
   {
@@ -51,25 +49,14 @@ const columns: ColumnDef<IFetchAccessPointsElementTypes>[] = [
     ),
   },
   {
-    accessorKey: "data_source_id",
+    accessorKey: "dataSource",
     header: () => {
       return <div className="capitalize min-w-max">Data Source</div>;
     },
     cell: ({ row }) => {
-      const { fetchDataSource } = useGlobalContext();
-      const [datasources, setDatasources] = useState<IDataSourceTypes>();
-      useEffect(() => {
-        const res = async () => {
-          const id = row.getValue("data_source_id");
-          const res = await fetchDataSource(id as number);
-          return setDatasources(res);
-        };
-        res();
-      }, []);
+      const dataSource: IDataSourceTypes = row.getValue("dataSource");
       return (
-        <div className="capitalize min-w-max">
-          {datasources?.datasource_name}
-        </div>
+        <div className="capitalize min-w-max">{dataSource.datasource_name}</div>
       );
     },
   },
