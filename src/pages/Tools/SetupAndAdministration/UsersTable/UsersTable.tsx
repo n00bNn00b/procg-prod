@@ -129,7 +129,7 @@ export function UsersTable() {
     setIsOpenModal(modelName);
   };
   const handleCloseModal = () => {
-    isOpenModal === "edit_user" && setIsOpenModal(""); // close modal
+    setIsOpenModal(""); // close modal
     setSelected([]);
     //table toggle false
     table.toggleAllRowsSelected(false);
