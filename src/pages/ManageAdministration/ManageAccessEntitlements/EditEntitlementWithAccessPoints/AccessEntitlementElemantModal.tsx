@@ -2,23 +2,20 @@ import CustomModal2 from "@/components/CustomModal/CustomModal2";
 import AccessPointsEditModal from "./AccessPointsEditModalTable";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import { X } from "lucide-react";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
 const AccessEntitlementElemantModal = () => {
-  const {
-    isOpenModal,
-    setIsOpenModal,
-    selectedManageAccessEntitlements,
-    setLimit,
-    setPage,
-  } = useManageAccessEntitlementsContext();
+  const { isOpenModal, setIsOpenModal } = useGlobalContext();
+  const { selectedManageAccessEntitlements, setLimit, setPage } =
+    useManageAccessEntitlementsContext();
   const handleCancel = () => {
-    setIsOpenModal(0);
+    setIsOpenModal("");
     setLimit(5);
     setPage(1);
   };
   return (
     <div>
-      {isOpenModal === 3 && (
+      {isOpenModal === "access_points" && (
         <CustomModal2>
           <div className="flex justify-between p-2 bg-slate-300 rounded-t-lg">
             <h2 className="text-lg font-bold capitalize">

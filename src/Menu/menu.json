@@ -49,14 +49,14 @@
     "submenu": "Tools",
     "submenuIcon": "/sidebar/tools.svg",
     "paths": [
-      "/tools/setup-and-administration",
+      "/tools/users",
       "/tools/datasources"
     ],
     "menuItems": [
       {
-        "name": "Setup and Administration",
+        "name": "Users",
         "icon": "sidebar/setup-and-administration.svg",
-        "path": "/tools/setup-and-administration"
+        "path": "/tools/users"
       },
       {
         "name": "Data Sources",

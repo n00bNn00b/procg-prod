@@ -286,7 +286,7 @@ const DND: FC = () => {
           .then((logicResult) => {
             if (logicResult.status === 200) {
               toast({
-                title: "Message",
+                title: "Info !!!",
                 description: "Access Global Condition data Save successfully.",
               });
             }
@@ -311,7 +311,7 @@ const DND: FC = () => {
           .then(([logicResult, attributeResult]) => {
             if (logicResult.status === 200 && attributeResult.status === 200) {
               toast({
-                title: "Message",
+                title: "Info !!!",
                 description: "Save data successfully.",
               });
             }

@@ -289,7 +289,7 @@ const DND: FC<IManageAccessModelDNDProps> = ({
           .then((logicResult) => {
             if (logicResult.status === 200) {
               toast({
-                title: "Message",
+                title: "Info !!!",
                 description: "Access Global Condition data Save successfully.",
               });
             }
@@ -298,7 +298,7 @@ const DND: FC<IManageAccessModelDNDProps> = ({
           .catch((error) => {
             if (error.response.status === 408) {
               toast({
-                title: "Message",
+                title: "Info !!!",
                 variant: "destructive",
                 description: "Name Already Exists.",
               });
@@ -322,7 +322,7 @@ const DND: FC<IManageAccessModelDNDProps> = ({
           .then(([logicResult, attributeResult]) => {
             if (logicResult.status === 200 && attributeResult.status === 200) {
               toast({
-                title: "Message",
+                title: "Info !!!",
                 description: "Save data successfully.",
               });
             }

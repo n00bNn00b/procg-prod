@@ -6,16 +6,27 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import {
   IAddUserTypes,
   ITenantsTypes,
+  IUpdateUserTypes,
+  IUsersInfoTypes,
 } from "@/types/interfaces/users.interface";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { hourglass } from "ldrs";
 import AddForm from "./AddForm";
 import { X } from "lucide-react";
-import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
-
-const AddUser = () => {
-  const { createUser, token, fetchTenants, isLoading } = useGlobalContext();
-  const { setIsOpenModal } = useManageAccessEntitlementsContext();
+import EditForm from "./EditForm";
+interface IAddUserProps {
+  selected: IUsersInfoTypes[];
+  handleCloseModal: () => void;
+}
+const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
+  const {
+    createUser,
+    token,
+    fetchTenants,
+    isLoading,
+    updateUser,
+    isOpenModal,
+  } = useGlobalContext();
   const [userType, setUserType] = useState<string>("person");
   const [tenants, setTenants] = useState<ITenantsTypes[] | undefined>([]);
   hourglass.register();
@@ -33,25 +44,39 @@ const AddUser = () => {
     fetchTenantsData();
   }, []);
   const FormSchema = z
-    .object({
-      user_type: z.string(),
-      user_name: z.string(),
-      first_name: z.string(),
-      middle_name: z.string().optional(),
-      last_name: z.string(),
-      job_title: z.string(),
-      tenant_id: z.string(),
-      email_addresses: z.union([
-        z.string().email(),
-        z.array(z.string().email()),
-      ]),
-      password: z.string().min(8, {
-        message: "At least 8 characters.",
-      }),
-      confirm_password: z.string().min(8, {
-        message: "At least 8 characters need.",
-      }),
-    })
+    .object(
+      isOpenModal === "create_user"
+        ? {
+            user_type: z.string(),
+            user_name: z.string(),
+            first_name: z.string(),
+            middle_name: z.string().optional(),
+            last_name: z.string(),
+            job_title: z.string(),
+            tenant_id: z.string(),
+            email_addresses: z.union([
+              z.string().email(),
+              z.array(z.string().email()),
+            ]),
+            password: z.string().min(8, {
+              message: "At least 8 characters.",
+            }),
+            confirm_password: z.string().min(8, {
+              message: "At least 8 characters need.",
+            }),
+          }
+        : {
+            user_name: z.string(),
+            first_name: z.string(),
+            middle_name: z.string().optional(),
+            last_name: z.string(),
+            job_title: z.string(),
+            email_addresses: z.union([
+              z.string().email(),
+              z.array(z.string().email()),
+            ]),
+          }
+    )
     .refine((data) => data.password === data.confirm_password, {
       message: "Passwords don't match",
       path: ["confirm_password"],
@@ -59,18 +84,28 @@ const AddUser = () => {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      user_name: "",
-      user_type: "person",
-      email_addresses: "",
-      tenant_id: "",
-      first_name: "",
-      middle_name: "",
-      last_name: "",
-      // job_title: "",
-      password: "",
-      confirm_password: "",
-    },
+    defaultValues:
+      isOpenModal === "create_user"
+        ? {
+            user_name: "",
+            user_type: "person",
+            email_addresses: "",
+            tenant_id: "",
+            first_name: "",
+            middle_name: "",
+            last_name: "",
+            // job_title: "",
+            password: "",
+            confirm_password: "",
+          }
+        : {
+            user_name: selected[0].user_name,
+            job_title: selected[0].job_title,
+            email_addresses: selected[0].email_addresses,
+            first_name: selected[0].first_name,
+            middle_name: selected[0].middle_name,
+            last_name: selected[0].last_name,
+          },
   });
   const { reset } = form;
   const handleReset = () => {
@@ -78,8 +113,6 @@ const AddUser = () => {
   };
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
-
     const postData: IAddUserTypes = {
       user_type: data.user_type,
       user_name: data.user_name,
@@ -95,30 +128,59 @@ const AddUser = () => {
       job_title: data.job_title,
       password: data.password,
     };
+    const putData: IUpdateUserTypes = {
+      user_name: data.user_name,
+      job_title: data.job_title,
+      email_addresses: Array.isArray(data.email_addresses)
+        ? data.email_addresses
+        : [data.email_addresses],
+      first_name: data.first_name,
+      middle_name: data.middle_name,
+      last_name: data.last_name,
+    };
+
     try {
-      createUser(postData);
-      reset();
+      isOpenModal === "create_user" && createUser(postData);
+      isOpenModal === "edit_user" && updateUser(selected[0].user_id, putData);
     } catch (error) {
       console.log(error);
+    } finally {
+      reset();
+      handleCloseModal();
     }
   };
-  console.log(userType);
   return (
     <div className="border rounded shadow-xl">
       <div className="p-2 bg-slate-300 rounded-t mx-auto text-center font-bold flex justify-between">
-        <h1>Create An Account</h1>
-        <X onClick={() => setIsOpenModal(0)} className="cursor-pointer" />
+        {isOpenModal === "edit_user" ? (
+          <h1>Edit An Account</h1>
+        ) : (
+          <h1>Create An Account</h1>
+        )}
+        <X onClick={() => handleCloseModal()} className="cursor-pointer" />
       </div>
       <div className="p-2">
-        <AddForm
-          form={form}
-          isLoading={isLoading}
-          userType={userType}
-          setUserType={setUserType}
-          tenants={tenants}
-          handleReset={handleReset}
-          onSubmit={onSubmit}
-        />
+        {isOpenModal === "edit_user" ? (
+          <EditForm
+            form={form}
+            isLoading={isLoading}
+            userType={userType}
+            setUserType={setUserType}
+            tenants={tenants}
+            handleReset={handleReset}
+            onSubmit={onSubmit}
+          />
+        ) : (
+          <AddForm
+            form={form}
+            isLoading={isLoading}
+            userType={userType}
+            setUserType={setUserType}
+            tenants={tenants}
+            handleReset={handleReset}
+            onSubmit={onSubmit}
+          />
+        )}
       </div>
     </div>
   );

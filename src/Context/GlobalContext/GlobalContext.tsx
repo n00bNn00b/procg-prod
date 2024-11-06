@@ -1,6 +1,7 @@
 import {
   Dispatch,
   ReactNode,
+  SetStateAction,
   createContext,
   useContext,
   useEffect,
@@ -13,7 +14,8 @@ import {
   IAddUserTypes,
   ITenantsTypes,
   IPersonsTypes,
-  ICombinedUser,
+  IUsersInfoTypes,
+  IUpdateUserTypes,
 } from "@/types/interfaces/users.interface";
 import {
   IDataSourcePostTypes,
@@ -53,7 +55,7 @@ interface GlobalContex {
   createUser: (postData: IAddUserTypes) => void;
   fetchTenants: () => Promise<ITenantsTypes[] | undefined>;
   person: IPersonsTypes | undefined;
-  usersInfo: ICombinedUser[];
+  usersInfo: IUsersInfoTypes[];
   fetchCombinedUser: () => Promise<void>;
   //lazy loading
   page: number;
@@ -62,7 +64,10 @@ interface GlobalContex {
   currentPage: number;
   limit: number;
   setLimit: Dispatch<React.SetStateAction<number>>;
-  deleteCombinedUser: (user_ids: ICombinedUser[]) => Promise<void>;
+  deleteCombinedUser: (user_ids: IUsersInfoTypes[]) => Promise<void>;
+  updateUser: (id: number, userInfo: IUpdateUserTypes) => void;
+  isOpenModal: string;
+  setIsOpenModal: Dispatch<SetStateAction<string>>;
 }
 
 const GlobalContex = createContext({} as GlobalContex);
@@ -74,6 +79,7 @@ export function useGlobalContext() {
 export function GlobalContextProvider({
   children,
 }: GlobalContextProviderProps) {
+  // const { setIsOpenModal } = useManageAccessEntitlementsContext();
   const [open, setOpen] = useState<boolean>(false);
   const [token, setToken] = useState<Token>(() => {
     const storeData = localStorage.getItem("token");
@@ -91,8 +97,8 @@ export function GlobalContextProvider({
 
   const [users, setUsers] = useState<Users[]>([]);
   const [person, setPerson] = useState<IPersonsTypes>();
-  const [usersInfo, setUsersInfo] = useState<ICombinedUser[]>([]);
-
+  const [usersInfo, setUsersInfo] = useState<IUsersInfoTypes[]>([]);
+  const [isOpenModal, setIsOpenModal] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const url = import.meta.env.VITE_API_URL;
   const user = token?.user_name;
@@ -128,12 +134,12 @@ export function GlobalContextProvider({
     try {
       setIsLoading(true);
       const users = await axios.get<Users[]>(`${url}/users`);
-      const res = await axios.get<ICombinedUser[]>(
-        `${url}/combined-user/${page}/${limit}`
+      const res = await axios.get<IUsersInfoTypes[]>(
+        `${url}/combined-user/users?page=${page}&limit=${limit}`
       );
       const totalCount = users.data.length;
-      console.log(res.data);
       const totalPages = Math.ceil(totalCount / limit);
+
       setUsersInfo(res.data);
       setTotalPage(totalPages);
       setCurrentPage(page);
@@ -143,25 +149,53 @@ export function GlobalContextProvider({
       setIsLoading(false);
     }
   };
-  const deleteCombinedUser = async (user_ids: ICombinedUser[]) => {
+  const updateUser = async (id: number, userInfo: IUpdateUserTypes) => {
+    try {
+      const res = await axios.put(`${url}/combined-user/user/${id}`, userInfo);
+      if (res.status === 200) {
+        setIsOpenModal("");
+        fetchCombinedUser();
+        toast({
+          title: "Info !!!",
+          description: `Update successfully.`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const deleteCombinedUser = async (user_ids: IUsersInfoTypes[]) => {
+    console.log(user_ids, "user_ids");
     setIsLoading(true);
     try {
       for (const id of user_ids) {
-        await Promise.all([
+        const [users, persons, credentials] = await Promise.all([
           axios.delete(`${url}/users/${id.user_id}`),
           axios.delete(`${url}/persons/${id.user_id}`),
           axios.delete(`${url}/user-credentials/${id.user_id}`),
         ]);
+        console.log(users, persons, credentials, "delete checked");
+        if (
+          users.status === 200 ||
+          persons.status === 200 ||
+          credentials.status === 200
+        ) {
+          toast({
+            title: "Info !!!",
+            description: `Delete successfully.`,
+          });
+        }
       }
-      fetchCombinedUser();
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
-    } finally {
-      setIsLoading(false);
+      fetchCombinedUser();
       toast({
-        title: "Success",
-        description: `Delete successfully.`,
+        title: "Info !!!",
+        description: `Error: ${error.message}`,
       });
+    } finally {
+      fetchCombinedUser();
+      setIsLoading(false);
     }
   };
   //Fetch DataSources
@@ -224,7 +258,7 @@ export function GlobalContextProvider({
       console.log(res.status);
       if (res.status === 201) {
         toast({
-          title: "Success",
+          title: "Info !!!",
           description: `Data added successfully.`,
         });
       }
@@ -264,7 +298,7 @@ export function GlobalContextProvider({
       // for sync data call fetch data source
       if (res.status === 200) {
         toast({
-          title: "Success",
+          title: "Info !!!",
           description: `Data updated successfully.`,
         });
       }
@@ -328,7 +362,7 @@ export function GlobalContextProvider({
       password,
     } = postData;
     try {
-      const res = await axios.post<IAddUserTypes>(`${url}/combined-user`, {
+      const res = await axios.post<IAddUserTypes>(`${url}/combined-user/v2`, {
         user_type,
         user_name,
         email_addresses,
@@ -343,8 +377,8 @@ export function GlobalContextProvider({
       });
       if (res.status === 201) {
         toast({
-          title: "Success",
-          description: `User added successfully.`,
+          title: "Info !!!",
+          description: `User added successfully from v2.`,
         });
       }
     } catch (error: any) {
@@ -388,6 +422,9 @@ export function GlobalContextProvider({
         limit,
         setLimit,
         deleteCombinedUser,
+        updateUser,
+        isOpenModal,
+        setIsOpenModal,
       }}
     >
       <SocketContextProvider>

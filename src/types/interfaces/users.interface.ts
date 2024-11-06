@@ -17,6 +17,14 @@ export interface Users {
   last_updated_on?: string;
   tenant_id?: number;
 }
+export interface IUpdateUserTypes {
+  user_name: string;
+  email_addresses: string[];
+  first_name: string;
+  middle_name: string | undefined;
+  last_name: string;
+  job_title: string;
+}
 export interface ICombinedUser extends Users {
   person: IPersonsTypes;
 }

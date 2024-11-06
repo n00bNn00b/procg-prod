@@ -55,7 +55,7 @@ export const ControlsContextProvider = ({
       .then((res) => {
         if (res.status === 201) {
           toast({
-            title: "Success",
+            title: "Info !!!",
             description: `Added successfully.`,
           });
         }

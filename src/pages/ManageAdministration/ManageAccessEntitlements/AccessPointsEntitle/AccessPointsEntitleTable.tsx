@@ -32,12 +32,13 @@ import columns from "./Columns";
 import { Button } from "@/components/ui/button";
 import Pagination4 from "@/components/Pagination/Pagination4";
 import Spinner from "@/components/Spinner/Spinner";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
 const AccessPointsEntitleTable = () => {
+  const { setIsOpenModal } = useGlobalContext();
   const {
     filteredData: data,
     isLoadingAccessPoints,
-    setIsOpenModal,
     selectedManageAccessEntitlements,
     fetchAccessPointsEntitlement,
     selected,
@@ -112,7 +113,7 @@ const AccessPointsEntitleTable = () => {
               <Button
                 className="px-4 py-2 border rounded shadow"
                 onClick={() => {
-                  setIsOpenModal(3);
+                  setIsOpenModal("access_points");
                   setPage(1);
                   // setLimit(10);
                 }}
@@ -129,7 +130,7 @@ const AccessPointsEntitleTable = () => {
             <div>
               <Button
                 onClick={() => {
-                  setIsOpenModal(2);
+                  setIsOpenModal("create_access_point");
                   setAccessPointStatus("create");
                 }}
               >
