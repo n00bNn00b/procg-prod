@@ -369,7 +369,7 @@ export function GlobalContextProvider({
     } = postData;
     try {
       const res = await axios.post<IAddUserTypes>(
-        `${url}/api/v2/combined-user/v2`,
+        `${url}/api/v2/combined-user`,
         {
           user_type,
           user_name,
