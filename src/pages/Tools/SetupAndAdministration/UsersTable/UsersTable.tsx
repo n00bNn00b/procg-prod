@@ -42,11 +42,10 @@ import {
 } from "@/components/ui/table";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import columns from "./Columns";
-import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import CustomModal from "@/components/CustomModal/CustomModal";
 import AddUser from "@/components/AddUser/AddUser";
 import Pagination4 from "@/components/Pagination/Pagination4";
-import { ICombinedUser } from "@/types/interfaces/users.interface";
+import { IUsersInfoTypes } from "@/types/interfaces/users.interface";
 
 export function UsersTable() {
   const {
@@ -58,9 +57,10 @@ export function UsersTable() {
     totalPage,
     deleteCombinedUser,
     token,
+    isOpenModal,
+    setIsOpenModal,
   } = useGlobalContext();
 
-  const { isOpenModal, setIsOpenModal } = useManageAccessEntitlementsContext();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -75,8 +75,8 @@ export function UsersTable() {
   React.useEffect(() => {
     fetchCombinedUser();
   }, []);
-  const [selected, setSelected] = React.useState<ICombinedUser[]>([]);
-  const handleRowSelection = (rowSelection: ICombinedUser) => {
+  const [selected, setSelected] = React.useState<IUsersInfoTypes[]>([]);
+  const handleRowSelection = (rowSelection: IUsersInfoTypes) => {
     setSelected((prevSelected) => {
       if (prevSelected.includes(rowSelection)) {
         return prevSelected.filter((item) => item !== rowSelection);
@@ -85,7 +85,7 @@ export function UsersTable() {
       }
     });
   };
-  console.log(selected, "selected");
+
   const handleDelete = () => {
     deleteCombinedUser(selected);
     //table toggle empty
@@ -125,35 +125,58 @@ export function UsersTable() {
       fetchCombinedUser();
     }
   }, [page, totalPage]);
+  const handleOpenModal = (modelName: string) => {
+    setIsOpenModal(modelName);
+  };
+  const handleCloseModal = () => {
+    isOpenModal === "edit_user" && setIsOpenModal(""); // close modal
+    setSelected([]);
+    //table toggle false
+    table.toggleAllRowsSelected(false);
+  };
   return (
     <div className="px-3">
-      {isOpenModal === 4 && (
-        <div>
+      {isOpenModal === "create_user" ? (
+        <CustomModal>
+          <AddUser selected={selected} handleCloseModal={handleCloseModal} />
+        </CustomModal>
+      ) : (
+        isOpenModal === "edit_user" && (
           <CustomModal>
-            <AddUser />
+            <AddUser selected={selected} handleCloseModal={handleCloseModal} />
           </CustomModal>
-        </div>
+        )
       )}
       {/* top icon and columns*/}
       <div className="flex gap-3 items-center py-2">
         <div className="flex gap-3">
           <div className="flex gap-3 items-center px-4 py-2 border rounded">
             <div className="flex gap-3">
-              <FileEdit className="cursor-not-allowed text-slate-200" />
               <PlusIcon
                 className="cursor-pointer"
-                onClick={() => setIsOpenModal(4)}
+                onClick={() => handleOpenModal("create_user")}
               />
+              <button disabled={selected.length > 1 || selected.length === 0}>
+                <FileEdit
+                  className={`${
+                    selected.length > 1 || selected.length === 0
+                      ? "text-slate-200 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
+                  onClick={() => handleOpenModal("edit_user")}
+                />
+              </button>
+
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <button
                     disabled={
-                      token.user_type !== "admin" && selected.length === 0
+                      token.user_type !== "system" || selected.length === 0
                     }
                   >
                     <Trash
                       className={`${
-                        token.user_type !== "admin" && selected.length === 0
+                        token.user_type !== "system" || selected.length === 0
                           ? "cursor-not-allowed text-slate-200"
                           : "cursor-pointer"
                       }`}
@@ -221,7 +244,7 @@ export function UsersTable() {
       </div>
       {/* Table */}
       <div className="rounded-md border">
-        <div className="h-[22rem]">
+        <div className="h-[23rem]">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -272,7 +295,7 @@ export function UsersTable() {
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-24 text-center"
+                    className="h-[21rem] text-center"
                   >
                     <l-tailspin
                       size="40"
@@ -289,7 +312,7 @@ export function UsersTable() {
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell, index) => (
-                      <TableCell key={cell.id} className="border p-1 w-fit">
+                      <TableCell key={cell.id} className="border p-1 h-8">
                         {index === 0 ? (
                           <Checkbox
                             className=""
@@ -309,20 +332,6 @@ export function UsersTable() {
                     ))}
                   </TableRow>
                 ))
-              ) : isLoading ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    <l-tailspin
-                      size="40"
-                      stroke="5"
-                      speed="0.9"
-                      color="black"
-                    ></l-tailspin>
-                  </TableCell>
-                </TableRow>
               ) : (
                 <TableRow>
                   <TableCell

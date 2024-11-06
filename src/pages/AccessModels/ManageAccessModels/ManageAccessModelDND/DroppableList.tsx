@@ -134,7 +134,7 @@ export const DroppableItem: FC<DroppableItemProps> = ({
     );
     setItems(remainingUser);
     toast({
-      title: "Message",
+      title: "Info !!!",
       description: "Delete data successfully.",
     });
     setDeleteAndSaveState((prev) => prev + 1);

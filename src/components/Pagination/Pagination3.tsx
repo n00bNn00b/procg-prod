@@ -4,10 +4,12 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { Dispatch } from "react";
 
 interface PaginationProps {
   table: any; // Consider defining a more specific type for `table`
-  setPage: (page: number) => void;
+  setPage: Dispatch<React.SetStateAction<number>>;
+  //(page: number) => void;
   page: number;
   totalPage: number | undefined;
   currentPage: number | undefined;

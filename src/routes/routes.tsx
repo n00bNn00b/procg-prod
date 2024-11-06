@@ -125,7 +125,7 @@ const routes = createBrowserRouter([
         path: "tools",
         children: [
           {
-            path: "setup-and-administration",
+            path: "users",
             element: <SetupAndAdministration />,
           },
           {

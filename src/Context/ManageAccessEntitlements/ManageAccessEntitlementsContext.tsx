@@ -39,10 +39,8 @@ interface IContextTypes {
   >;
   isLoading: boolean;
   isLoadingAccessPoints: boolean;
-  isOpenModal: number;
   selectedRow: ICreateAccessPointsElementTypes[];
   setSelectedRow: Dispatch<SetStateAction<ICreateAccessPointsElementTypes[]>>;
-  setIsOpenModal: Dispatch<SetStateAction<number>>;
   selectedManageAccessEntitlements: IManageAccessEntitlementsTypes | undefined;
   setSelectedManageAccessEntitlements: Dispatch<
     SetStateAction<IManageAccessEntitlementsTypes | undefined>
@@ -122,7 +120,6 @@ export const ManageAccessEntitlementsProvider = ({
   const [filteredData, setFilteredData] = useState<
     IFetchCombinedAccessPointsElementAndDatasourceTypes[] | []
   >([]);
-  const [isOpenModal, setIsOpenModal] = useState<number>(0);
   const [selectedRow, setSelectedRow] = useState<
     ICreateAccessPointsElementTypes[]
   >([]);
@@ -284,7 +281,7 @@ export const ManageAccessEntitlementsProvider = ({
       );
       if (res.status === 201) {
         toast({
-          title: "Success",
+          title: "Info !!!",
           description: `User added successfully.`,
         });
         setEditManageAccessEntitlement(false);
@@ -333,7 +330,7 @@ export const ManageAccessEntitlementsProvider = ({
 
       if (res.status === 200) {
         toast({
-          title: "Success",
+          title: "Info !!!",
           description: `Update successfully.`,
         });
         setEditManageAccessEntitlement(false);
@@ -369,7 +366,7 @@ export const ManageAccessEntitlementsProvider = ({
       const res = await axios.delete(`${url}/manage-access-entitlements/${id}`);
       if (res.status === 200) {
         toast({
-          title: "Success",
+          title: "Info !!!",
           description: `Data deleted successfully.`,
         });
       }
@@ -414,7 +411,7 @@ export const ManageAccessEntitlementsProvider = ({
       // setSave((prevSave) => prevSave + 1);
       if (res.status === 201) {
         toast({
-          title: "Success",
+          title: "Info !!!",
           description: `Add successfully.`,
         });
         setSave2((prevSave) => prevSave + 1);
@@ -439,7 +436,7 @@ export const ManageAccessEntitlementsProvider = ({
       const res = await axios.delete(`${url}/access-points-element/${id}`);
       if (res.status === 200) {
         toast({
-          title: "Success",
+          title: "Info !!!",
           description: `Deleted successfully.`,
         });
       }
@@ -480,7 +477,7 @@ export const ManageAccessEntitlementsProvider = ({
     } finally {
       setIsLoadingAccessPoints(false);
       toast({
-        title: "Success",
+        title: "Info !!!",
         description: `Data added successfully to ${selectedManageAccessEntitlements?.entitlement_name}`,
       });
     }
@@ -525,10 +522,8 @@ export const ManageAccessEntitlementsProvider = ({
     setFilteredData,
     isLoading,
     isLoadingAccessPoints,
-    isOpenModal,
     selectedRow,
     setSelectedRow,
-    setIsOpenModal,
     selectedManageAccessEntitlements,
     setSelectedManageAccessEntitlements,
     createAccessPointsEntitlement,

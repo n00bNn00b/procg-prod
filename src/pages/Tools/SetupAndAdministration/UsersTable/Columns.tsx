@@ -1,8 +1,8 @@
-import { ICombinedUser } from "@/types/interfaces/users.interface";
+import { IUsersInfoTypes } from "@/types/interfaces/users.interface";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-export const columns: ColumnDef<ICombinedUser>[] = [
+export const columns: ColumnDef<IUsersInfoTypes>[] = [
   {
     id: "select",
     cell: ({ row }) => (

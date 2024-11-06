@@ -39,6 +39,7 @@ const AddForm: FC<AddFormProps> = ({
   handleReset,
   onSubmit,
 }) => {
+  // console.log(form.getValues(), "form");
   const { token } = useGlobalContext();
   return (
     <Form {...form}>
@@ -78,6 +79,7 @@ const AddForm: FC<AddFormProps> = ({
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="user_name"
@@ -96,6 +98,7 @@ const AddForm: FC<AddFormProps> = ({
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="job_title"
@@ -123,6 +126,7 @@ const AddForm: FC<AddFormProps> = ({
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="tenant_id"
@@ -206,6 +210,7 @@ const AddForm: FC<AddFormProps> = ({
               )}
             />
           )}
+
           <FormField
             disabled={token.user_type !== "system" && userType === "system"}
             control={form.control}

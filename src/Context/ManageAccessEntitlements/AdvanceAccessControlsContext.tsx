@@ -166,7 +166,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       if (res.status === 201) {
         setStateChange((prev) => prev + 1);
         toast({
-          title: "Success",
+          title: "Info !!!",
           description: `Added successfully.`,
         });
       }
@@ -261,7 +261,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       .then((res) => {
         if (res.status === 200) {
           toast({
-            title: "Success",
+            title: "Info !!!",
             description: `Data deleted successfully.`,
           });
         }
@@ -342,7 +342,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       if (res.status === 201) {
         setStateChange((prev) => prev + 1);
         toast({
-          title: "Success",
+          title: "Info !!!",
           description: `Added successfully.`,
         });
       }
@@ -360,7 +360,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         .then((res) => {
           if (res.status === 200) {
             toast({
-              title: "Success",
+              title: "Info !!!",
               description: `Data deleted successfully.`,
             });
           }
