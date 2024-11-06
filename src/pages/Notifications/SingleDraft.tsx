@@ -50,7 +50,9 @@ const SingleDraft = () => {
   useEffect(() => {
     const fetchMessage = async () => {
       try {
-        const response = await axios.get<Message>(`${url}/messages/${id}`);
+        const response = await axios.get<Message>(
+          `${url}/api/v2/messages/${id}`
+        );
         const result = response.data;
         setRecivers(result.recivers);
         setSubject(result.subject);
@@ -113,7 +115,7 @@ const SingleDraft = () => {
     handlesendMessage(data);
     setIsSending(true);
     try {
-      const response = await axios.post(`${url}/messages`, data);
+      const response = await axios.post(`${url}/api/v2/messages`, data);
       console.log("Response:", response.data);
       toast({
         title: "Message Sent",
@@ -123,7 +125,7 @@ const SingleDraft = () => {
     }
 
     try {
-      const response = await axios.delete(`${url}/messages/${id}`);
+      const response = await axios.delete(`${url}/api/v2/messages/${id}`);
       console.log("Resource deleted:", response.data);
       const currentMessages = draftMessages.filter((msg) => msg.id !== id);
       setDraftMessages(currentMessages);
@@ -142,7 +144,7 @@ const SingleDraft = () => {
 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(`${url}/messages/${id}`);
+      const response = await axios.delete(`${url}/api/v2/messages/${id}`);
       console.log("Resource deleted:", response.data);
       const currentMessages = draftMessages.filter((msg) => msg.id !== id);
       setDraftMessages(currentMessages);

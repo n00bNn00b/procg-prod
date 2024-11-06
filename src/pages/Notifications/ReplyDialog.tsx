@@ -54,7 +54,7 @@ const ReplyDialog = ({
     setIsSending(true);
     handlesendMessage(data);
     try {
-      const response = await axios.post(`${url}/messages`, data);
+      const response = await axios.post(`${url}/api/v2/messages`, data);
       console.log("Response:", response.data);
       toast({
         title: "Message Sent",

@@ -87,7 +87,7 @@ const ComposeButton = () => {
     setIsSending(true);
     handlesendMessage(data);
     try {
-      const response = await axios.post(`${url}/messages`, data);
+      const response = await axios.post(`${url}/api/v2/messages`, data);
       console.log("Response:", response.data);
       toast({
         title: "Message Sent",
@@ -118,7 +118,7 @@ const ComposeButton = () => {
     setIsDrafting(true);
     handleDraftMessage(data);
     try {
-      const response = await axios.post(`${url}/messages`, data);
+      const response = await axios.post(`${url}/api/v2/messages`, data);
       console.log("Response:", response.data);
       toast({
         title: "Message saved to draft",
