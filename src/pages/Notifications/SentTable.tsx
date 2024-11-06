@@ -74,7 +74,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
       try {
         setIsloading(true);
         const response = await axios.get<Message[]>(
-          `${url}/messages/sent/${user}/${currentPage}`
+          `${url}/api/v2/messages/sent/${user}/${currentPage}`
         );
         const result = response.data;
         setSentMessages(result);
@@ -91,7 +91,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await axios.delete(`${url}/messages/${id}`);
+      const response = await axios.delete(`${url}/api/v2/messages/${id}`);
       console.log("Resource deleted:", response.data);
     } catch (error) {
       console.error("Error deleting resource:", error);

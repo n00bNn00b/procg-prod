@@ -107,11 +107,11 @@ export function GlobalContextProvider({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const users = await axios.get<Users[]>(`${url}/users`);
+        const users = await axios.get<Users[]>(`${url}/api/v2/users`);
         if (token?.user_id) {
           const res = async () => {
             const person = await axios.get<IPersonsTypes>(
-              `${url}/persons/${token?.user_id}`
+              `${url}/api/v2/persons/${token?.user_id}`
             );
             setPerson(person?.data);
           };
@@ -133,9 +133,9 @@ export function GlobalContextProvider({
   const fetchCombinedUser = async () => {
     try {
       setIsLoading(true);
-      const users = await axios.get<Users[]>(`${url}/users`);
+      const users = await axios.get<Users[]>(`${url}/api/v2/users`);
       const res = await axios.get<IUsersInfoTypes[]>(
-        `${url}/combined-user/users?page=${page}&limit=${limit}`
+        `${url}/api/v2/combined-user/users?page=${page}&limit=${limit}`
       );
       const totalCount = users.data.length;
       const totalPages = Math.ceil(totalCount / limit);
@@ -151,7 +151,10 @@ export function GlobalContextProvider({
   };
   const updateUser = async (id: number, userInfo: IUpdateUserTypes) => {
     try {
-      const res = await axios.put(`${url}/combined-user/user/${id}`, userInfo);
+      const res = await axios.put(
+        `${url}/api/v2/combined-user/user/${id}`,
+        userInfo
+      );
       if (res.status === 200) {
         setIsOpenModal("");
         fetchCombinedUser();
@@ -170,9 +173,9 @@ export function GlobalContextProvider({
     try {
       for (const id of user_ids) {
         const [users, persons, credentials] = await Promise.all([
-          axios.delete(`${url}/users/${id.user_id}`),
-          axios.delete(`${url}/persons/${id.user_id}`),
-          axios.delete(`${url}/user-credentials/${id.user_id}`),
+          axios.delete(`${url}/api/v2/users/${id.user_id}`),
+          axios.delete(`${url}/api/v2/persons/${id.user_id}`),
+          axios.delete(`${url}/api/v2/user-credentials/${id.user_id}`),
         ]);
         console.log(users, persons, credentials, "delete checked");
         if (
@@ -202,7 +205,7 @@ export function GlobalContextProvider({
   const fetchDataSources = async (page: number, limit: number) => {
     try {
       const response = await axios.get<IManageAccessEntitlementsPerPageTypes>(
-        `${url}/data-sources/p?page=${page}&limit=${limit}`
+        `${url}/api/v2/data-sources/p?page=${page}&limit=${limit}`
       );
       const sortingData = response.data;
       return sortingData ?? [];
@@ -214,7 +217,7 @@ export function GlobalContextProvider({
   const fetchDataSource = async (id: number): Promise<IDataSourceTypes> => {
     try {
       const response = await axios.get<IDataSourceTypes>(
-        `${url}/data-sources/${id}`
+        `${url}/api/v2/data-sources/${id}`
       );
       if (response.status === 200) {
         // Check if status code indicates success
@@ -243,17 +246,20 @@ export function GlobalContextProvider({
       last_updated_by,
     } = postData;
     try {
-      const res = await axios.post<IDataSourceTypes>(`${url}/data-sources`, {
-        datasource_name,
-        description,
-        application_type,
-        application_type_version,
-        last_access_synchronization_status,
-        last_transaction_synchronization_status,
-        default_datasource,
-        created_by,
-        last_updated_by,
-      });
+      const res = await axios.post<IDataSourceTypes>(
+        `${url}/api/v2/data-sources`,
+        {
+          datasource_name,
+          description,
+          application_type,
+          application_type_version,
+          last_access_synchronization_status,
+          last_transaction_synchronization_status,
+          default_datasource,
+          created_by,
+          last_updated_by,
+        }
+      );
       // for sync data call fetch data source
       console.log(res.status);
       if (res.status === 201) {
@@ -279,7 +285,7 @@ export function GlobalContextProvider({
   ) => {
     try {
       const res = await axios.put<IDataSourcePostTypes>(
-        `${url}/data-sources/${id}`,
+        `${url}/api/v2/data-sources/${id}`,
         {
           data_source_id: id,
           datasource_name: postData.datasource_name,
@@ -316,7 +322,7 @@ export function GlobalContextProvider({
   const deleteDataSource = async (id: number) => {
     try {
       const res = await axios.delete<IDataSourceTypes>(
-        `${url}/data-sources/${id}`
+        `${url}/api/v2/data-sources/${id}`
       );
 
       if (res.status === 200) {
@@ -339,7 +345,7 @@ export function GlobalContextProvider({
   // Tenant IDs
   const fetchTenants = async () => {
     try {
-      const res = await axios.get<ITenantsTypes[]>(`${url}/tenants`);
+      const res = await axios.get<ITenantsTypes[]>(`${url}/api/v2/tenants`);
       return res.data;
     } catch (error) {
       console.log(error);
@@ -362,19 +368,22 @@ export function GlobalContextProvider({
       password,
     } = postData;
     try {
-      const res = await axios.post<IAddUserTypes>(`${url}/combined-user/v2`, {
-        user_type,
-        user_name,
-        email_addresses,
-        created_by,
-        last_updated_by,
-        tenant_id,
-        first_name,
-        middle_name,
-        last_name,
-        job_title,
-        password,
-      });
+      const res = await axios.post<IAddUserTypes>(
+        `${url}/api/v2/combined-user/v2`,
+        {
+          user_type,
+          user_name,
+          email_addresses,
+          created_by,
+          last_updated_by,
+          tenant_id,
+          first_name,
+          middle_name,
+          last_name,
+          job_title,
+          password,
+        }
+      );
       if (res.status === 201) {
         toast({
           title: "Info !!!",

@@ -73,7 +73,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
       try {
         setIsloading(true);
         const response = await axios.get<Message[]>(
-          `${url}/messages/draft/${user}/${currentPage}`
+          `${url}/api/v2/messages/draft/${user}/${currentPage}`
         );
         const result = response.data;
         setDraftMessages(result);
@@ -90,7 +90,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await axios.delete(`${url}/messages/${id}`);
+      const response = await axios.delete(`${url}/api/v2/messages/${id}`);
       console.log("Resource deleted:", response.data);
     } catch (error) {
       console.error("Error deleting resource:", error);

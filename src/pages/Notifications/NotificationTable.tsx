@@ -75,7 +75,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
       try {
         setIsloading(true);
         const response = await axios.get<Message[]>(
-          `${url}/messages/received/${user}/${currentPage}`
+          `${url}/api/v2/messages/received/${user}/${currentPage}`
         );
         const result = response.data;
         setReceivedMessages(result);
@@ -95,12 +95,14 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
   const handleUniqueMessages = async (parentid: string) => {
     navigate(`/notifications/inbox/${parentid}`);
     handleRead(parentid);
-    await axios.put(`${url}/messages/update-readers/${parentid}/${user}`);
+    await axios.put(
+      `${url}/api/v2/messages/update-readers/${parentid}/${user}`
+    );
   };
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await axios.delete(`${url}/messages/${id}`);
+      const response = await axios.delete(`${url}/api/v2/messages/${id}`);
       console.log("Resource deleted:", response.data);
     } catch (error) {
       console.error("Error deleting resource:", error);

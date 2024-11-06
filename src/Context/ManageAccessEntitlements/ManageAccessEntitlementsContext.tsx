@@ -148,7 +148,7 @@ export const ManageAccessEntitlementsProvider = ({
     setIsLoading(true);
     try {
       const response = await axios.get<IManageAccessEntitlementsPerPageTypes>(
-        `${url}/manage-access-entitlements/p?page=${page}&limit=${limit}`
+        `${url}/api/v2/manage-access-entitlements/p?page=${page}&limit=${limit}`
       );
       const sortingData = response.data;
       return sortingData ?? {};
@@ -163,7 +163,7 @@ export const ManageAccessEntitlementsProvider = ({
     setIsLoading(true);
     try {
       const response = await axios.get<IFetchAccessPointsElementTypes[]>(
-        `${url}/access-points-element`
+        `${url}/api/v2/access-points-element`
       );
       setAccessPoints(response.data);
       return response.data;
@@ -202,14 +202,16 @@ export const ManageAccessEntitlementsProvider = ({
         if (fetchData) {
           const response = await axios.get<
             IFetchAccessEntitlementElementsTypes[]
-          >(`${url}/access-entitlement-elements/${fetchData.entitlement_id}`);
+          >(
+            `${url}/api/v2/access-entitlement-elements/${fetchData.entitlement_id}`
+          );
           const accessPointsId = response.data.map(
             (data) => data.access_point_id
           );
 
           // fetch access points data by IDS array
           const filterAccessPointsById = await axios.get(
-            `${url}/access-points-element/ids?ids=${accessPointsId}&page=${page}&limit=${limit}`
+            `${url}/api/v2/access-points-element/ids?ids=${accessPointsId}&page=${page}&limit=${limit}`
           );
           const totalCount = response.data.length;
           const totalPages = Math.ceil(totalCount / limit);
@@ -235,14 +237,16 @@ export const ManageAccessEntitlementsProvider = ({
         if (fetchData) {
           const response = await axios.get<
             IFetchAccessEntitlementElementsTypes[]
-          >(`${url}/access-entitlement-elements/${fetchData.entitlement_id}`);
+          >(
+            `${url}/api/v2/access-entitlement-elements/${fetchData.entitlement_id}`
+          );
           const accessPointsId = response.data.map(
             (data) => data.access_point_id
           );
 
           // fetch access points data by IDS array
           const filterAccessPointsById = await axios.get(
-            `${url}/access-points-element/ids?ids=${accessPointsId}&page=${page}&limit=${limit}`
+            `${url}/api/v2/access-points-element/ids?ids=${accessPointsId}&page=${page}&limit=${limit}`
           );
           return filterAccessPointsById.data ?? [];
         }
@@ -269,7 +273,7 @@ export const ManageAccessEntitlementsProvider = ({
     setIsLoading(true);
     try {
       const res = await axios.post<IManageAccessEntitlementsTypes>(
-        `${url}/manage-access-entitlements`,
+        `${url}/api/v2/manage-access-entitlements`,
         {
           entitlement_name,
           description,
@@ -316,7 +320,7 @@ export const ManageAccessEntitlementsProvider = ({
     } = putData;
     try {
       const res = await axios.put<IManageAccessEntitlementsTypes>(
-        `${url}/manage-access-entitlements/${id}`,
+        `${url}/api/v2/manage-access-entitlements/${id}`,
         {
           entitlement_id,
           entitlement_name,
@@ -352,7 +356,7 @@ export const ManageAccessEntitlementsProvider = ({
     try {
       //fetch access entitlements
       const response = await axios.get(
-        `${url}/access-entitlement-elements/${id}`
+        `${url}/api/v2/access-entitlement-elements/${id}`
       );
       console.log(response.data, "response");
       if (response.data.length > 0) {
@@ -363,7 +367,9 @@ export const ManageAccessEntitlementsProvider = ({
           );
         }
       }
-      const res = await axios.delete(`${url}/manage-access-entitlements/${id}`);
+      const res = await axios.delete(
+        `${url}/api/v2/manage-access-entitlements/${id}`
+      );
       if (res.status === 200) {
         toast({
           title: "Info !!!",
@@ -394,7 +400,7 @@ export const ManageAccessEntitlementsProvider = ({
     try {
       setIsLoading(true);
       const res = await axios.post<ICreateAccessPointsElementTypes>(
-        `${url}/access-points-element`,
+        `${url}/api/v2/access-points-element`,
         {
           data_source_id,
           element_name,
@@ -433,7 +439,9 @@ export const ManageAccessEntitlementsProvider = ({
   // delete access-points-element
   const deleteAccessPointsElement = async (id: number) => {
     try {
-      const res = await axios.delete(`${url}/access-points-element/${id}`);
+      const res = await axios.delete(
+        `${url}/api/v2/access-points-element/${id}`
+      );
       if (res.status === 200) {
         toast({
           title: "Info !!!",
@@ -449,7 +457,7 @@ export const ManageAccessEntitlementsProvider = ({
   //fetch access entitlement elements
   const fetchAccessEtitlementElenents = async () => {
     const res = await axios.get<IFetchAccessEntitlementElementsTypes[]>(
-      `${url}/access-entitlement-elements`
+      `${url}/api/v2/access-entitlement-elements`
     );
     return res.data;
   };
@@ -463,7 +471,7 @@ export const ManageAccessEntitlementsProvider = ({
       setIsLoadingAccessPoints(true);
       for (const id of accessPointsMaxId) {
         await axios.post<IFetchAccessEntitlementElementsTypes>(
-          `${url}/access-entitlement-elements`,
+          `${url}/api/v2/access-entitlement-elements`,
           {
             entitlement_id: entitlement_id,
             access_point_id: id,
@@ -492,7 +500,7 @@ export const ManageAccessEntitlementsProvider = ({
     try {
       await Promise.all([
         await axios
-          .delete(`${url}/access-entitlement-elements`, {
+          .delete(`${url}/api/v2/access-entitlement-elements`, {
             data: { entitlementId, accessPointId },
           })
           .then((res) => {
@@ -504,7 +512,7 @@ export const ManageAccessEntitlementsProvider = ({
           .finally(() => {
             fetchAccessPointsEntitlementForDelete(selected[0]);
           }),
-        // await axios.delete(`${url}/access-points-element/${accessPointId}`),
+        // await axios.delete(`${url}/api/v2/access-points-element/${accessPointId}`),
       ]);
     } catch (error) {
       console.log(error);

@@ -38,7 +38,9 @@ const AccessPointsEntitleModal = () => {
   const url = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const res = async () => {
-      const res = await axios.get<IDataSourceTypes[]>(`${url}/data-sources`);
+      const res = await axios.get<IDataSourceTypes[]>(
+        `${url}/api/v2/data-sources`
+      );
       setDataSources(res.data);
     };
     res();
@@ -87,7 +89,7 @@ const AccessPointsEntitleModal = () => {
     const postAccessPointsElement = async () => {
       const url = import.meta.env.VITE_API_URL;
       //get max access point id
-      const res = await axios.get(`${url}/access-points-element`);
+      const res = await axios.get(`${url}/api/v2/access-points-element`);
       const accessPointsMaxId =
         res.data.length > 0
           ? Math.max(
