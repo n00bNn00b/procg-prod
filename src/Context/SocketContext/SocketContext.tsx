@@ -52,7 +52,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const url = import.meta.env.VITE_API_URL;
   const { user } = useGlobalContext();
 
-  const socket = io(url, {
+  const socket = io(`${url}/api/v2`, {
     query: {
       key: user,
     },
