@@ -56,6 +56,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     query: {
       key: user,
     },
+    transports: ["websocket"],
   });
 
   //Fetch Notification Messages
