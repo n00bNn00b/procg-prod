@@ -52,7 +52,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const url = import.meta.env.VITE_API_URL;
   const { user } = useGlobalContext();
 
-  const socket = io(`${url}/api/v2`, {
+  const socket = io(`${url}`, {
     query: {
       key: user,
     },
@@ -63,7 +63,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     const fetchNotificationMessages = async () => {
       try {
         const response = await axios.get<Message[]>(
-          `${url}/api/v2/messages/notification/${user}`
+          `${url}/messages/notification/${user}`
         );
         const result = response.data;
         setSocketMessages(result);
@@ -81,7 +81,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     const fetchTotalReceivedMessages = async () => {
       try {
         const response = await axios.get(
-          `${url}/api/v2/messages/total-received/${user}`
+          `${url}/messages/total-received/${user}`
         );
         setTotalReceivedMessages(response.data.total);
       } catch (error) {
@@ -97,9 +97,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   useEffect(() => {
     const fetchTotalSentMessages = async () => {
       try {
-        const response = await axios.get(
-          `${url}/api/v2/messages/total-sent/${user}`
-        );
+        const response = await axios.get(`${url}/messages/total-sent/${user}`);
         setTotalSentMessages(response.data.total);
       } catch (error) {
         console.log(error);
@@ -114,9 +112,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   useEffect(() => {
     const fetchTotalDraftMessages = async () => {
       try {
-        const response = await axios.get(
-          `${url}/api/v2/messages/total-draft/${user}`
-        );
+        const response = await axios.get(`${url}/messages/total-draft/${user}`);
         setTotalDraftMessages(response.data.total);
       } catch (error) {
         console.log(error);

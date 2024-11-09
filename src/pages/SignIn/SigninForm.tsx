@@ -37,7 +37,7 @@ const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
   const handleSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       setIsLoading(true);
-      const response = await axios.post(`${url}/api/v2/login`, data);
+      const response = await axios.post(`${url}/login`, data);
       console.log("Response:", response.data);
       setToken(response.data);
       setIsWrongCredential(false);

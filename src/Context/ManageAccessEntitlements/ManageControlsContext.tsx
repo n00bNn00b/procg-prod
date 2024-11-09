@@ -40,9 +40,7 @@ export const ControlsContextProvider = ({
   const fetchControls = async () => {
     try {
       // setIsLoading(true);
-      const response = await axios.get<IControlsTypes[]>(
-        `${url}/api/v2/controls`
-      );
+      const response = await axios.get<IControlsTypes[]>(`${url}/controls`);
       if (response) {
         setControlsData(response.data ?? []);
         return response.data ?? [];
@@ -53,7 +51,7 @@ export const ControlsContextProvider = ({
   };
   const createControl = async (data: IControlsTypes) => {
     await axios
-      .post(`${url}/api/v2/controls`, data)
+      .post(`${url}/controls`, data)
       .then((res) => {
         if (res.status === 201) {
           toast({

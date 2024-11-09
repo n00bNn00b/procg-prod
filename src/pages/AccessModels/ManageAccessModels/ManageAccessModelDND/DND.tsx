@@ -283,7 +283,7 @@ const DND: FC<IManageAccessModelDNDProps> = ({
       if (isChangedAccessGlobalCondition) {
         axios
           .put(
-            `${url}/api/v2/manage-access-models/${selectedItem[0].manage_access_model_id}`,
+            `${url}/manage-access-models/${selectedItem[0].manage_access_model_id}`,
             changedAccessGlobalCondition
           )
           .then((logicResult) => {
@@ -312,15 +312,12 @@ const DND: FC<IManageAccessModelDNDProps> = ({
       }
       if (items.length > 0) {
         Promise.all([
-          axios.post(`${url}/api/v2/manage-access-model-logics/upsert`, {
+          axios.post(`${url}/manage-access-model-logics/upsert`, {
             upsertLogics,
           }),
-          axios.post(
-            `${url}/api/v2/manage-access-model-logic-attributes/upsert`,
-            {
-              upsertAttributes,
-            }
-          ),
+          axios.post(`${url}/manage-access-model-logic-attributes/upsert`, {
+            upsertAttributes,
+          }),
         ])
           .then(([logicResult, attributeResult]) => {
             if (logicResult.status === 200 && attributeResult.status === 200) {

@@ -36,7 +36,7 @@ const SingleSent = () => {
     const fetchMessage = async () => {
       try {
         const response = await axios.get<Message[]>(
-          `${url}/api/v2/messages/reply/${id}`
+          `${url}/messages/reply/${id}`
         );
         const result = response.data;
         setTotalMessages(result);
@@ -54,9 +54,7 @@ const SingleSent = () => {
   useEffect(() => {
     const fetchMessage = async () => {
       try {
-        const response = await axios.get<Message>(
-          `${url}/api/v2/messages/${id}`
-        );
+        const response = await axios.get<Message>(`${url}/messages/${id}`);
         const result = response.data;
         setParrentMessage(result);
       } catch (error) {
@@ -91,7 +89,7 @@ const SingleSent = () => {
 
   const handleDelete = async (msgId: string) => {
     try {
-      await axios.delete(`${url}/api/v2/messages/${msgId}`);
+      await axios.delete(`${url}/messages/${msgId}`);
       const currentMessages = sentMessages.filter((msg) => msg.id !== msgId);
       setSentMessages(currentMessages);
       const currentTotalMessages = totalMessages.filter(
