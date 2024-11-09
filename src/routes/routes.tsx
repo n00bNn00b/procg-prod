@@ -10,7 +10,7 @@ import Tasks from "@/pages/Tasks/Tasks";
 import Home from "@/pages/Home/Home";
 import SingleSent from "@/pages/Notifications/SingleSent";
 import DataSources from "@/pages/Tools/ManageDataSources/DataSources";
-import SetupAndAdministration from "@/pages/Tools/SetupAndAdministration/SetupAndAdministration";
+import Users from "@/pages/Tools/Users/SetupAndAdministration";
 import ManageGlobaConditions from "@/pages/ManageAdministration/ManageGlobalConditions/ManageGlobalConditions";
 import ManageLocalConditions from "@/pages/ManageAdministration/ManageLocalConditions/ManageLocalConditions";
 import Alerts from "@/pages/Alerts/Alerts";
@@ -126,7 +126,7 @@ const routes = createBrowserRouter([
         children: [
           {
             path: "users",
-            element: <SetupAndAdministration />,
+            element: <Users />,
           },
           {
             path: "datasources",

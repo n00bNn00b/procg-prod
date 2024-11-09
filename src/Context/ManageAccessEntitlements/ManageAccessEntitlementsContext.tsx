@@ -148,7 +148,7 @@ export const ManageAccessEntitlementsProvider = ({
     setIsLoading(true);
     try {
       const response = await axios.get<IManageAccessEntitlementsPerPageTypes>(
-        `${url}/api/v2/manage-access-entitlements/p?page=${page}&limit=${limit}`
+        `${url}/api/v2/manage-access-entitlements/${page}/${limit}`
       );
       const sortingData = response.data;
       return sortingData ?? {};
