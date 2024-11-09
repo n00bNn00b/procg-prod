@@ -16,6 +16,7 @@ import {
   IPersonsTypes,
   IUsersInfoTypes,
   IUpdateUserTypes,
+  IUserPasswordResetTypes,
 } from "@/types/interfaces/users.interface";
 import {
   IDataSourcePostTypes,
@@ -68,6 +69,8 @@ interface GlobalContex {
   updateUser: (id: number, userInfo: IUpdateUserTypes) => void;
   isOpenModal: string;
   setIsOpenModal: Dispatch<SetStateAction<string>>;
+  resetPassword: (resetData: IUserPasswordResetTypes) => Promise<void>;
+  getUserInfo: (user_id: number) => Promise<IUsersInfoTypes | undefined>;
 }
 
 const GlobalContex = createContext({} as GlobalContex);
@@ -135,7 +138,7 @@ export function GlobalContextProvider({
       setIsLoading(true);
       const users = await axios.get<Users[]>(`${url}/api/v2/users`);
       const res = await axios.get<IUsersInfoTypes[]>(
-        `${url}/api/v2/combined-user/users?page=${page}&limit=${limit}`
+        `${url}/api/v2/combined-user/${page}/${limit}`
       );
       const totalCount = users.data.length;
       const totalPages = Math.ceil(totalCount / limit);
@@ -149,10 +152,24 @@ export function GlobalContextProvider({
       setIsLoading(false);
     }
   };
+  //user info
+  const getUserInfo = async (user_id: number) => {
+    try {
+      setIsLoading(true);
+      const res = await axios.get<IUsersInfoTypes>(
+        `${url}/api/v2/combined-user/${user_id}`
+      );
+      return res.data;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const updateUser = async (id: number, userInfo: IUpdateUserTypes) => {
     try {
       const res = await axios.put(
-        `${url}/api/v2/combined-user/user/${id}`,
+        `${url}/api/v2/combined-user/${id}`,
         userInfo
       );
       if (res.status === 200) {
@@ -165,6 +182,32 @@ export function GlobalContextProvider({
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+  // reset password
+  const resetPassword = async (resetData: IUserPasswordResetTypes) => {
+    try {
+      setIsLoading(true);
+      const res = await axios.put(
+        `${url}/api/v2/user-credentials/reset-password`,
+        resetData
+      );
+
+      if (res.status === 200) {
+        toast({
+          title: "Info !!!",
+          description: `Reset password successfully.`,
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Info !!!",
+        variant: "destructive",
+        description: `${error.response.data.message}`,
+      });
+      return;
+    } finally {
+      setIsLoading(false);
     }
   };
   const deleteCombinedUser = async (user_ids: IUsersInfoTypes[]) => {
@@ -205,7 +248,7 @@ export function GlobalContextProvider({
   const fetchDataSources = async (page: number, limit: number) => {
     try {
       const response = await axios.get<IManageAccessEntitlementsPerPageTypes>(
-        `${url}/api/v2/data-sources/p?page=${page}&limit=${limit}`
+        `${url}/api/v2/data-sources/${page}/${limit}`
       );
       const sortingData = response.data;
       return sortingData ?? [];
@@ -387,7 +430,7 @@ export function GlobalContextProvider({
       if (res.status === 201) {
         toast({
           title: "Info !!!",
-          description: `User added successfully from v2.`,
+          description: `User added successfully.`,
         });
       }
     } catch (error: any) {
@@ -434,6 +477,8 @@ export function GlobalContextProvider({
         updateUser,
         isOpenModal,
         setIsOpenModal,
+        resetPassword,
+        getUserInfo,
       }}
     >
       <SocketContextProvider>

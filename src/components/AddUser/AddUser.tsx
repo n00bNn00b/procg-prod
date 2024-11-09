@@ -58,11 +58,11 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
               z.string().email(),
               z.array(z.string().email()),
             ]),
-            password: z.string().min(8, {
-              message: "At least 8 characters.",
+            password: z.string().min(6, {
+              message: "At least 6 characters.",
             }),
-            confirm_password: z.string().min(8, {
-              message: "At least 8 characters need.",
+            confirm_password: z.string().min(6, {
+              message: "At least 6 characters need.",
             }),
           }
         : {
@@ -75,6 +75,18 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
               z.string().email(),
               z.array(z.string().email()),
             ]),
+            password: z
+              .string()
+              .min(6, {
+                message: "At least 6 characters.",
+              })
+              .optional(),
+            confirm_password: z
+              .string()
+              .min(6, {
+                message: "At least 6 characters need.",
+              })
+              .optional(),
           }
     )
     .refine((data) => data.password === data.confirm_password, {
@@ -137,6 +149,7 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
       first_name: data.first_name,
       middle_name: data.middle_name,
       last_name: data.last_name,
+      password: data.password,
     };
 
     try {

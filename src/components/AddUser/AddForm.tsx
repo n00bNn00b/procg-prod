@@ -15,8 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import UserTypes from "@/pages/Tools/SetupAndAdministration/user_type.json";
-import JobTitleTypes from "@/pages/Tools/SetupAndAdministration/job_title.json";
+import UserTypes from "@/pages/Tools/Users/user_type.json";
+import JobTitleTypes from "@/pages/Tools/Users/job_title.json";
 import { Dispatch, FC, SetStateAction } from "react";
 import { ITenantsTypes } from "@/types/interfaces/users.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
@@ -223,6 +223,7 @@ const AddForm: FC<AddFormProps> = ({
                     {...field}
                     type="email"
                     placeholder="example@gmail.com"
+                    multiple={true}
                   />
                 </FormControl>
               </FormItem>

@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import JobTitleTypes from "@/pages/Tools/SetupAndAdministration/job_title.json";
+import JobTitleTypes from "@/pages/Tools/Users/job_title.json";
 import { Dispatch, FC, SetStateAction } from "react";
 import { ITenantsTypes } from "@/types/interfaces/users.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
@@ -150,21 +150,36 @@ const EditForm: FC<AddFormProps> = ({
               </FormItem>
             )}
           />
+          <FormField
+            disabled={token.user_type !== "system" && userType === "system"}
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input {...field} type="password" placeholder="••••••••" />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            disabled={token.user_type !== "system" && userType === "system"}
+            control={form.control}
+            name="confirm_password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
+                  <Input {...field} type="password" placeholder="••••••••" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
         <FormMessage />
-        {token.user_type !== "system" && userType === "system" ? (
-          <p className="text-red-500 text-center py-2 flex justify-center items-center gap-2">
-            <l-hourglass
-              size="20"
-              bg-opacity="0.1"
-              speed="1.75"
-              color="red"
-            ></l-hourglass>{" "}
-            Login as a Admin.
-          </p>
-        ) : (
-          ""
-        )}
+
         <div className="flex gap-4 p-4">
           <Button
             className="w-full bg-red-300 hover:bg-red-500"

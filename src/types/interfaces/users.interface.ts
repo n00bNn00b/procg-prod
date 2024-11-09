@@ -24,6 +24,7 @@ export interface IUpdateUserTypes {
   middle_name: string | undefined;
   last_name: string;
   job_title: string;
+  password?: string;
 }
 export interface ICombinedUser extends Users {
   person: IPersonsTypes;
@@ -66,3 +67,9 @@ export interface IPersonsTypes {
   job_title: string;
 }
 export interface IUsersInfoTypes extends Users, IPersonsTypes {}
+
+export interface IUserPasswordResetTypes {
+  user_id: number;
+  old_password: string;
+  new_password: string;
+}
