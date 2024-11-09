@@ -280,7 +280,7 @@ const DND: FC = () => {
       if (isChangedAccessGlobalCondition) {
         axios
           .put(
-            `${url}/api/v2/manage-global-conditions/${selectedItem[0].manage_global_condition_id}`,
+            `${url}/manage-global-conditions/${selectedItem[0].manage_global_condition_id}`,
             changedAccessGlobalCondition
           )
           .then((logicResult) => {
@@ -301,15 +301,12 @@ const DND: FC = () => {
       }
       if (items.length > 0) {
         Promise.all([
-          axios.post(`${url}/api/v2/manage-global-condition-logics/upsert`, {
+          axios.post(`${url}/manage-global-condition-logics/upsert`, {
             upsertLogics,
           }),
-          axios.post(
-            `${url}/api/v2/manage-global-condition-logic-attributes/upsert`,
-            {
-              upsertAttributes,
-            }
-          ),
+          axios.post(`${url}/manage-global-condition-logic-attributes/upsert`, {
+            upsertAttributes,
+          }),
         ])
           .then(([logicResult, attributeResult]) => {
             if (logicResult.status === 200 && attributeResult.status === 200) {

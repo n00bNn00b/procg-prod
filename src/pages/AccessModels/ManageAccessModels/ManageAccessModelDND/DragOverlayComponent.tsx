@@ -64,11 +64,9 @@ const DragOverlayComponent: FC<DroppableItemProps> = ({
     try {
       if (res === 200) {
         Promise.all([
+          axios.delete(`${url}/manage-global-condition-logics/${logicId}`),
           axios.delete(
-            `${url}/api/v2/manage-global-condition-logics/${logicId}`
-          ),
-          axios.delete(
-            `${url}/api/v2/manage-global-condition-logic-attributes/${attrId}`
+            `${url}/manage-global-condition-logic-attributes/${attrId}`
           ),
         ])
           // .then(([logicResult, attributeResult]) => {
