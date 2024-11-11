@@ -275,7 +275,7 @@ const ManageAccessEntitlementsTable = () => {
                     onClick={handleGenerateAccessPointsDelete}
                   />
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent className="max-h-[80%] overflow-y-auto">
                   <AlertDialogHeader>
                     <AlertDialogTitle>
                       Are you absolutely sure?
