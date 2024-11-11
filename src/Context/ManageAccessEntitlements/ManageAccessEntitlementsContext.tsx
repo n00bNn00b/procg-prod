@@ -209,7 +209,7 @@ export const ManageAccessEntitlementsProvider = ({
 
           // fetch access points data by IDS array
           const filterAccessPointsById = await axios.get(
-            `${url}/access-points-element/ids?ids=${accessPointsId}&page=${page}&limit=${limit}`
+            `${url}/access-points-element/${accessPointsId}/${page}/${limit}`
           );
           const totalCount = response.data.length;
           const totalPages = Math.ceil(totalCount / limit);
@@ -242,7 +242,7 @@ export const ManageAccessEntitlementsProvider = ({
 
           // fetch access points data by IDS array
           const filterAccessPointsById = await axios.get(
-            `${url}/access-points-element/ids?ids=${accessPointsId}&page=${page}&limit=${limit}`
+            `${url}/access-points-element/${accessPointsId}`
           );
           return filterAccessPointsById.data ?? [];
         }

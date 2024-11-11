@@ -16,7 +16,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, Pencil, Plus, Trash } from "lucide-react";
+import { ArrowUpDown, ChevronDown, FileEdit, Plus, Trash } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -318,7 +318,7 @@ const DataSources = () => {
           <div className="flex gap-3 px-4 py-2 border rounded">
             <AlertDialog>
               <AlertDialogTrigger>
-                <Plus className="cursor-pointer hover:text-green-500" />
+                <Plus className="cursor-pointer  text-green-500" />
               </AlertDialogTrigger>
               <AlertDialogContent className="bg-slate-300">
                 <AlertDialogHeader>
@@ -345,10 +345,10 @@ const DataSources = () => {
                   selected.length !== 1 && "text-slate-200 cursor-not-allowed"
                 }`}
               >
-                <Pencil
+                <FileEdit
                   className={`${
                     selected.length === 1
-                      ? "cursor-pointer text-sky-600"
+                      ? "cursor-pointer "
                       : "cursor-not-allowed"
                   }`}
                 />
