@@ -10,7 +10,7 @@ export interface Users {
   user_id: number;
   user_name: string;
   user_type?: string;
-  email_addresses?: string;
+  email_addresses: string;
   created_by?: number;
   created_on?: string;
   last_updated_by?: number;
