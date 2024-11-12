@@ -166,10 +166,60 @@ export function GlobalContextProvider({
       setIsLoading(false);
     }
   };
+  const createUser = async (postData: IAddUserTypes) => {
+    setIsLoading(true);
+    const {
+      user_type,
+      user_name,
+      email_addresses,
+      created_by,
+      last_updated_by,
+      tenant_id,
+      first_name,
+      middle_name,
+      last_name,
+      job_title,
+      password,
+    } = postData;
+    try {
+      const res = await axios.post<IAddUserTypes>(`${url}/combined-user`, {
+        user_type,
+        user_name,
+        email_addresses,
+        created_by,
+        last_updated_by,
+        tenant_id,
+        first_name,
+        middle_name,
+        last_name,
+        job_title,
+        password,
+      });
+      if (res.status === 201) {
+        setIsLoading(false);
+        toast({
+          title: "Info !!!",
+          description: `User added successfully.`,
+        });
+      }
+    } catch (error: any) {
+      if (error.response.status) {
+        toast({
+          title: "Info !!!",
+          description: `${error.message}`,
+        });
+      }
+      console.log(error);
+    } finally {
+      fetchCombinedUser();
+    }
+  };
   const updateUser = async (id: number, userInfo: IUpdateUserTypes) => {
+    setIsLoading(true);
     try {
       const res = await axios.put(`${url}/combined-user/${id}`, userInfo);
       if (res.status === 200) {
+        setIsLoading(false);
         setIsOpenModal("");
         fetchCombinedUser();
         toast({
@@ -179,6 +229,8 @@ export function GlobalContextProvider({
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      fetchCombinedUser();
     }
   };
   // reset password
@@ -208,7 +260,6 @@ export function GlobalContextProvider({
     }
   };
   const deleteCombinedUser = async (user_ids: IUsersInfoTypes[]) => {
-    console.log(user_ids, "user_ids");
     setIsLoading(true);
     try {
       for (const id of user_ids) {
@@ -217,7 +268,6 @@ export function GlobalContextProvider({
           axios.delete(`${url}/persons/${id.user_id}`),
           axios.delete(`${url}/user-credentials/${id.user_id}`),
         ]);
-        console.log(users, persons, credentials, "delete checked");
         if (
           users.status === 200 ||
           persons.status === 200 ||
@@ -389,54 +439,7 @@ export function GlobalContextProvider({
     }
   };
   // Create User
-  const createUser = async (postData: IAddUserTypes) => {
-    setIsLoading(true);
-    const {
-      user_type,
-      user_name,
-      email_addresses,
-      created_by,
-      last_updated_by,
-      tenant_id,
-      first_name,
-      middle_name,
-      last_name,
-      job_title,
-      password,
-    } = postData;
-    try {
-      const res = await axios.post<IAddUserTypes>(`${url}/combined-user`, {
-        user_type,
-        user_name,
-        email_addresses,
-        created_by,
-        last_updated_by,
-        tenant_id,
-        first_name,
-        middle_name,
-        last_name,
-        job_title,
-        password,
-      });
-      if (res.status === 201) {
-        toast({
-          title: "Info !!!",
-          description: `User added successfully.`,
-        });
-      }
-    } catch (error: any) {
-      if (error.response.status) {
-        toast({
-          title: "Info !!!",
-          description: `${error.message}`,
-        });
-      }
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-      fetchCombinedUser();
-    }
-  };
+
   return (
     <GlobalContex.Provider
       value={{

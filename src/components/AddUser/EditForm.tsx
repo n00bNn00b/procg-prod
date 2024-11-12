@@ -19,8 +19,9 @@ import JobTitleTypes from "@/pages/Tools/Users/job_title.json";
 import { Dispatch, FC, SetStateAction } from "react";
 import { ITenantsTypes } from "@/types/interfaces/users.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { FieldValues, UseFormReturn } from "react-hook-form";
 interface AddFormProps {
-  form: any;
+  form: UseFormReturn<FieldValues>;
   isLoading: boolean;
   userType: string;
   setUserType: Dispatch<SetStateAction<string>>;
@@ -143,10 +144,12 @@ const EditForm: FC<AddFormProps> = ({
                 <FormControl>
                   <Input
                     {...field}
-                    type="email"
+                    type="text"
                     placeholder="example@gmail.com"
+                    multiple={true}
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -160,6 +163,7 @@ const EditForm: FC<AddFormProps> = ({
                 <FormControl>
                   <Input {...field} type="password" placeholder="••••••••" />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -178,7 +182,6 @@ const EditForm: FC<AddFormProps> = ({
             )}
           />
         </div>
-        <FormMessage />
 
         <div className="flex gap-4 p-4">
           <Button

@@ -189,6 +189,11 @@ export function UsersTable() {
                       Are you absolutely sure?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
+                      {selected.map((item, index) => (
+                        <span key={item.user_id} className="block text-red-500">
+                          {index + 1}. username : {item.user_name}
+                        </span>
+                      ))}
                       This action cannot be undone. This will permanently delete
                       your account and remove your data from our servers.
                     </AlertDialogDescription>

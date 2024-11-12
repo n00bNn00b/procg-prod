@@ -54,10 +54,18 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
             last_name: z.string(),
             job_title: z.string(),
             tenant_id: z.string(),
-            email_addresses: z.union([
-              z.string().email(),
-              z.array(z.string().email()),
-            ]),
+            email_addresses: z
+              .string() // Ensure it's a string
+              .transform((val) => val.split(",").map((email) => email.trim())) // Split by commas and trim spaces
+              .refine(
+                (emails) =>
+                  emails.every(
+                    (email) => z.string().email().safeParse(email).success // Validate each email
+                  ),
+                {
+                  message: "One or more emails are invalid.",
+                }
+              ),
             password: z.string().min(6, {
               message: "At least 6 characters.",
             }),
@@ -71,10 +79,21 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
             middle_name: z.string().optional(),
             last_name: z.string(),
             job_title: z.string(),
-            email_addresses: z.union([
-              z.string().email(),
-              z.array(z.string().email()),
-            ]),
+            email_addresses: z
+              .string() // Ensure it's a string if provided
+              .optional() // Make it optional
+              .transform((val) =>
+                val ? val.split(",").map((email) => email.trim()) : []
+              ) // If there's a value, split and trim; otherwise, return an empty array
+              .refine(
+                (emails) =>
+                  emails.every(
+                    (email) => z.string().email().safeParse(email).success // Validate each email
+                  ),
+                {
+                  message: "One or more emails are invalid.",
+                }
+              ),
             password: z
               .string()
               .min(6, {
@@ -113,7 +132,12 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
         : {
             user_name: selected[0].user_name,
             job_title: selected[0].job_title,
-            email_addresses: selected[0].email_addresses,
+            email_addresses: Array.isArray(selected[0].email_addresses)
+              ? selected[0].email_addresses.join(",")
+              : // If it's an array, join the emails into a string
+                selected[0].email_addresses,
+            // If it's already a string, just leave it
+
             first_name: selected[0].first_name,
             middle_name: selected[0].middle_name,
             last_name: selected[0].last_name,

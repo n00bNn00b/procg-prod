@@ -20,8 +20,9 @@ import JobTitleTypes from "@/pages/Tools/Users/job_title.json";
 import { Dispatch, FC, SetStateAction } from "react";
 import { ITenantsTypes } from "@/types/interfaces/users.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { FieldValues, UseFormReturn } from "react-hook-form";
 interface AddFormProps {
-  form: any;
+  form: UseFormReturn<FieldValues>;
   isLoading: boolean;
   userType: string;
   setUserType: Dispatch<SetStateAction<string>>;
@@ -221,15 +222,15 @@ const AddForm: FC<AddFormProps> = ({
                 <FormControl>
                   <Input
                     {...field}
-                    type="email"
-                    placeholder="example@gmail.com"
+                    type="text"
+                    placeholder="example@email.com, example2@email.com"
                     multiple={true}
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
-
           <FormField
             disabled={token.user_type !== "system" && userType === "system"}
             control={form.control}
@@ -245,6 +246,7 @@ const AddForm: FC<AddFormProps> = ({
                     placeholder="••••••••"
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -268,7 +270,6 @@ const AddForm: FC<AddFormProps> = ({
             )}
           />
         </div>
-        <FormMessage />
         {token.user_type !== "system" && userType === "system" ? (
           <p className="text-red-500 text-center py-2 flex justify-center items-center gap-2">
             <l-hourglass
