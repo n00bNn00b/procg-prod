@@ -25,9 +25,9 @@ import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useEffect, useState } from "react";
 import { Message } from "@/types/interfaces/users.interface";
-import Pagination4 from "@/components/Pagination/Pagination4";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
+import Pagination5 from "@/components/Pagination/Pagination5";
 
 interface NotificationTableProps {
   path: string;
@@ -53,10 +53,10 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
   const totalPageNumbers = Math.ceil(
     totalReceivedMessages / totalDisplayedMessages
   );
-  const paginationArray = Array.from(
-    { length: totalPageNumbers },
-    (_, i) => i + 1
-  );
+  // const paginationArray = Array.from(
+  //   { length: totalPageNumbers },
+  //   (_, i) => i + 1
+  // );
   let startNumber = 1;
   let endNumber = currentPage * totalDisplayedMessages;
 
@@ -206,11 +206,10 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
             </TableBody>
           </Table>
           <div className="flex w-full justify-end mt-4">
-            <Pagination4
+            <Pagination5
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
               totalPageNumbers={totalPageNumbers}
-              paginationArray={paginationArray}
             />
           </div>
         </div>

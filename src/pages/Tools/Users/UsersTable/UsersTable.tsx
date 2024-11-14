@@ -44,8 +44,8 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import columns from "./Columns";
 import CustomModal from "@/components/CustomModal/CustomModal";
 import AddUser from "@/components/AddUser/AddUser";
-import Pagination4 from "@/components/Pagination/Pagination4";
 import { IUsersInfoTypes } from "@/types/interfaces/users.interface";
+import Pagination5 from "@/components/Pagination/Pagination5";
 
 export function UsersTable() {
   const {
@@ -114,13 +114,7 @@ export function UsersTable() {
     },
   });
 
-  const [paginationArray, setPaginationArray] = React.useState<number[]>([]);
   React.useEffect(() => {
-    const paginationArray = [];
-    for (let i = 1; i <= totalPage; i++) {
-      paginationArray.push(i);
-    }
-    setPaginationArray(paginationArray);
     if (page > 1 || page < totalPage) {
       fetchCombinedUser();
     }
@@ -355,11 +349,10 @@ export function UsersTable() {
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} row(s) selected.
           </div>
-          <Pagination4
+          <Pagination5
             currentPage={page}
             setCurrentPage={setPage}
             totalPageNumbers={totalPage as number}
-            paginationArray={paginationArray}
           />
         </div>
       </div>
