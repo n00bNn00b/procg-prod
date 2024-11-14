@@ -92,6 +92,7 @@ interface IContextTypes {
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
   totalPage: number;
+  setTotalPage:Dispatch<SetStateAction<number>>;
   currentPage: number;
   limit: number;
   setLimit: (number: number) => void;
@@ -118,7 +119,7 @@ export const ManageAccessEntitlementsProvider = ({
     []
   );
   const [filteredData, setFilteredData] = useState<
-    IFetchCombinedAccessPointsElementAndDatasourceTypes[] | []
+    IFetchCombinedAccessPointsElementAndDatasourceTypes[]
   >([]);
   const [selectedRow, setSelectedRow] = useState<
     ICreateAccessPointsElementTypes[]
@@ -175,7 +176,7 @@ export const ManageAccessEntitlementsProvider = ({
   };
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(5);
-  const [totalPage, setTotalPage] = useState<number>(Number());
+  const [totalPage, setTotalPage] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
   // access entitlement elements lazy loading
   // const fetchAccessEtitlementElenentsLazyLoading = useCallback(
@@ -554,7 +555,7 @@ export const ManageAccessEntitlementsProvider = ({
     setSelectedAccessEntitlementElements,
     page,
     setPage,
-    totalPage,
+    totalPage,setTotalPage,
     currentPage,
     limit,
     setLimit,

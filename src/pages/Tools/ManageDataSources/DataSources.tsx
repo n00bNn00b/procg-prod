@@ -47,7 +47,7 @@ import {
 import DataSourceDataAdd from "@/components/DataSourceDataAdd/DataSourceDataAdd";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import Pagination4 from "@/components/Pagination/Pagination4";
+import Pagination5 from "@/components/Pagination/Pagination5";
 
 const DataSources = () => {
   const { fetchDataSources, deleteDataSource } = useGlobalContext();
@@ -58,19 +58,12 @@ const DataSources = () => {
   const [limit, setLimit] = React.useState(10);
   const [totalPage, setTotalPage] = React.useState<number | undefined>();
   // const [currentPage, setCurrentPage] = React.useState<number | undefined>();
-  const [paginationArray, setPaginationArray] = React.useState<number[]>([]);
   // Fetch Data
   React.useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
         const result = await fetchDataSources(page, limit);
-        const num = result?.totalPages || 1;
-        const array = [];
-        for (let i = 1; i <= num; i++) {
-          array.push(i);
-        }
-        setPaginationArray(array);
         setTotalPage(result?.totalPages);
         // setCurrentPage(result?.currentPage);
         setData(result?.results ?? []);
@@ -599,11 +592,10 @@ const DataSources = () => {
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} row(s) selected.
           </div>
-          <Pagination4
+          <Pagination5
             currentPage={page}
             setCurrentPage={setPage}
             totalPageNumbers={totalPage as number}
-            paginationArray={paginationArray}
           />
         </div>
       </div>

@@ -22,8 +22,8 @@ import {
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import columns from "./Columns";
 import RelationAccessPoint from "./RelationAccessPoint";
-import Pagination4 from "@/components/Pagination/Pagination4";
 import Spinner from "@/components/Spinner/Spinner";
+import Pagination5 from "@/components/Pagination/Pagination5";
 
 const AccessPointsEditModal = () => {
   const {
@@ -87,14 +87,9 @@ const AccessPointsEditModal = () => {
   const tableRow = () => {
     table.toggleAllPageRowsSelected(false);
   };
-  const [paginationArray, setPaginationArray] = React.useState<number[]>([]);
   React.useEffect(() => {
     fetchAccessPointsEntitlement(selected[0]);
-    const paginationArray = [];
-    for (let i = 1; i <= totalPage; i++) {
-      paginationArray.push(i);
-    }
-    setPaginationArray(paginationArray);
+
     //table toggle false
     table.toggleAllRowsSelected(false);
     //set number of selected rows
@@ -222,11 +217,10 @@ const AccessPointsEditModal = () => {
               {table.getFilteredSelectedRowModel().rows.length} of{" "}
               {table.getFilteredRowModel().rows.length} row(s) selected.
             </div>
-            <Pagination4
+            <Pagination5
               currentPage={page}
               setCurrentPage={setPage}
               totalPageNumbers={totalPage as number}
-              paginationArray={paginationArray}
             />
           </div>
         </div>
