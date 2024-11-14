@@ -50,9 +50,12 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const [totalDraftMessages, setTotalDraftMessages] = useState(0);
   const [socketMessage, setSocketMessages] = useState<Message[]>([]);
   const url = import.meta.env.VITE_API_URL;
+  const socket_url = import.meta.env.VITE_SOCKET_URL;
   const { user } = useGlobalContext();
 
-  const socket = io(`${url}`, {
+  //Socket
+  const socket = io(socket_url, {
+    path: "/socket.io/",
     query: {
       key: user,
     },
