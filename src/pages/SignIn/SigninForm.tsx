@@ -93,8 +93,11 @@ const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
             )}
           />
           <button
+            disabled={isLoading}
             type="submit"
-            className="w-full py-2 rounded-md bg-Red-200 hover:bg-Red-200/90 text-white "
+            className={`${
+              isLoading && "cursor-not-allowed"
+            } w-full py-2 rounded-md bg-Red-200 hover:bg-Red-200/90 text-white`}
           >
             {isLoading ? (
               <l-tailspin size="15" stroke="3" speed="0.9" color="white" />

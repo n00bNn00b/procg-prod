@@ -7,8 +7,7 @@ import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 const Topbar = () => {
   const { open, setOpen } = useGlobalContext();
-  const {socketMessage} = useSocketContext();
-
+  const { socketMessage } = useSocketContext();
   const uniquMessages = socketMessage.filter(
     (item, index) =>
       index === socketMessage.findIndex((obj) => obj.date === item.date)

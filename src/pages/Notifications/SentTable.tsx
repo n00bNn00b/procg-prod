@@ -25,9 +25,9 @@ import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useEffect, useState } from "react";
 import { Message } from "@/types/interfaces/users.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import Pagination4 from "@/components/Pagination/Pagination4";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
+import Pagination5 from "@/components/Pagination/Pagination5";
 
 interface SentTableProps {
   path: string;
@@ -49,13 +49,13 @@ const SentTable = ({ path, person }: SentTableProps) => {
 
   const url = import.meta.env.VITE_API_URL;
   const totalDisplayedMessages = 5;
-  const totalPageNumbers = Math.ceil(
-    totalSentMessages / totalDisplayedMessages
-  );
-  const paginationArray = Array.from(
-    { length: totalPageNumbers },
-    (_, i) => i + 1
-  );
+  // const totalPageNumbers = Math.ceil(
+  //   totalSentMessages / totalDisplayedMessages
+  // );
+  // const paginationArray = Array.from(
+  //   { length: totalPageNumbers },
+  //   (_, i) => i + 1
+  // );
   let startNumber = 1;
   let endNumber = currentPage * totalDisplayedMessages;
 
@@ -114,6 +114,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
   const handleNavigate = (id: string) => {
     navigate(`/notifications/sent/${id}`);
   };
+  console.log(sentMessages, "recivers");
 
   return (
     <>
@@ -133,32 +134,31 @@ const SentTable = ({ path, person }: SentTableProps) => {
           </div>
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="font-bold">{person}</TableHead>
-                <TableHead className="font-bold">
-                  <span>Subject/</span>Body
-                </TableHead>
-                <TableHead className="w-[115px] font-bold">Date</TableHead>
-                <TableHead className="font-bold">Action</TableHead>
+              <TableRow className="bg-white hover:bg-white">
+                <TableHead className="w-[7rem] font-bold">{person}</TableHead>
+                <TableHead className="font-bold">Subject</TableHead>
+                <TableHead className="w-[7rem] font-bold">Date</TableHead>
+                <TableHead className="w-[5rem] font-bold">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sentMessages.map((msg) => (
                 <TableRow key={msg.id}>
                   <TableCell className="py-2">
-                    {msg.recivers.slice(0, 4).join(", ")}
+                    {msg.recivers.slice(0, 2).join(", ")}
+                    {msg.recivers.length > 2 && ", ..."}
                   </TableCell>
                   <TableCell className="py-2">
                     <span className="font-medium mr-1">{msg.subject}</span>
-                    <span className="text-dark-400 mr-1">
+                    {/* <span className="text-dark-400 mr-1">
                       {msg.body?.slice(0, 60)}
                     </span>
-                    <span>...</span>
+                    <span>...</span> */}
                   </TableCell>
                   <TableCell className="w-[115px] py-2">
                     {convertDate(msg.date)}
                   </TableCell>
-                  <TableCell className="flex gap-2 h-full items-center py-2">
+                  <TableCell className="flex gap-2 py-auto">
                     <View
                       onClick={() => handleNavigate(msg.parentid)}
                       color="#044BD9"
@@ -198,11 +198,10 @@ const SentTable = ({ path, person }: SentTableProps) => {
             </TableBody>
           </Table>
           <div className="flex w-full justify-end mt-4">
-            <Pagination4
+            <Pagination5
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
-              totalPageNumbers={totalPageNumbers}
-              paginationArray={paginationArray}
+              totalPageNumbers={totalSentMessages}
             />
           </div>
         </div>

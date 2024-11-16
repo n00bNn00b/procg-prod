@@ -1,4 +1,4 @@
-import { Send, Delete, ArrowLeft, Trash2 } from "lucide-react";
+import { Send, Delete, ArrowLeft, Trash2, Save } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -257,19 +257,34 @@ const SingleDraft = () => {
             </div>
           </CardContent>
           <CardFooter className="flex justify-end">
-            {recivers.length === 0 || body === "" ? null : (
+            <div className="flex gap-2">
               <button
+                //if receivers, subject, body change by any how then enabled button
+
                 onClick={handleSend}
-                className="flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md bg-dark-100 text-white hover:scale-95 duration-300"
+                className="flex gap-1 items-center px-5 py-2 rounded-l-full rounded-r-md bg-dark-100 text-white hover:scale-95 duration-300"
               >
                 {isSending ? (
                   <Spinner size="20" color="#ffffff" />
                 ) : (
-                  <Send size={18} />
+                  <Save size={18} />
                 )}
-                <p className="font-semibold ">Send</p>
+                <p className="font-semibold ">Save</p>
               </button>
-            )}
+              {recivers.length === 0 || body === "" ? null : (
+                <button
+                  onClick={handleSend}
+                  className="flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md bg-dark-100 text-white hover:scale-95 duration-300"
+                >
+                  {isSending ? (
+                    <Spinner size="20" color="#ffffff" />
+                  ) : (
+                    <Send size={18} />
+                  )}
+                  <p className="font-semibold ">Send</p>
+                </button>
+              )}
+            </div>
           </CardFooter>
         </Card>
       )}
