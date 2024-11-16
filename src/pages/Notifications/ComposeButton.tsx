@@ -223,32 +223,42 @@ const ComposeButton = () => {
           </div>
         </div>
         <DialogFooter className="flex">
-          {recivers.length === 0 || body === "" ? null : (
-            <button
-              onClick={handleDraft}
-              className="flex gap-1 items-center px-5 py-2 rounded-l-full rounded-r-md bg-dark-300 text-white hover:scale-95 duration-300"
-            >
-              {isDrafting ? (
-                <Spinner size="20" color="#ffffff" />
-              ) : (
-                <Save size={18} />
-              )}
-              <p className="font-semibold ">Save as draft</p>
-            </button>
-          )}
-          {recivers.length === 0 || body === "" ? null : (
-            <button
-              onClick={handleSend}
-              className="flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md bg-dark-100 text-white hover:scale-95 duration-300"
-            >
-              {isSending ? (
-                <Spinner size="20" color="#ffffff" />
-              ) : (
-                <Send size={18} />
-              )}
-              <p className="font-semibold ">Send</p>
-            </button>
-          )}
+          {/* {recivers.length > 0 || body !== "" || subject !== "" ? ( */}
+          <button
+            disabled={recivers.length === 0 && body === "" && subject === ""}
+            onClick={handleDraft}
+            className={`${
+              recivers.length === 0 && body === "" && subject === ""
+                ? "cursor-not-allowed bg-dark-400"
+                : "cursor-pointer bg-dark-100"
+            } flex gap-1 items-center px-4 py-1 rounded-l-full rounded-r-md  text-white hover:scale-95 duration-300`}
+          >
+            {isDrafting ? (
+              <Spinner size="20" color="#ffffff" />
+            ) : (
+              <Save size={18} />
+            )}
+            <p className="font-semibold ">Save as draft</p>
+          </button>
+          {/* ) : null}
+           {recivers.length === 0 || body === "" ? null : ( */}
+          <button
+            disabled={recivers.length === 0 || body === "" || subject === ""}
+            onClick={handleSend}
+            className={`${
+              recivers.length === 0 || body === "" || subject === ""
+                ? "cursor-not-allowed bg-dark-400"
+                : "cursor-pointer bg-dark-100"
+            } flex gap-1 items-center px-4 py-1 rounded-r-full rounded-l-md text-white hover:scale-95 duration-300`}
+          >
+            {isSending ? (
+              <Spinner size="20" color="#ffffff" />
+            ) : (
+              <Send size={18} />
+            )}
+            <p className="font-semibold ">Send</p>
+          </button>
+          {/* )} */}
         </DialogFooter>
       </DialogContent>
     </Dialog>

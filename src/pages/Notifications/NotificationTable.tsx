@@ -41,6 +41,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     receivedMessages,
     setReceivedMessages,
     handleRead,
+    handleCountSyncSocketMsg,
     setTotalReceivedMessages,
     totalReceivedMessages,
   } = useSocketContext();
@@ -88,7 +89,15 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     };
 
     fetchReceivedMessages();
-  }, [url, user, currentPage, setReceivedMessages]);
+  }, [
+    url,
+    user,
+    currentPage,
+    receivedMessages.length,
+    totalReceivedMessages,
+    setReceivedMessages,
+    setTotalReceivedMessages,
+  ]);
 
   const uniquMessagesIds = socketMessage.map((msg) => msg.id);
 
@@ -100,6 +109,8 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
 
   const handleDelete = async (id: string) => {
     try {
+      handleCountSyncSocketMsg(id);
+
       const response = await axios.delete(`${url}/messages/${id}`);
       console.log("Resource deleted:", response.data);
     } catch (error) {
@@ -108,9 +119,6 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     toast({
       title: "Message has been deleted.",
     });
-    const currentMessages = receivedMessages.filter((msg) => msg.id !== id);
-    setReceivedMessages(currentMessages);
-    setTotalReceivedMessages((prev) => prev - 1);
   };
 
   const convertDate = (isoDateString: Date) => {
@@ -137,13 +145,11 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
           </div>
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="font-bold">{person}</TableHead>
-                <TableHead className="font-bold">
-                  <span>Subject/</span>Body
-                </TableHead>
-                <TableHead className="w-[115px] font-bold">Date</TableHead>
-                <TableHead className="font-bold">Action</TableHead>
+              <TableRow className="bg-white hover:bg-white">
+                <TableHead className="w-[7rem] font-bold">{person}</TableHead>
+                <TableHead className="font-bold">Subject</TableHead>
+                <TableHead className="w-[7rem] font-bold">Date</TableHead>
+                <TableHead className="w-[5rem] font-bold">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -156,18 +162,21 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
                       : "mt-0"
                   }
                 >
-                  <TableCell className="py-2">{msg.sender}</TableCell>
+                  <TableCell className="py-2">
+                    {msg.sender.slice(0, 8)}
+                    {msg.sender.length > 8 && "..."}
+                  </TableCell>
                   <TableCell className="py-2">
                     <span className="font-medium mr-1">{msg.subject}</span>
-                    <span className="text-dark-400 mr-1">
+                    {/* <span className="text-dark-400 mr-1">
                       {msg.body?.slice(0, 60)}
                     </span>
-                    <span>...</span>
+                    <span>...</span> */}
                   </TableCell>
-                  <TableCell className="w-[115px] py-2">
+                  <TableCell className="py-2">
                     {convertDate(msg.date)}
                   </TableCell>
-                  <TableCell className="flex gap-2 py-2">
+                  <TableCell className="flex gap-2 py-auto">
                     <View
                       onClick={() => handleUniqueMessages(msg.parentid)}
                       color="#044BD9"
