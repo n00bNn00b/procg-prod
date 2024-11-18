@@ -21,7 +21,11 @@ import {
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { Message } from "@/types/interfaces/users.interface";
 import Spinner from "@/components/Spinner/Spinner";
-
+interface IOldMsgTypes {
+  receivers?: string[];
+  subject?: string;
+  body?: string;
+}
 const SingleDraft = () => {
   const { users, token } = useGlobalContext();
   const {
@@ -29,6 +33,7 @@ const SingleDraft = () => {
     setDraftMessages,
     handlesendMessage,
     setTotalDraftMessages,
+    handleDraftMessage,
   } = useSocketContext();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -39,14 +44,17 @@ const SingleDraft = () => {
   const [subject, setSubject] = useState<string>("");
   const [body, setBody] = useState<string>("");
   const [query, setQuery] = useState<string>("");
-  const [isSending, setIsSending] = useState(false);
-  const [isAllClicked, setIsAllClicked] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isSending, setIsSending] = useState<boolean>(false);
+  const [isAllClicked, setIsAllClicked] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [saveDraftLoading, setSaveDraftLoading] = useState(false);
+  const [oldMsgState, setOldMsgState] = useState<IOldMsgTypes | undefined>(
+    undefined
+  );
   const sender = token.user_name;
-
   const totalusers = [...recivers, sender];
   const uniqueUsers = [...new Set(totalusers)];
-
+  console.log(recivers, subject, body);
   useEffect(() => {
     const fetchMessage = async () => {
       try {
@@ -55,6 +63,13 @@ const SingleDraft = () => {
         setRecivers(result.recivers);
         setSubject(result.subject);
         setBody(result.body);
+        setOldMsgState(() => {
+          return {
+            receivers: result?.recivers,
+            subject: result?.subject,
+            body: result?.body,
+          };
+        });
       } catch (error) {
         console.log(error);
       } finally {
@@ -96,6 +111,36 @@ const SingleDraft = () => {
     setRecivers(allusers);
   };
 
+  const handleDraft = async () => {
+    const data = {
+      id: id as string,
+      sender,
+      recivers,
+      subject,
+      body,
+      date: new Date(),
+      status: "Draft",
+      parentid: id as string,
+      involvedusers: uniqueUsers,
+      readers: recivers,
+    };
+    handlesendMessage(data);
+    setSaveDraftLoading(true);
+    try {
+      const response = await axios.put(`${url}/messages/${id}`, data);
+      if (response.status === 201) {
+        handleDraftMessage(data);
+        toast({
+          title: "Message saved to draft",
+        });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setSaveDraftLoading(false);
+    }
+    // navigate("/notifications/draft");
+  };
   const handleSend = async () => {
     const newID = uuidv4();
     const data = {
@@ -152,7 +197,7 @@ const SingleDraft = () => {
     }
     navigate("/notifications/draft");
   };
-
+  console.log(oldMsgState, "oldMsgState");
   return (
     <div className="w-full flex justify-center">
       {isLoading ? (
@@ -260,30 +305,49 @@ const SingleDraft = () => {
             <div className="flex gap-2">
               <button
                 //if receivers, subject, body change by any how then enabled button
-
-                onClick={handleSend}
-                className="flex gap-1 items-center px-5 py-2 rounded-l-full rounded-r-md bg-dark-100 text-white hover:scale-95 duration-300"
+                disabled={
+                  recivers?.filter(
+                    (receiver) => !oldMsgState?.receivers?.includes(receiver)
+                  ).length === 0 &&
+                  oldMsgState?.subject === subject &&
+                  oldMsgState?.body === body
+                }
+                onClick={handleDraft}
+                className={`${
+                  recivers?.filter(
+                    (receiver) => !oldMsgState?.receivers?.includes(receiver)
+                  ).length === 0 &&
+                  oldMsgState?.subject === subject &&
+                  oldMsgState?.body === body
+                    ? " bg-dark-400 cursor-not-allowed"
+                    : " bg-dark-100 cursor-pointer"
+                } flex gap-1 items-center px-5 py-2 rounded-l-full rounded-r-md text-white hover:scale-95 duration-300`}
               >
-                {isSending ? (
+                {saveDraftLoading ? (
                   <Spinner size="20" color="#ffffff" />
                 ) : (
                   <Save size={18} />
                 )}
                 <p className="font-semibold ">Save</p>
               </button>
-              {recivers.length === 0 || body === "" ? null : (
-                <button
-                  onClick={handleSend}
-                  className="flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md bg-dark-100 text-white hover:scale-95 duration-300"
-                >
-                  {isSending ? (
-                    <Spinner size="20" color="#ffffff" />
-                  ) : (
-                    <Send size={18} />
-                  )}
-                  <p className="font-semibold ">Send</p>
-                </button>
-              )}
+              <button
+                disabled={
+                  recivers.length === 0 || body === "" || subject === ""
+                }
+                onClick={handleSend}
+                className={`${
+                  recivers.length === 0 || body === "" || subject === ""
+                    ? " bg-dark-400 cursor-not-allowed"
+                    : " bg-dark-100 cursor-pointer"
+                } flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md text-white hover:scale-95 duration-300`}
+              >
+                {isSending ? (
+                  <Spinner size="20" color="#ffffff" />
+                ) : (
+                  <Send size={18} />
+                )}
+                <p className="font-semibold ">Send</p>
+              </button>
             </div>
           </CardFooter>
         </Card>

@@ -129,100 +129,102 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
 
   return (
     <>
-      {isLoading ? (
-        <div className="flex w-[100vw] h-[50vh] justify-center items-center">
-          <Spinner size="80" color="#000000" />
+      <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
+        <div className="flex justify-between">
+          <h1 className="text-lg font-bold mb-6 ">{path}</h1>
+          <TableRowCounter
+            startNumber={startNumber}
+            endNumber={endNumber}
+            totalNumber={totalReceivedMessages}
+          />
         </div>
-      ) : (
-        <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
-          <div className="flex justify-between">
-            <h1 className="text-lg font-bold mb-6 ">{path}</h1>
-            <TableRowCounter
-              startNumber={startNumber}
-              endNumber={endNumber}
-              totalNumber={totalReceivedMessages}
-            />
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-white hover:bg-white">
-                <TableHead className="w-[7rem] font-bold">{person}</TableHead>
-                <TableHead className="font-bold">Subject</TableHead>
-                <TableHead className="w-[7rem] font-bold">Date</TableHead>
-                <TableHead className="w-[5rem] font-bold">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {receivedMessages.map((msg) => (
-                <TableRow
-                  key={msg.id}
-                  className={
-                    uniquMessagesIds.includes(msg.id)
-                      ? "bg-winter-100/30"
-                      : "mt-0"
-                  }
-                >
-                  <TableCell className="py-2">
-                    {msg.sender.slice(0, 8)}
-                    {msg.sender.length > 8 && "..."}
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-white hover:bg-white">
+              <TableHead className="w-[7rem] font-bold">{person}</TableHead>
+              <TableHead className="font-bold">Subject</TableHead>
+              <TableHead className="w-[7rem] font-bold">Date</TableHead>
+              <TableHead className="w-[5rem] font-bold">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {receivedMessages.map((msg) => (
+              <TableRow
+                key={msg.id}
+                className={
+                  uniquMessagesIds.includes(msg.id)
+                    ? "bg-winter-100/30"
+                    : "mt-0"
+                }
+              >
+                {isLoading ? (
+                  <TableCell className="flex w-[100vw] h-[50vh] justify-center items-center">
+                    <Spinner size="80" color="#000000" />
                   </TableCell>
-                  <TableCell className="py-2">
-                    <span className="font-medium mr-1">{msg.subject}</span>
-                    {/* <span className="text-dark-400 mr-1">
+                ) : (
+                  <>
+                    <TableCell className="py-2">
+                      {msg.sender.slice(0, 8)}
+                      {msg.sender.length > 8 && "..."}
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <span className="font-medium mr-1">{msg.subject}</span>
+                      {/* <span className="text-dark-400 mr-1">
                       {msg.body?.slice(0, 60)}
                     </span>
                     <span>...</span> */}
-                  </TableCell>
-                  <TableCell className="py-2">
-                    {convertDate(msg.date)}
-                  </TableCell>
-                  <TableCell className="flex gap-2 py-auto">
-                    <View
-                      onClick={() => handleUniqueMessages(msg.parentid)}
-                      color="#044BD9"
-                      className="cursor-pointer"
-                    />
-                    <AlertDialog>
-                      <AlertDialogTrigger>
-                        <Trash2 color="#E60B0B" />
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Are you absolutely sure?
-                          </AlertDialogTitle>
-                        </AlertDialogHeader>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently
-                          delete from both side.
-                        </AlertDialogDescription>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
-                            <X />
-                          </AlertDialogCancel>
-                          <AlertDialogAction
-                            className="bg-green-600 text-white flex justify-center items-center"
-                            onClick={() => handleDelete(msg.id)}
-                          >
-                            <Check />
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="flex w-full justify-end mt-4">
-            <Pagination5
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-              totalPageNumbers={totalPageNumbers}
-            />
-          </div>
+                    </TableCell>
+                    <TableCell className="py-2">
+                      {convertDate(msg.date)}
+                    </TableCell>
+                    <TableCell className="flex gap-2 py-auto">
+                      <View
+                        onClick={() => handleUniqueMessages(msg.parentid)}
+                        color="#044BD9"
+                        className="cursor-pointer"
+                      />
+                      <AlertDialog>
+                        <AlertDialogTrigger>
+                          <Trash2 color="#E60B0B" />
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                          </AlertDialogHeader>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete from both side.
+                          </AlertDialogDescription>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
+                              <X />
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-green-600 text-white flex justify-center items-center"
+                              onClick={() => handleDelete(msg.id)}
+                            >
+                              <Check />
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </TableCell>
+                  </>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <div className="flex w-full justify-end mt-4">
+          <Pagination5
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPageNumbers={totalPageNumbers}
+          />
         </div>
-      )}
+      </div>
     </>
   );
 };
