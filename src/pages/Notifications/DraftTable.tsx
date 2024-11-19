@@ -22,9 +22,6 @@ import axios from "axios";
 import { Check, Edit, Trash2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
-import { useEffect, useState } from "react";
-import { Message } from "@/types/interfaces/users.interface";
-import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
 import Pagination5 from "@/components/Pagination/Pagination5";
@@ -35,19 +32,16 @@ interface DraftTableProps {
 }
 
 const DraftTable = ({ path, person }: DraftTableProps) => {
-  const { user } = useGlobalContext();
   const {
+    isLoading,
     draftMessages,
-    setDraftMessages,
-    setTotalDraftMessages,
     totalDraftMessages,
     handleCountSyncSocketMsg,
-    saveDraftMessage,
+    currentPage,
+    setCurrentPage,
   } = useSocketContext();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isLoading, setIsloading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const url = import.meta.env.VITE_API_URL;
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -69,48 +63,22 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
     startNumber = page * totalDisplayedMessages + 1;
   }
 
-  //Fetch Sent Messages
-  useEffect(() => {
-    const fetchSentMessages = async () => {
-      try {
-        setIsloading(true);
-        const response = await axios.get<Message[]>(
-          `${url}/messages/draft/${user}/${currentPage}`
-        );
-        const result = response.data;
-        setDraftMessages(result);
-      } catch (error) {
-        console.log(error);
-        return [];
-      } finally {
-        setIsloading(false);
-      }
-    };
-
-    fetchSentMessages();
-  }, [
-    url,
-    user,
-    currentPage,
-    draftMessages.length,
-    setDraftMessages,
-    totalDraftMessages,
-    setTotalDraftMessages,
-    saveDraftMessage.length,
-  ]);
-
   const handleDelete = async (id: string) => {
     try {
       handleCountSyncSocketMsg(id);
 
       const response = await axios.delete(`${url}/messages/${id}`);
-      console.log("Resource deleted:", response.data);
-    } catch (error) {
+      if (response.status === 200) {
+        toast({
+          title: "Message has been deleted.",
+        });
+      }
+    } catch (error: any) {
       console.error("Error deleting resource:", error);
+      toast({
+        title: `${error?.message}`,
+      });
     }
-    toast({
-      title: "Message has been deleted.",
-    });
   };
 
   const convertDate = (isoDateString: Date) => {
@@ -143,14 +111,18 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
               <TableHead className="w-[5rem] font-bold">Action</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {draftMessages.map((msg) => (
-              <TableRow key={msg.id}>
-                {isLoading ? (
-                  <TableCell className="flex w-[100vw] h-[50vh] justify-center items-center">
-                    <Spinner size="80" color="#000000" />
-                  </TableCell>
-                ) : (
+          {isLoading ? (
+            <TableBody className="w-full">
+              <TableRow>
+                <TableCell className="flex flex-col items-center justify-center w-[50rem] h-[12rem]">
+                  <Spinner size="80" color="#000000" />
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          ) : (
+            <TableBody>
+              {draftMessages.map((msg) => (
+                <TableRow key={msg.id}>
                   <>
                     <TableCell className="py-2">
                       {msg.recivers.slice(0, 2).join(", ")}
@@ -201,10 +173,10 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
                       </AlertDialog>
                     </TableCell>
                   </>
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
         </Table>
         <div className="flex w-full justify-end mt-4">
           <Pagination5

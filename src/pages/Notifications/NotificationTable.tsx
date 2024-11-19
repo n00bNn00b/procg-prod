@@ -23,8 +23,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import { useEffect, useState } from "react";
-import { Message } from "@/types/interfaces/users.interface";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
 import Pagination5 from "@/components/Pagination/Pagination5";
@@ -37,18 +35,17 @@ interface NotificationTableProps {
 const NotificationTable = ({ path, person }: NotificationTableProps) => {
   const { user } = useGlobalContext();
   const {
+    isLoading,
     socketMessage,
     receivedMessages,
-    setReceivedMessages,
     handleRead,
     handleCountSyncSocketMsg,
-    setTotalReceivedMessages,
     totalReceivedMessages,
+    currentPage,
+    setCurrentPage,
   } = useSocketContext();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsloading] = useState(false);
   const url = import.meta.env.VITE_API_URL;
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -70,35 +67,6 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     startNumber = page * totalDisplayedMessages + 1;
   }
 
-  //Fetch Received Messages
-  useEffect(() => {
-    const fetchReceivedMessages = async () => {
-      try {
-        setIsloading(true);
-        const response = await axios.get<Message[]>(
-          `${url}/messages/received/${user}/${currentPage}`
-        );
-        const result = response.data;
-        setReceivedMessages(result);
-      } catch (error) {
-        console.log(error);
-        return [];
-      } finally {
-        setIsloading(false);
-      }
-    };
-
-    fetchReceivedMessages();
-  }, [
-    url,
-    user,
-    currentPage,
-    receivedMessages.length,
-    totalReceivedMessages,
-    setReceivedMessages,
-    setTotalReceivedMessages,
-  ]);
-
   const uniquMessagesIds = socketMessage.map((msg) => msg.id);
 
   const handleUniqueMessages = async (parentid: string) => {
@@ -112,13 +80,16 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
       handleCountSyncSocketMsg(id);
 
       const response = await axios.delete(`${url}/messages/${id}`);
+      if (response.status === 200) {
+        toast({
+          title: "Message has been deleted.",
+        });
+      }
+
       console.log("Resource deleted:", response.data);
     } catch (error) {
       console.error("Error deleting resource:", error);
     }
-    toast({
-      title: "Message has been deleted.",
-    });
   };
 
   const convertDate = (isoDateString: Date) => {
@@ -147,21 +118,25 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
               <TableHead className="w-[5rem] font-bold">Action</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {receivedMessages.map((msg) => (
-              <TableRow
-                key={msg.id}
-                className={
-                  uniquMessagesIds.includes(msg.id)
-                    ? "bg-winter-100/30"
-                    : "mt-0"
-                }
-              >
-                {isLoading ? (
-                  <TableCell className="flex w-[100vw] h-[50vh] justify-center items-center">
-                    <Spinner size="80" color="#000000" />
-                  </TableCell>
-                ) : (
+          {isLoading ? (
+            <TableBody className="w-full">
+              <TableRow>
+                <TableCell className="flex flex-col items-center justify-center w-[50rem] h-[12rem]">
+                  <Spinner size="80" color="#000000" />
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          ) : (
+            <TableBody>
+              {receivedMessages.map((msg) => (
+                <TableRow
+                  key={msg.id}
+                  className={
+                    uniquMessagesIds.includes(msg.id)
+                      ? "bg-winter-100/30"
+                      : "mt-0"
+                  }
+                >
                   <>
                     <TableCell className="py-2">
                       {msg.sender.slice(0, 8)}
@@ -212,10 +187,10 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
                       </AlertDialog>
                     </TableCell>
                   </>
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
         </Table>
         <div className="flex w-full justify-end mt-4">
           <Pagination5

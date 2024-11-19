@@ -22,9 +22,6 @@ import axios from "axios";
 import { Check, Trash2, View, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
-import { useEffect, useState } from "react";
-import { Message } from "@/types/interfaces/users.interface";
-import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
 import Pagination5 from "@/components/Pagination/Pagination5";
@@ -35,18 +32,16 @@ interface SentTableProps {
 }
 
 const SentTable = ({ path, person }: SentTableProps) => {
-  const { user } = useGlobalContext();
   const {
+    isLoading,
     sentMessages,
-    setSentMessages,
-    setTotalSentMessages,
     totalSentMessages,
     handleCountSyncSocketMsg,
+    currentPage,
+    setCurrentPage,
   } = useSocketContext();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isLoading, setIsloading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
 
   const url = import.meta.env.VITE_API_URL;
   const totalDisplayedMessages = 5;
@@ -69,47 +64,23 @@ const SentTable = ({ path, person }: SentTableProps) => {
     startNumber = page * totalDisplayedMessages + 1;
   }
 
-  //Fetch Sent Messages
-  useEffect(() => {
-    const fetchSentMessages = async () => {
-      try {
-        setIsloading(true);
-        const response = await axios.get<Message[]>(
-          `${url}/messages/sent/${user}/${currentPage}`
-        );
-        const result = response.data;
-        setSentMessages(result);
-      } catch (error) {
-        console.log(error);
-        return [];
-      } finally {
-        setIsloading(false);
-      }
-    };
-
-    fetchSentMessages();
-  }, [
-    url,
-    user,
-    currentPage,
-    setSentMessages,
-    totalSentMessages,
-    sentMessages.length,
-    setTotalSentMessages,
-  ]);
-
   const handleDelete = async (id: string) => {
     try {
       handleCountSyncSocketMsg(id);
 
       const response = await axios.delete(`${url}/messages/${id}`);
+      if (response.status === 200) {
+        toast({
+          title: "Message has been deleted.",
+        });
+      }
       console.log("Resource deleted:", response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting resource:", error);
+      toast({
+        title: `${error?.message}`,
+      });
     }
-    toast({
-      title: "Message has been deleted.",
-    });
   };
 
   const convertDate = (isoDateString: Date) => {
@@ -142,69 +113,66 @@ const SentTable = ({ path, person }: SentTableProps) => {
               <TableHead className="w-[5rem] font-bold">Action</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {sentMessages.map((msg) => (
-              <TableRow key={msg.id}>
-                {isLoading ? (
-                  <TableCell className="flex w-[100vw] h-[50vh] justify-center items-center">
-                    <Spinner size="80" color="#000000" />
-                  </TableCell>
-                ) : (
-                  <>
-                    <TableCell className="py-2">
-                      {msg.recivers.slice(0, 2).join(", ")}
-                      {msg.recivers.length > 2 && ", ..."}
-                    </TableCell>
-                    <TableCell className="py-2">
-                      <span className="font-medium mr-1">{msg.subject}</span>
-                      {/* <span className="text-dark-400 mr-1">
-                      {msg.body?.slice(0, 60)}
-                    </span>
-                    <span>...</span> */}
-                    </TableCell>
-                    <TableCell className="w-[115px] py-2">
-                      {convertDate(msg.date)}
-                    </TableCell>
-                    <TableCell className="flex gap-2 py-auto">
-                      <View
-                        onClick={() => handleNavigate(msg.parentid)}
-                        color="#044BD9"
-                        className="cursor-pointer"
-                      />
-
-                      <AlertDialog>
-                        <AlertDialogTrigger>
-                          <Trash2 color="#E60B0B" />
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Are you absolutely sure?
-                            </AlertDialogTitle>
-                          </AlertDialogHeader>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete from both side.
-                          </AlertDialogDescription>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
-                              <X />
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              className="bg-green-600 text-white flex justify-center items-center"
-                              onClick={() => handleDelete(msg.id)}
-                            >
-                              <Check />
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </TableCell>
-                  </>
-                )}
+          {isLoading ? (
+            <TableBody className="w-full">
+              <TableRow>
+                <TableCell className="flex flex-col items-center justify-center w-[50rem] h-[12rem]">
+                  <Spinner size="80" color="#000000" />
+                </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
+            </TableBody>
+          ) : (
+            <TableBody>
+              {sentMessages.map((msg) => (
+                <TableRow key={msg.id}>
+                  <TableCell className="py-2">
+                    {msg.recivers.slice(0, 2).join(", ")}
+                    {msg.recivers.length > 2 && ", ..."}
+                  </TableCell>
+                  <TableCell className="py-2">
+                    <span className="font-medium mr-1">{msg.subject}</span>
+                  </TableCell>
+                  <TableCell className="w-[115px] py-2">
+                    {convertDate(msg.date)}
+                  </TableCell>
+                  <TableCell className="flex gap-2 py-auto">
+                    <View
+                      onClick={() => handleNavigate(msg.parentid)}
+                      color="#044BD9"
+                      className="cursor-pointer"
+                    />
+                    <AlertDialog>
+                      <AlertDialogTrigger>
+                        <Trash2 color="#E60B0B" />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
+                        </AlertDialogHeader>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete from both sides.
+                        </AlertDialogDescription>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
+                            <X />
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-green-600 text-white flex justify-center items-center"
+                            onClick={() => handleDelete(msg.id)}
+                          >
+                            <Check />
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
         </Table>
         <div className="flex w-full justify-end mt-4">
           <Pagination5
