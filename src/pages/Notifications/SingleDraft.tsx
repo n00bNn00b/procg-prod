@@ -34,6 +34,7 @@ const SingleDraft = () => {
     handlesendMessage,
     setTotalDraftMessages,
     handleDraftMessage,
+    handleCountSyncSocketMsg,
   } = useSocketContext();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -54,7 +55,6 @@ const SingleDraft = () => {
   const sender = token.user_name;
   const totalusers = [...recivers, sender];
   const uniqueUsers = [...new Set(totalusers)];
-  console.log(recivers, subject, body);
   useEffect(() => {
     const fetchMessage = async () => {
       try {
@@ -124,6 +124,11 @@ const SingleDraft = () => {
       involvedusers: uniqueUsers,
       readers: recivers,
     };
+    setOldMsgState({
+      receivers: recivers,
+      subject,
+      body,
+    });
     handlesendMessage(data);
     setSaveDraftLoading(true);
     try {
@@ -188,16 +193,25 @@ const SingleDraft = () => {
   const handleDelete = async () => {
     try {
       const response = await axios.delete(`${url}/messages/${id}`);
-      console.log("Resource deleted:", response.data);
-      const currentMessages = draftMessages.filter((msg) => msg.id !== id);
-      setDraftMessages(currentMessages);
-      setTotalDraftMessages((prev) => prev - 1);
-    } catch (error) {
+      if (response.status === 200) {
+        handleCountSyncSocketMsg(id as string);
+        const currentMessages = draftMessages.filter((msg) => msg.id !== id);
+        setDraftMessages(currentMessages);
+
+        navigate("/notifications/draft");
+
+        setTotalDraftMessages((prev) => prev - 1);
+        toast({
+          title: "Message has been deleted.",
+        });
+      }
+    } catch (error: any) {
       console.error("Error deleting resource:", error);
+      toast({
+        title: `${error?.message}`,
+      });
     }
-    navigate("/notifications/draft");
   };
-  console.log(oldMsgState, "oldMsgState");
   return (
     <div className="w-full flex justify-center">
       {isLoading ? (
@@ -314,9 +328,9 @@ const SingleDraft = () => {
                 }
                 onClick={handleDraft}
                 className={`${
-                  recivers?.filter(
-                    (receiver) => !oldMsgState?.receivers?.includes(receiver)
-                  ).length === 0 &&
+                  oldMsgState?.receivers?.every((rcvr) =>
+                    recivers.includes(rcvr)
+                  ) &&
                   oldMsgState?.subject === subject &&
                   oldMsgState?.body === body
                     ? " bg-dark-400 cursor-not-allowed"

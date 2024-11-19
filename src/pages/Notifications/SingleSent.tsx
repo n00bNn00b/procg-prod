@@ -10,8 +10,12 @@ import { useToast } from "@/components/ui/use-toast";
 import Spinner from "@/components/Spinner/Spinner";
 
 const SingleSent = () => {
-  const { sentMessages, setSentMessages, setTotalSentMessages } =
-    useSocketContext();
+  const {
+    sentMessages,
+    setSentMessages,
+    setTotalSentMessages,
+    handleCountSyncSocketMsg,
+  } = useSocketContext();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
@@ -89,23 +93,25 @@ const SingleSent = () => {
 
   const handleDelete = async (msgId: string) => {
     try {
-      await axios.delete(`${url}/messages/${msgId}`);
-      const currentMessages = sentMessages.filter((msg) => msg.id !== msgId);
-      setSentMessages(currentMessages);
-      const currentTotalMessages = totalMessages.filter(
-        (msg) => msg.id !== msgId
-      );
-      setTotalMessages(currentTotalMessages);
-      setTotalSentMessages((prev) => prev - 1);
+      const res = await axios.delete(`${url}/messages/${msgId}`);
+      if (res.status === 200) {
+        handleCountSyncSocketMsg(msgId);
+        const currentMessages = sentMessages.filter((msg) => msg.id !== msgId);
+        setSentMessages(currentMessages);
+        const currentTotalMessages = totalMessages.filter(
+          (msg) => msg.id !== msgId
+        );
+        if (currentTotalMessages.length === 0) {
+          navigate("/notifications/sent");
+        }
+        setTotalMessages(currentTotalMessages);
+        setTotalSentMessages((prev) => prev - 1);
+        toast({
+          title: "Message has been deleted",
+        });
+      }
     } catch (error) {
       console.error("Error deleting resource:", error);
-    } finally {
-      toast({
-        title: "Message has been deleted",
-      });
-      if (totalMessages.length === 0) {
-        navigate("/notifications/inbox");
-      }
     }
   };
 

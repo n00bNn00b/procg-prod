@@ -88,12 +88,16 @@ const ComposeButton = () => {
     handlesendMessage(data);
     try {
       const response = await axios.post(`${url}/messages`, data);
-      console.log("Response:", response.data);
-      toast({
-        title: "Message Sent",
-      });
-    } catch (error) {
+      if (response.status === 201) {
+        toast({
+          title: "Message Sent",
+        });
+      }
+    } catch (error: any) {
       console.error("Error:", error);
+      toast({
+        title: `${error?.message}`,
+      });
     } finally {
       setIsSending(false);
     }

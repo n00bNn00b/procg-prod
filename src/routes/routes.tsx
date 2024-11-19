@@ -6,7 +6,7 @@ import Sent from "@/pages/Notifications/Sent";
 import Draft from "@/pages/Notifications/Draft";
 import SingleMessage from "@/pages/Notifications/SingleMessage";
 import SingleDraft from "@/pages/Notifications/SingleDraft";
-import Tasks from "@/pages/Tasks/Tasks";
+import ActionItems from "@/pages/ActionItems/ActionItems";
 import Home from "@/pages/Home/Home";
 import SingleSent from "@/pages/Notifications/SingleSent";
 import DataSources from "@/pages/Tools/ManageDataSources/DataSources";
@@ -50,8 +50,8 @@ const routes = createBrowserRouter([
         element: <Profile />,
       },
       {
-        path: "tasks",
-        element: <Tasks />,
+        path: "action-items",
+        element: <ActionItems />,
       },
       {
         path: "security",

@@ -11,8 +11,12 @@ import { useToast } from "@/components/ui/use-toast";
 import Spinner from "@/components/Spinner/Spinner";
 
 const SingleMessage = () => {
-  const { receivedMessages, setReceivedMessages, setTotalReceivedMessages } =
-    useSocketContext();
+  const {
+    receivedMessages,
+    setReceivedMessages,
+    setTotalReceivedMessages,
+    handleCountSyncSocketMsg,
+  } = useSocketContext();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -90,28 +94,31 @@ const SingleMessage = () => {
 
   const handleDelete = async (msgId: string) => {
     try {
-      await axios.delete(`${url}/messages/${msgId}`);
-      const currentMessages = receivedMessages.filter(
-        (msg) => msg.id !== msgId
-      );
-      setReceivedMessages(currentMessages);
-      const currentTotalMessages = totalMessages.filter(
-        (msg) => msg.id !== msgId
-      );
-      setTotalMessages(currentTotalMessages);
-      setTotalReceivedMessages((prev) => prev - 1);
+      const res = await axios.delete(`${url}/messages/${msgId}`);
+      if (res.status === 200) {
+        handleCountSyncSocketMsg(msgId);
+        const currentMessages = receivedMessages.filter(
+          (msg) => msg.id !== msgId
+        );
+        setReceivedMessages(currentMessages);
+        const currentTotalMessages = totalMessages.filter(
+          (msg) => msg.id !== msgId
+        );
+        if (currentTotalMessages.length === 0) {
+          navigate("/notifications/inbox");
+        }
+        setTotalMessages(currentTotalMessages);
+        setTotalReceivedMessages((prev) => prev - 1);
+        toast({
+          title: "Message has been deleted",
+        });
+      }
     } catch (error) {
       console.error("Error deleting resource:", error);
-    } finally {
-      toast({
-        title: "Message has been deleted",
-      });
-      if (totalMessages.length === 0) {
-        navigate("/notifications/inbox");
-      }
     }
   };
 
+  console.log(totalMessages.length);
   const convertDate = (isoDateString: Date) => {
     const date = new Date(isoDateString);
     const formattedDate = date.toLocaleString();

@@ -15,6 +15,8 @@ interface SocketContextProps {
 }
 
 interface SocketContext {
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   receivedMessages: Message[];
   handlesendMessage: (data: Message) => void;
   handleDisconnect: () => void;
@@ -35,6 +37,8 @@ interface SocketContext {
   setTotalSentMessages: React.Dispatch<React.SetStateAction<number>>;
   totalDraftMessages: number;
   setTotalDraftMessages: React.Dispatch<React.SetStateAction<number>>;
+  currentPage: number;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const SocketContext = createContext({} as SocketContext);
@@ -44,6 +48,7 @@ export function useSocketContext() {
 }
 
 export function SocketContextProvider({ children }: SocketContextProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [receivedMessages, setReceivedMessages] = useState<Message[]>([]);
   const [totalReceivedMessages, setTotalReceivedMessages] = useState(0);
   const [sentMessages, setSentMessages] = useState<Message[]>([]);
@@ -55,6 +60,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const url = import.meta.env.VITE_API_URL;
   const socket_url = import.meta.env.VITE_SOCKET_URL;
   const { user } = useGlobalContext();
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   //Socket
   const socket = io(socket_url, {
@@ -83,6 +89,27 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     fetchNotificationMessages();
   }, [url, user]);
 
+  //Fetch Received Messages
+  useEffect(() => {
+    const fetchReceivedMessages = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get<Message[]>(
+          `${url}/messages/received/${user}/${currentPage}`
+        );
+        const result = response.data;
+        setReceivedMessages(result);
+      } catch (error) {
+        console.log(error);
+        return [];
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReceivedMessages();
+  }, [url, user, currentPage, receivedMessages.length, totalReceivedMessages]);
+
   // Fetch Total Received Messages Number
   useEffect(() => {
     const fetchTotalReceivedMessages = async () => {
@@ -100,6 +127,27 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     fetchTotalReceivedMessages();
   }, [url, user]);
 
+  //Fetch Sent Messages
+  useEffect(() => {
+    const fetchSentMessages = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get<Message[]>(
+          `${url}/messages/sent/${user}/${currentPage}`
+        );
+        const result = response.data;
+        setSentMessages(result);
+      } catch (error) {
+        console.log(error);
+        return [];
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSentMessages();
+  }, [url, user, currentPage, totalSentMessages, sentMessages.length]);
+
   // Fetch Total Sent Messages Number
   useEffect(() => {
     const fetchTotalSentMessages = async () => {
@@ -114,6 +162,34 @@ export function SocketContextProvider({ children }: SocketContextProps) {
 
     fetchTotalSentMessages();
   }, [url, user]);
+
+  //Fetch Draft Messages
+  useEffect(() => {
+    const fetchSentMessages = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get<Message[]>(
+          `${url}/messages/draft/${user}/${currentPage}`
+        );
+        const result = response.data;
+        setDraftMessages(result);
+      } catch (error) {
+        console.log(error);
+        return [];
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSentMessages();
+  }, [
+    url,
+    user,
+    currentPage,
+    draftMessages.length,
+    totalDraftMessages,
+    saveDraftMessage.length,
+  ]);
 
   // Fetch Total Draft Messages Number
   useEffect(() => {
@@ -220,6 +296,8 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   return (
     <SocketContext.Provider
       value={{
+        isLoading,
+        setIsLoading,
         handlesendMessage,
         handleDisconnect,
         handleRead,
@@ -240,6 +318,8 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         setTotalSentMessages,
         totalDraftMessages,
         setTotalDraftMessages,
+        currentPage,
+        setCurrentPage,
       }}
     >
       {children}
