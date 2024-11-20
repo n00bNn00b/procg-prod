@@ -25,6 +25,9 @@ import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
 import Pagination5 from "@/components/Pagination/Pagination5";
+import { useEffect } from "react";
+import { Message } from "@/types/interfaces/users.interface";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
 interface SentTableProps {
   path: string;
@@ -34,16 +37,40 @@ interface SentTableProps {
 const SentTable = ({ path, person }: SentTableProps) => {
   const {
     isLoading,
+    setIsLoading,
     sentMessages,
     totalSentMessages,
     handleCountSyncSocketMsg,
     currentPage,
     setCurrentPage,
+    setSentMessages,
   } = useSocketContext();
+  const { user } = useGlobalContext();
   const navigate = useNavigate();
   const { toast } = useToast();
-
   const url = import.meta.env.VITE_API_URL;
+
+  //Fetch Sent Messages
+  useEffect(() => {
+    const fetchSentMessages = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get<Message[]>(
+          `${url}/messages/sent/${user}/${currentPage}`
+        );
+        const result = response.data;
+        setSentMessages(result);
+      } catch (error) {
+        console.log(error);
+        return [];
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSentMessages();
+  }, [url, user, currentPage, totalSentMessages, sentMessages.length]);
+
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
     totalSentMessages / totalDisplayedMessages

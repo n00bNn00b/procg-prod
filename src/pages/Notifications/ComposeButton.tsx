@@ -20,10 +20,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import Spinner from "@/components/Spinner/Spinner";
+// import { send } from "process";
 
 const ComposeButton = () => {
   const { users, token, user } = useGlobalContext();
-  const { handlesendMessage, handleDraftMessage } = useSocketContext();
+  const { handlesendMessage, handleReceiveMessage, handleDraftMessage } =
+    useSocketContext();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
   const [recivers, setRecivers] = useState<string[]>([]);
@@ -72,7 +74,7 @@ const ComposeButton = () => {
   };
 
   const handleSend = async () => {
-    const data = {
+    const sendData = {
       id,
       sender,
       recivers,
@@ -84,11 +86,23 @@ const ComposeButton = () => {
       involvedusers: uniqueUsers,
       readers: recivers,
     };
+    const receivedId = uuidv4();
+    const receivedData = {
+      ...sendData,
+      id: receivedId,
+      status: "Received",
+      parentid: receivedId,
+    };
+
     setIsSending(true);
-    handlesendMessage(data);
+    handlesendMessage(sendData);
+    handleReceiveMessage(receivedData);
     try {
-      const response = await axios.post(`${url}/messages`, data);
-      if (response.status === 201) {
+      const [sendResponse, receiveResponse] = await Promise.all([
+        await axios.post(`${url}/messages`, sendData),
+        await axios.post(`${url}/messages`, receivedData),
+      ]);
+      if (sendResponse.status === 201 || receiveResponse.status === 201) {
         toast({
           title: "Message Sent",
         });

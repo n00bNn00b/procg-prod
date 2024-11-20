@@ -118,7 +118,6 @@ const SingleMessage = () => {
     }
   };
 
-  console.log(totalMessages.length);
   const convertDate = (isoDateString: Date) => {
     const date = new Date(isoDateString);
     const formattedDate = date.toLocaleString();

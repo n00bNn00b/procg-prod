@@ -26,6 +26,8 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
 import Pagination5 from "@/components/Pagination/Pagination5";
+import { useEffect } from "react";
+import { Message } from "@/types/interfaces/users.interface";
 
 interface NotificationTableProps {
   path: string;
@@ -36,17 +38,50 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
   const { user } = useGlobalContext();
   const {
     isLoading,
+    setIsLoading,
     socketMessage,
     receivedMessages,
+    setReceivedMessages,
     handleRead,
     handleCountSyncSocketMsg,
     totalReceivedMessages,
     currentPage,
     setCurrentPage,
+    sentMessages,
   } = useSocketContext();
   const { toast } = useToast();
   const navigate = useNavigate();
   const url = import.meta.env.VITE_API_URL;
+
+  //Fetch Received Messages
+  useEffect(() => {
+    const fetchReceivedMessages = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get<Message[]>(
+          `${url}/messages/received/${user}/${currentPage}`
+        );
+        const result = response.data;
+        setReceivedMessages(result);
+      } catch (error) {
+        console.log(error);
+        return [];
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReceivedMessages();
+  }, [
+    url,
+    user,
+    currentPage,
+    receivedMessages.length,
+    totalReceivedMessages,
+    socketMessage.length,
+    sentMessages.length,
+  ]);
+
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
     totalReceivedMessages / totalDisplayedMessages
