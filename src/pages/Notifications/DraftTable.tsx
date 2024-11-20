@@ -25,6 +25,9 @@ import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
 import Pagination5 from "@/components/Pagination/Pagination5";
+import { useEffect } from "react";
+import { Message } from "@/types/interfaces/users.interface";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
 interface DraftTableProps {
   path: string;
@@ -34,15 +37,48 @@ interface DraftTableProps {
 const DraftTable = ({ path, person }: DraftTableProps) => {
   const {
     isLoading,
+    setIsLoading,
     draftMessages,
     totalDraftMessages,
     handleCountSyncSocketMsg,
     currentPage,
     setCurrentPage,
+    setDraftMessages,
+    saveDraftMessage,
   } = useSocketContext();
+  const { user } = useGlobalContext();
   const navigate = useNavigate();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
+
+  //Fetch Draft Messages
+  useEffect(() => {
+    const fetchSentMessages = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get<Message[]>(
+          `${url}/messages/draft/${user}/${currentPage}`
+        );
+        const result = response.data;
+        setDraftMessages(result);
+      } catch (error) {
+        console.log(error);
+        return [];
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSentMessages();
+  }, [
+    url,
+    user,
+    currentPage,
+    draftMessages.length,
+    totalDraftMessages,
+    saveDraftMessage.length,
+  ]);
+
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
     totalDraftMessages / totalDisplayedMessages

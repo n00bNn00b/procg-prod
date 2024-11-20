@@ -19,6 +19,7 @@ interface SocketContext {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   receivedMessages: Message[];
   handlesendMessage: (data: Message) => void;
+  handleReceiveMessage: (data: Message) => void;
   handleDisconnect: () => void;
   handleRead: (id: string) => void;
   handleCountSyncSocketMsg: (id: string) => void;
@@ -87,28 +88,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     };
 
     fetchNotificationMessages();
-  }, [url, user]);
-
-  //Fetch Received Messages
-  useEffect(() => {
-    const fetchReceivedMessages = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.get<Message[]>(
-          `${url}/messages/received/${user}/${currentPage}`
-        );
-        const result = response.data;
-        setReceivedMessages(result);
-      } catch (error) {
-        console.log(error);
-        return [];
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchReceivedMessages();
-  }, [url, user, currentPage, receivedMessages.length, totalReceivedMessages]);
+  }, [url, user, socketMessage.length]);
 
   // Fetch Total Received Messages Number
   useEffect(() => {
@@ -125,28 +105,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     };
 
     fetchTotalReceivedMessages();
-  }, [url, user]);
-
-  //Fetch Sent Messages
-  useEffect(() => {
-    const fetchSentMessages = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.get<Message[]>(
-          `${url}/messages/sent/${user}/${currentPage}`
-        );
-        const result = response.data;
-        setSentMessages(result);
-      } catch (error) {
-        console.log(error);
-        return [];
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSentMessages();
-  }, [url, user, currentPage, totalSentMessages, sentMessages.length]);
+  }, [url, user, socketMessage.length]);
 
   // Fetch Total Sent Messages Number
   useEffect(() => {
@@ -161,35 +120,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     };
 
     fetchTotalSentMessages();
-  }, [url, user]);
-
-  //Fetch Draft Messages
-  useEffect(() => {
-    const fetchSentMessages = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.get<Message[]>(
-          `${url}/messages/draft/${user}/${currentPage}`
-        );
-        const result = response.data;
-        setDraftMessages(result);
-      } catch (error) {
-        console.log(error);
-        return [];
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSentMessages();
-  }, [
-    url,
-    user,
-    currentPage,
-    draftMessages.length,
-    totalDraftMessages,
-    saveDraftMessage.length,
-  ]);
+  }, [url, user, totalSentMessages]);
 
   // Fetch Total Draft Messages Number
   useEffect(() => {
@@ -204,7 +135,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     };
 
     fetchTotalDraftMessages();
-  }, [url, user]);
+  }, [url, user, totalDraftMessages]);
 
   //Listen to socket events
   useEffect(() => {
@@ -277,6 +208,9 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const handlesendMessage = (data: Message) => {
     socket.emit("sendMessage", data);
   };
+  const handleReceiveMessage = (data: Message) => {
+    socket.emit("receiveMessage", data);
+  };
 
   const handleDisconnect = () => {
     socket.disconnect();
@@ -299,6 +233,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         isLoading,
         setIsLoading,
         handlesendMessage,
+        handleReceiveMessage,
         handleDisconnect,
         handleRead,
         handleCountSyncSocketMsg,
