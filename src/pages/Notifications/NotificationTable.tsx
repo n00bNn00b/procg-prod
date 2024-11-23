@@ -47,12 +47,11 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     totalReceivedMessages,
     currentPage,
     setCurrentPage,
-    sentMessages,
+    totalRecycleBinMsg,
   } = useSocketContext();
   const { toast } = useToast();
   const navigate = useNavigate();
   const url = import.meta.env.VITE_API_URL;
-
   //Fetch Received Messages
   useEffect(() => {
     const fetchReceivedMessages = async () => {
@@ -72,15 +71,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     };
 
     fetchReceivedMessages();
-  }, [
-    url,
-    user,
-    currentPage,
-    receivedMessages.length,
-    totalReceivedMessages,
-    socketMessage.length,
-    sentMessages.length,
-  ]);
+  }, [currentPage, socketMessage, receivedMessages.length, totalRecycleBinMsg]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -112,18 +103,20 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
 
   const handleDelete = async (id: string) => {
     try {
-      handleCountSyncSocketMsg(id);
-
-      const response = await axios.delete(`${url}/messages/${id}`);
+      setIsLoading(true);
+      const response = await axios.put(
+        `${url}/messages/set-user-into-recyclebin/${id}/${user}`
+      );
       if (response.status === 200) {
+        handleCountSyncSocketMsg(id);
         toast({
-          title: "Message has been deleted.",
+          title: "Message has been moved to recyclebin.",
         });
       }
-
-      console.log("Resource deleted:", response.data);
     } catch (error) {
       console.error("Error deleting resource:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -204,8 +197,8 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
                             </AlertDialogTitle>
                           </AlertDialogHeader>
                           <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete from both side.
+                            This action cannot be undone. Message will be move
+                            to recycle bin folder .
                           </AlertDialogDescription>
                           <AlertDialogFooter>
                             <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">

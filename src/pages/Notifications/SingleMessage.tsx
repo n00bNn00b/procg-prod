@@ -9,14 +9,11 @@ import { Message } from "@/types/interfaces/users.interface";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
 import Spinner from "@/components/Spinner/Spinner";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
 const SingleMessage = () => {
-  const {
-    receivedMessages,
-    setReceivedMessages,
-    setTotalReceivedMessages,
-    handleCountSyncSocketMsg,
-  } = useSocketContext();
+  const { handleCountSyncSocketMsg } = useSocketContext();
+  const { token } = useGlobalContext();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -94,27 +91,21 @@ const SingleMessage = () => {
 
   const handleDelete = async (msgId: string) => {
     try {
-      const res = await axios.delete(`${url}/messages/${msgId}`);
-      if (res.status === 200) {
-        handleCountSyncSocketMsg(msgId);
-        const currentMessages = receivedMessages.filter(
-          (msg) => msg.id !== msgId
-        );
-        setReceivedMessages(currentMessages);
-        const currentTotalMessages = totalMessages.filter(
-          (msg) => msg.id !== msgId
-        );
-        if (currentTotalMessages.length === 0) {
-          navigate("/notifications/inbox");
-        }
-        setTotalMessages(currentTotalMessages);
-        setTotalReceivedMessages((prev) => prev - 1);
+      setIsLoading(true);
+      const response = await axios.put(
+        `${url}/messages/set-user-into-recyclebin/${msgId}/${token.user_name}`
+      );
+      if (response.status === 200) {
+        handleCountSyncSocketMsg(id as string);
+        navigate("/notifications/inbox");
         toast({
-          title: "Message has been deleted",
+          title: "Message has been moved to recyclebin.",
         });
       }
     } catch (error) {
       console.error("Error deleting resource:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

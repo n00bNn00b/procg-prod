@@ -1,4 +1,4 @@
-import { Home, Bell, Mail, Menu, X, NotebookPen } from "lucide-react";
+import { Home, Bell, Mail, Menu, X, ListTodo } from "lucide-react";
 import logo from "@/Image/logo-2.png";
 import { Link, NavLink } from "react-router-dom";
 import Dropdown from "./Dropdown";
@@ -53,7 +53,7 @@ const Topbar = () => {
               : "px-4 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50"
           }
         >
-          <NotebookPen className="text-2xl" />
+          <ListTodo className="text-2xl" />
           <p className="font-semibold">Action Items</p>
         </NavLink>
         <NavLink
