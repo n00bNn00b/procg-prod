@@ -24,8 +24,7 @@ import Spinner from "@/components/Spinner/Spinner";
 
 const ComposeButton = () => {
   const { users, token, user } = useGlobalContext();
-  const { handlesendMessage, handleReceiveMessage, handleDraftMessage } =
-    useSocketContext();
+  const { handlesendMessage, handleDraftMessage } = useSocketContext();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
   const [recivers, setRecivers] = useState<string[]>([]);
@@ -74,7 +73,7 @@ const ComposeButton = () => {
   };
 
   const handleSend = async () => {
-    const sendData = {
+    const data = {
       id,
       sender,
       recivers,
@@ -85,24 +84,14 @@ const ComposeButton = () => {
       parentid: id,
       involvedusers: uniqueUsers,
       readers: recivers,
+      holders: uniqueUsers,
+      recyclebin: [],
     };
-    const receivedId = uuidv4();
-    const receivedData = {
-      ...sendData,
-      id: receivedId,
-      status: "Received",
-      parentid: receivedId,
-    };
-
     setIsSending(true);
-    handlesendMessage(sendData);
-    handleReceiveMessage(receivedData);
     try {
-      const [sendResponse, receiveResponse] = await Promise.all([
-        await axios.post(`${url}/messages`, sendData),
-        await axios.post(`${url}/messages`, receivedData),
-      ]);
-      if (sendResponse.status === 201 || receiveResponse.status === 201) {
+      handlesendMessage(data);
+      const response = await axios.post(`${url}/messages`, data);
+      if (response.status === 201) {
         toast({
           title: "Message Sent",
         });
@@ -114,10 +103,10 @@ const ComposeButton = () => {
       });
     } finally {
       setIsSending(false);
+      setRecivers([]);
+      setSubject("");
+      setBody("");
     }
-    setRecivers([]);
-    setSubject("");
-    setBody("");
   };
 
   const handleDraft = async () => {
@@ -132,23 +121,26 @@ const ComposeButton = () => {
       parentid: id,
       involvedusers: uniqueUsers,
       readers: recivers,
+      holders: [sender],
+      recyclebin: [],
     };
     setIsDrafting(true);
     handleDraftMessage(data);
     try {
       const response = await axios.post(`${url}/messages`, data);
-      console.log("Response:", response.data);
-      toast({
-        title: "Message saved to draft",
-      });
+      if (response.status === 201) {
+        toast({
+          title: "Message saved to draft",
+        });
+      }
     } catch (error) {
       console.error("Error:", error);
     } finally {
       setIsDrafting(false);
+      setRecivers([]);
+      setSubject("");
+      setBody("");
     }
-    setRecivers([]);
-    setSubject("");
-    setBody("");
   };
 
   return (

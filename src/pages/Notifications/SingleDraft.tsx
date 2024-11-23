@@ -123,6 +123,8 @@ const SingleDraft = () => {
       parentid: id as string,
       involvedusers: uniqueUsers,
       readers: recivers,
+      holders: [sender],
+      recyclebin: [],
     };
     setOldMsgState({
       receivers: recivers,
@@ -192,24 +194,21 @@ const SingleDraft = () => {
 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(`${url}/messages/${id}`);
+      setIsLoading(true);
+      const response = await axios.put(
+        `${url}/messages/set-user-into-recyclebin/${id}/${token.user_name}`
+      );
       if (response.status === 200) {
         handleCountSyncSocketMsg(id as string);
-        const currentMessages = draftMessages.filter((msg) => msg.id !== id);
-        setDraftMessages(currentMessages);
-
-        navigate("/notifications/draft");
-
-        setTotalDraftMessages((prev) => prev - 1);
+        navigate("/notifications/drafts");
         toast({
-          title: "Message has been deleted.",
+          title: "Message has been moved to recyclebin.",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error deleting resource:", error);
-      toast({
-        title: `${error?.message}`,
-      });
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -223,7 +222,7 @@ const SingleDraft = () => {
           <CardHeader>
             <div className="flex text-dark-400">
               <Link
-                to="/notifications/draft"
+                to="/notifications/drafts"
                 className="p-1 rounded-md hover:bg-winter-100/50"
               >
                 <ArrowLeft size={20} />

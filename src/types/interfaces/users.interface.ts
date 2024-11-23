@@ -41,6 +41,8 @@ export interface Message {
   parentid: string;
   involvedusers: string[];
   readers?: string[];
+  holders?: string[];
+  recyclebin?: string[];
 }
 export interface IAddUserTypes {
   user_type: string;

@@ -45,6 +45,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
     setCurrentPage,
     setDraftMessages,
     saveDraftMessage,
+    totalRecycleBinMsg,
   } = useSocketContext();
   const { user } = useGlobalContext();
   const navigate = useNavigate();
@@ -71,12 +72,11 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
 
     fetchSentMessages();
   }, [
-    url,
-    user,
     currentPage,
     draftMessages.length,
     totalDraftMessages,
     saveDraftMessage.length,
+    totalRecycleBinMsg,
   ]);
 
   const totalDisplayedMessages = 5;
@@ -101,19 +101,20 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
 
   const handleDelete = async (id: string) => {
     try {
-      handleCountSyncSocketMsg(id);
-
-      const response = await axios.delete(`${url}/messages/${id}`);
+      setIsLoading(true);
+      const response = await axios.put(
+        `${url}/messages/set-user-into-recyclebin/${id}/${user}`
+      );
       if (response.status === 200) {
+        handleCountSyncSocketMsg(id);
         toast({
-          title: "Message has been deleted.",
+          title: "Message has been moved to recyclebin.",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error deleting resource:", error);
-      toast({
-        title: `${error?.message}`,
-      });
+    } finally {
+      setIsLoading(false);
     }
   };
 

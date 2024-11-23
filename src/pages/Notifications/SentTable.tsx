@@ -44,6 +44,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
     currentPage,
     setCurrentPage,
     setSentMessages,
+    totalRecycleBinMsg,
   } = useSocketContext();
   const { user } = useGlobalContext();
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
     };
 
     fetchSentMessages();
-  }, [url, user, currentPage, totalSentMessages, sentMessages.length]);
+  }, [currentPage, totalSentMessages, sentMessages.length, totalRecycleBinMsg]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -93,20 +94,20 @@ const SentTable = ({ path, person }: SentTableProps) => {
 
   const handleDelete = async (id: string) => {
     try {
-      handleCountSyncSocketMsg(id);
-
-      const response = await axios.delete(`${url}/messages/${id}`);
+      setIsLoading(true);
+      const response = await axios.put(
+        `${url}/messages/set-user-into-recyclebin/${id}/${user}`
+      );
       if (response.status === 200) {
+        handleCountSyncSocketMsg(id);
         toast({
-          title: "Message has been deleted.",
+          title: "Message has been moved to recyclebin.",
         });
       }
-      console.log("Resource deleted:", response.data);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error deleting resource:", error);
-      toast({
-        title: `${error?.message}`,
-      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -150,12 +151,13 @@ const SentTable = ({ path, person }: SentTableProps) => {
             </TableBody>
           ) : (
             <TableBody>
-              {sentMessages.map((msg) => (
-                <TableRow key={msg.id}>
+              {sentMessages.map((msg, i) => (
+                <TableRow key={i}>
                   <TableCell className="py-2">
-                    {msg.recivers.slice(0, 2).join(", ")}
-                    {msg.recivers.length > 2 && ", ..."}
+                    {(msg.recivers || []).slice(0, 2).join(", ")}
+                    {(msg.recivers || []).length > 2 && ", ..."}
                   </TableCell>
+
                   <TableCell className="py-2">
                     <span className="font-medium mr-1">{msg.subject}</span>
                   </TableCell>

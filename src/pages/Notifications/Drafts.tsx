@@ -2,14 +2,14 @@ import ComposeButton from "./ComposeButton";
 import NotificationCard from "./NotificationCard";
 import DraftTable from "./DraftTable";
 
-const Draft = () => {
+const Drafts = () => {
   return (
     <div>
       <NotificationCard />
-      <DraftTable path="Draft" person="To" />
+      <DraftTable path="Drafts" person="To" />
       <ComposeButton />
     </div>
   );
 };
 
-export default Draft;
+export default Drafts;

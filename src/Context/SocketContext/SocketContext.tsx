@@ -19,7 +19,6 @@ interface SocketContext {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   receivedMessages: Message[];
   handlesendMessage: (data: Message) => void;
-  handleReceiveMessage: (data: Message) => void;
   handleDisconnect: () => void;
   handleRead: (id: string) => void;
   handleCountSyncSocketMsg: (id: string) => void;
@@ -30,6 +29,8 @@ interface SocketContext {
   setSentMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   draftMessages: Message[];
   setDraftMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  recycleBinMsg: Message[];
+  setRecycleBinMsg: React.Dispatch<React.SetStateAction<Message[]>>;
   handleDraftMessage: (data: Message) => void;
   saveDraftMessage: string[];
   totalReceivedMessages: number;
@@ -40,6 +41,7 @@ interface SocketContext {
   setTotalDraftMessages: React.Dispatch<React.SetStateAction<number>>;
   currentPage: number;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  totalRecycleBinMsg: number;
 }
 
 const SocketContext = createContext({} as SocketContext);
@@ -58,11 +60,12 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const [saveDraftMessage, setSaveDraftMessage] = useState<string[]>([]);
   const [totalDraftMessages, setTotalDraftMessages] = useState(0);
   const [socketMessage, setSocketMessages] = useState<Message[]>([]);
+  const [recycleBinMsg, setRecycleBinMsg] = useState<Message[]>([]);
+  const [totalRecycleBinMsg, setTotalRecycleBinMsg] = useState<number>(0);
   const url = import.meta.env.VITE_API_URL;
   const socket_url = import.meta.env.VITE_SOCKET_URL;
   const { user } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState<number>(1);
-
   //Socket
   const socket = io(socket_url, {
     path: "/socket.io/",
@@ -74,89 +77,55 @@ export function SocketContextProvider({ children }: SocketContextProps) {
 
   //Fetch Notification Messages
   useEffect(() => {
-    const fetchNotificationMessages = async () => {
+    const fetchCunterMessages = async () => {
       try {
-        const response = await axios.get<Message[]>(
-          `${url}/messages/notification/${user}`
-        );
-        const result = response.data;
-        setSocketMessages(result);
+        const [notification, received, sent, draft, recyclebin] =
+          await Promise.all([
+            axios.get(`${url}/messages/notification/${user}`),
+            axios.get(`${url}/messages/total-received/${user}`),
+            axios.get(`${url}/messages/total-sent/${user}`),
+            axios.get(`${url}/messages/total-draft/${user}`),
+            axios.get(`${url}/messages/total-recyclebin/${user}`),
+          ]);
+        setSocketMessages(notification.data);
+        setTotalReceivedMessages(received.data.total);
+        setTotalSentMessages(sent.data.total);
+        setTotalDraftMessages(draft.data.total);
+        setTotalRecycleBinMsg(recyclebin.data.total);
       } catch (error) {
         console.log(error);
         return [];
       }
     };
 
-    fetchNotificationMessages();
-  }, [url, user, socketMessage.length]);
-
-  // Fetch Total Received Messages Number
-  useEffect(() => {
-    const fetchTotalReceivedMessages = async () => {
-      try {
-        const response = await axios.get(
-          `${url}/messages/total-received/${user}`
-        );
-        setTotalReceivedMessages(response.data.total);
-      } catch (error) {
-        console.log(error);
-        return [];
-      }
-    };
-
-    fetchTotalReceivedMessages();
-  }, [url, user, socketMessage.length]);
-
-  // Fetch Total Sent Messages Number
-  useEffect(() => {
-    const fetchTotalSentMessages = async () => {
-      try {
-        const response = await axios.get(`${url}/messages/total-sent/${user}`);
-        setTotalSentMessages(response.data.total);
-      } catch (error) {
-        console.log(error);
-        return [];
-      }
-    };
-
-    fetchTotalSentMessages();
-  }, [url, user, totalSentMessages]);
-
-  // Fetch Total Draft Messages Number
-  useEffect(() => {
-    const fetchTotalDraftMessages = async () => {
-      try {
-        const response = await axios.get(`${url}/messages/total-draft/${user}`);
-        setTotalDraftMessages(response.data.total);
-      } catch (error) {
-        console.log(error);
-        return [];
-      }
-    };
-
-    fetchTotalDraftMessages();
-  }, [url, user, totalDraftMessages]);
+    fetchCunterMessages();
+  }, []);
 
   //Listen to socket events
   useEffect(() => {
     socket.on("receivedMessage", (data) => {
-      setSocketMessages((prevArray) => [data, ...prevArray]);
       const receivedMessagesId = receivedMessages.map((msg) => msg.id);
       if (receivedMessagesId.includes(data.id)) {
         return;
       } else {
-        setReceivedMessages((prev) => [data, ...prev]);
-        setTotalReceivedMessages((prev) => prev + 1);
+        receivedMsg(data);
       }
     });
-
+    const receivedMsg = async (data: Message) => {
+      try {
+        setSocketMessages((prevArray) => [data, ...prevArray]);
+        setReceivedMessages((prev) => [data, ...prev]);
+        setTotalReceivedMessages((prev) => prev + 1);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     socket.on("sentMessage", (data) => {
-      const sentMessagesId = sentMessages.map((msg) => msg.id);
-      if (sentMessagesId.includes(data.id)) {
-        return;
-      } else {
+      try {
         setSentMessages((prev) => [data, ...prev]);
         setTotalSentMessages((prev) => prev + 1);
+      } catch (error) {
+        console.log(error);
       }
     });
 
@@ -189,27 +158,37 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         setReceivedMessages((prev) => prev.filter((msg) => msg.id !== id));
         setTotalReceivedMessages((prev) => prev - 1);
         setSocketMessages(socketMessage.filter((msg) => msg.id !== id));
+        setTotalRecycleBinMsg((prev) => prev + 1);
       } else if (sentMessages.some((msg) => msg.id === id)) {
         // if sent message includes the id then remove it
         setSentMessages((prev) => prev.filter((msg) => msg.id !== id));
         setTotalSentMessages((prev) => prev - 1);
+        setTotalRecycleBinMsg((prev) => prev + 1);
       } else if (draftMessages.some((msg) => msg.id === id)) {
         // if draft message includes the id then remove it
         setDraftMessages((prev) => prev.filter((msg) => msg.id !== id));
         setTotalDraftMessages((prev) => prev - 1);
+        setTotalRecycleBinMsg((prev) => prev + 1);
+      } else if (recycleBinMsg.some((msg) => msg.id === id)) {
+        // if receive message includes the id then remove it
+        setRecycleBinMsg((prev) => prev.filter((msg) => msg.id !== id));
+        setTotalRecycleBinMsg((prev) => prev - 1);
       }
     });
 
     return () => {
       socket.disconnect();
     };
-  }, [socketMessage, receivedMessages, draftMessages, sentMessages, socket]);
+  }, [
+    socketMessage,
+    receivedMessages,
+    draftMessages,
+    sentMessages,
+    totalRecycleBinMsg,
+  ]);
 
   const handlesendMessage = (data: Message) => {
     socket.emit("sendMessage", data);
-  };
-  const handleReceiveMessage = (data: Message) => {
-    socket.emit("receiveMessage", data);
   };
 
   const handleDisconnect = () => {
@@ -233,7 +212,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         isLoading,
         setIsLoading,
         handlesendMessage,
-        handleReceiveMessage,
         handleDisconnect,
         handleRead,
         handleCountSyncSocketMsg,
@@ -245,6 +223,8 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         setSentMessages,
         draftMessages,
         setDraftMessages,
+        recycleBinMsg,
+        setRecycleBinMsg,
         handleDraftMessage,
         saveDraftMessage,
         totalReceivedMessages,
@@ -255,6 +235,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         setTotalDraftMessages,
         currentPage,
         setCurrentPage,
+        totalRecycleBinMsg,
       }}
     >
       {children}

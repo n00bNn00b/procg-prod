@@ -3,7 +3,7 @@ import Layout from "@/Layout/Layout";
 import Profile from "@/pages/Profile/Profile";
 import Inbox from "@/pages/Notifications/Inbox";
 import Sent from "@/pages/Notifications/Sent";
-import Draft from "@/pages/Notifications/Draft";
+import Drafts from "@/pages/Notifications/Drafts";
 import SingleMessage from "@/pages/Notifications/SingleMessage";
 import SingleDraft from "@/pages/Notifications/SingleDraft";
 import ActionItems from "@/pages/ActionItems/ActionItems";
@@ -31,6 +31,7 @@ import ManageAccessEntitlements from "@/pages/ManageAdministration/ManageAccessE
 import Security from "@/pages/Security/Security";
 import Settings from "@/pages/Settings/Settings";
 import ManageResults from "@/pages/Controls/ManageResults/ManageResults";
+import RecycleBin from "@/pages/Notifications/RecycleBin";
 
 const routes = createBrowserRouter([
   {
@@ -74,8 +75,8 @@ const routes = createBrowserRouter([
             element: <Sent />,
           },
           {
-            path: "draft",
-            element: <Draft />,
+            path: "drafts",
+            element: <Drafts />,
           },
           {
             path: "draft/:id",
@@ -88,6 +89,10 @@ const routes = createBrowserRouter([
           {
             path: "inbox/:id",
             element: <SingleMessage />,
+          },
+          {
+            path: "recycle-bin",
+            element: <RecycleBin />,
           },
         ],
       },
