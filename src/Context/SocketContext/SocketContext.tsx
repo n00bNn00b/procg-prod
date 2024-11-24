@@ -77,71 +77,90 @@ export function SocketContextProvider({ children }: SocketContextProps) {
 
   //Fetch Notification Messages
   useEffect(() => {
-    const fetchCunterMessages = async () => {
+    const fetchCounterMessages = async () => {
       try {
-        const [notification, received, sent, draft, recyclebin] =
-          await Promise.all([
-            axios.get(`${url}/messages/notification/${user}`),
-            axios.get(`${url}/messages/total-received/${user}`),
-            axios.get(`${url}/messages/total-sent/${user}`),
-            axios.get(`${url}/messages/total-draft/${user}`),
-            axios.get(`${url}/messages/total-recyclebin/${user}`),
-          ]);
-        setSocketMessages(notification.data);
-        setTotalReceivedMessages(received.data.total);
-        setTotalSentMessages(sent.data.total);
-        setTotalDraftMessages(draft.data.total);
-        setTotalRecycleBinMsg(recyclebin.data.total);
+        const [
+          notificationTotal,
+          receivedTotal,
+          sentTotal,
+          draftTotal,
+          recyclebinTotal,
+          sentMsg,
+          draftMsg,
+          recyclebinMsg,
+        ] = await Promise.all([
+          axios.get(`${url}/messages/notification/${user}`),
+          axios.get(`${url}/messages/total-received/${user}`),
+          axios.get(`${url}/messages/total-sent/${user}`),
+          axios.get(`${url}/messages/total-draft/${user}`),
+          axios.get(`${url}/messages/total-recyclebin/${user}`),
+          axios.get<Message[]>(`${url}/messages/sent/${user}/${currentPage}`),
+          axios.get<Message[]>(`${url}/messages/draft/${user}/${currentPage}`),
+          axios.get<Message[]>(
+            `${url}/messages/recyclebin/${user}/${currentPage}`
+          ),
+        ]);
+        setSocketMessages(notificationTotal.data);
+        setTotalReceivedMessages(receivedTotal.data.total);
+        setSentMessages(sentMsg.data);
+        setTotalSentMessages(sentTotal.data.total);
+        setDraftMessages(draftMsg.data);
+        setTotalDraftMessages(draftTotal.data.total);
+        setRecycleBinMsg(recyclebinMsg.data);
+        setTotalRecycleBinMsg(recyclebinTotal.data.total);
       } catch (error) {
         console.log(error);
         return [];
       }
     };
 
-    fetchCunterMessages();
-  }, []);
+    fetchCounterMessages();
+  }, [url, user]);
 
   //Listen to socket events
   useEffect(() => {
-    socket.on("receivedMessage", (data) => {
-      const receivedMessagesId = receivedMessages.map((msg) => msg.id);
-      if (receivedMessagesId.includes(data.id)) {
-        return;
-      } else {
-        receivedMsg(data);
-      }
-    });
-    const receivedMsg = async (data: Message) => {
+    socket.on("receivedMessage", async (data) => {
       try {
-        setSocketMessages((prevArray) => [data, ...prevArray]);
-        setReceivedMessages((prev) => [data, ...prev]);
-        setTotalReceivedMessages((prev) => prev + 1);
+        const receivedMessagesId = receivedMessages.map((msg) => msg.id);
+        if (!receivedMessagesId.includes(data.id)) {
+          setSocketMessages((prevArray) => [data, ...prevArray]);
+          setReceivedMessages((prev) => [data, ...prev]);
+          setTotalReceivedMessages((prev) => prev + 1);
+        }
       } catch (error) {
         console.log(error);
       }
-    };
-    socket.on("sentMessage", (data) => {
+    });
+    socket.on("sentMessage", async (data) => {
       try {
-        setSentMessages((prev) => [data, ...prev]);
-        setTotalSentMessages((prev) => prev + 1);
+        const sentMessageId = sentMessages.map((msg) => msg.id);
+        if (!sentMessageId.includes(data.id)) {
+          setSentMessages((prev) => [data, ...prev]);
+          setTotalSentMessages((prev) => prev + 1);
+        }
       } catch (error) {
         console.log(error);
       }
     });
 
-    socket.on("draftMessage", (data) => {
-      const draftMessagesId = draftMessages.map((msg) => msg.id);
-      if (draftMessagesId.includes(data.id)) {
-        // remove message match id
-        const newDraftMessages = draftMessages.filter(
-          (msg) => msg.id !== data.id
-        );
-        // For state call
-        setSaveDraftMessage((prev) => [...prev, data.id]);
-        return setDraftMessages(() => [data, ...newDraftMessages]);
-      } else {
-        setDraftMessages((prev) => [data, ...prev]);
-        setTotalDraftMessages((prev) => prev + 1);
+    socket.on("draftMessage", async (data) => {
+      try {
+        // const parseData = await JSON.parse(data);
+        const draftMessagesId = draftMessages.map((msg) => msg.id);
+        if (draftMessagesId.includes(data.id)) {
+          // remove message match id
+          const newDraftMessages = draftMessages.filter(
+            (msg) => msg.id !== data.id
+          );
+          // For state call
+          setSaveDraftMessage((prev) => [...prev, data.id]);
+          return setDraftMessages(() => [data, ...newDraftMessages]);
+        } else {
+          setDraftMessages((prev) => [data, ...prev]);
+          setTotalDraftMessages((prev) => prev + 1);
+        }
+      } catch (error) {
+        console.log(error);
       }
     });
 
@@ -153,26 +172,30 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     });
 
     socket.on("removeMsgFromSocketMessages", (id) => {
-      if (receivedMessages.some((msg) => msg.id === id)) {
-        // if receive message includes the id then remove it
-        setReceivedMessages((prev) => prev.filter((msg) => msg.id !== id));
-        setTotalReceivedMessages((prev) => prev - 1);
-        setSocketMessages(socketMessage.filter((msg) => msg.id !== id));
-        setTotalRecycleBinMsg((prev) => prev + 1);
-      } else if (sentMessages.some((msg) => msg.id === id)) {
-        // if sent message includes the id then remove it
-        setSentMessages((prev) => prev.filter((msg) => msg.id !== id));
-        setTotalSentMessages((prev) => prev - 1);
-        setTotalRecycleBinMsg((prev) => prev + 1);
-      } else if (draftMessages.some((msg) => msg.id === id)) {
-        // if draft message includes the id then remove it
-        setDraftMessages((prev) => prev.filter((msg) => msg.id !== id));
-        setTotalDraftMessages((prev) => prev - 1);
-        setTotalRecycleBinMsg((prev) => prev + 1);
-      } else if (recycleBinMsg.some((msg) => msg.id === id)) {
-        // if receive message includes the id then remove it
-        setRecycleBinMsg((prev) => prev.filter((msg) => msg.id !== id));
-        setTotalRecycleBinMsg((prev) => prev - 1);
+      try {
+        if (receivedMessages.some((msg) => msg.id === id)) {
+          // if receive message includes the id then remove it
+          setReceivedMessages((prev) => prev.filter((msg) => msg.id !== id));
+          setTotalReceivedMessages((prev) => prev - 1);
+          setSocketMessages(socketMessage.filter((msg) => msg.id !== id));
+          setTotalRecycleBinMsg((prev) => prev + 1);
+        } else if (sentMessages.some((msg) => msg.id === id)) {
+          // if sent message includes the id then remove it
+          setSentMessages((prev) => prev.filter((msg) => msg.id !== id));
+          setTotalSentMessages((prev) => prev - 1);
+          setTotalRecycleBinMsg((prev) => prev + 1);
+        } else if (draftMessages.some((msg) => msg.id === id)) {
+          // if draft message includes the id then remove it
+          setDraftMessages((prev) => prev.filter((msg) => msg.id !== id));
+          setTotalDraftMessages((prev) => prev - 1);
+          setTotalRecycleBinMsg((prev) => prev + 1);
+        } else if (recycleBinMsg.some((msg) => msg.id === id)) {
+          // if receive message includes the id then remove it
+          setRecycleBinMsg((prev) => prev.filter((msg) => msg.id !== id));
+          setTotalRecycleBinMsg((prev) => prev - 1);
+        }
+      } catch (error) {
+        console.log(error);
       }
     });
 
@@ -180,11 +203,11 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       socket.disconnect();
     };
   }, [
-    socketMessage,
-    receivedMessages,
-    draftMessages,
-    sentMessages,
-    totalRecycleBinMsg,
+    sentMessages.length,
+    draftMessages.length,
+    socketMessage.length,
+    recycleBinMsg.length,
+    receivedMessages.length,
   ]);
 
   const handlesendMessage = (data: Message) => {

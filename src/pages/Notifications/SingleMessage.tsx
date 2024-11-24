@@ -97,7 +97,7 @@ const SingleMessage = () => {
       );
       if (response.status === 200) {
         handleCountSyncSocketMsg(id as string);
-        navigate("/notifications/inbox");
+        if (totalMessages.length === 1) navigate("/notifications/inbox");
         toast({
           title: "Message has been moved to recyclebin.",
         });

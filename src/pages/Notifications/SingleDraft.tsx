@@ -52,6 +52,7 @@ const SingleDraft = () => {
   const [oldMsgState, setOldMsgState] = useState<IOldMsgTypes | undefined>(
     undefined
   );
+  const [userChanged, setuserChanged] = useState<boolean>(false);
   const sender = token.user_name;
   const totalusers = [...recivers, sender];
   const uniqueUsers = [...new Set(totalusers)];
@@ -211,6 +212,45 @@ const SingleDraft = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    const handleUserChange = async () => {
+      if (oldMsgState?.receivers?.length ?? 0 > 0) {
+        if (oldMsgState?.receivers?.length !== recivers.length) {
+          setuserChanged(true);
+        } else {
+          oldMsgState?.receivers?.map((receiver) => {
+            const res = recivers.every((recvr) => {
+              if (receiver !== recvr) {
+                return true;
+              } else {
+                return false;
+              }
+            });
+            setuserChanged(res);
+          });
+        }
+      } else if (recivers.length > 0) {
+        if (recivers.length !== oldMsgState?.receivers?.length) {
+          setuserChanged(true);
+        } else {
+          recivers.map((receiver) => {
+            const res = oldMsgState?.receivers?.every((recvr) => {
+              if (receiver !== recvr) {
+                return true;
+              } else {
+                return false;
+              }
+            });
+            setuserChanged(res ?? false);
+          });
+        }
+      } else {
+        setuserChanged(false);
+      }
+    };
+    handleUserChange();
+  }, [recivers.length, oldMsgState?.receivers?.length]);
   return (
     <div className="w-full flex justify-center">
       {isLoading ? (
@@ -319,17 +359,13 @@ const SingleDraft = () => {
               <button
                 //if receivers, subject, body change by any how then enabled button
                 disabled={
-                  recivers?.filter(
-                    (receiver) => !oldMsgState?.receivers?.includes(receiver)
-                  ).length === 0 &&
+                  !userChanged &&
                   oldMsgState?.subject === subject &&
                   oldMsgState?.body === body
                 }
                 onClick={handleDraft}
                 className={`${
-                  oldMsgState?.receivers?.every((rcvr) =>
-                    recivers.includes(rcvr)
-                  ) &&
+                  !userChanged &&
                   oldMsgState?.subject === subject &&
                   oldMsgState?.body === body
                     ? " bg-dark-400 cursor-not-allowed"

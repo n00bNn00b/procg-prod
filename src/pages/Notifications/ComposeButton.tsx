@@ -87,11 +87,11 @@ const ComposeButton = () => {
       holders: uniqueUsers,
       recyclebin: [],
     };
-    setIsSending(true);
     try {
-      handlesendMessage(data);
+      setIsSending(true);
       const response = await axios.post(`${url}/messages`, data);
       if (response.status === 201) {
+        handlesendMessage(data);
         toast({
           title: "Message Sent",
         });
@@ -124,11 +124,11 @@ const ComposeButton = () => {
       holders: [sender],
       recyclebin: [],
     };
-    setIsDrafting(true);
-    handleDraftMessage(data);
     try {
+      setIsDrafting(true);
       const response = await axios.post(`${url}/messages`, data);
       if (response.status === 201) {
+        handleDraftMessage(data);
         toast({
           title: "Message saved to draft",
         });
