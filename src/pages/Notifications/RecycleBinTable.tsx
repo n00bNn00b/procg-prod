@@ -51,7 +51,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
     const fetchRecycleBinMsg = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(
+        const response = await axios.get<Message[]>(
           `${url}/messages/recyclebin/${user}/${currentPage}`
         );
         setRecycleBinMsg(response.data);
@@ -244,11 +244,15 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
                 <TableRow key={msg.id}>
                   <>
                     <TableCell className="py-2">
-                      {msg.recivers.slice(0, 2).join(", ")}
+                      {msg.recivers.length === 0
+                        ? "(no user)"
+                        : msg.recivers.slice(0, 2).join(", ")}
                       {msg.recivers.length > 2 && ", ..."}
                     </TableCell>
                     <TableCell className="py-2">
-                      <span className="font-medium mr-1">{msg.subject}</span>
+                      <span className="font-medium mr-1">
+                        {msg.subject === "" ? "(no subject)" : msg.subject}
+                      </span>
                       {/* <span className="text-dark-400 mr-1">
                       {msg.body?.slice(0, 60)}
                     </span>

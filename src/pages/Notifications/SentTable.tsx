@@ -44,7 +44,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
     currentPage,
     setCurrentPage,
     setSentMessages,
-    totalRecycleBinMsg,
+    recycleBinMsg,
   } = useSocketContext();
   const { user } = useGlobalContext();
   const navigate = useNavigate();
@@ -70,7 +70,12 @@ const SentTable = ({ path, person }: SentTableProps) => {
     };
 
     fetchSentMessages();
-  }, [currentPage, totalSentMessages, sentMessages.length, totalRecycleBinMsg]);
+  }, [
+    currentPage,
+    sentMessages.length,
+    totalSentMessages,
+    recycleBinMsg.length,
+  ]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
