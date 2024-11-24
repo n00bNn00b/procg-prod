@@ -75,7 +75,7 @@ const NotificationCard = () => {
       >
         <div className="flex gap-1">
           <Trash />
-          <p className="font-semibold">Trash</p>
+          <p className="font-semibold">Bin</p>
         </div>
         {totalRecycleBinMsg > 0 && (
           <p className="text-white px-2 rounded-full bg-winter-500 font-semibold">
