@@ -85,28 +85,17 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           sentTotal,
           draftTotal,
           recyclebinTotal,
-          sentMsg,
-          draftMsg,
-          recyclebinMsg,
         ] = await Promise.all([
           axios.get(`${url}/messages/notification/${user}`),
           axios.get(`${url}/messages/total-received/${user}`),
           axios.get(`${url}/messages/total-sent/${user}`),
           axios.get(`${url}/messages/total-draft/${user}`),
           axios.get(`${url}/messages/total-recyclebin/${user}`),
-          axios.get<Message[]>(`${url}/messages/sent/${user}/${currentPage}`),
-          axios.get<Message[]>(`${url}/messages/draft/${user}/${currentPage}`),
-          axios.get<Message[]>(
-            `${url}/messages/recyclebin/${user}/${currentPage}`
-          ),
         ]);
         setSocketMessages(notificationTotal.data);
         setTotalReceivedMessages(receivedTotal.data.total);
-        setSentMessages(sentMsg.data);
         setTotalSentMessages(sentTotal.data.total);
-        setDraftMessages(draftMsg.data);
         setTotalDraftMessages(draftTotal.data.total);
-        setRecycleBinMsg(recyclebinMsg.data);
         setTotalRecycleBinMsg(recyclebinTotal.data.total);
       } catch (error) {
         console.log(error);
@@ -122,11 +111,14 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     socket.on("receivedMessage", async (data) => {
       try {
         const receivedMessagesId = receivedMessages.map((msg) => msg.id);
-        if (!receivedMessagesId.includes(data.id)) {
+        if (receivedMessagesId.includes(data.id)) {
+          return;
+        } else {
           setSocketMessages((prevArray) => [data, ...prevArray]);
           setReceivedMessages((prev) => [data, ...prev]);
           setTotalReceivedMessages((prev) => prev + 1);
         }
+        return;
       } catch (error) {
         console.log(error);
       }
@@ -134,10 +126,13 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     socket.on("sentMessage", async (data) => {
       try {
         const sentMessageId = sentMessages.map((msg) => msg.id);
-        if (!sentMessageId.includes(data.id)) {
+        if (sentMessageId.includes(data.id)) {
+          return;
+        } else {
           setSentMessages((prev) => [data, ...prev]);
           setTotalSentMessages((prev) => prev + 1);
         }
+        return;
       } catch (error) {
         console.log(error);
       }
@@ -159,6 +154,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           setDraftMessages((prev) => [data, ...prev]);
           setTotalDraftMessages((prev) => prev + 1);
         }
+        return;
       } catch (error) {
         console.log(error);
       }
@@ -169,6 +165,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         (msg) => msg.parentid !== id
       );
       setSocketMessages(synedSocketMessages);
+      return;
     });
 
     socket.on("removeMsgFromSocketMessages", (id) => {
@@ -194,6 +191,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           setRecycleBinMsg((prev) => prev.filter((msg) => msg.id !== id));
           setTotalRecycleBinMsg((prev) => prev - 1);
         }
+        return;
       } catch (error) {
         console.log(error);
       }

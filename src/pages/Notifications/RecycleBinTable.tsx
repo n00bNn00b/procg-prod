@@ -191,7 +191,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
             justify-center hover:bg-red-500 hover:text-white duration-200
             cursor-pointer"
               >
-                <Trash /> <span>Empty Recycle Bin</span>
+                <Trash /> <span>Empty Bin</span>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
