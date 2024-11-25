@@ -6,10 +6,10 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 import ReplyDialog from "./ReplyDialog";
 import { Message } from "@/types/interfaces/users.interface";
-import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
 import Spinner from "@/components/Spinner/Spinner";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 const SingleMessage = () => {
   const { handleCountSyncSocketMsg } = useSocketContext();
@@ -32,6 +32,9 @@ const SingleMessage = () => {
     status: "",
     parentid: "",
     involvedusers: [],
+    readers: [],
+    holders: [],
+    recyclebin: [],
   });
   //Fetch TotalReplyMessages
   useEffect(() => {
@@ -170,7 +173,7 @@ const SingleMessage = () => {
                   <Trash2 size={20} />
                 </button>
                 <ReplyDialog
-                  parrentid={parrentMessage.id}
+                  parentid={parrentMessage.id}
                   involvedUsers={totalInvolvedUsers}
                   setTotalMessages={setTotalMessages}
                 />

@@ -18,8 +18,8 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
-import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import Spinner from "@/components/Spinner/Spinner";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 // import { send } from "process";
 
 const ComposeButton = () => {
@@ -96,11 +96,13 @@ const ComposeButton = () => {
           title: "Message Sent",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
-      toast({
-        title: `${error?.message}`,
-      });
+      if (error instanceof Error) {
+        toast({
+          title: error.message,
+        });
+      }
     } finally {
       setIsSending(false);
       setRecivers([]);

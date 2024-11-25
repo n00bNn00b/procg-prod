@@ -32,7 +32,6 @@ interface SocketContext {
   recycleBinMsg: Message[];
   setRecycleBinMsg: React.Dispatch<React.SetStateAction<Message[]>>;
   handleDraftMessage: (data: Message) => void;
-  saveDraftMessage: string[];
   totalReceivedMessages: number;
   setTotalReceivedMessages: React.Dispatch<React.SetStateAction<number>>;
   totalSentMessages: number;
@@ -46,6 +45,7 @@ interface SocketContext {
 
 const SocketContext = createContext({} as SocketContext);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSocketContext() {
   return useContext(SocketContext);
 }
@@ -57,7 +57,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const [sentMessages, setSentMessages] = useState<Message[]>([]);
   const [totalSentMessages, setTotalSentMessages] = useState<number>(0);
   const [draftMessages, setDraftMessages] = useState<Message[]>([]);
-  const [saveDraftMessage, setSaveDraftMessage] = useState<string[]>([]);
+  // const [saveDraftMessage, setSaveDraftMessage] = useState<string[]>([]);
   const [totalDraftMessages, setTotalDraftMessages] = useState<number>(0);
   const [socketMessage, setSocketMessages] = useState<Message[]>([]);
   const [recycleBinMsg, setRecycleBinMsg] = useState<Message[]>([]);
@@ -108,7 +108,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
 
   //Listen to socket events
   useEffect(() => {
-    socket.on("receivedMessage", async (data) => {
+    socket.on("receivedMessage", (data) => {
       try {
         console.log("receivedMessage", data);
         const receivedMessagesId = receivedMessages.map((msg) => msg.id);
@@ -124,7 +124,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       }
     });
 
-    socket.on("sentMessage", async (data) => {
+    socket.on("sentMessage", (data) => {
       try {
         console.log("sentMessage", data);
         // for sync socket draft messages
@@ -134,8 +134,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
             prev.filter((item) => item.id !== data.id)
           );
           setTotalDraftMessages((prev) => prev - 1);
-        } else {
-          return;
         }
         // for sync socket sent messages
         const sentMessageId = sentMessages.map((msg) => msg.id);
@@ -150,7 +148,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       }
     });
 
-    socket.on("draftMessage", async (data) => {
+    socket.on("draftMessage", (data) => {
       try {
         console.log("draftMessages", data);
         // const parseData = await JSON.parse(data);
@@ -161,7 +159,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
             (msg) => msg.id !== data.id
           );
           // For state call
-          setSaveDraftMessage((prev) => [...prev, data.id]);
           return setDraftMessages(() => [data, ...newDraftMessages]);
         } else {
           setDraftMessages((prev) => [data, ...prev]);
@@ -217,11 +214,12 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       socket.disconnect();
     };
   }, [
-    sentMessages.length,
-    draftMessages.length,
-    socketMessage.length,
-    recycleBinMsg.length,
-    receivedMessages.length,
+    sentMessages,
+    draftMessages,
+    socketMessage,
+    recycleBinMsg,
+    receivedMessages,
+    socket,
   ]);
 
   const handlesendMessage = (data: Message) => {
@@ -263,7 +261,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         recycleBinMsg,
         setRecycleBinMsg,
         handleDraftMessage,
-        saveDraftMessage,
         totalReceivedMessages,
         setTotalReceivedMessages,
         totalSentMessages,
