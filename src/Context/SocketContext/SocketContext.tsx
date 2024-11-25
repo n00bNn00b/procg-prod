@@ -74,7 +74,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     },
     transports: ["websocket"],
   });
-  console.log(socket);
+
   //Fetch Notification Messages
   useEffect(() => {
     const fetchCounterMessages = async () => {
@@ -104,19 +104,13 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     };
 
     fetchCounterMessages();
-  }, [
-    url,
-    user,
-    draftMessages,
-    recycleBinMsg,
-    sentMessages,
-    receivedMessages.length,
-  ]);
+  }, [url, user]);
 
   //Listen to socket events
   useEffect(() => {
     socket.on("receivedMessage", async (data) => {
       try {
+        console.log("receivedMessage", data);
         const receivedMessagesId = receivedMessages.map((msg) => msg.id);
         if (receivedMessagesId.includes(data.id)) {
           return;
@@ -132,8 +126,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
 
     socket.on("sentMessage", async (data) => {
       try {
-        console.log(data.id, "draft id");
-        console.log(draftMessages, "draftMessages");
+        console.log("sentMessage", data);
         // for sync socket draft messages
         const draftMessageId = draftMessages.map((msg) => msg.id);
         if (draftMessageId.includes(data.id)) {
@@ -159,6 +152,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
 
     socket.on("draftMessage", async (data) => {
       try {
+        console.log("draftMessages", data);
         // const parseData = await JSON.parse(data);
         const draftMessagesId = draftMessages.map((msg) => msg.id);
         if (draftMessagesId.includes(data.id)) {
@@ -204,6 +198,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           setTotalDraftMessages((prev) => prev - 1);
           setTotalRecycleBinMsg((prev) => prev + 1);
         } else if (recycleBinMsg.some((msg) => msg.id === id)) {
+          console.log("empty message bin", id);
           // if receive message includes the id then remove it
           setRecycleBinMsg((prev) => prev.filter((msg) => msg.id !== id));
           setTotalRecycleBinMsg((prev) => prev - 1);
