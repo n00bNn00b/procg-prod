@@ -12,7 +12,6 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import {
   DropdownMenuContent,
@@ -29,9 +28,8 @@ interface IOldMsgTypes {
 const SingleDraft = () => {
   const { users, token } = useGlobalContext();
   const {
-    draftMessages,
-    setDraftMessages,
     handlesendMessage,
+    totalDraftMessages,
     setTotalDraftMessages,
     handleDraftMessage,
     handleCountSyncSocketMsg,
@@ -79,7 +77,7 @@ const SingleDraft = () => {
     };
 
     fetchMessage();
-  }, [id, url]);
+  }, [id, url, totalDraftMessages]);
 
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -132,11 +130,11 @@ const SingleDraft = () => {
       subject,
       body,
     });
-    handlesendMessage(data);
-    setSaveDraftLoading(true);
+    // handlesendMessage(data);
     try {
+      setSaveDraftLoading(true);
       const response = await axios.put(`${url}/messages/${id}`, data);
-      if (response.status === 201) {
+      if (response.status === 200) {
         handleDraftMessage(data);
         toast({
           title: "Message saved to draft",
@@ -150,47 +148,40 @@ const SingleDraft = () => {
     // navigate("/notifications/draft");
   };
   const handleSend = async () => {
-    const newID = uuidv4();
+    // const newID = uuidv4();
     const data = {
-      id: newID,
+      id: id as string,
       sender,
       recivers,
       subject,
       body,
       date: new Date(),
       status: "Sent",
-      parentid: newID,
+      parentid: id as string,
       involvedusers: uniqueUsers,
       readers: recivers,
+      holders: [sender, ...recivers],
+      recyclebin: [],
     };
-    handlesendMessage(data);
-    setIsSending(true);
     try {
-      const response = await axios.post(`${url}/messages`, data);
+      setIsSending(true);
+      const response = await axios.put(`${url}/messages/${id}`, data);
       console.log("Response:", response.data);
-      toast({
-        title: "Message Sent",
-      });
+      if (response.status === 200) {
+        handlesendMessage(data);
+        setTotalDraftMessages((prev) => prev - 1);
+        toast({
+          title: "Message Sent",
+        });
+        navigate("/notifications/drafts");
+      }
     } catch (error) {
       console.error("Error:", error);
-    }
-
-    try {
-      const response = await axios.delete(`${url}/messages/${id}`);
-      console.log("Resource deleted:", response.data);
-      const currentMessages = draftMessages.filter((msg) => msg.id !== id);
-      setDraftMessages(currentMessages);
-      setTotalDraftMessages((prev) => prev - 1);
-    } catch (error) {
-      console.error("Error deleting resource:", error);
     } finally {
-      setIsSending(false);
+      setRecivers([]);
+      setSubject("");
+      setBody("");
     }
-
-    setRecivers([]);
-    setSubject("");
-    setBody("");
-    navigate("/notifications/draft");
   };
 
   const handleDelete = async () => {
