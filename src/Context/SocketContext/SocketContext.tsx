@@ -215,8 +215,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       socket.disconnect();
     };
   }, [
-    sentMessages,
-    receivedMessages,
     sentMessages.length,
     draftMessages.length,
     socketMessage.length,

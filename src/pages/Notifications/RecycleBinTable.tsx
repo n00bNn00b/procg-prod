@@ -153,7 +153,6 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
           }
         } else if (holdersNumber === 0) {
           if (recycleBinNumber > 1) {
-            console.log("update");
             const response = await axios.put(
               `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
             );
@@ -164,7 +163,6 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
               });
             }
           } else if (recycleBinNumber === 1) {
-            console.log("delete");
             const response = await axios.delete(`${url}/messages/${msg.id}`);
             if (response.status === 200) {
               handleCountSyncSocketMsg(msg.id);
