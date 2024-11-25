@@ -140,7 +140,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
       setIsLoading(true);
       for (const msg of recycleBinMsg) {
         const holdersNumber = msg.holders?.length ?? 0;
-        const recycleBinNumber = msg.recyclebin?.length;
+        const recycleBinNumber = msg.recyclebin?.length ?? 0;
         if (holdersNumber > 0) {
           const response = await axios.put(
             `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
@@ -152,7 +152,8 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
             });
           }
         } else if (holdersNumber === 0) {
-          if (recycleBinMsg.length > 1) {
+          if (recycleBinNumber > 1) {
+            console.log("update");
             const response = await axios.put(
               `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
             );
@@ -162,7 +163,8 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
                 title: "Message has been deleted.",
               });
             }
-          } else if (holdersNumber === 0 && recycleBinNumber === 1) {
+          } else if (recycleBinNumber === 1) {
+            console.log("delete");
             const response = await axios.delete(`${url}/messages/${msg.id}`);
             if (response.status === 200) {
               handleCountSyncSocketMsg(msg.id);

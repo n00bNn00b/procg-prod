@@ -30,7 +30,6 @@ const SingleDraft = () => {
   const {
     handlesendMessage,
     totalDraftMessages,
-    setTotalDraftMessages,
     handleDraftMessage,
     handleCountSyncSocketMsg,
   } = useSocketContext();
@@ -171,7 +170,6 @@ const SingleDraft = () => {
       console.log("Response:", response.data);
       if (response.status === 200) {
         handlesendMessage(data);
-        setTotalDraftMessages((prev) => prev - 1);
         toast({
           title: "Message Sent",
         });

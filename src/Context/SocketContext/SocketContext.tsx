@@ -53,12 +53,12 @@ export function useSocketContext() {
 export function SocketContextProvider({ children }: SocketContextProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [receivedMessages, setReceivedMessages] = useState<Message[]>([]);
-  const [totalReceivedMessages, setTotalReceivedMessages] = useState(0);
+  const [totalReceivedMessages, setTotalReceivedMessages] = useState<number>(0);
   const [sentMessages, setSentMessages] = useState<Message[]>([]);
-  const [totalSentMessages, setTotalSentMessages] = useState(0);
+  const [totalSentMessages, setTotalSentMessages] = useState<number>(0);
   const [draftMessages, setDraftMessages] = useState<Message[]>([]);
   const [saveDraftMessage, setSaveDraftMessage] = useState<string[]>([]);
-  const [totalDraftMessages, setTotalDraftMessages] = useState(0);
+  const [totalDraftMessages, setTotalDraftMessages] = useState<number>(0);
   const [socketMessage, setSocketMessages] = useState<Message[]>([]);
   const [recycleBinMsg, setRecycleBinMsg] = useState<Message[]>([]);
   const [totalRecycleBinMsg, setTotalRecycleBinMsg] = useState<number>(0);
@@ -74,7 +74,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     },
     transports: ["websocket"],
   });
-
+  console.log(socket);
   //Fetch Notification Messages
   useEffect(() => {
     const fetchCounterMessages = async () => {
@@ -118,13 +118,26 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           setReceivedMessages((prev) => [data, ...prev]);
           setTotalReceivedMessages((prev) => prev + 1);
         }
-        return;
       } catch (error) {
         console.log(error);
       }
     });
+
     socket.on("sentMessage", async (data) => {
       try {
+        console.log(data.id, "draft id");
+        console.log(draftMessages, "draftMessages");
+        // for sync socket draft messages
+        const draftMessageId = draftMessages.map((msg) => msg.id);
+        if (draftMessageId.includes(data.id)) {
+          setDraftMessages((prev) =>
+            prev.filter((item) => item.id !== data.id)
+          );
+          setTotalDraftMessages((prev) => prev - 1);
+        } else {
+          return;
+        }
+        // for sync socket sent messages
         const sentMessageId = sentMessages.map((msg) => msg.id);
         if (sentMessageId.includes(data.id)) {
           return;
@@ -132,7 +145,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           setSentMessages((prev) => [data, ...prev]);
           setTotalSentMessages((prev) => prev + 1);
         }
-        return;
       } catch (error) {
         console.log(error);
       }
@@ -154,7 +166,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           setDraftMessages((prev) => [data, ...prev]);
           setTotalDraftMessages((prev) => prev + 1);
         }
-        return;
       } catch (error) {
         console.log(error);
       }
@@ -165,7 +176,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         (msg) => msg.parentid !== id
       );
       setSocketMessages(synedSocketMessages);
-      return;
     });
 
     socket.on("removeMsgFromSocketMessages", (id) => {
@@ -191,16 +201,22 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           setRecycleBinMsg((prev) => prev.filter((msg) => msg.id !== id));
           setTotalRecycleBinMsg((prev) => prev - 1);
         }
-        return;
       } catch (error) {
         console.log(error);
       }
     });
 
     return () => {
+      socket.off("receivedMessage");
+      socket.off("sentMessage");
+      socket.off("draftMessage");
+      socket.off("sync");
+      socket.off("removeMsgFromSocketMessages");
       socket.disconnect();
     };
   }, [
+    sentMessages,
+    receivedMessages,
     sentMessages.length,
     draftMessages.length,
     socketMessage.length,
