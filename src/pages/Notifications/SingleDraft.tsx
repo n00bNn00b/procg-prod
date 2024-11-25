@@ -26,7 +26,7 @@ interface IOldMsgTypes {
   body?: string;
 }
 const SingleDraft = () => {
-  const { users, token } = useGlobalContext();
+  const { users, token, user } = useGlobalContext();
   const {
     handlesendMessage,
     totalDraftMessages,
@@ -79,11 +79,13 @@ const SingleDraft = () => {
     fetchMessage();
   }, [id, url, totalDraftMessages]);
 
+  const actualUsers = users.filter((usr) => usr.user_name !== user);
+
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
 
-  const filterdUser = users.filter((user) =>
+  const filterdUser = actualUsers.filter((user) =>
     user.user_name.toLowerCase().includes(query.toLowerCase())
   );
 
