@@ -17,9 +17,11 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { Message } from "@/types/interfaces/users.interface";
 import Spinner from "@/components/Spinner/Spinner";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
+import { v4 as uuidv4 } from "uuid";
+
 interface IOldMsgTypes {
   receivers?: string[];
   subject?: string;
@@ -46,9 +48,7 @@ const SingleDraft = () => {
   const [isAllClicked, setIsAllClicked] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [saveDraftLoading, setSaveDraftLoading] = useState(false);
-  const [oldMsgState, setOldMsgState] = useState<IOldMsgTypes | undefined>(
-    undefined
-  );
+  const [oldMsgState, setOldMsgState] = useState<IOldMsgTypes | undefined>({});
   const [userChanged, setuserChanged] = useState<boolean>(false);
   const sender = token.user_name;
   const totalusers = [...recivers, sender];
@@ -61,12 +61,10 @@ const SingleDraft = () => {
         setRecivers(result.recivers);
         setSubject(result.subject);
         setBody(result.body);
-        setOldMsgState(() => {
-          return {
-            receivers: result?.recivers,
-            subject: result?.subject,
-            body: result?.body,
-          };
+        setOldMsgState({
+          receivers: result?.recivers,
+          subject: result?.subject,
+          body: result?.body,
         });
       } catch (error) {
         console.log(error);
@@ -143,33 +141,40 @@ const SingleDraft = () => {
       }
     } catch (error) {
       console.error("Error:", error);
+      if (error instanceof Error) {
+        toast({
+          title: error.message,
+        });
+      }
     } finally {
       setSaveDraftLoading(false);
     }
     // navigate("/notifications/draft");
   };
   const handleSend = async () => {
-    // const newID = uuidv4();
+    const newID = uuidv4();
     const data = {
-      id: id as string,
+      id: newID,
       sender,
       recivers,
       subject,
       body,
       date: new Date(),
       status: "Sent",
-      parentid: id as string,
+      parentid: newID,
       involvedusers: uniqueUsers,
       readers: recivers,
-      holders: [sender, ...recivers],
+      holders: uniqueUsers,
       recyclebin: [],
     };
     try {
       setIsSending(true);
-      const response = await axios.put(`${url}/messages/${id}`, data);
+      const response = await axios.delete(`${url}/messages/${id}`);
+      const newMsg = await axios.post(`${url}/messages`, data);
       console.log("Response:", response.data);
-      if (response.status === 200) {
+      if (response.data && newMsg.data) {
         handlesendMessage(data);
+        handleCountSyncSocketMsg(id as string);
         toast({
           title: "Message Sent",
         });
@@ -241,7 +246,7 @@ const SingleDraft = () => {
       }
     };
     handleUserChange();
-  }, [recivers.length, oldMsgState?.receivers?.length]);
+  }, [recivers, oldMsgState?.receivers]);
   return (
     <div className="w-full flex justify-center">
       {isLoading ? (

@@ -5,9 +5,9 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ReplyDialog from "./ReplyDialog";
 import { Message } from "@/types/interfaces/users.interface";
-import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
 import Spinner from "@/components/Spinner/Spinner";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 const SingleSent = () => {
   const {
@@ -176,7 +176,7 @@ const SingleSent = () => {
                   <Trash2 size={20} />
                 </button>
                 <ReplyDialog
-                  parrentid={parrentMessage.id}
+                  parentid={parrentMessage.id}
                   involvedUsers={totalInvolvedUsers}
                   setTotalMessages={setTotalMessages}
                 />

@@ -1,5 +1,4 @@
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { Message } from "@/types/interfaces/users.interface";
 import axios from "axios";
 import { useEffect } from "react";
@@ -27,6 +26,7 @@ import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
 import Pagination5 from "@/components/Pagination/Pagination5";
 import { toast } from "@/components/ui/use-toast";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 interface RecycleBinTableProps {
   path: string;
   person: string;
@@ -37,9 +37,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
     isLoading,
     setIsLoading,
     currentPage,
-    totalReceivedMessages,
     totalDraftMessages,
-    totalSentMessages,
     setCurrentPage,
     handleCountSyncSocketMsg,
     recycleBinMsg,
@@ -62,13 +60,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
       }
     };
     fetchRecycleBinMsg();
-  }, [
-    currentPage,
-    totalReceivedMessages,
-    totalDraftMessages,
-    totalSentMessages,
-    recycleBinMsg.length,
-  ]);
+  }, [currentPage, url, user, setIsLoading, setRecycleBinMsg]);
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
     totalRecycleBinMsg / totalDisplayedMessages

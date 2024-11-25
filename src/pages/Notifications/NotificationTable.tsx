@@ -21,13 +21,13 @@ import axios from "axios";
 import { Check, Trash2, View, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
-import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
 import Pagination5 from "@/components/Pagination/Pagination5";
 import { useEffect } from "react";
 import { Message } from "@/types/interfaces/users.interface";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 interface NotificationTableProps {
   path: string;
@@ -47,7 +47,6 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     totalReceivedMessages,
     currentPage,
     setCurrentPage,
-    totalRecycleBinMsg,
   } = useSocketContext();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -71,7 +70,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     };
 
     fetchReceivedMessages();
-  }, [currentPage, socketMessage, receivedMessages.length, totalRecycleBinMsg]);
+  }, [currentPage, setIsLoading, setReceivedMessages, url, user]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(

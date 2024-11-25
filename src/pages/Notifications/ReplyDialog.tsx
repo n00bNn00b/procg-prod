@@ -17,13 +17,13 @@ import { ChangeEvent, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 interface ReplyDialogProps {
-  parrentid: string;
+  parentid: string;
   involvedUsers: string[];
   setTotalMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
 const ReplyDialog = ({
-  parrentid,
+  parentid,
   involvedUsers,
   setTotalMessages,
 }: ReplyDialogProps) => {
@@ -36,9 +36,9 @@ const ReplyDialog = ({
   const [isSending, setIsSending] = useState(false);
   const sender = token.user_name;
   const recivers = involvedUsers.filter((user) => user !== sender);
+  const id = uuidv4();
 
   const handleSend = async () => {
-    const id = uuidv4();
     const data = {
       id,
       sender,
@@ -47,28 +47,35 @@ const ReplyDialog = ({
       body,
       date: new Date(),
       status: "Sent",
-      parentid: parrentid,
+      parentid,
       involvedusers: involvedUsers,
       readers: recivers,
+      holders: involvedUsers,
+      recyclebin: [],
     };
-    setIsSending(true);
-    handlesendMessage(data);
     try {
+      setIsSending(true);
       const response = await axios.post(`${url}/messages`, data);
-      console.log("Response:", response.data);
-      toast({
-        title: "Message Sent",
-      });
+      if (response.status === 201) {
+        handlesendMessage(data);
+        setTotalMessages((prev) => [data, ...prev]);
+        toast({
+          title: "Message Sent",
+        });
+      }
     } catch (error) {
       console.error("Error:", error);
+      if (error instanceof Error) {
+        toast({
+          title: error.message,
+        });
+      }
     } finally {
       setIsSending(false);
+      setSubject("");
+      setBody("");
     }
-    setBody("");
-    setSubject("");
-    setTotalMessages((prev) => [data, ...prev]);
   };
-
   return (
     <Dialog>
       <DialogTrigger className="p-1 rounded-md hover:bg-winter-100/50">
