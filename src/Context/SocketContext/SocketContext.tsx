@@ -104,7 +104,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     };
 
     fetchCounterMessages();
-  }, [url, user]);
+  }, [url, user, draftMessages, recycleBinMsg, sentMessages, receivedMessages]);
 
   //Listen to socket events
   useEffect(() => {
@@ -215,8 +215,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       socket.disconnect();
     };
   }, [
-    sentMessages,
-    receivedMessages,
     sentMessages.length,
     draftMessages.length,
     socketMessage.length,
