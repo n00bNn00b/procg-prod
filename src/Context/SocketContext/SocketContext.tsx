@@ -104,7 +104,14 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     };
 
     fetchCounterMessages();
-  }, [url, user, draftMessages, recycleBinMsg, sentMessages, receivedMessages]);
+  }, [
+    url,
+    user,
+    draftMessages,
+    recycleBinMsg,
+    sentMessages,
+    receivedMessages.length,
+  ]);
 
   //Listen to socket events
   useEffect(() => {
