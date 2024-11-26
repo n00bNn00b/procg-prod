@@ -93,7 +93,6 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
 
   const handleDelete = async (id: string) => {
     try {
-      setIsLoading(true);
       const response = await axios.put(
         `${url}/messages/set-user-into-recyclebin/${id}/${user}`
       );
@@ -105,8 +104,6 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
       }
     } catch (error) {
       console.error("Error deleting resource:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 

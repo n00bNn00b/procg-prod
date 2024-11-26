@@ -93,7 +93,6 @@ const SentTable = ({ path, person }: SentTableProps) => {
 
   const handleDelete = async (id: string) => {
     try {
-      setIsLoading(true);
       const response = await axios.put(
         `${url}/messages/set-user-into-recyclebin/${id}/${user}`
       );
@@ -105,8 +104,6 @@ const SentTable = ({ path, person }: SentTableProps) => {
       }
     } catch (error) {
       console.error("Error deleting resource:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
