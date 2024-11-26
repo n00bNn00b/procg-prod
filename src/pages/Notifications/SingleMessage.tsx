@@ -94,7 +94,6 @@ const SingleMessage = () => {
 
   const handleDelete = async (msgId: string) => {
     try {
-      setIsLoading(true);
       const response = await axios.put(
         `${url}/messages/set-user-into-recyclebin/${msgId}/${token.user_name}`
       );
@@ -107,8 +106,6 @@ const SingleMessage = () => {
       }
     } catch (error) {
       console.error("Error deleting resource:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 

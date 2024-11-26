@@ -37,7 +37,6 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
     isLoading,
     setIsLoading,
     currentPage,
-    totalDraftMessages,
     setCurrentPage,
     handleCountSyncSocketMsg,
     recycleBinMsg,
@@ -60,7 +59,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
       }
     };
     fetchRecycleBinMsg();
-  }, [currentPage, url, user, setIsLoading, setRecycleBinMsg]);
+  }, [currentPage, setIsLoading, setRecycleBinMsg, url, user]);
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
     totalRecycleBinMsg / totalDisplayedMessages
@@ -72,8 +71,8 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
   let startNumber = 1;
   let endNumber = currentPage * totalDisplayedMessages;
 
-  if (endNumber > totalDraftMessages) {
-    endNumber = totalDraftMessages;
+  if (endNumber > totalRecycleBinMsg) {
+    endNumber = totalRecycleBinMsg;
   }
 
   if (currentPage > 1) {
@@ -87,9 +86,8 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
   };
   const handleDelete = async (msg: Message) => {
     try {
-      setIsLoading(true);
       const holdersNumber = msg.holders?.length ?? 0;
-      const recycleBinNumber = msg.recyclebin?.length;
+      const recycleBinNumber = msg.recyclebin?.length ?? 0;
       if (holdersNumber > 0) {
         const response = await axios.put(
           `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
@@ -100,8 +98,8 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
             title: "Message has been deleted.",
           });
         }
-      } else if (holdersNumber === 0) {
-        if (recycleBinMsg.length > 1) {
+      } else {
+        if (recycleBinNumber > 1) {
           const response = await axios.put(
             `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
           );
@@ -111,7 +109,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
               title: "Message has been deleted.",
             });
           }
-        } else if (holdersNumber === 0 && recycleBinNumber === 1) {
+        } else if (recycleBinNumber === 1) {
           const response = await axios.delete(`${url}/messages/${msg.id}`);
           if (response.status === 200) {
             handleCountSyncSocketMsg(msg.id);
@@ -123,13 +121,10 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
       }
     } catch (error) {
       console.error("Error deleting resource:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
   const emptyRecycleBin = async () => {
     try {
-      setIsLoading(true);
       for (const msg of recycleBinMsg) {
         const holdersNumber = msg.holders?.length ?? 0;
         const recycleBinNumber = msg.recyclebin?.length ?? 0;
@@ -143,7 +138,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
               title: "Message has been deleted.",
             });
           }
-        } else if (holdersNumber === 0) {
+        } else {
           if (recycleBinNumber > 1) {
             const response = await axios.put(
               `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
@@ -167,8 +162,6 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
       }
     } catch (error) {
       console.error("Error deleting resource:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
   return (
@@ -179,9 +172,10 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
           <div>
             <AlertDialog>
               <AlertDialogTrigger
-                className="flex gap-1 bg-red-50 rounded p-2 items-center
-            justify-center hover:bg-red-500 hover:text-white duration-200
-            cursor-pointer"
+                className="bg-white text-white cursor-default"
+                //     className="flex gap-1 bg-red-50 rounded p-2 items-center
+                // justify-center hover:bg-red-500 hover:text-white duration-200
+                // cursor-pointer"
               >
                 <Trash /> <span>Empty Bin</span>
               </AlertDialogTrigger>
@@ -199,7 +193,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
                   </AlertDialogCancel>
                   <AlertDialogAction
                     className="bg-green-600 text-white flex justify-center items-center"
-                    onClick={() => emptyRecycleBin()}
+                    onClick={emptyRecycleBin}
                   >
                     <Check />
                   </AlertDialogAction>

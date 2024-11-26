@@ -34,6 +34,7 @@ const SingleDraft = () => {
     totalDraftMessages,
     handleDraftMessage,
     handleCountSyncSocketMsg,
+    handleDraftMsgId,
   } = useSocketContext();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -167,18 +168,22 @@ const SingleDraft = () => {
       holders: uniqueUsers,
       recyclebin: [],
     };
+    console.log(data, "data");
     try {
       setIsSending(true);
-      const response = await axios.delete(`${url}/messages/${id}`);
+
       const newMsg = await axios.post(`${url}/messages`, data);
-      console.log("Response:", response.data);
-      if (response.data && newMsg.data) {
+      if (newMsg.data) {
         handlesendMessage(data);
-        handleCountSyncSocketMsg(id as string);
+        handleDraftMsgId(id as string);
+        console.log(data, "data");
         toast({
           title: "Message Sent",
         });
-        navigate("/notifications/drafts");
+        setTimeout(async () => {
+          await axios.delete(`${url}/messages/${id}`);
+          navigate("/notifications/drafts");
+        }, 500);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -191,7 +196,6 @@ const SingleDraft = () => {
 
   const handleDelete = async () => {
     try {
-      setIsLoading(true);
       const response = await axios.put(
         `${url}/messages/set-user-into-recyclebin/${id}/${token.user_name}`
       );
@@ -204,8 +208,6 @@ const SingleDraft = () => {
       }
     } catch (error) {
       console.error("Error deleting resource:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
