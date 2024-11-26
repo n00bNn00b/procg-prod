@@ -58,7 +58,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const [sentMessages, setSentMessages] = useState<Message[]>([]);
   const [totalSentMessages, setTotalSentMessages] = useState<number>(0);
   const [draftMessages, setDraftMessages] = useState<Message[]>([]);
-  // const [saveDraftMessage, setSaveDraftMessage] = useState<string[]>([]);
   const [totalDraftMessages, setTotalDraftMessages] = useState<number>(0);
   const [socketMessage, setSocketMessages] = useState<Message[]>([]);
   const [recycleBinMsg, setRecycleBinMsg] = useState<Message[]>([]);
@@ -185,15 +184,12 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     socket.on("removeMsgFromSocketMessages", (id) => {
       try {
         if (receivedMessages.some((msg) => msg.id === id)) {
-          console.log("received", receivedMessages);
-
           // if receive message includes the id then remove it
           setReceivedMessages((prev) => prev.filter((msg) => msg.id !== id));
           setTotalReceivedMessages((prev) => prev - 1);
-          setSocketMessages(socketMessage.filter((msg) => msg.id !== id));
+          setSocketMessages((prev) => prev.filter((msg) => msg.id !== id));
           setTotalRecycleBinMsg((prev) => prev + 1);
         } else if (sentMessages.some((msg) => msg.id === id)) {
-          console.log("received", sentMessages);
           // if sent message includes the id then remove it
           setSentMessages((prev) => prev.filter((msg) => msg.id !== id));
           setTotalSentMessages((prev) => prev - 1);
@@ -204,12 +200,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           setTotalDraftMessages((prev) => prev - 1);
           setTotalRecycleBinMsg((prev) => prev + 1);
         } else if (recycleBinMsg.some((msg) => msg.id === id)) {
-          console.log(
-            "empty message bin",
-            id,
-            recycleBinMsg,
-            totalRecycleBinMsg
-          );
           // if receive message includes the id then remove it
           setRecycleBinMsg((prev) => prev.filter((msg) => msg.id !== id));
           setTotalRecycleBinMsg((prev) => prev - 1);
