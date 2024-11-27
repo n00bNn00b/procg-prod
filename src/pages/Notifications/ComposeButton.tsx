@@ -132,7 +132,7 @@ const ComposeButton = () => {
       if (response.status === 201) {
         handleDraftMessage(data);
         toast({
-          title: "Message saved to draft",
+          title: "Message saved to drafts",
         });
       }
     } catch (error) {
@@ -250,7 +250,7 @@ const ComposeButton = () => {
             ) : (
               <Save size={18} />
             )}
-            <p className="font-semibold ">Save as draft</p>
+            <p className="font-semibold ">Save as drafts</p>
           </button>
           {/* ) : null}
            {recivers.length === 0 || body === "" ? null : ( */}

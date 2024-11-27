@@ -137,7 +137,7 @@ const SingleDraft = () => {
       if (response.status === 200) {
         handleDraftMessage(data);
         toast({
-          title: "Message saved to draft",
+          title: "Message saved to drafts",
         });
       }
     } catch (error) {

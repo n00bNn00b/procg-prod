@@ -52,6 +52,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
 
   //Fetch Sent Messages
   useEffect(() => {
+    console.log("loading from sent table");
     const fetchSentMessages = async () => {
       try {
         setIsLoading(true);
@@ -69,16 +70,20 @@ const SentTable = ({ path, person }: SentTableProps) => {
     };
 
     fetchSentMessages();
-  }, [currentPage, url, user, setIsLoading, setSentMessages]);
+  }, [
+    currentPage,
+    url,
+    user,
+    setIsLoading,
+    setSentMessages,
+    sentMessages.length,
+  ]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
     totalSentMessages / totalDisplayedMessages
   );
-  // const paginationArray = Array.from(
-  //   { length: totalPageNumbers },
-  //   (_, i) => i + 1
-  // );
+
   let startNumber = 1;
   let endNumber = currentPage * totalDisplayedMessages;
 

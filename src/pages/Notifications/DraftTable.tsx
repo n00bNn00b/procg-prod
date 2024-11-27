@@ -52,6 +52,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
 
   //Fetch Draft Messages
   useEffect(() => {
+    console.log("loading from draft table");
     const fetchSentMessages = async () => {
       try {
         setIsLoading(true);
@@ -69,16 +70,20 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
     };
 
     fetchSentMessages();
-  }, [currentPage, setDraftMessages, setIsLoading, url, user]);
+  }, [
+    currentPage,
+    setDraftMessages,
+    setIsLoading,
+    url,
+    user,
+    draftMessages.length,
+  ]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
     totalDraftMessages / totalDisplayedMessages
   );
-  // const paginationArray = Array.from(
-  //   { length: totalPageNumbers },
-  //   (_, i) => i + 1
-  // );
+
   let startNumber = 1;
   let endNumber = currentPage * totalDisplayedMessages;
 

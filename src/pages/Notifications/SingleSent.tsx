@@ -10,12 +10,7 @@ import Spinner from "@/components/Spinner/Spinner";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 const SingleSent = () => {
-  const {
-    sentMessages,
-    setSentMessages,
-    setTotalSentMessages,
-    handleCountSyncSocketMsg,
-  } = useSocketContext();
+  const { handleCountSyncSocketMsg } = useSocketContext();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
@@ -96,22 +91,24 @@ const SingleSent = () => {
       const res = await axios.delete(`${url}/messages/${msgId}`);
       if (res.status === 200) {
         handleCountSyncSocketMsg(msgId);
-        const currentMessages = sentMessages.filter((msg) => msg.id !== msgId);
-        setSentMessages(currentMessages);
         const currentTotalMessages = totalMessages.filter(
           (msg) => msg.id !== msgId
         );
-        if (currentTotalMessages.length === 0) {
-          navigate("/notifications/sent");
-        }
         setTotalMessages(currentTotalMessages);
-        setTotalSentMessages((prev) => prev - 1);
         toast({
           title: "Message has been deleted",
         });
+        if (currentTotalMessages.length === 0) {
+          navigate("/notifications/sent");
+        }
       }
     } catch (error) {
       console.error("Error deleting resource:", error);
+      if (error instanceof Error) {
+        toast({
+          title: `${error.message}`,
+        });
+      }
     }
   };
 
