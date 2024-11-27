@@ -53,6 +53,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
   const url = import.meta.env.VITE_API_URL;
   //Fetch Received Messages
   useEffect(() => {
+    console.log("loading from inbox table");
     const fetchReceivedMessages = async () => {
       try {
         setIsLoading(true);
@@ -70,16 +71,20 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     };
 
     fetchReceivedMessages();
-  }, [currentPage, setIsLoading, setReceivedMessages, url, user]);
+  }, [
+    currentPage,
+    setIsLoading,
+    setReceivedMessages,
+    url,
+    user,
+    receivedMessages.length,
+  ]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
     totalReceivedMessages / totalDisplayedMessages
   );
-  // const paginationArray = Array.from(
-  //   { length: totalPageNumbers },
-  //   (_, i) => i + 1
-  // );
+
   let startNumber = 1;
   let endNumber = currentPage * totalDisplayedMessages;
 

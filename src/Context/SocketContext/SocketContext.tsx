@@ -109,68 +109,48 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   //Listen to socket events
   useEffect(() => {
     socket.on("receivedMessage", (data) => {
-      try {
-        console.log("receivedMessage", data);
-        const receivedMessagesId = receivedMessages.map((msg) => msg.id);
-        if (receivedMessagesId.includes(data.id)) {
-          return;
-        } else {
-          setSocketMessages((prevArray) => [data, ...prevArray]);
-          setReceivedMessages((prev) => [data, ...prev]);
-          setTotalReceivedMessages((prev) => prev + 1);
-        }
-      } catch (error) {
-        console.log(error);
+      console.log("receivedMessage", data);
+      const receivedMessagesId = receivedMessages.map((msg) => msg.id);
+      if (receivedMessagesId.includes(data.id)) {
+        return;
+      } else {
+        setSocketMessages((prevArray) => [data, ...prevArray]);
+        setReceivedMessages((prev) => [data, ...prev]);
+        setTotalReceivedMessages((prev) => prev + 1);
       }
     });
     socket.on("sentMessage", (data) => {
-      try {
-        // for sync socket sent messages
-        const sentMessageId = sentMessages.map((msg) => msg.id);
-        if (sentMessageId.includes(data.id)) {
-          return;
-        } else {
-          setSentMessages((prev) => [data, ...prev]);
-          setTotalSentMessages((prev) => prev + 1);
-        }
-      } catch (error) {
-        console.log(error);
+      const sentMessageId = sentMessages.map((msg) => msg.id);
+      if (sentMessageId.includes(data.id)) {
+        return;
+      } else {
+        setSentMessages((prev) => [data, ...prev]);
+        setTotalSentMessages((prev) => prev + 1);
       }
     });
     socket.on("draftMessage", (data) => {
-      try {
-        // const parseData = await JSON.parse(data);
-        const draftMessagesId = draftMessages.map((msg) => msg.id);
-        if (draftMessagesId.includes(data.id)) {
-          // remove message match id
-          const newDraftMessages = draftMessages.filter(
-            (msg) => msg.id !== data.id
-          );
-          // For state call
-          return setDraftMessages(() => [data, ...newDraftMessages]);
-        } else {
-          setDraftMessages((prev) => [data, ...prev]);
-          setTotalDraftMessages((prev) => prev + 1);
-        }
-      } catch (error) {
-        console.log(error);
+      const draftMessagesId = draftMessages.map((msg) => msg.id);
+      if (draftMessagesId.includes(data.id)) {
+        // remove message match id
+        const newDraftMessages = draftMessages.filter(
+          (msg) => msg.id !== data.id
+        );
+        // For state call
+        return setDraftMessages(() => [data, ...newDraftMessages]);
+      } else {
+        setDraftMessages((prev) => [data, ...prev]);
+        setTotalDraftMessages((prev) => prev + 1);
       }
     });
 
     socket.on("draftMessageId", (id) => {
-      try {
-        console.log(draftMessages, "draftMessages");
-        console.log(id, "draftMessagesid");
-        // for sync socket draft messages
-        const draftMessageId = draftMessages.map((msg) => msg.id);
-        if (draftMessageId.includes(id)) {
-          setDraftMessages((prev) => prev.filter((item) => item.id !== id));
-          setTotalDraftMessages((prev) => prev - 1);
-        } else {
-          return;
-        }
-      } catch (error) {
-        console.log(error);
+      console.log(draftMessages, "draftMessages");
+      console.log(id, "draftMessagesid");
+      // for sync socket draft messages
+      const draftMessageId = draftMessages.map((msg) => msg.id);
+      if (draftMessageId.includes(id)) {
+        setDraftMessages((prev) => prev.filter((item) => item.id !== id));
+        setTotalDraftMessages((prev) => prev - 1);
       }
     });
 
@@ -182,30 +162,26 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     });
 
     socket.on("removeMsgFromSocketMessages", (id) => {
-      try {
-        if (receivedMessages.some((msg) => msg.id === id)) {
-          // if receive message includes the id then remove it
-          setReceivedMessages((prev) => prev.filter((msg) => msg.id !== id));
-          setTotalReceivedMessages((prev) => prev - 1);
-          setSocketMessages((prev) => prev.filter((msg) => msg.id !== id));
-          setTotalRecycleBinMsg((prev) => prev + 1);
-        } else if (sentMessages.some((msg) => msg.id === id)) {
-          // if sent message includes the id then remove it
-          setSentMessages((prev) => prev.filter((msg) => msg.id !== id));
-          setTotalSentMessages((prev) => prev - 1);
-          setTotalRecycleBinMsg((prev) => prev + 1);
-        } else if (draftMessages.some((msg) => msg.id === id)) {
-          // if draft message includes the id then remove it
-          setDraftMessages((prev) => prev.filter((msg) => msg.id !== id));
-          setTotalDraftMessages((prev) => prev - 1);
-          setTotalRecycleBinMsg((prev) => prev + 1);
-        } else if (recycleBinMsg.some((msg) => msg.id === id)) {
-          // if receive message includes the id then remove it
-          setRecycleBinMsg((prev) => prev.filter((msg) => msg.id !== id));
-          setTotalRecycleBinMsg((prev) => prev - 1);
-        }
-      } catch (error) {
-        console.log(error);
+      if (receivedMessages.some((msg) => msg.id === id)) {
+        // if receive message includes the id then remove it
+        setReceivedMessages((prev) => prev.filter((msg) => msg.id !== id));
+        setTotalReceivedMessages((prev) => prev - 1);
+        setSocketMessages((prev) => prev.filter((msg) => msg.id !== id));
+        setTotalRecycleBinMsg((prev) => prev + 1);
+      } else if (sentMessages.some((msg) => msg.id === id)) {
+        // if sent message includes the id then remove it
+        setSentMessages((prev) => prev.filter((msg) => msg.id !== id));
+        setTotalSentMessages((prev) => prev - 1);
+        setTotalRecycleBinMsg((prev) => prev + 1);
+      } else if (draftMessages.some((msg) => msg.id === id)) {
+        // if draft message includes the id then remove it
+        setDraftMessages((prev) => prev.filter((msg) => msg.id !== id));
+        setTotalDraftMessages((prev) => prev - 1);
+        setTotalRecycleBinMsg((prev) => prev + 1);
+      } else if (recycleBinMsg.some((msg) => msg.id === id)) {
+        // if receive message includes the id then remove it
+        setRecycleBinMsg((prev) => prev.filter((msg) => msg.id !== id));
+        setTotalRecycleBinMsg((prev) => prev - 1);
       }
     });
 
