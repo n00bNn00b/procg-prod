@@ -56,6 +56,8 @@ const ReplyDialog = ({
     try {
       setIsSending(true);
       const response = await axios.post(`${url}/messages`, data);
+      console.log(data);
+      console.log(response.data);
       if (response.status === 201) {
         handlesendMessage(data);
         setTotalMessages((prev) => [data, ...prev]);

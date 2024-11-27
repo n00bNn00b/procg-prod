@@ -3,7 +3,6 @@ import axios from "axios";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-
 import ReplyDialog from "./ReplyDialog";
 import { Message } from "@/types/interfaces/users.interface";
 import { useToast } from "@/components/ui/use-toast";
@@ -12,8 +11,8 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 const SingleMessage = () => {
-  const { handleCountSyncSocketMsg } = useSocketContext();
-  const { token } = useGlobalContext();
+  const { handleDeleteMessage } = useSocketContext();
+  const { token, user } = useGlobalContext();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -36,12 +35,14 @@ const SingleMessage = () => {
     holders: [],
     recyclebin: [],
   });
+  const [totalInvolvedUsers, setTotalInvolvedUsers] = useState<string[]>([]);
+  console.log(totalInvolvedUsers);
   //Fetch TotalReplyMessages
   useEffect(() => {
     const fetchMessage = async () => {
       try {
         const response = await axios.get<Message[]>(
-          `${url}/messages/reply/${id}`
+          `${url}/messages/reply/${id}/${user}`
         );
         const result = response.data;
         setTotalMessages(result);
@@ -53,7 +54,7 @@ const SingleMessage = () => {
     };
 
     fetchMessage();
-  }, [id, url]);
+  }, [id, url, user]);
 
   //Fetch SingleMessage
   useEffect(() => {
@@ -62,6 +63,7 @@ const SingleMessage = () => {
         const response = await axios.get<Message>(`${url}/messages/${id}`);
         const result = response.data;
         setParrentMessage(result);
+        setTotalInvolvedUsers(result.involvedusers);
       } catch (error) {
         console.log(error);
       } finally {
@@ -70,9 +72,8 @@ const SingleMessage = () => {
     };
 
     fetchMessage();
-  }, [id, url]);
+  }, [id, url, user]);
 
-  const totalInvolvedUsers = parrentMessage.involvedusers;
   const colors = [
     "text-[#5D3CA6]",
     "text-[#BF0436]",
@@ -98,14 +99,24 @@ const SingleMessage = () => {
         `${url}/messages/set-user-into-recyclebin/${msgId}/${token.user_name}`
       );
       if (response.status === 200) {
-        handleCountSyncSocketMsg(id as string);
-        if (totalMessages.length === 1) navigate("/notifications/inbox");
+        handleDeleteMessage(msgId as string);
+        setTotalMessages((prev) => prev.filter((msg) => msg.id !== msgId));
         toast({
           title: "Message has been moved to recyclebin.",
         });
       }
     } catch (error) {
-      console.error("Error deleting resource:", error);
+      if (error instanceof Error) {
+        toast({
+          title: `${error.message}`,
+        });
+      }
+    } finally {
+      if (totalMessages.length === 0) {
+        setTimeout(() => {
+          navigate("/notifications/inbox");
+        }, 1000);
+      }
     }
   };
 

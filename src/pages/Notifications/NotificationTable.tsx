@@ -43,7 +43,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     receivedMessages,
     setReceivedMessages,
     handleRead,
-    handleCountSyncSocketMsg,
+    handleDeleteMessage,
     totalReceivedMessages,
     currentPage,
     setCurrentPage,
@@ -111,7 +111,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
         `${url}/messages/set-user-into-recyclebin/${id}/${user}`
       );
       if (response.status === 200) {
-        handleCountSyncSocketMsg(id);
+        handleDeleteMessage(id);
         toast({
           title: "Message has been moved to recyclebin.",
         });

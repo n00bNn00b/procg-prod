@@ -21,7 +21,7 @@ interface SocketContext {
   handlesendMessage: (data: Message) => void;
   handleDisconnect: () => void;
   handleRead: (id: string) => void;
-  handleCountSyncSocketMsg: (id: string) => void;
+  handleDeleteMessage: (id: string) => void;
   setReceivedMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   socketMessage: Message[];
   setSocketMessages: React.Dispatch<React.SetStateAction<Message[]>>;
@@ -161,7 +161,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       setSocketMessages(synedSocketMessages);
     });
 
-    socket.on("removeMsgFromSocketMessages", (id) => {
+    socket.on("deletedMessage", (id) => {
       if (receivedMessages.some((msg) => msg.id === id)) {
         // if receive message includes the id then remove it
         setReceivedMessages((prev) => prev.filter((msg) => msg.id !== id));
@@ -214,8 +214,8 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const handleRead = (id: string) => {
     socket.emit("read", { id, user });
   };
-  const handleCountSyncSocketMsg = (id: string) => {
-    socket.emit("countSyncSocketMsg", { id, user });
+  const handleDeleteMessage = (id: string) => {
+    socket.emit("deleteMessage", { id, user });
   };
 
   const handleDraftMessage = (data: Message) => {
@@ -234,7 +234,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         handlesendMessage,
         handleDisconnect,
         handleRead,
-        handleCountSyncSocketMsg,
+        handleDeleteMessage,
         socketMessage,
         setSocketMessages,
         receivedMessages,

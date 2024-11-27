@@ -40,7 +40,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
     setIsLoading,
     draftMessages,
     totalDraftMessages,
-    handleCountSyncSocketMsg,
+    handleDeleteMessage,
     currentPage,
     setCurrentPage,
     setDraftMessages,
@@ -102,7 +102,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
         `${url}/messages/set-user-into-recyclebin/${id}/${user}`
       );
       if (response.status === 200) {
-        handleCountSyncSocketMsg(id);
+        handleDeleteMessage(id);
         toast({
           title: "Message has been moved to recyclebin.",
         });
