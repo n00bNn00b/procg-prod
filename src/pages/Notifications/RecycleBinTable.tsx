@@ -38,7 +38,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
     setIsLoading,
     currentPage,
     setCurrentPage,
-    handleCountSyncSocketMsg,
+    handleDeleteMessage,
     recycleBinMsg,
     setRecycleBinMsg,
     totalRecycleBinMsg,
@@ -93,7 +93,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
           `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
         );
         if (response.status === 200) {
-          handleCountSyncSocketMsg(msg.id);
+          handleDeleteMessage(msg.id);
           toast({
             title: "Message has been deleted.",
           });
@@ -104,7 +104,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
             `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
           );
           if (response.status === 200) {
-            handleCountSyncSocketMsg(msg.id);
+            handleDeleteMessage(msg.id);
             toast({
               title: "Message has been deleted.",
             });
@@ -112,7 +112,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
         } else if (recycleBinNumber === 1) {
           const response = await axios.delete(`${url}/messages/${msg.id}`);
           if (response.status === 200) {
-            handleCountSyncSocketMsg(msg.id);
+            handleDeleteMessage(msg.id);
             toast({
               title: "Message has been deleted.",
             });
@@ -133,7 +133,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
             `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
           );
           if (response.status === 200) {
-            handleCountSyncSocketMsg(msg.id);
+            handleDeleteMessage(msg.id);
             toast({
               title: "Message has been deleted.",
             });
@@ -144,7 +144,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
               `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
             );
             if (response.status === 200) {
-              handleCountSyncSocketMsg(msg.id);
+              handleDeleteMessage(msg.id);
               toast({
                 title: "Message has been deleted.",
               });
@@ -152,7 +152,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
           } else if (recycleBinNumber === 1) {
             const response = await axios.delete(`${url}/messages/${msg.id}`);
             if (response.status === 200) {
-              handleCountSyncSocketMsg(msg.id);
+              handleDeleteMessage(msg.id);
               toast({
                 title: "Message has been deleted.",
               });

@@ -33,7 +33,7 @@ const SingleDraft = () => {
     handlesendMessage,
     totalDraftMessages,
     handleDraftMessage,
-    handleCountSyncSocketMsg,
+    handleDeleteMessage,
     handleDraftMsgId,
   } = useSocketContext();
   const navigate = useNavigate();
@@ -200,7 +200,7 @@ const SingleDraft = () => {
         `${url}/messages/set-user-into-recyclebin/${id}/${token.user_name}`
       );
       if (response.status === 200) {
-        handleCountSyncSocketMsg(id as string);
+        handleDeleteMessage(id as string);
         navigate("/notifications/drafts");
         toast({
           title: "Message has been moved to recyclebin.",

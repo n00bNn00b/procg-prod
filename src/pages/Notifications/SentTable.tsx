@@ -40,7 +40,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
     setIsLoading,
     sentMessages,
     totalSentMessages,
-    handleCountSyncSocketMsg,
+    handleDeleteMessage,
     currentPage,
     setCurrentPage,
     setSentMessages,
@@ -102,7 +102,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
         `${url}/messages/set-user-into-recyclebin/${id}/${user}`
       );
       if (response.status === 200) {
-        handleCountSyncSocketMsg(id);
+        handleDeleteMessage(id);
         toast({
           title: "Message has been moved to recyclebin.",
         });

@@ -8,9 +8,11 @@ import { Message } from "@/types/interfaces/users.interface";
 import { useToast } from "@/components/ui/use-toast";
 import Spinner from "@/components/Spinner/Spinner";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
 const SingleSent = () => {
-  const { handleCountSyncSocketMsg } = useSocketContext();
+  const { handleDeleteMessage } = useSocketContext();
+  const { token, user } = useGlobalContext();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
@@ -30,12 +32,13 @@ const SingleSent = () => {
     parentid: "",
     involvedusers: [],
   });
+  const [totalInvolvedUsers, setTotalInvolvedUsers] = useState<string[]>([]);
   //Fetch TotalReplyMessages
   useEffect(() => {
     const fetchMessage = async () => {
       try {
         const response = await axios.get<Message[]>(
-          `${url}/messages/reply/${id}`
+          `${url}/messages/reply/${id}/${user}`
         );
         const result = response.data;
         setTotalMessages(result);
@@ -47,7 +50,7 @@ const SingleSent = () => {
     };
 
     fetchMessage();
-  }, [id, url]);
+  }, [id, url, user]);
 
   //Fetch SingleMessage
   useEffect(() => {
@@ -56,6 +59,7 @@ const SingleSent = () => {
         const response = await axios.get<Message>(`${url}/messages/${id}`);
         const result = response.data;
         setParrentMessage(result);
+        setTotalInvolvedUsers(result.involvedusers);
       } catch (error) {
         console.log(error);
       } finally {
@@ -66,7 +70,6 @@ const SingleSent = () => {
     fetchMessage();
   }, [id, url]);
 
-  const totalInvolvedUsers = parrentMessage.involvedusers;
   const colors = [
     "text-[#5D3CA6]",
     "text-[#BF0436]",
@@ -88,30 +91,30 @@ const SingleSent = () => {
 
   const handleDelete = async (msgId: string) => {
     try {
-      const res = await axios.delete(`${url}/messages/${msgId}`);
-      if (res.status === 200) {
-        handleCountSyncSocketMsg(msgId);
-        const currentTotalMessages = totalMessages.filter(
-          (msg) => msg.id !== msgId
-        );
-        setTotalMessages(currentTotalMessages);
+      const response = await axios.put(
+        `${url}/messages/set-user-into-recyclebin/${msgId}/${token.user_name}`
+      );
+      if (response.status === 200) {
+        handleDeleteMessage(msgId as string);
+        setTotalMessages((prev) => prev.filter((msg) => msg.id !== msgId));
         toast({
-          title: "Message has been deleted",
+          title: "Message has been moved to recyclebin.",
         });
-        if (currentTotalMessages.length === 0) {
-          navigate("/notifications/sent");
-        }
       }
     } catch (error) {
-      console.error("Error deleting resource:", error);
       if (error instanceof Error) {
         toast({
           title: `${error.message}`,
         });
       }
+    } finally {
+      if (totalMessages.length === 0) {
+        setTimeout(() => {
+          navigate("/notifications/sent");
+        }, 1000);
+      }
     }
   };
-
   const convertDate = (isoDateString: Date) => {
     const date = new Date(isoDateString);
     const formattedDate = date.toLocaleString();
