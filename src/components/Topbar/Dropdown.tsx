@@ -10,12 +10,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NavLink, useNavigate } from "react-router-dom";
 import { LogOut, Settings, ShieldBan, User } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 const Dropdown = () => {
   const { token, setToken } = useGlobalContext();
+  const { handleDisconnect } = useSocketContext();
   const navigate = useNavigate();
 
   const handleSignOut = () => {
+    handleDisconnect();
     localStorage.setItem("token", JSON.stringify({ access_token: "" }));
     localStorage.setItem("user_name", "");
     setToken({ access_token: "", user_name: "" });

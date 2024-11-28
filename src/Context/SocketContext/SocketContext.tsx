@@ -3,6 +3,7 @@ import {
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useGlobalContext } from "../GlobalContext/GlobalContext";
@@ -66,19 +67,23 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const socket_url = import.meta.env.VITE_SOCKET_URL;
   const { user } = useGlobalContext();
   const [currentPage, setCurrentPage] = useState<number>(1);
-  //Socket
-  const socket = io(socket_url, {
-    path: "/socket.io/",
-    query: {
-      key: user,
-    },
-    transports: ["websocket"],
-  });
+
+  // Memoize the socket connection so that it's created only once
+  const socket = useMemo(() => {
+    return io(socket_url, {
+      path: "/socket.io/",
+      query: {
+        key: user,
+      },
+      transports: ["websocket"],
+    });
+  }, [socket_url, user]);
 
   //Fetch Notification Messages
   useEffect(() => {
     const fetchCounterMessages = async () => {
       try {
+        if (!user) return;
         const [
           notificationTotal,
           receivedTotal,
@@ -120,6 +125,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       }
     });
     socket.on("sentMessage", (data) => {
+      console.log("check sent msg");
       const sentMessageId = sentMessages.map((msg) => msg.id);
       if (sentMessageId.includes(data.id)) {
         return;
@@ -144,11 +150,11 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     });
 
     socket.on("draftMessageId", (id) => {
-      console.log(draftMessages, "draftMessages");
-      console.log(id, "draftMessagesid");
+      console.log(id, draftMessages, "draftMessages");
       // for sync socket draft messages
       const draftMessageId = draftMessages.map((msg) => msg.id);
       if (draftMessageId.includes(id)) {
+        console.log("check draftMessageId time");
         setDraftMessages((prev) => prev.filter((item) => item.id !== id));
         setTotalDraftMessages((prev) => prev - 1);
       }
@@ -160,7 +166,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       );
       setSocketMessages(synedSocketMessages);
     });
-
     socket.on("deletedMessage", (id) => {
       if (receivedMessages.some((msg) => msg.id === id)) {
         // if receive message includes the id then remove it
@@ -169,29 +174,75 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         setSocketMessages((prev) => prev.filter((msg) => msg.id !== id));
         setTotalRecycleBinMsg((prev) => prev + 1);
       } else if (sentMessages.some((msg) => msg.id === id)) {
-        // if sent message includes the id then remove it
-        setSentMessages((prev) => prev.filter((msg) => msg.id !== id));
-        setTotalSentMessages((prev) => prev - 1);
+        console.log("sentMessage");
+        // Check if the message is already deleted before updating
+        setSentMessages((prev) => {
+          const filteredMessages = prev.filter((msg) => msg.id !== id);
+          // Only update total if the message was actually removed
+          if (filteredMessages.length < prev.length) {
+            setTotalSentMessages((prevTotal) => prevTotal - 1);
+          }
+          return filteredMessages;
+        });
         setTotalRecycleBinMsg((prev) => prev + 1);
       } else if (draftMessages.some((msg) => msg.id === id)) {
-        // if draft message includes the id then remove it
-        setDraftMessages((prev) => prev.filter((msg) => msg.id !== id));
-        setTotalDraftMessages((prev) => prev - 1);
+        console.log("draft msg");
+        // Check if the message is already deleted before updating
+        setDraftMessages((prev) => {
+          const filteredMessages = prev.filter((msg) => msg.id !== id);
+          // Only update total if the message was actually removed
+          if (filteredMessages.length < prev.length) {
+            setTotalDraftMessages((prevTotal) => prevTotal - 1);
+          }
+          console.log(prev, filteredMessages, "check if remove");
+          return filteredMessages;
+        });
         setTotalRecycleBinMsg((prev) => prev + 1);
       } else if (recycleBinMsg.some((msg) => msg.id === id)) {
-        // if receive message includes the id then remove it
-        setRecycleBinMsg((prev) => prev.filter((msg) => msg.id !== id));
-        setTotalRecycleBinMsg((prev) => prev - 1);
+        // Check if the message is already deleted before updating
+        setRecycleBinMsg((prev) => {
+          const filteredMessages = prev.filter((msg) => msg.id !== id);
+          // Only update total if the message was actually removed
+          if (filteredMessages.length < prev.length) {
+            setTotalRecycleBinMsg((prevTotal) => prevTotal - 1);
+          }
+          return filteredMessages;
+        });
       }
     });
+
+    // socket.on("deletedMessage", (id) => {
+    //   if (receivedMessages.some((msg) => msg.id === id)) {
+    //     // if receive message includes the id then remove it
+    //     setReceivedMessages((prev) => prev.filter((msg) => msg.id !== id));
+    //     setTotalReceivedMessages((prev) => prev - 1);
+    //     setSocketMessages((prev) => prev.filter((msg) => msg.id !== id));
+    //     setTotalRecycleBinMsg((prev) => prev + 1);
+    //   } else if (sentMessages.some((msg) => msg.id === id)) {
+    //     console.log("sentMessage");
+    //     // if sent message includes the id then remove it
+    //     setSentMessages((prev) => prev.filter((msg) => msg.id !== id));
+    //     setTotalSentMessages((prev) => prev - 1);
+    //     setTotalRecycleBinMsg((prev) => prev + 1);
+    //   } else if (draftMessages.some((msg) => msg.id === id)) {
+    //     // if draft message includes the id then remove it
+    //     setDraftMessages((prev) => prev.filter((msg) => msg.id !== id));
+    //     setTotalDraftMessages((prev) => prev - 1);
+    //     setTotalRecycleBinMsg((prev) => prev + 1);
+    //   } else if (recycleBinMsg.some((msg) => msg.id === id)) {
+    //     // if receive message includes the id then remove it
+    //     setRecycleBinMsg((prev) => prev.filter((msg) => msg.id !== id));
+    //     setTotalRecycleBinMsg((prev) => prev - 1);
+    //   }
+    // });
 
     return () => {
       socket.off("receivedMessage");
       socket.off("sentMessage");
       socket.off("draftMessage");
       socket.off("sync");
-      socket.off("removeMsgFromSocketMessages");
-      socket.disconnect();
+      socket.off("deletedMessage");
+      // socket.disconnect();
     };
   }, [
     draftMessages,

@@ -77,7 +77,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     setReceivedMessages,
     url,
     user,
-    receivedMessages.length,
+    // receivedMessages.length,
   ]);
 
   const totalDisplayedMessages = 5;
