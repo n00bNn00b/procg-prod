@@ -76,7 +76,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
     user,
     setIsLoading,
     setSentMessages,
-    sentMessages.length,
+    // sentMessages.length,
   ]);
 
   const totalDisplayedMessages = 5;

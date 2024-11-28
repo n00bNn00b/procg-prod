@@ -31,7 +31,7 @@ const SingleDraft = () => {
   const { users, token, user } = useGlobalContext();
   const {
     handlesendMessage,
-    totalDraftMessages,
+    // totalDraftMessages,
     handleDraftMessage,
     handleDeleteMessage,
     handleDraftMsgId,
@@ -75,7 +75,7 @@ const SingleDraft = () => {
     };
 
     fetchMessage();
-  }, [id, url, totalDraftMessages]);
+  }, [id, url]);
 
   const actualUsers = users.filter((usr) => usr.user_name !== user);
 
@@ -168,14 +168,13 @@ const SingleDraft = () => {
       holders: uniqueUsers,
       recyclebin: [],
     };
-    console.log(data, "data");
     try {
       setIsSending(true);
 
       const newMsg = await axios.post(`${url}/messages`, data);
       if (newMsg.data) {
-        handlesendMessage(data);
         handleDraftMsgId(id as string);
+        handlesendMessage(data);
         console.log(data, "data");
         toast({
           title: "Message Sent",
@@ -191,6 +190,7 @@ const SingleDraft = () => {
       setRecivers([]);
       setSubject("");
       setBody("");
+      setIsSending(false);
     }
   };
 

@@ -76,7 +76,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
     setIsLoading,
     url,
     user,
-    draftMessages.length,
+    // draftMessages.length,
   ]);
 
   const totalDisplayedMessages = 5;
