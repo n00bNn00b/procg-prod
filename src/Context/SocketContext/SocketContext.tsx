@@ -242,6 +242,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       socket.off("draftMessage");
       socket.off("sync");
       socket.off("deletedMessage");
+      socket.off("draftMessageId");
       // socket.disconnect();
     };
   }, [

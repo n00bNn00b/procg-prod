@@ -170,9 +170,9 @@ const SingleDraft = () => {
     };
     try {
       setIsSending(true);
-
       const newMsg = await axios.post(`${url}/messages`, data);
-      if (newMsg.data) {
+      const deletedMsg = await axios.delete(`${url}/messages/${id}`);
+      if (newMsg.data && deletedMsg.data) {
         handleDraftMsgId(id as string);
         handlesendMessage(data);
         console.log(data, "data");
@@ -180,7 +180,6 @@ const SingleDraft = () => {
           title: "Message Sent",
         });
         setTimeout(async () => {
-          await axios.delete(`${url}/messages/${id}`);
           navigate("/notifications/drafts");
         }, 500);
       }
