@@ -52,7 +52,6 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
 
   //Fetch Draft Messages
   useEffect(() => {
-    console.log("loading from draft table");
     const fetchSentMessages = async () => {
       try {
         setIsLoading(true);
@@ -62,22 +61,18 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
         const result = response.data;
         setDraftMessages(result);
       } catch (error) {
-        console.log(error);
-        return [];
+        if (error instanceof Error) {
+          toast({
+            title: `${error.message}}`,
+          });
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchSentMessages();
-  }, [
-    currentPage,
-    setDraftMessages,
-    setIsLoading,
-    url,
-    user,
-    // draftMessages.length,
-  ]);
+  }, [currentPage, setDraftMessages, setIsLoading, url, user, toast]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -108,7 +103,11 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
         });
       }
     } catch (error) {
-      console.error("Error deleting resource:", error);
+      if (error instanceof Error) {
+        toast({
+          title: `${error.message}}`,
+        });
+      }
     }
   };
 

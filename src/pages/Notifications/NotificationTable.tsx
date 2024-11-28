@@ -53,7 +53,6 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
   const url = import.meta.env.VITE_API_URL;
   //Fetch Received Messages
   useEffect(() => {
-    console.log("loading from inbox table");
     const fetchReceivedMessages = async () => {
       try {
         setIsLoading(true);
@@ -63,7 +62,11 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
         const result = response.data;
         setReceivedMessages(result);
       } catch (error) {
-        console.log(error);
+        if (error instanceof Error) {
+          toast({
+            title: `${error.message}}`,
+          });
+        }
         return [];
       } finally {
         setIsLoading(false);
@@ -71,14 +74,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     };
 
     fetchReceivedMessages();
-  }, [
-    currentPage,
-    setIsLoading,
-    setReceivedMessages,
-    url,
-    user,
-    // receivedMessages.length,
-  ]);
+  }, [currentPage, setIsLoading, setReceivedMessages, url, user, toast]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -117,7 +113,11 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
         });
       }
     } catch (error) {
-      console.error("Error deleting resource:", error);
+      if (error instanceof Error) {
+        toast({
+          title: `${error.message}}`,
+        });
+      }
     }
   };
 

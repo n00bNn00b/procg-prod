@@ -114,7 +114,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   //Listen to socket events
   useEffect(() => {
     socket.on("receivedMessage", (data) => {
-      console.log("receivedMessage", data);
       const receivedMessagesId = receivedMessages.map((msg) => msg.id);
       if (receivedMessagesId.includes(data.id)) {
         return;
@@ -125,7 +124,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       }
     });
     socket.on("sentMessage", (data) => {
-      console.log("check sent msg");
       const sentMessageId = sentMessages.map((msg) => msg.id);
       if (sentMessageId.includes(data.id)) {
         return;
@@ -150,7 +148,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     });
 
     socket.on("draftMessageId", (id) => {
-      console.log(id, draftMessages, "draftMessages");
       // for sync socket draft messages
       const draftMessageId = draftMessages.map((msg) => msg.id);
       if (draftMessageId.includes(id)) {
@@ -174,7 +171,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         setSocketMessages((prev) => prev.filter((msg) => msg.id !== id));
         setTotalRecycleBinMsg((prev) => prev + 1);
       } else if (sentMessages.some((msg) => msg.id === id)) {
-        console.log("sentMessage");
         // Check if the message is already deleted before updating
         setSentMessages((prev) => {
           const filteredMessages = prev.filter((msg) => msg.id !== id);
@@ -186,7 +182,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         });
         setTotalRecycleBinMsg((prev) => prev + 1);
       } else if (draftMessages.some((msg) => msg.id === id)) {
-        console.log("draft msg");
         // Check if the message is already deleted before updating
         setDraftMessages((prev) => {
           const filteredMessages = prev.filter((msg) => msg.id !== id);
@@ -194,7 +189,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           if (filteredMessages.length < prev.length) {
             setTotalDraftMessages((prevTotal) => prevTotal - 1);
           }
-          console.log(prev, filteredMessages, "check if remove");
           return filteredMessages;
         });
         setTotalRecycleBinMsg((prev) => prev + 1);
@@ -206,6 +200,12 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           if (filteredMessages.length < prev.length) {
             setTotalRecycleBinMsg((prevTotal) => prevTotal - 1);
           }
+          console.log(
+            recycleBinMsg,
+            filteredMessages,
+            totalRecycleBinMsg,
+            "check if remove"
+          );
           return filteredMessages;
         });
       }
