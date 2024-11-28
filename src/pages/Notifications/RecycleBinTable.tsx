@@ -53,21 +53,22 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
         );
         setRecycleBinMsg(response.data);
       } catch (error) {
-        console.log(error);
+        if (error instanceof Error) {
+          toast({
+            title: `${error.message}}`,
+          });
+        }
       } finally {
         setIsLoading(false);
       }
     };
     fetchRecycleBinMsg();
   }, [currentPage, setIsLoading, setRecycleBinMsg, url, user]);
+
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
     totalRecycleBinMsg / totalDisplayedMessages
   );
-  // const paginationArray = Array.from(
-  //   { length: totalPageNumbers },
-  //   (_, i) => i + 1
-  // );
   let startNumber = 1;
   let endNumber = currentPage * totalDisplayedMessages;
 
@@ -120,7 +121,11 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
         }
       }
     } catch (error) {
-      console.error("Error deleting resource:", error);
+      if (error instanceof Error) {
+        toast({
+          title: `${error.message}}`,
+        });
+      }
     }
   };
   const emptyRecycleBin = async () => {

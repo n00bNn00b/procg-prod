@@ -36,7 +36,7 @@ const SingleMessage = () => {
     recyclebin: [],
   });
   const [totalInvolvedUsers, setTotalInvolvedUsers] = useState<string[]>([]);
-  console.log(totalInvolvedUsers);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
   //Fetch TotalReplyMessages
   useEffect(() => {
     const fetchMessage = async () => {
@@ -46,15 +46,20 @@ const SingleMessage = () => {
         );
         const result = response.data;
         setTotalMessages(result);
+        setIsLoaded(true);
       } catch (error) {
-        console.log(error);
+        if (error instanceof Error) {
+          toast({
+            title: `${error.message}}`,
+          });
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchMessage();
-  }, [id, url, user]);
+  }, [id, toast, url, user]);
 
   //Fetch SingleMessage
   useEffect(() => {
@@ -65,14 +70,26 @@ const SingleMessage = () => {
         setParrentMessage(result);
         setTotalInvolvedUsers(result.involvedusers);
       } catch (error) {
-        console.log(error);
+        if (error instanceof Error) {
+          toast({
+            title: `${error.message}}`,
+          });
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchMessage();
-  }, [id, url, user]);
+  }, [id, toast, url, user]);
+
+  useEffect(() => {
+    if (totalMessages.length === 0 && isLoaded) {
+      setTimeout(() => {
+        navigate("/notifications/inbox");
+      }, 500);
+    }
+  }, [isLoaded, navigate, totalMessages.length]);
 
   const colors = [
     "text-[#725EF2]",
@@ -107,12 +124,6 @@ const SingleMessage = () => {
         toast({
           title: `${error.message}`,
         });
-      }
-    } finally {
-      if (totalMessages.length === 0) {
-        setTimeout(() => {
-          navigate("/notifications/inbox");
-        }, 1000);
       }
     }
   };

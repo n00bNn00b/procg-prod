@@ -52,7 +52,6 @@ const SentTable = ({ path, person }: SentTableProps) => {
 
   //Fetch Sent Messages
   useEffect(() => {
-    console.log("loading from sent table");
     const fetchSentMessages = async () => {
       try {
         setIsLoading(true);
@@ -62,22 +61,18 @@ const SentTable = ({ path, person }: SentTableProps) => {
         const result = response.data;
         setSentMessages(result);
       } catch (error) {
-        console.log(error);
-        return [];
+        if (error instanceof Error) {
+          toast({
+            title: `${error.message}}`,
+          });
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchSentMessages();
-  }, [
-    currentPage,
-    url,
-    user,
-    setIsLoading,
-    setSentMessages,
-    // sentMessages.length,
-  ]);
+  }, [currentPage, url, user, setIsLoading, setSentMessages, toast]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -108,7 +103,11 @@ const SentTable = ({ path, person }: SentTableProps) => {
         });
       }
     } catch (error) {
-      console.error("Error deleting resource:", error);
+      if (error instanceof Error) {
+        toast({
+          title: `${error.message}}`,
+        });
+      }
     }
   };
 

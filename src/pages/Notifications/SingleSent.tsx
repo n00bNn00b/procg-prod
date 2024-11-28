@@ -33,6 +33,7 @@ const SingleSent = () => {
     involvedusers: [],
   });
   const [totalInvolvedUsers, setTotalInvolvedUsers] = useState<string[]>([]);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
   //Fetch TotalReplyMessages
   useEffect(() => {
     const fetchMessage = async () => {
@@ -42,15 +43,28 @@ const SingleSent = () => {
         );
         const result = response.data;
         setTotalMessages(result);
+        setIsLoaded(true);
       } catch (error) {
-        console.log(error);
+        if (error instanceof Error) {
+          toast({
+            title: `${error.message}}`,
+          });
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchMessage();
-  }, [id, url, user]);
+  }, [id, toast, url, user]);
+
+  useEffect(() => {
+    if (totalMessages.length === 0 && isLoaded) {
+      setTimeout(() => {
+        navigate("/notifications/sent");
+      }, 500);
+    }
+  }, [isLoaded, navigate, totalMessages.length]);
 
   //Fetch SingleMessage
   useEffect(() => {
@@ -61,14 +75,18 @@ const SingleSent = () => {
         setParrentMessage(result);
         setTotalInvolvedUsers(result.involvedusers);
       } catch (error) {
-        console.log(error);
+        if (error instanceof Error) {
+          toast({
+            title: `${error.message}}`,
+          });
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchMessage();
-  }, [id, url]);
+  }, [id, toast, url]);
 
   const colors = [
     "text-[#725EF2]",
@@ -103,12 +121,6 @@ const SingleSent = () => {
         toast({
           title: `${error.message}`,
         });
-      }
-    } finally {
-      if (totalMessages.length === 0) {
-        setTimeout(() => {
-          navigate("/notifications/sent");
-        }, 1000);
       }
     }
   };
