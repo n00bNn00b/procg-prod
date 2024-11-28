@@ -71,16 +71,13 @@ const SingleSent = () => {
   }, [id, url]);
 
   const colors = [
-    "text-[#5D3CA6]",
-    "text-[#BF0436]",
-    "text-[#078C03]",
-    "text-[#040FD9]",
-    "text-[#1B3940]",
-    "text-[#A6495A]",
-    "text-[#305473]",
-    "text-[#0F8C5E]",
-    "text-[#D95829]",
-    "text-[#8C2B2B]",
+    "text-[#725EF2]",
+    "text-[#8C1C03]",
+    "text-[#05A61D]",
+    "text-[#D99E30]",
+    "text-[#1B8EF2]",
+    "text-[#D93D04]",
+    "text-[#027313]",
   ];
 
   const getUniqueColor = (user: string) => {
