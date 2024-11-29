@@ -165,12 +165,27 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     });
     socket.on("deletedMessage", (id) => {
       if (receivedMessages.some((msg) => msg.id === id)) {
+        // add to recycleBinMsg
+        setRecycleBinMsg((prev) => {
+          const deletedMessages = receivedMessages.find((msg) => msg.id === id);
+          if (!deletedMessages) return prev;
+          return [deletedMessages, ...prev];
+        });
+        setTotalRecycleBinMsg((prev) => prev + 1);
+
         // if receive message includes the id then remove it
         setReceivedMessages((prev) => prev.filter((msg) => msg.id !== id));
         setTotalReceivedMessages((prev) => prev - 1);
         setSocketMessages((prev) => prev.filter((msg) => msg.id !== id));
-        setTotalRecycleBinMsg((prev) => prev + 1);
       } else if (sentMessages.some((msg) => msg.id === id)) {
+        // add to recycleBinMsg
+        setRecycleBinMsg((prev) => {
+          const deletedMessages = sentMessages.find((msg) => msg.id === id);
+          if (!deletedMessages) return prev;
+          return [deletedMessages, ...prev];
+        });
+        setTotalRecycleBinMsg((prev) => prev + 1);
+
         // Check if the message is already deleted before updating
         setSentMessages((prev) => {
           const filteredMessages = prev.filter((msg) => msg.id !== id);
@@ -180,8 +195,15 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           }
           return filteredMessages;
         });
-        setTotalRecycleBinMsg((prev) => prev + 1);
       } else if (draftMessages.some((msg) => msg.id === id)) {
+        // add to recycleBinMsg
+        setRecycleBinMsg((prev) => {
+          const deletedMessages = draftMessages.find((msg) => msg.id === id);
+          if (!deletedMessages) return prev;
+          return [deletedMessages, ...prev];
+        });
+        setTotalRecycleBinMsg((prev) => prev + 1);
+
         // Check if the message is already deleted before updating
         setDraftMessages((prev) => {
           const filteredMessages = prev.filter((msg) => msg.id !== id);
@@ -191,21 +213,14 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           }
           return filteredMessages;
         });
-        setTotalRecycleBinMsg((prev) => prev + 1);
       } else if (recycleBinMsg.some((msg) => msg.id === id)) {
         // Check if the message is already deleted before updating
         setRecycleBinMsg((prev) => {
           const filteredMessages = prev.filter((msg) => msg.id !== id);
           // Only update total if the message was actually removed
           if (filteredMessages.length < prev.length) {
-            setTotalRecycleBinMsg((prevTotal) => prevTotal - 1);
+            setTotalRecycleBinMsg(totalRecycleBinMsg - 1);
           }
-          console.log(
-            recycleBinMsg,
-            filteredMessages,
-            totalRecycleBinMsg,
-            "check if remove"
-          );
           return filteredMessages;
         });
       }
@@ -240,9 +255,9 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       socket.off("receivedMessage");
       socket.off("sentMessage");
       socket.off("draftMessage");
+      socket.off("draftMessageId");
       socket.off("sync");
       socket.off("deletedMessage");
-      socket.off("draftMessageId");
       // socket.disconnect();
     };
   }, [
