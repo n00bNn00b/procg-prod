@@ -89,19 +89,13 @@
     "submenu": "Access Models",
     "submenuIcon": "/sidebar/access-model.png",
     "paths": [
-      "/access-models/manage-access-models",
-      "/access-models/create-access-model"
+      "/access-models/manage-access-models"
     ],
     "menuItems": [
       {
         "name": "Manage Access Models",
         "icon": "sidebar/manage-access-models.png",
         "path": "/access-models/manage-access-models"
-      },
-      {
-        "name": "Create Access Model",
-        "icon": "sidebar/create-access-model.png",
-        "path": "/access-models/create-access-model"
       }
     ]
   },
