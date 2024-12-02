@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import {
   Token,
   Users,
@@ -202,13 +202,16 @@ export function GlobalContextProvider({
           description: `User added successfully.`,
         });
       }
-    } catch (error: any) {
-      if (error.response.status) {
-        toast({
-          title: "Info !!!",
-          description: `${error.message}`,
-        });
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status) {
+          toast({
+            title: "Info !!!",
+            description: `${error.message}`,
+          });
+        }
       }
+
       console.log(error);
     } finally {
       fetchCombinedUser();
@@ -248,12 +251,15 @@ export function GlobalContextProvider({
           description: `Reset password successfully.`,
         });
       }
-    } catch (error: any) {
-      toast({
-        title: "Info !!!",
-        variant: "destructive",
-        description: `${error.response.data.message}`,
-      });
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        toast({
+          title: "Info !!!",
+          variant: "destructive",
+          description: `${error.response.data.message}`,
+        });
+      }
+
       return;
     } finally {
       setIsLoading(false);
@@ -279,13 +285,15 @@ export function GlobalContextProvider({
           });
         }
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
-      fetchCombinedUser();
-      toast({
-        title: "Info !!!",
-        description: `Error: ${error.message}`,
-      });
+      if (error instanceof Error) {
+        fetchCombinedUser();
+        toast({
+          title: "Info !!!",
+          description: `Error: ${error.message}`,
+        });
+      }
     } finally {
       fetchCombinedUser();
       setIsLoading(false);
@@ -355,13 +363,16 @@ export function GlobalContextProvider({
           description: `Data added successfully.`,
         });
       }
-    } catch (error: any) {
-      if (error.response.status === 408) {
-        toast({
-          title: "Info !!!",
-          description: `Can't add data already exist !.`,
-        });
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 408) {
+          toast({
+            title: "Info !!!",
+            description: `Can't add data already exist !.`,
+          });
+        }
       }
+
       console.log(error);
     }
   };
@@ -395,13 +406,16 @@ export function GlobalContextProvider({
           description: `Data updated successfully.`,
         });
       }
-    } catch (error: any) {
-      if (error.response.status == 408) {
-        toast({
-          title: "Info !!!",
-          description: `Can't change data already exist !.`,
-        });
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status == 408) {
+          toast({
+            title: "Info !!!",
+            description: `Can't change data already exist !.`,
+          });
+        }
       }
+
       console.log(error);
     }
   };
@@ -419,14 +433,16 @@ export function GlobalContextProvider({
         });
       }
       console.log(res);
-    } catch (error: any) {
-      console.log(error);
-      if (error?.status === 500) {
-        toast({
-          title: "Successfully Deleted",
-          description: `DataSource Name : ${error.message}`,
-        });
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error?.status === 500) {
+          toast({
+            title: "Successfully Deleted",
+            description: `DataSource Name : ${error.message}`,
+          });
+        }
       }
+      console.log(error);
     }
   };
   // Tenant IDs
