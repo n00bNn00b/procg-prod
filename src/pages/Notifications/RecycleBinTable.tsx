@@ -11,6 +11,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -21,12 +28,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Check, Trash, Trash2, X } from "lucide-react";
+import { Check, RotateCcw, Trash, Trash2, View, X } from "lucide-react";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
 import Pagination5 from "@/components/Pagination/Pagination5";
 import { toast } from "@/components/ui/use-toast";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
+import { useNavigate } from "react-router-dom";
 interface RecycleBinTableProps {
   path: string;
   person: string;
@@ -44,6 +52,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
     totalRecycleBinMsg,
   } = useSocketContext();
   const url = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchRecycleBinMsg = async () => {
       try {
@@ -169,6 +178,9 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
       console.error("Error deleting resource:", error);
     }
   };
+  const handleNavigate = (id: string) => {
+    navigate(`/notifications/recycle-bin/${id}`);
+  };
   return (
     <>
       <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
@@ -253,33 +265,67 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
                       {convertDate(msg.date)}
                     </TableCell>
                     <TableCell className="flex gap-2 py-auto">
-                      <AlertDialog>
-                        <AlertDialogTrigger>
-                          <Trash2 color="#E60B0B" />
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Are you absolutely sure?
-                            </AlertDialogTitle>
-                          </AlertDialogHeader>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete from both side.
-                          </AlertDialogDescription>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
-                              <X />
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              className="bg-green-600 text-white flex justify-center items-center"
-                              onClick={() => handleDelete(msg)}
-                            >
-                              <Check />
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <View
+                              onClick={() => handleNavigate(msg.id)}
+                              className="cursor-pointer"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>View</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <RotateCcw className="cursor-pointer" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Restore</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <AlertDialog>
+                              <AlertDialogTrigger>
+                                <Trash2 color="#E60B0B" />
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Are you absolutely sure?
+                                  </AlertDialogTitle>
+                                </AlertDialogHeader>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will
+                                  permanently delete from both side.
+                                </AlertDialogDescription>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
+                                    <X />
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    className="bg-green-600 text-white flex justify-center items-center"
+                                    onClick={() => handleDelete(msg)}
+                                  >
+                                    <Check />
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Permanently delete</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </TableCell>
                   </>
                 </TableRow>

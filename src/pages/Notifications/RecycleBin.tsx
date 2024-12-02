@@ -6,7 +6,7 @@ const RecycleBin = () => {
   return (
     <div>
       <NotificationCard />
-      <RecycleBinTable path="RecycleBin" person="To" />
+      <RecycleBinTable path="Recycle Bin" person="To" />
       <ComposeButton />
     </div>
   );
