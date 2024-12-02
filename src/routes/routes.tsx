@@ -48,7 +48,7 @@ const routes = createBrowserRouter([
         element: <Alerts />,
       },
       {
-        path: "profile",
+        path: "access-profile",
         element: <Profile />,
       },
       {

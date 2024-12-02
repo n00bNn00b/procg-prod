@@ -1,5 +1,12 @@
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { Card, CardTitle } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import React, { useEffect, useState } from "react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import axios from "axios";
@@ -124,19 +131,38 @@ const SingleRecycleBin = () => {
       ) : (
         <div className="flex flex-col gap-4 w-full">
           <Card key={message?.id} className="p-6 w-full">
-            <div className="flex text-dark-400 mb-4">
-              <Link
-                to="/notifications/recycle-bin"
-                className="p-1 rounded-md hover:bg-winter-100/50"
-              >
-                <ArrowLeft size={20} />
-              </Link>
-              <button
-                onClick={() => handleDelete()}
-                className="p-1 rounded-md hover:bg-winter-100/50"
-              >
-                <Trash2 size={20} color="#E60B0B" />
-              </button>
+            <div className="flex text-dark-400 mb-4 items-center">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="p-1 rounded-md hover:bg-winter-100/50 h-7">
+                      <Link to="/notifications/recycle-bin">
+                        <ArrowLeft size={20} />
+                      </Link>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Back</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <button
+                        onClick={() => handleDelete()}
+                        className="p-1 rounded-md hover:bg-winter-100/50"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Permanently delete</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <CardTitle>{`${message.subject}`}</CardTitle>
             <p className="my-4 text-dark-400">{convertDate(message.date)}</p>

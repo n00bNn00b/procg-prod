@@ -43,7 +43,7 @@ const Dropdown = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <NavLink
-            to="/profile"
+            to="/access-profile"
             className={({ isActive }) =>
               isActive
                 ? "flex gap-2 items-center w-full text-Red-400"
@@ -51,7 +51,9 @@ const Dropdown = () => {
             }
           >
             <User size={18} />
-            <p className="font-semibold font-workSans text-md">Profile</p>
+            <p className="font-semibold font-workSans text-md">
+              Access Profile
+            </p>
           </NavLink>
         </DropdownMenuItem>
         <DropdownMenuItem>
