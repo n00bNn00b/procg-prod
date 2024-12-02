@@ -15,8 +15,8 @@ const NotificationCard = () => {
         to="/notifications/inbox"
         className={({ isActive }) =>
           isActive
-            ? "bg-light-200 flex justify-between hover:bg-light-200 px-4 py-4 items-center"
-            : "flex justify-between hover:bg-light-200 px-4 py-4 items-center"
+            ? "bg-light-200 flex justify-between hover:bg-light-200 px-2 py-4 items-center"
+            : "flex justify-between hover:bg-light-200 px-2 py-4 items-center"
         }
       >
         <div className="flex gap-1">
@@ -33,8 +33,8 @@ const NotificationCard = () => {
         to="/notifications/sent"
         className={({ isActive }) =>
           isActive
-            ? "bg-light-200 flex justify-between hover:bg-light-200 px-4 py-4 items-center"
-            : "flex justify-between hover:bg-light-200 px-4 py-4 items-center"
+            ? "bg-light-200 flex justify-between hover:bg-light-200 px-2 py-4 items-center"
+            : "flex justify-between hover:bg-light-200 px-2 py-4 items-center"
         }
       >
         <div className="flex gap-1">
@@ -51,8 +51,8 @@ const NotificationCard = () => {
         to="/notifications/drafts"
         className={({ isActive }) =>
           isActive
-            ? "bg-light-200 flex justify-between hover:bg-light-200 px-4 py-4 items-center"
-            : "flex justify-between hover:bg-light-200 px-4 py-4 items-center"
+            ? "bg-light-200 flex justify-between hover:bg-light-200 px-2 py-4 items-center"
+            : "flex justify-between hover:bg-light-200 px-2 py-4 items-center"
         }
       >
         <div className="flex gap-1">
@@ -69,13 +69,13 @@ const NotificationCard = () => {
         to="/notifications/recycle-bin"
         className={({ isActive }) =>
           isActive
-            ? "bg-light-200 flex justify-between hover:bg-light-200 px-4 py-4 items-center"
-            : "flex justify-between hover:bg-light-200 px-4 py-4 items-center"
+            ? "bg-light-200 flex justify-between hover:bg-light-200 px-2 py-4 items-center"
+            : "flex justify-between hover:bg-light-200 px-2 py-4 items-center"
         }
       >
         <div className="flex gap-1">
           <Trash />
-          <p className="font-semibold">Bin</p>
+          <p className="font-semibold">Recycle Bin</p>
         </div>
         {totalRecycleBinMsg > 0 && (
           <p className="text-white px-2 rounded-full bg-winter-500 font-semibold">

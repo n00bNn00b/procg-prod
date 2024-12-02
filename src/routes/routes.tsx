@@ -32,6 +32,7 @@ import Security from "@/pages/Security/Security";
 import Settings from "@/pages/Settings/Settings";
 import ManageResults from "@/pages/Controls/ManageResults/ManageResults";
 import RecycleBin from "@/pages/Notifications/RecycleBin";
+import SingleRecycleBin from "@/pages/Notifications/SingleRecycleBin";
 
 const routes = createBrowserRouter([
   {
@@ -93,6 +94,10 @@ const routes = createBrowserRouter([
           {
             path: "recycle-bin",
             element: <RecycleBin />,
+          },
+          {
+            path: "recycle-bin/:id",
+            element: <SingleRecycleBin />,
           },
         ],
       },
