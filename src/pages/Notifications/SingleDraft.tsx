@@ -1,4 +1,4 @@
-import { Send, Delete, ArrowLeft, Trash2, Save } from "lucide-react";
+import { Send, Delete, ArrowLeft, Trash, Save } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -6,6 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import { ChangeEvent, useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
@@ -258,18 +265,37 @@ const SingleDraft = () => {
         <Card className="w-full mb-4">
           <CardHeader>
             <div className="flex text-dark-400">
-              <Link
-                to="/notifications/drafts"
-                className="p-1 rounded-md hover:bg-winter-100/50"
-              >
-                <ArrowLeft size={20} />
-              </Link>
-              <button
-                onClick={handleDelete}
-                className="p-1 rounded-md hover:bg-winter-100/50"
-              >
-                <Trash2 size={20} />
-              </button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="p-1 rounded-md hover:bg-winter-100/50 h-7">
+                      <Link to="/notifications/drafts">
+                        <ArrowLeft size={20} />
+                      </Link>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Back</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <button
+                        onClick={handleDelete}
+                        className="p-1 rounded-md hover:bg-winter-100/50"
+                      >
+                        <Trash size={20} />
+                      </button>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Move to Recyclebin</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <CardTitle className=" font-bold">Draft Message</CardTitle>
           </CardHeader>

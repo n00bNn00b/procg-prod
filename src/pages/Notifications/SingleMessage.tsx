@@ -1,6 +1,13 @@
 import { Card, CardTitle } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import axios from "axios";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ReplyDialog from "./ReplyDialog";
@@ -175,24 +182,54 @@ const SingleMessage = () => {
         <div className="flex flex-col gap-4 w-full">
           {totalMessages.map((message) => (
             <Card key={message.id} className="p-6 w-full">
-              <div className="flex text-dark-400 mb-4">
-                <Link
-                  to="/notifications/inbox"
-                  className="p-1 rounded-md hover:bg-winter-100/50"
-                >
-                  <ArrowLeft size={20} />
-                </Link>
-                <button
-                  onClick={() => handleDelete(message.id)}
-                  className="p-1 rounded-md hover:bg-winter-100/50"
-                >
-                  <Trash2 size={20} />
-                </button>
-                <ReplyDialog
-                  parentid={parrentMessage.id}
-                  involvedUsers={totalInvolvedUsers}
-                  setTotalMessages={setTotalMessages}
-                />
+              <div className="flex text-dark-400 mb-4  ">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="p-1 rounded-md hover:bg-winter-100/50 h-7">
+                        <Link to="/notifications/inbox">
+                          <ArrowLeft size={20} />
+                        </Link>
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Back</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span>
+                        <button
+                          onClick={() => handleDelete(message.id)}
+                          className="p-1 rounded-md hover:bg-winter-100/50"
+                        >
+                          <Trash size={20} />
+                        </button>
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Move to Recyclebin</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span>
+                        <ReplyDialog
+                          parentid={parrentMessage.id}
+                          involvedUsers={totalInvolvedUsers}
+                          setTotalMessages={setTotalMessages}
+                        />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Replay</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <CardTitle>{`${message.subject}`}</CardTitle>
               <p className="my-4 text-dark-400">{convertDate(message.date)}</p>

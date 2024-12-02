@@ -256,22 +256,21 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
                       <span className="font-medium mr-1">
                         {msg.subject === "" ? "(no subject)" : msg.subject}
                       </span>
-                      {/* <span className="text-dark-400 mr-1">
-                      {msg.body?.slice(0, 60)}
-                    </span>
-                    <span>...</span> */}
                     </TableCell>
                     <TableCell className="w-[115px] py-2">
                       {convertDate(msg.date)}
                     </TableCell>
                     <TableCell className="flex gap-2 py-auto">
+                      {/* View Tooltip */}
                       <TooltipProvider>
                         <Tooltip>
-                          <TooltipTrigger>
-                            <View
-                              onClick={() => handleNavigate(msg.id)}
-                              className="cursor-pointer"
-                            />
+                          <TooltipTrigger asChild>
+                            <span>
+                              <View
+                                onClick={() => handleNavigate(msg.id)}
+                                className="cursor-pointer"
+                              />
+                            </span>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>View</p>
@@ -279,10 +278,13 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
                         </Tooltip>
                       </TooltipProvider>
 
+                      {/* Restore Tooltip */}
                       <TooltipProvider>
                         <Tooltip>
-                          <TooltipTrigger>
-                            <RotateCcw className="cursor-pointer" />
+                          <TooltipTrigger asChild>
+                            <span>
+                              <RotateCcw className="cursor-pointer" />
+                            </span>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Restore</p>
@@ -290,36 +292,39 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
                         </Tooltip>
                       </TooltipProvider>
 
+                      {/* Delete Tooltip */}
                       <TooltipProvider>
                         <Tooltip>
-                          <TooltipTrigger>
-                            <AlertDialog>
-                              <AlertDialogTrigger>
-                                <Trash2 color="#E60B0B" />
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Are you absolutely sure?
-                                  </AlertDialogTitle>
-                                </AlertDialogHeader>
-                                <AlertDialogDescription>
-                                  This action cannot be undone. This will
-                                  permanently delete from both side.
-                                </AlertDialogDescription>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
-                                    <X />
-                                  </AlertDialogCancel>
-                                  <AlertDialogAction
-                                    className="bg-green-600 text-white flex justify-center items-center"
-                                    onClick={() => handleDelete(msg)}
-                                  >
-                                    <Check />
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                          <TooltipTrigger asChild>
+                            <span>
+                              <AlertDialog>
+                                <AlertDialogTrigger>
+                                  <Trash2 />
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Are you absolutely sure?
+                                    </AlertDialogTitle>
+                                  </AlertDialogHeader>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will
+                                    permanently delete from both sides.
+                                  </AlertDialogDescription>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
+                                      <X />
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      className="bg-green-600 text-white flex justify-center items-center"
+                                      onClick={() => handleDelete(msg)}
+                                    >
+                                      <Check />
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </span>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Permanently delete</p>

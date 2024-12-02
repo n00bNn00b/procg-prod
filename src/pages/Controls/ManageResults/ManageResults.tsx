@@ -5,7 +5,7 @@ import SearchResults from "./SearchResultsIncidents/SearchResults";
 import { useState } from "react";
 
 const ManageResults = () => {
-  const [isSearchModelsOpen, setIsSearchModelsOpen] = useState(true);
+  const [isSearchModelsOpen, setIsSearchModelsOpen] = useState(false);
   const [isSearchResultsOpen, setIsSearchResultsOpen] = useState(true);
 
   ring.register();

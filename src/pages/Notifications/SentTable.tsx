@@ -7,6 +7,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -19,7 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
-import { Check, Trash2, View, X } from "lucide-react";
+import { Check, Trash, View, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
@@ -165,38 +172,60 @@ const SentTable = ({ path, person }: SentTableProps) => {
                     {convertDate(msg.date)}
                   </TableCell>
                   <TableCell className="flex gap-2 py-auto">
-                    <View
-                      onClick={() => handleNavigate(msg.parentid)}
-                      color="#044BD9"
-                      className="cursor-pointer"
-                    />
-                    <AlertDialog>
-                      <AlertDialogTrigger>
-                        <Trash2 color="#E60B0B" />
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Are you absolutely sure?
-                          </AlertDialogTitle>
-                        </AlertDialogHeader>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently
-                          delete from both sides.
-                        </AlertDialogDescription>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
-                            <X />
-                          </AlertDialogCancel>
-                          <AlertDialogAction
-                            className="bg-green-600 text-white flex justify-center items-center"
-                            onClick={() => handleDelete(msg.id)}
-                          >
-                            <Check />
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span>
+                            <View
+                              onClick={() => handleNavigate(msg.parentid)}
+                              className="cursor-pointer"
+                            />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>View</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span>
+                            {" "}
+                            <AlertDialog>
+                              <AlertDialogTrigger>
+                                <Trash />
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Are you absolutely sure?
+                                  </AlertDialogTitle>
+                                </AlertDialogHeader>
+                                <AlertDialogDescription>
+                                  This message will be displayed in the Recycle
+                                  Bin.
+                                </AlertDialogDescription>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel className="bg-Red-200 text-white flex justify-center items-center">
+                                    <X />
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    className="bg-green-600 text-white flex justify-center items-center"
+                                    onClick={() => handleDelete(msg.id)}
+                                  >
+                                    <Check />
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Move to Recyclebin</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </TableCell>
                 </TableRow>
               ))}

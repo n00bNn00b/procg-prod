@@ -7,11 +7,11 @@ import { useAACContext } from "@/Context/ManageAccessEntitlements/AdvanceAccessC
 
 const ManageAccessModels = () => {
   const { fetchDataSource } = useAACContext();
-  const [isSearchModelsOpen, setIsSearchModelsOpen] = useState(true);
+  const [isSearchModelsOpen, setIsSearchModelsOpen] = useState(false);
   const [isSearchResultsOpen, setIsSearchResultsOpen] = useState(true);
   useEffect(() => {
     fetchDataSource();
-  }, []);
+  }, [fetchDataSource]);
 
   ring.register();
   return (

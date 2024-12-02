@@ -28,7 +28,7 @@ const Profile = () => {
   return (
     <Tabs defaultValue="profile" className="w-full">
       <TabsList className="grid w-[30rem] mx-auto grid-cols-2">
-        <TabsTrigger value="profile">Profile</TabsTrigger>
+        <TabsTrigger value="profile">Access Profiles</TabsTrigger>
         <TabsTrigger value="customize">Customize</TabsTrigger>
       </TabsList>
       <TabsContent value="profile">

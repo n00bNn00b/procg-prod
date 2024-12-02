@@ -21,7 +21,6 @@ import IssueManagement from "@/pages/Finance/IssueManagement/IssueManagement";
 import ResultManagement from "@/pages/ContinuousMonitoring/ResultManagement/ResultManagement";
 import ContinuousControlManagement from "@/pages/ContinuousMonitoring/ContinuousControlManagement/ContinuousControlManagement";
 import ManageControls from "@/pages/Controls/ManageControls/ManageControls";
-import CreateAccessModels from "@/pages/AccessModels/CreateAccessModels/CreateAccessModels";
 import CreateAccessGlobalConditions from "@/pages/ManageAdministration/CreateAccessGlobalConditions/CreateAccessGlobalConditions";
 import ManageAccessPathConditions from "@/pages/ManageAdministration/ManageAccessPathConditions/ManageAccessPathConditions";
 import ManageUserDefinedObjects from "@/pages/ManageAdministration/ManageUserDefinedObjects/ManageUserDefinedObjects";
@@ -48,7 +47,7 @@ const routes = createBrowserRouter([
         element: <Alerts />,
       },
       {
-        path: "profile",
+        path: "access-profiles",
         element: <Profile />,
       },
       {
@@ -163,10 +162,6 @@ const routes = createBrowserRouter([
           {
             path: "manage-access-models",
             element: <ManageAccessModels />,
-          },
-          {
-            path: "create-access-model",
-            element: <CreateAccessModels />,
           },
         ],
       },
