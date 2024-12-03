@@ -227,6 +227,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
         <Table>
           <TableHeader>
             <TableRow className="bg-white hover:bg-white">
+              <TableHead className="w-[3rem] font-bold">Origin</TableHead>
               <TableHead className="w-[7rem] font-bold">{person}</TableHead>
               <TableHead className="font-bold">Subject</TableHead>
               <TableHead className="w-[7rem] font-bold">Date</TableHead>
@@ -246,6 +247,9 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
               {recycleBinMsg.map((msg) => (
                 <TableRow key={msg.id}>
                   <>
+                    <TableCell className="py-2 font-bold">
+                      {msg.recivers.includes(user) ? "Inbox" : msg.status}
+                    </TableCell>
                     <TableCell className="py-2">
                       {msg.recivers.length === 0
                         ? "(no user)"

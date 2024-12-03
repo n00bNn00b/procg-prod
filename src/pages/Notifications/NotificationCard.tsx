@@ -10,7 +10,7 @@ const NotificationCard = () => {
     totalRecycleBinMsg,
   } = useSocketContext();
   return (
-    <div className="fixed flex flex-col rounded-md shadow-sm border w-[160px] ">
+    <div className="fixed flex flex-col rounded-md shadow-sm border w-[170px] ">
       <NavLink
         to="/notifications/inbox"
         className={({ isActive }) =>
