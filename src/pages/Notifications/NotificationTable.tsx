@@ -240,7 +240,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Move to Recyclebin</p>
+                            <p>Move to Recycle Bin</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
