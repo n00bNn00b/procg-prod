@@ -181,6 +181,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
   const handleNavigate = (id: string) => {
     navigate(`/notifications/recycle-bin/${id}`);
   };
+  console.log(recycleBinMsg.map((msg) => msg));
   return (
     <>
       <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">
@@ -253,6 +254,8 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
                     <TableCell className="py-2">
                       {msg.recivers.length === 0
                         ? "(no user)"
+                        : msg.recivers.includes(user)
+                        ? msg.sender
                         : msg.recivers.slice(0, 2).join(", ")}
                       {msg.recivers.length > 2 && ", ..."}
                     </TableCell>
