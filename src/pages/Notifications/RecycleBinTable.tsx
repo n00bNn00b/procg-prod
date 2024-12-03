@@ -251,9 +251,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
                       {msg.recivers.includes(user) ? "Inbox" : msg.status}
                     </TableCell>
                     <TableCell className="py-2">
-                      {msg.recivers.length === 0
-                        ? "(no user)"
-                        : msg.recivers.slice(0, 2).join(", ")}
+                      {msg.recivers.length === 0 ? "(no user)" : msg.sender}
                       {msg.recivers.length > 2 && ", ..."}
                     </TableCell>
                     <TableCell className="py-2">
