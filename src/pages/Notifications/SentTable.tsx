@@ -31,7 +31,7 @@ import { useNavigate } from "react-router-dom";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
 import Pagination5 from "@/components/Pagination/Pagination5";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Message } from "@/types/interfaces/users.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
@@ -43,18 +43,16 @@ interface SentTableProps {
 
 const SentTable = ({ path, person }: SentTableProps) => {
   const {
-    isLoading,
-    setIsLoading,
     sentMessages,
     totalSentMessages,
     handleDeleteMessage,
-    currentPage,
-    setCurrentPage,
     setSentMessages,
   } = useSocketContext();
   const { user } = useGlobalContext();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const url = import.meta.env.VITE_API_URL;
 
   //Fetch Sent Messages

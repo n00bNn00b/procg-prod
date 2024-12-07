@@ -16,8 +16,6 @@ interface SocketContextProps {
 }
 
 interface SocketContext {
-  isLoading: boolean;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   receivedMessages: Message[];
   handlesendMessage: (data: Message) => void;
   handleDisconnect: () => void;
@@ -39,8 +37,6 @@ interface SocketContext {
   setTotalSentMessages: React.Dispatch<React.SetStateAction<number>>;
   totalDraftMessages: number;
   setTotalDraftMessages: React.Dispatch<React.SetStateAction<number>>;
-  currentPage: number;
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   totalRecycleBinMsg: number;
   handleDraftMsgId: (id: string) => void;
 }
@@ -53,7 +49,6 @@ export function useSocketContext() {
 }
 
 export function SocketContextProvider({ children }: SocketContextProps) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [receivedMessages, setReceivedMessages] = useState<Message[]>([]);
   const [totalReceivedMessages, setTotalReceivedMessages] = useState<number>(0);
   const [sentMessages, setSentMessages] = useState<Message[]>([]);
@@ -66,7 +61,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const url = import.meta.env.VITE_API_URL;
   const socket_url = import.meta.env.VITE_SOCKET_URL;
   const { user } = useGlobalContext();
-  const [currentPage, setCurrentPage] = useState<number>(1);
 
   // Memoize the socket connection so that it's created only once
   const socket = useMemo(() => {
@@ -296,8 +290,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   return (
     <SocketContext.Provider
       value={{
-        isLoading,
-        setIsLoading,
         handlesendMessage,
         handleDisconnect,
         handleRead,
@@ -319,8 +311,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         setTotalSentMessages,
         totalDraftMessages,
         setTotalDraftMessages,
-        currentPage,
-        setCurrentPage,
         totalRecycleBinMsg,
         handleDraftMsgId,
       }}
