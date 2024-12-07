@@ -1,7 +1,7 @@
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { Message } from "@/types/interfaces/users.interface";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -42,15 +42,14 @@ interface RecycleBinTableProps {
 const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
   const { user } = useGlobalContext();
   const {
-    isLoading,
-    setIsLoading,
-    currentPage,
-    setCurrentPage,
     handleDeleteMessage,
     recycleBinMsg,
     setRecycleBinMsg,
     totalRecycleBinMsg,
   } = useSocketContext();
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const url = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   useEffect(() => {

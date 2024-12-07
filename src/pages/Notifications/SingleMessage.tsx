@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/tooltip";
 
 import axios from "axios";
-import { ArrowLeft, Trash } from "lucide-react";
+import { ArrowLeft, Ellipsis, Trash } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ReplyDialog from "./ReplyDialog";
@@ -247,17 +247,58 @@ const SingleMessage = () => {
                 </div>
                 <div className="flex flex-col text-dark-400">
                   <p className="text-right">To</p>
-                  <div className="flex gap-2 max-w-[400px]">
-                    {message.recivers.map((rcvr) => (
-                      <div key={rcvr} className="flex flex-col text-dark-400">
-                        <p className={getUniqueColor(message.sender)}>{rcvr}</p>
-                        <img
-                          src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                          alt="img"
-                          className="w-10 h-10 rounded-full object-cover object-center"
-                        />
+                  <div className="flex gap-2 max-w-[400px] items-center">
+                    {message.recivers.slice(0, 2).map((recvr) => (
+                      <div key={recvr} className="flex">
+                        <div className="flex flex-col text-dark-400 items-center">
+                          <p className={getUniqueColor(message.sender)}>
+                            {recvr.slice(0, 8)}
+                            {recvr.length > 8 && ".."}
+                          </p>
+                          <img
+                            src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                            alt="img"
+                            className="w-10 h-10 rounded-full object-cover object-center"
+                          />
+                        </div>
                       </div>
                     ))}
+                    {/* Hover Effect */}
+                    {message.recivers.length > 2 && (
+                      <>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger className=" pb-2 px-2 rounded">
+                              <Ellipsis />
+                            </TooltipTrigger>
+                            <TooltipContent className=" h-60 overflow-y-scroll scrollbar-thin p-4">
+                              {message.recivers.map((rcvr) => (
+                                <div
+                                  key={rcvr}
+                                  className="flex my-2 text-dark-400"
+                                >
+                                  {/* {message.recivers[0] === rcvr ||
+                                message.recivers[1] === rcvr ? null : ( */}
+                                  <div className="flex items-center gap-1">
+                                    <img
+                                      src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                      alt="img"
+                                      className="w-10 h-10 rounded-full object-cover object-center"
+                                    />
+                                    <p
+                                      className={getUniqueColor(message.sender)}
+                                    >
+                                      {rcvr}
+                                    </p>
+                                  </div>
+                                  {/* )} */}
+                                </div>
+                              ))}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

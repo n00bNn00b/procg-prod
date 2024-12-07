@@ -32,7 +32,7 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
 import Spinner from "@/components/Spinner/Spinner";
 import Pagination5 from "@/components/Pagination/Pagination5";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Message } from "@/types/interfaces/users.interface";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
@@ -44,19 +44,17 @@ interface NotificationTableProps {
 const NotificationTable = ({ path, person }: NotificationTableProps) => {
   const { user } = useGlobalContext();
   const {
-    isLoading,
-    setIsLoading,
     socketMessage,
     receivedMessages,
     setReceivedMessages,
     handleRead,
     handleDeleteMessage,
     totalReceivedMessages,
-    currentPage,
-    setCurrentPage,
   } = useSocketContext();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const url = import.meta.env.VITE_API_URL;
   //Fetch Received Messages
   useEffect(() => {
