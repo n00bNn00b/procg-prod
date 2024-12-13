@@ -84,7 +84,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
     totalSentMessages / totalDisplayedMessages
   );
 
-  let startNumber = 1;
+  let startNumber = 0;
   let endNumber = currentPage * totalDisplayedMessages;
 
   if (endNumber > totalSentMessages) {
@@ -132,7 +132,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
         <div className="flex justify-between">
           <h1 className="text-lg font-bold mb-6 ">{path}</h1>
           <TableRowCounter
-            startNumber={startNumber}
+            startNumber={totalSentMessages > 0 ? startNumber : 0}
             endNumber={endNumber}
             totalNumber={totalSentMessages}
           />
@@ -149,12 +149,15 @@ const SentTable = ({ path, person }: SentTableProps) => {
           {isLoading ? (
             <TableBody className="w-full">
               <TableRow>
-                <TableCell className="flex flex-col items-center justify-center w-[50rem] h-[12rem]">
+                <TableCell></TableCell>
+                <TableCell className="flex items-center justify-center h-[12rem] py-32">
                   <Spinner size="80" color="#000000" />
                 </TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
               </TableRow>
             </TableBody>
-          ) : (
+          ) : sentMessages.length > 0 ? (
             <TableBody>
               {sentMessages.map((msg, i) => (
                 <TableRow key={i}>
@@ -228,13 +231,24 @@ const SentTable = ({ path, person }: SentTableProps) => {
                 </TableRow>
               ))}
             </TableBody>
+          ) : (
+            <TableBody>
+              <TableRow>
+                <TableCell> </TableCell>
+                <TableCell className="py-32 flex justify-center">
+                  No messages found in Sent Folder.
+                </TableCell>
+                <TableCell> </TableCell>
+                <TableCell> </TableCell>
+              </TableRow>
+            </TableBody>
           )}
         </Table>
         <div className="flex w-full justify-end mt-4">
           <Pagination5
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-            totalPageNumbers={totalPageNumbers}
+            totalPageNumbers={totalPageNumbers === 0 ? 1 : totalPageNumbers}
           />
         </div>
       </div>

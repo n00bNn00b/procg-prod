@@ -26,12 +26,24 @@ const Account: FC<IAccountTypes> = ({ userInfo }) => {
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="space-y-1">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" defaultValue={userInfo?.first_name} />
+            <Label htmlFor="name">Avatar</Label>
+            <Input type="file" />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="first-name">First Name</Label>
+            <Input id="first-name" defaultValue={userInfo?.first_name} />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="last-name"> Last Name</Label>
+            <Input id="last-name" defaultValue={userInfo?.last_name} />
           </div>
           <div className="space-y-1">
             <Label htmlFor="username">Username</Label>
             <Input id="username" defaultValue={userInfo?.user_name} />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" defaultValue={userInfo?.email_addresses[0]} />
           </div>
         </CardContent>
         <CardFooter>

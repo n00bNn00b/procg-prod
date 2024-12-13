@@ -133,7 +133,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
         <div className="flex justify-between">
           <h1 className="text-lg font-bold mb-6 ">{path}</h1>
           <TableRowCounter
-            startNumber={startNumber}
+            startNumber={totalDraftMessages > 0 ? startNumber : 0}
             endNumber={endNumber}
             totalNumber={totalDraftMessages}
           />
@@ -150,12 +150,15 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
           {isLoading ? (
             <TableBody className="w-full">
               <TableRow>
-                <TableCell className="flex flex-col items-center justify-center w-[50rem] h-[12rem]">
+                <TableCell></TableCell>
+                <TableCell className="flex items-center justify-center h-[12rem] py-32">
                   <Spinner size="80" color="#000000" />
                 </TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
               </TableRow>
             </TableBody>
-          ) : (
+          ) : draftMessages.length > 0 ? (
             <TableBody>
               {draftMessages.map((msg) => (
                 <TableRow key={msg.id}>
@@ -233,13 +236,24 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
                 </TableRow>
               ))}
             </TableBody>
+          ) : (
+            <TableBody>
+              <TableRow>
+                <TableCell> </TableCell>
+                <TableCell className="py-32 flex justify-center">
+                  No messages found in Drafts Fonder.
+                </TableCell>
+                <TableCell> </TableCell>
+                <TableCell> </TableCell>
+              </TableRow>
+            </TableBody>
           )}
         </Table>
         <div className="flex w-full justify-end mt-4">
           <Pagination5
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-            totalPageNumbers={totalPageNumbers}
+            totalPageNumbers={totalPageNumbers === 0 ? 1 : totalPageNumbers}
           />
         </div>
       </div>
