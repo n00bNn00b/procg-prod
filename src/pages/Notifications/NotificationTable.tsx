@@ -138,7 +138,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
         <div className="flex justify-between">
           <h1 className="text-lg font-bold mb-6 ">{path}</h1>
           <TableRowCounter
-            startNumber={startNumber}
+            startNumber={totalReceivedMessages > 0 ? startNumber : 0}
             endNumber={endNumber}
             totalNumber={totalReceivedMessages}
           />
@@ -253,7 +253,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
           <Pagination5
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-            totalPageNumbers={totalPageNumbers}
+            totalPageNumbers={totalPageNumbers === 0 ? 1 : totalPageNumbers}
           />
         </div>
       </div>

@@ -84,7 +84,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
     totalSentMessages / totalDisplayedMessages
   );
 
-  let startNumber = 1;
+  let startNumber = 0;
   let endNumber = currentPage * totalDisplayedMessages;
 
   if (endNumber > totalSentMessages) {
@@ -132,7 +132,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
         <div className="flex justify-between">
           <h1 className="text-lg font-bold mb-6 ">{path}</h1>
           <TableRowCounter
-            startNumber={startNumber}
+            startNumber={totalSentMessages > 0 ? startNumber : 0}
             endNumber={endNumber}
             totalNumber={totalSentMessages}
           />
@@ -234,7 +234,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
           <Pagination5
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-            totalPageNumbers={totalPageNumbers}
+            totalPageNumbers={totalPageNumbers === 0 ? 1 : totalPageNumbers}
           />
         </div>
       </div>

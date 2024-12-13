@@ -133,7 +133,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
         <div className="flex justify-between">
           <h1 className="text-lg font-bold mb-6 ">{path}</h1>
           <TableRowCounter
-            startNumber={startNumber}
+            startNumber={totalDraftMessages > 0 ? startNumber : 0}
             endNumber={endNumber}
             totalNumber={totalDraftMessages}
           />
@@ -239,7 +239,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
           <Pagination5
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-            totalPageNumbers={totalPageNumbers}
+            totalPageNumbers={totalPageNumbers === 0 ? 1 : totalPageNumbers}
           />
         </div>
       </div>

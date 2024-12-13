@@ -219,7 +219,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
             </AlertDialog>
           </div>
           <TableRowCounter
-            startNumber={startNumber}
+            startNumber={totalRecycleBinMsg > 0 ? startNumber : 0}
             endNumber={endNumber}
             totalNumber={totalRecycleBinMsg}
           />
@@ -348,7 +348,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
           <Pagination5
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-            totalPageNumbers={totalPageNumbers}
+            totalPageNumbers={totalPageNumbers === 0 ? 1 : totalPageNumbers}
           />
         </div>
       </div>
