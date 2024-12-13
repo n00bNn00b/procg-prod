@@ -8,9 +8,9 @@ import {
 import { QRCodeCanvas } from "qrcode.react";
 const LinkDevies = () => {
   return (
-    <Card className="border-none">
+    <Card className="h-[70vh]">
       <CardHeader>
-        <CardTitle className="text-center">Link Devices</CardTitle>
+        <CardTitle>Link a Device</CardTitle>
         {/* <CardDescription>Card Description</CardDescription> */}
       </CardHeader>
       <CardContent>

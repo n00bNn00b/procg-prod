@@ -18,7 +18,6 @@ const Pagination5 = ({
   setCurrentPage,
   totalPageNumbers,
 }: Pagination4Props) => {
-  console.log(currentPage, totalPageNumbers, "pagination check");
   const handleNext = () => {
     if (totalPageNumbers > currentPage) {
       setCurrentPage((prev) => prev + 1);

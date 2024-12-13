@@ -237,12 +237,16 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
           {isLoading ? (
             <TableBody className="w-full">
               <TableRow>
-                <TableCell className="flex flex-col items-center justify-center w-[50rem] h-[12rem]">
+                <TableCell> </TableCell>
+                <TableCell> </TableCell>
+                <TableCell className="flex items-center justify-center  h-[12rem] py-32">
                   <Spinner size="80" color="#000000" />
                 </TableCell>
+                <TableCell> </TableCell>
+                <TableCell> </TableCell>
               </TableRow>
             </TableBody>
-          ) : (
+          ) : recycleBinMsg.length !== 0 ? (
             <TableBody>
               {recycleBinMsg.map((msg) => (
                 <TableRow key={msg.id}>
@@ -341,6 +345,18 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
                   </>
                 </TableRow>
               ))}
+            </TableBody>
+          ) : (
+            <TableBody>
+              <TableRow>
+                <TableCell> </TableCell>
+                <TableCell> </TableCell>
+                <TableCell className="py-32 flex justify-center">
+                  No messages found in Recycle Bin Folder.
+                </TableCell>
+                <TableCell> </TableCell>
+                <TableCell> </TableCell>
+              </TableRow>
             </TableBody>
           )}
         </Table>

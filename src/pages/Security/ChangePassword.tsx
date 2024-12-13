@@ -66,7 +66,7 @@ const ChangePassword = () => {
     }
   }
   return (
-    <Card>
+    <Card className="h-[70vh]">
       <CardHeader>
         <CardTitle>Change Password</CardTitle>
         <CardDescription>

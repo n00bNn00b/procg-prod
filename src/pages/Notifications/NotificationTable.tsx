@@ -155,12 +155,15 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
           {isLoading ? (
             <TableBody className="w-full">
               <TableRow>
-                <TableCell className="flex flex-col items-center justify-center w-[50rem] h-[12rem]">
+                <TableCell></TableCell>
+                <TableCell className="flex items-center justify-center h-[12rem] py-32">
                   <Spinner size="80" color="#000000" />
                 </TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
               </TableRow>
             </TableBody>
-          ) : (
+          ) : receivedMessages.length > 0 ? (
             <TableBody>
               {receivedMessages.map((msg) => (
                 <TableRow
@@ -246,6 +249,17 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
                   </>
                 </TableRow>
               ))}
+            </TableBody>
+          ) : (
+            <TableBody>
+              <TableRow>
+                <TableCell> </TableCell>
+                <TableCell className="py-32 flex justify-center">
+                  No messages found in Inbox Folder.
+                </TableCell>
+                <TableCell> </TableCell>
+                <TableCell> </TableCell>
+              </TableRow>
             </TableBody>
           )}
         </Table>
