@@ -1,6 +1,6 @@
 import { Home, Bell, Mail, Menu, X, ListTodo } from "lucide-react";
 import logo from "@/Image/logo-2.png";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import Dropdown from "./Dropdown";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
@@ -12,6 +12,8 @@ const Topbar = () => {
     (item, index) =>
       index === socketMessage.findIndex((obj) => obj.date === item.date)
   );
+  const location = useLocation();
+
   return (
     <div className="flex justify-between items-center h-[3rem] w-[100vw] px-8 bg-white shadow-md fixed z-40 ">
       <div className="flex gap-2 items-center">
@@ -70,7 +72,10 @@ const Topbar = () => {
         <NavLink
           to="/notifications/inbox"
           className={({ isActive }) =>
-            isActive
+            isActive ||
+            location.pathname === "/notifications/sent" ||
+            location.pathname === "/notifications/drafts" ||
+            location.pathname === "/notifications/recycle-bin"
               ? "bg-winter-100 px-4 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50 relative"
               : "px-4 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50 relative"
           }

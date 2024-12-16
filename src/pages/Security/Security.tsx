@@ -6,11 +6,13 @@ import LinkedDevices from "./LinkedDevices";
 export default function Security() {
   return (
     <Tabs defaultValue="change_password" className="w-full">
-      <TabsList className="grid w-[40rem] grid-cols-3">
-        <TabsTrigger value="change_password">Change Password</TabsTrigger>
-        <TabsTrigger value="link-devices">Link a Device</TabsTrigger>
-        <TabsTrigger value="linked-devices">Linked Devices</TabsTrigger>
-      </TabsList>
+      <div className="bg-slate-100 rounded">
+        <TabsList className="grid w-[40rem] grid-cols-3">
+          <TabsTrigger value="change_password">Change Password</TabsTrigger>
+          <TabsTrigger value="link-devices">Link a Device</TabsTrigger>
+          <TabsTrigger value="linked-devices">Linked Devices</TabsTrigger>
+        </TabsList>
+      </div>
       <TabsContent value="change_password">
         <ChangePassword />
       </TabsContent>

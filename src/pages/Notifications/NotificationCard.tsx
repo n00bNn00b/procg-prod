@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 
 const NotificationCard = () => {
   const {
-    totalReceivedMessages,
+    totalReceivedMessages = 0,
     totalSentMessages,
     totalDraftMessages,
     totalRecycleBinMsg,
@@ -23,9 +23,14 @@ const NotificationCard = () => {
           <Inbox />
           <p className="font-semibold">Inbox</p>
         </div>
-        {totalReceivedMessages > 0 && (
+        {totalReceivedMessages > 0 && totalReceivedMessages < 100 && (
           <p className="text-white px-2 rounded-full bg-winter-500 font-semibold">
             {totalReceivedMessages}
+          </p>
+        )}
+        {totalReceivedMessages > 99 && (
+          <p className="text-white px-2 rounded-full bg-winter-500 font-semibold">
+            99<span className="align-super">+</span>
           </p>
         )}
       </NavLink>
@@ -41,9 +46,14 @@ const NotificationCard = () => {
           <Send />
           <p className="font-semibold">Sent</p>
         </div>
-        {totalSentMessages > 0 && (
+        {totalSentMessages > 0 && totalSentMessages < 100 && (
           <p className="text-white px-2 rounded-full bg-winter-500 font-semibold">
             {totalSentMessages}
+          </p>
+        )}
+        {totalSentMessages > 99 && (
+          <p className="text-white px-2 rounded-full bg-winter-500 font-semibold">
+            99<span className="align-super">+</span>
           </p>
         )}
       </NavLink>
@@ -59,9 +69,14 @@ const NotificationCard = () => {
           <NotebookPen />
           <p className="font-semibold">Drafts</p>
         </div>
-        {totalDraftMessages > 0 && (
+        {totalDraftMessages > 0 && totalDraftMessages < 100 && (
           <p className="text-white px-2 rounded-full bg-winter-500 font-semibold">
             {totalDraftMessages}
+          </p>
+        )}
+        {totalDraftMessages > 99 && (
+          <p className="text-white px-2 rounded-full bg-winter-500 font-semibold">
+            99<span className="align-super">+</span>
           </p>
         )}
       </NavLink>
@@ -77,9 +92,14 @@ const NotificationCard = () => {
           <Trash />
           <p className="font-semibold">Recycle Bin</p>
         </div>
-        {totalRecycleBinMsg > 0 && (
+        {totalRecycleBinMsg > 0 && totalRecycleBinMsg < 100 && (
           <p className="text-white px-2 rounded-full bg-winter-500 font-semibold">
             {totalRecycleBinMsg}
+          </p>
+        )}
+        {totalRecycleBinMsg > 99 && (
+          <p className="text-white px-2 rounded-full bg-winter-500 font-semibold">
+            99<span className="align-super">+</span>
           </p>
         )}
       </NavLink>

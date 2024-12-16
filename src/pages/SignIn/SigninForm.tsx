@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import axios from "axios";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface SignInFormProps {
   setIsWrongCredential: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,6 +25,7 @@ const loginSchema = z.object({
 const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
   const { setToken, isLoading, setIsLoading } = useGlobalContext();
   const navigate = useNavigate();
+  const location = useLocation();
   const url = import.meta.env.VITE_API_URL;
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -45,7 +46,7 @@ const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
       localStorage.setItem("user_name", response.data.user_name);
       setIsLoading(false);
       if (response.data) {
-        navigate("/");
+        navigate(location?.state ? location?.state : "/", { replace: true });
       }
     } catch (error) {
       console.error("Error:", error);

@@ -4,7 +4,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "../ui/use-toast";
 
 interface Pagination4Props {
@@ -18,6 +18,7 @@ const Pagination5 = ({
   setCurrentPage,
   totalPageNumbers,
 }: Pagination4Props) => {
+  const [goToPage, setGoToPage] = useState<number>(currentPage);
   const handleNext = () => {
     if (totalPageNumbers > currentPage) {
       setCurrentPage((prev) => prev + 1);
@@ -37,8 +38,7 @@ const Pagination5 = ({
   const handleFirst = () => {
     setCurrentPage(1);
   };
-  const handleSetCurrentPage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
+  const handleSetCurrentPage = (value: number) => {
     if (value > totalPageNumbers) {
       toast({
         title: `${value} is not a valid page number.`,
@@ -50,6 +50,18 @@ const Pagination5 = ({
       setCurrentPage(value);
     }
   };
+  const handleChangeNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setGoToPage(parseInt(e.target.value));
+  };
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSetCurrentPage(goToPage);
+  };
+  useEffect(() => {
+    setGoToPage(currentPage);
+  }, [currentPage]);
+
   return (
     <div className="flex gap-4 items-center">
       <button
@@ -84,14 +96,24 @@ const Pagination5 = ({
       </button>
       <div className="flex gap-2 items-center">
         <span>Page</span>
-        <input
+        {/* <input
           className="border rounded-md px-2"
           type="number"
           value={currentPage}
           min={1}
           max={Math.max(totalPageNumbers > 0 ? totalPageNumbers : 0)}
-          onChange={(e) => handleSetCurrentPage(e)}
-        />
+          onChange={(e) => handleSetCurrentPage(e.target.value)}
+        /> */}
+        <form onSubmit={handleSubmit}>
+          <input
+            value={goToPage}
+            type="number"
+            min={1}
+            max={Math.max(totalPageNumbers > 0 ? totalPageNumbers : 0)}
+            className="border rounded-md px-2"
+            onChange={handleChangeNumber}
+          />
+        </form>
         <div className="flex gap-2 items-center">
           of <span className="block">{totalPageNumbers}</span>
         </div>

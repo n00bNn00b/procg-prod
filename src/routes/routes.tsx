@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import Layout from "@/Layout/Layout";
 import Profile from "@/pages/Profile/Profile";
 import Inbox from "@/pages/Notifications/Inbox";
 import Sent from "@/pages/Notifications/Sent";
@@ -32,6 +31,8 @@ import Settings from "@/pages/Settings/Settings";
 import ManageResults from "@/pages/Controls/ManageResults/ManageResults";
 import RecycleBin from "@/pages/Notifications/RecycleBin";
 import SingleRecycleBin from "@/pages/Notifications/SingleRecycleBin";
+import SignIn from "@/pages/SignIn/SignIn";
+import Layout from "@/Layout/Layout";
 
 const routes = createBrowserRouter([
   {
@@ -199,6 +200,10 @@ const routes = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "login",
+    element: <SignIn />,
   },
   {
     path: "*",

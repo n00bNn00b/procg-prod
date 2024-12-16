@@ -5,12 +5,14 @@ const Settings = () => {
   const url = import.meta.env.VITE_API_URL;
   return (
     <Tabs defaultValue="url_link" className="w-full">
-      <TabsList className="grid w-[40rem] grid-cols-3">
-        <TabsTrigger value="change_password">URL Link</TabsTrigger>
-        <TabsTrigger value="link-devic ">Settings</TabsTrigger>
-        <TabsTrigger value="linked-device ">Others</TabsTrigger>
-      </TabsList>
-      <TabsContent value="change_password">
+      <div className="bg-slate-100 rounded">
+        <TabsList className="grid w-[40rem] grid-cols-3">
+          <TabsTrigger value="url_link">URL Link</TabsTrigger>
+          <TabsTrigger value="link-devic ">Settings</TabsTrigger>
+          <TabsTrigger value="linked-device ">Others</TabsTrigger>
+        </TabsList>
+      </div>
+      <TabsContent value="url_link">
         <Card className="h-[70vh]">
           <CardHeader>
             <CardTitle>URL Link</CardTitle>
