@@ -58,6 +58,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const [socketMessage, setSocketMessages] = useState<Message[]>([]);
   const [recycleBinMsg, setRecycleBinMsg] = useState<Message[]>([]);
   const [totalRecycleBinMsg, setTotalRecycleBinMsg] = useState<number>(0);
+  const location = window.location.pathname;
   const url = import.meta.env.VITE_API_URL;
   const socket_url = import.meta.env.VITE_SOCKET_URL;
   const { user } = useGlobalContext();
@@ -98,12 +99,12 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         setTotalRecycleBinMsg(recyclebinTotal.data.total);
       } catch (error) {
         console.log(error);
-        return [];
+        return;
       }
     };
 
     fetchCounterMessages();
-  }, [url, user]);
+  }, [url, user, location]);
 
   //Listen to socket events
   useEffect(() => {

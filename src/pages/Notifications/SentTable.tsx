@@ -84,7 +84,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
     totalSentMessages / totalDisplayedMessages
   );
 
-  let startNumber = 0;
+  let startNumber = 1;
   let endNumber = currentPage * totalDisplayedMessages;
 
   if (endNumber > totalSentMessages) {

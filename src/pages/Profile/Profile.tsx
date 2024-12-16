@@ -55,10 +55,12 @@ const Profile = () => {
   }, []);
   return (
     <Tabs defaultValue="profile" className="w-full">
-      <TabsList className="grid w-[30rem] grid-cols-2">
-        <TabsTrigger value="profile">Access Profiles</TabsTrigger>
-        <TabsTrigger value="customize">Customize</TabsTrigger>
-      </TabsList>
+      <div className="bg-slate-100 rounded">
+        <TabsList className="grid w-[30rem] grid-cols-2">
+          <TabsTrigger value="profile">Access Profiles</TabsTrigger>
+          <TabsTrigger value="customize">Customize</TabsTrigger>
+        </TabsList>
+      </div>
       <TabsContent value="profile">
         <Card className="h-[70vh]">
           <CardHeader>
