@@ -1,10 +1,21 @@
 export interface Token {
-  access_token?: string;
-  tenant_id?: number;
-  user_id?: number;
-  user_type?: string;
+  isLoggedIn: boolean;
+  access_token: string;
+  tenant_id: number;
+  user_id: number;
+  user_type: string;
   user_name: string;
+  iat: number;
+  exp: number;
+  issuedAt: string;
 }
+// export interface Token {
+//   access_token?: string;
+//   tenant_id?: number;
+//   user_id?: number;
+//   user_type?: string;
+//   user_name: string;
+// }
 
 export interface Users {
   user_id: number;

@@ -1,16 +1,25 @@
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import MainApp from "./MainApp";
 import { Navigate, useLocation } from "react-router-dom";
+import Spinner from "@/components/Spinner/Spinner";
 
 const Layout = () => {
-  const { token } = useGlobalContext();
+  const { token, isUserLoading } = useGlobalContext();
   const location = useLocation();
 
-  if (!token?.access_token) {
+  if (isUserLoading) {
+    return (
+      <div className="text-center p-4">
+        <Spinner size="100" color="red"></Spinner>
+      </div>
+    );
+  }
+
+  if (token?.user_id === 0) {
     return <Navigate state={location.pathname} to="/login" replace />;
   }
 
-  return <>{token?.access_token && <MainApp />}</>;
+  return <>{token?.user_id !== 0 && <MainApp />}</>;
 };
 
 export default Layout;

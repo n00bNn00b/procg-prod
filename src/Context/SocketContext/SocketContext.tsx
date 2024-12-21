@@ -8,8 +8,8 @@ import {
 } from "react";
 import { useGlobalContext } from "../GlobalContext/GlobalContext";
 import { Message } from "@/types/interfaces/users.interface";
-import axios from "axios";
 import { io } from "socket.io-client";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 interface SocketContextProps {
   children: ReactNode;
@@ -49,6 +49,7 @@ export function useSocketContext() {
 }
 
 export function SocketContextProvider({ children }: SocketContextProps) {
+  const api = useAxiosPrivate();
   const [receivedMessages, setReceivedMessages] = useState<Message[]>([]);
   const [totalReceivedMessages, setTotalReceivedMessages] = useState<number>(0);
   const [sentMessages, setSentMessages] = useState<Message[]>([]);
@@ -86,11 +87,11 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           draftTotal,
           recyclebinTotal,
         ] = await Promise.all([
-          axios.get(`${url}/messages/notification/${user}`),
-          axios.get(`${url}/messages/total-received/${user}`),
-          axios.get(`${url}/messages/total-sent/${user}`),
-          axios.get(`${url}/messages/total-draft/${user}`),
-          axios.get(`${url}/messages/total-recyclebin/${user}`),
+          api.get(`${url}/messages/notification/${user}`),
+          api.get(`${url}/messages/total-received/${user}`),
+          api.get(`${url}/messages/total-sent/${user}`),
+          api.get(`${url}/messages/total-draft/${user}`),
+          api.get(`${url}/messages/total-recyclebin/${user}`),
         ]);
         setSocketMessages(notificationTotal.data);
         setTotalReceivedMessages(receivedTotal.data.total);

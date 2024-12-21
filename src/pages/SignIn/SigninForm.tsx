@@ -9,9 +9,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import axios from "axios";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useLocation, useNavigate } from "react-router-dom";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 interface SignInFormProps {
   setIsWrongCredential: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,6 +23,7 @@ const loginSchema = z.object({
 });
 
 const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
+  const api = useAxiosPrivate();
   const { setToken, isLoading, setIsLoading } = useGlobalContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,12 +39,14 @@ const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
   const handleSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       setIsLoading(true);
-      const response = await axios.post(`${url}/login`, data);
+      await api.post(`${url}/login`, data);
+      const response = await api.get(`/auth/user`);
       console.log("Response:", response.data);
       setToken(response.data);
       setIsWrongCredential(false);
-      localStorage.setItem("token", JSON.stringify(response.data));
-      localStorage.setItem("user_name", response.data.user_name);
+      // localStorage.setItem("token", JSON.stringify(response.data));
+      // localStorage.setItem("user_name", response.data.user_name);
+      localStorage.setItem("loggedInUser", "true");
       setIsLoading(false);
       if (response.data) {
         navigate(location?.state ? location?.state : "/", { replace: true });

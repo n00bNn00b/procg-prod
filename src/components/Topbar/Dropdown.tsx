@@ -11,6 +11,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { LogOut, Settings, ShieldBan, User } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
+import { Token } from "@/types/interfaces/users.interface";
 
 const Dropdown = () => {
   const { token, setToken } = useGlobalContext();
@@ -19,10 +20,10 @@ const Dropdown = () => {
 
   const handleSignOut = () => {
     handleDisconnect();
-    localStorage.setItem("token", JSON.stringify({ access_token: "" }));
-    localStorage.setItem("user_name", "");
-    setToken({ access_token: "", user_name: "" });
-    navigate("/");
+    // localStorage.setItem("token", JSON.stringify({ access_token: "" }));
+    // localStorage.setItem("user_name", "");
+    setToken({} as Token);
+    navigate("/login");
   };
 
   return (

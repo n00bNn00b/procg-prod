@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import {
   Token,
   Users,
@@ -28,6 +28,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { ManageAccessEntitlementsProvider } from "../ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import { AACContextProvider } from "../ManageAccessEntitlements/AdvanceAccessControlsContext";
 import { SocketContextProvider } from "../SocketContext/SocketContext";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { Navigate } from "react-router-dom";
 
 interface GlobalContextProviderProps {
   children: ReactNode;
@@ -71,8 +73,19 @@ interface GlobalContex {
   setIsOpenModal: Dispatch<SetStateAction<string>>;
   resetPassword: (resetData: IUserPasswordResetTypes) => Promise<void>;
   getUserInfo: (user_id: number) => Promise<IUsersInfoTypes | undefined>;
+  isUserLoading: boolean;
 }
-
+const userExample = {
+  isLoggedIn: false,
+  user_id: 0,
+  user_name: "",
+  user_type: "",
+  tenant_id: 0,
+  access_token: "",
+  issuedAt: "",
+  iat: 0,
+  exp: 0,
+};
 const GlobalContex = createContext({} as GlobalContex);
 
 export function useGlobalContext() {
@@ -83,20 +96,52 @@ export function GlobalContextProvider({
   children,
 }: GlobalContextProviderProps) {
   // const { setIsOpenModal } = useManageAccessEntitlementsContext();
+  const api = useAxiosPrivate();
   const [open, setOpen] = useState<boolean>(false);
-  const [token, setToken] = useState<Token>(() => {
-    const storeData = localStorage.getItem("token");
-    if (storeData) {
+  const [token, setToken] = useState<Token>(userExample);
+  const [isUserLoading, setIsUserLoading] = useState(true);
+
+  useEffect(() => {
+    const getUser = async () => {
       try {
-        const userData = JSON.parse(storeData);
-        return userData;
+        const storeData = localStorage.getItem("loggedInUser");
+        if (storeData) {
+          const localData = JSON.parse(storeData);
+          if (!localData) return console.log("Please Login ");
+          const res = await api.get<Token>("/auth/user");
+          console.log(res, "res");
+          if (res?.status === 200) {
+            setToken(res.data);
+          } else if (res?.status === 500) {
+            console.log(res, "res");
+            localStorage.setItem("loggedInUser", JSON.stringify(false));
+            setToken(userExample);
+            return <Navigate to="/login" />;
+          }
+        }
       } catch (error) {
-        console.error("Error parsing stored access token:", error);
-        return null;
+        localStorage.setItem("loggedInUser", JSON.stringify(false));
+        setToken(userExample);
+        console.log(error);
+      } finally {
+        setIsUserLoading(false);
       }
-    }
-    return null;
-  });
+    };
+    getUser();
+  }, []);
+  // const [token, setToken] = useState<Token>(() => {
+  //   const storeData = localStorage.getItem("token");
+  //   if (storeData) {
+  //     try {
+  //       const userData = JSON.parse(storeData);
+  //       return userData;
+  //     } catch (error) {
+  //       console.error("Error parsing stored access token:", error);
+  //       return null;
+  //     }
+  //   }
+  //   return null;
+  // });
 
   const [users, setUsers] = useState<Users[]>([]);
   const [person, setPerson] = useState<IPersonsTypes>();
@@ -110,10 +155,10 @@ export function GlobalContextProvider({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const users = await axios.get<Users[]>(`${url}/users`);
+        const users = await api.get<Users[]>(`${url}/users`);
         if (token?.user_id) {
           const res = async () => {
-            const person = await axios.get<IPersonsTypes>(
+            const person = await api.get<IPersonsTypes>(
               `${url}/persons/${token?.user_id}`
             );
             setPerson(person?.data);
@@ -136,8 +181,8 @@ export function GlobalContextProvider({
   const fetchCombinedUser = async () => {
     try {
       setIsLoading(true);
-      const users = await axios.get<Users[]>(`${url}/users`);
-      const res = await axios.get<IUsersInfoTypes[]>(
+      const users = await api.get<Users[]>(`${url}/users`);
+      const res = await api.get<IUsersInfoTypes[]>(
         `${url}/combined-user/${page}/${limit}`
       );
       const totalCount = users.data.length;
@@ -156,7 +201,7 @@ export function GlobalContextProvider({
   const getUserInfo = async (user_id: number) => {
     try {
       setIsLoading(true);
-      const res = await axios.get<IUsersInfoTypes>(
+      const res = await api.get<IUsersInfoTypes>(
         `${url}/combined-user/${user_id}`
       );
       return res.data;
@@ -182,7 +227,7 @@ export function GlobalContextProvider({
       password,
     } = postData;
     try {
-      const res = await axios.post<IAddUserTypes>(`${url}/combined-user`, {
+      const res = await api.post<IAddUserTypes>(`${url}/combined-user`, {
         user_type,
         user_name,
         email_addresses,
@@ -220,7 +265,7 @@ export function GlobalContextProvider({
   const updateUser = async (id: number, userInfo: IUpdateUserTypes) => {
     setIsLoading(true);
     try {
-      const res = await axios.put(`${url}/combined-user/${id}`, userInfo);
+      const res = await api.put(`${url}/combined-user/${id}`, userInfo);
       if (res.status === 200) {
         setIsLoading(false);
         setIsOpenModal("");
@@ -240,7 +285,7 @@ export function GlobalContextProvider({
   const resetPassword = async (resetData: IUserPasswordResetTypes) => {
     try {
       setIsLoading(true);
-      const res = await axios.put(
+      const res = await api.put(
         `${url}/user-credentials/reset-password`,
         resetData
       );
@@ -270,9 +315,9 @@ export function GlobalContextProvider({
     try {
       for (const id of user_ids) {
         const [users, persons, credentials] = await Promise.all([
-          axios.delete(`${url}/users/${id.user_id}`),
-          axios.delete(`${url}/persons/${id.user_id}`),
-          axios.delete(`${url}/user-credentials/${id.user_id}`),
+          api.delete(`${url}/users/${id.user_id}`),
+          api.delete(`${url}/persons/${id.user_id}`),
+          api.delete(`${url}/user-credentials/${id.user_id}`),
         ]);
         if (
           users.status === 200 ||
@@ -302,7 +347,7 @@ export function GlobalContextProvider({
   //Fetch DataSources
   const fetchDataSources = async (page: number, limit: number) => {
     try {
-      const response = await axios.get<IManageAccessEntitlementsPerPageTypes>(
+      const response = await api.get<IManageAccessEntitlementsPerPageTypes>(
         `${url}/data-sources/${page}/${limit}`
       );
       const sortingData = response.data;
@@ -314,7 +359,7 @@ export function GlobalContextProvider({
   //Fetch SingleDataSource
   const fetchDataSource = async (id: number): Promise<IDataSourceTypes> => {
     try {
-      const response = await axios.get<IDataSourceTypes>(
+      const response = await api.get<IDataSourceTypes>(
         `${url}/data-sources/${id}`
       );
       if (response.status === 200) {
@@ -344,7 +389,7 @@ export function GlobalContextProvider({
       last_updated_by,
     } = postData;
     try {
-      const res = await axios.post<IDataSourceTypes>(`${url}/data-sources`, {
+      const res = await api.post<IDataSourceTypes>(`${url}/data-sources`, {
         datasource_name,
         description,
         application_type,
@@ -382,7 +427,7 @@ export function GlobalContextProvider({
     postData: IDataSourcePostTypes
   ) => {
     try {
-      const res = await axios.put<IDataSourcePostTypes>(
+      const res = await api.put<IDataSourcePostTypes>(
         `${url}/data-sources/${id}`,
         {
           data_source_id: id,
@@ -422,7 +467,7 @@ export function GlobalContextProvider({
   // Delete DataSource
   const deleteDataSource = async (id: number) => {
     try {
-      const res = await axios.delete<IDataSourceTypes>(
+      const res = await api.delete<IDataSourceTypes>(
         `${url}/data-sources/${id}`
       );
 
@@ -448,7 +493,7 @@ export function GlobalContextProvider({
   // Tenant IDs
   const fetchTenants = async () => {
     try {
-      const res = await axios.get<ITenantsTypes[]>(`${url}/tenants`);
+      const res = await api.get<ITenantsTypes[]>(`${url}/tenants`);
       return res.data;
     } catch (error) {
       console.log(error);
@@ -489,6 +534,7 @@ export function GlobalContextProvider({
         setIsOpenModal,
         resetPassword,
         getUserInfo,
+        isUserLoading,
       }}
     >
       <SocketContextProvider>
