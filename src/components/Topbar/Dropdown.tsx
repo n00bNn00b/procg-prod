@@ -11,18 +11,30 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { LogOut, Settings, ShieldBan, User } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
-import { Token } from "@/types/interfaces/users.interface";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 const Dropdown = () => {
+  const api = useAxiosPrivate();
   const { token, setToken } = useGlobalContext();
   const { handleDisconnect } = useSocketContext();
   const navigate = useNavigate();
 
-  const handleSignOut = () => {
+  const userExample = {
+    isLoggedIn: false,
+    user_id: 0,
+    user_name: "",
+    user_type: "",
+    tenant_id: 0,
+    access_token: "",
+    issuedAt: "",
+    iat: 0,
+    exp: 0,
+  };
+  const handleSignOut = async () => {
+    await api.get(`/logout`);
+    localStorage.removeItem("loggedInUser");
     handleDisconnect();
-    // localStorage.setItem("token", JSON.stringify({ access_token: "" }));
-    // localStorage.setItem("user_name", "");
-    setToken({} as Token);
+    setToken(userExample);
     navigate("/login");
   };
 

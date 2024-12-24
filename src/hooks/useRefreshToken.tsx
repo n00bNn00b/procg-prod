@@ -1,22 +1,44 @@
 import { api } from "@/Api/Api";
+import { toast } from "@/components/ui/use-toast";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-// import { Navigate } from "react-router-dom";
 
 const useRefreshToken = () => {
   const { setToken } = useGlobalContext();
+  const userExample = {
+    isLoggedIn: false,
+    user_id: 0,
+    user_name: "",
+    user_type: "",
+    tenant_id: 0,
+    access_token: "",
+    issuedAt: "",
+    iat: 0,
+    exp: 0,
+  };
+
   const refreshToken = async () => {
     try {
-      const res = await api.get(`/login/refresh-token`);
-      // console.log(res,"res")
-      setToken((prev) => {
-        console.log(JSON.stringify(prev));
-        return { ...prev, access_token: res.data.access_token };
-      });
-      return res.data.access_token;
+      const isLoggedIn = localStorage.getItem("loggedInUser");
+      const response = await api.get(`/login/refresh-token`);
+      if (!response && isLoggedIn === "true") {
+        await api.get(`/logout`);
+
+        toast({
+          title: "Session Expired",
+          description: "Please login again",
+        });
+        localStorage.removeItem("loggedInUser");
+        setToken(userExample);
+        // setTimeout(() => {
+        //   window.location.href = "/login";
+        // }, 2000);
+        return;
+      }
+      setToken(response.data);
+      return response.data.access_token;
     } catch (error) {
-      // Handle refresh token error or redirect to login
-      console.log(error);
-      // <Navigate to="/login" />;
+      console.log(error, "Refresh token invalid or expired.");
+      return;
     }
   };
   return refreshToken;

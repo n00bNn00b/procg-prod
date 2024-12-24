@@ -1,8 +1,8 @@
 import { IControlsTypes } from "@/types/interfaces/manageControls.interface";
-import axios from "axios";
 import { createContext, useContext, useState } from "react";
 import { useAACContext } from "./AdvanceAccessControlsContext";
 import { toast } from "@/components/ui/use-toast";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 interface IControlsProviderProps {
   children: React.ReactNode;
 }
@@ -32,7 +32,7 @@ export const useControlsContext = () => {
 export const ControlsContextProvider = ({
   children,
 }: IControlsProviderProps) => {
-  const url = import.meta.env.VITE_API_URL;
+  const api = useAxiosPrivate();
   const { setIsLoading } = useAACContext();
   const [controlsData, setControlsData] = useState<IControlsTypes[]>([]);
   const [selectedControl, setSelectedControl] = useState<IControlsTypes[]>([]);
@@ -40,7 +40,7 @@ export const ControlsContextProvider = ({
   const fetchControls = async () => {
     try {
       // setIsLoading(true);
-      const response = await axios.get<IControlsTypes[]>(`${url}/controls`);
+      const response = await api.get<IControlsTypes[]>(`/controls`);
       if (response) {
         setControlsData(response.data ?? []);
         return response.data ?? [];
@@ -50,8 +50,8 @@ export const ControlsContextProvider = ({
     }
   };
   const createControl = async (data: IControlsTypes) => {
-    await axios
-      .post(`${url}/controls`, data)
+    await api
+      .post(`/controls`, data)
       .then((res) => {
         if (res.status === 201) {
           toast({

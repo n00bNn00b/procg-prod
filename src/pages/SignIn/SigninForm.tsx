@@ -52,8 +52,8 @@ const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
         navigate(location?.state ? location?.state : "/", { replace: true });
       }
     } catch (error) {
-      console.error("Error:", error);
-      setIsWrongCredential(true);
+      console.log(error);
+    } finally {
       setIsLoading(false);
     }
   };

@@ -25,6 +25,7 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import { ring } from "ldrs";
 import Spinner from "@/components/Spinner/Spinner";
+import { Row } from "@tanstack/react-table";
 interface IManageAccessEntitlementsProps {
   selectedItem?: IManageAccessEntitlementsTypes;
 }
@@ -101,7 +102,11 @@ const ManageAccessPointsEntitleModal: FC<IManageAccessEntitlementsProps> = ({
     if (mangeAccessEntitlementAction === "edit") {
       updateManageAccessEntitlements(id, putData);
       setSelected([]);
-      table.getRowModel().rows.map((row: any) => row.toggleSelected(false));
+      table
+        ?.getRowModel()
+        .rows.forEach((row: Row<IManageAccessEntitlementsTypes>) =>
+          row.toggleSelected(false)
+        );
     } else if (mangeAccessEntitlementAction === "add") {
       createManageAccessEntitlements(postData);
     }

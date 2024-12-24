@@ -9,7 +9,7 @@ const Layout = () => {
 
   if (isUserLoading) {
     return (
-      <div className="text-center p-4">
+      <div className="flex flex-row min-h-screen justify-center items-center">
         <Spinner size="100" color="red"></Spinner>
       </div>
     );

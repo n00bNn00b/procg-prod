@@ -21,18 +21,18 @@ const useAxiosPrivate = () => {
     const responseInterceptor = api.interceptors.response.use(
       (response) => response,
       async (error) => {
-        const prevRequest = error?.config;
-        if (error?.response?.status === 403 && !prevRequest?.sent) {
-          prevRequest.sent = true;
-          try {
+        try {
+          const prevRequest = error?.config;
+          if (error?.response?.status === 401 && !prevRequest?.sent) {
+            prevRequest.sent = true;
             const newAccessToken = await refresh();
             prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
             return api(prevRequest);
-          } catch (err) {
-            return Promise.reject(err); // Handle errors from the refresh function
           }
+        } catch (error) {
+          console.log(error, "axios private error");
+          return;
         }
-        return Promise.reject(error);
       }
     );
 

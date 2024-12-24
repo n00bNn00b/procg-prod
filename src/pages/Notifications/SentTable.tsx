@@ -25,7 +25,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
-import axios from "axios";
 import { Check, Trash, View, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
@@ -35,6 +34,7 @@ import { useEffect, useState } from "react";
 import { Message } from "@/types/interfaces/users.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 interface SentTableProps {
   path: string;
@@ -42,6 +42,7 @@ interface SentTableProps {
 }
 
 const SentTable = ({ path, person }: SentTableProps) => {
+  const api = useAxiosPrivate();
   const {
     sentMessages,
     totalSentMessages,
@@ -53,31 +54,26 @@ const SentTable = ({ path, person }: SentTableProps) => {
   const { toast } = useToast();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const url = import.meta.env.VITE_API_URL;
 
   //Fetch Sent Messages
   useEffect(() => {
     const fetchSentMessages = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get<Message[]>(
-          `${url}/messages/sent/${user}/${currentPage}`
+        const response = await api.get<Message[]>(
+          `/messages/sent/${user}/${currentPage}`
         );
         const result = response.data;
         setSentMessages(result);
       } catch (error) {
-        if (error instanceof Error) {
-          toast({
-            title: `${error.message}}`,
-          });
-        }
+        console.log("Error fetch sent messages.");
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchSentMessages();
-  }, [currentPage, url, user, setIsLoading, setSentMessages, toast]);
+  }, [currentPage, user, setIsLoading, setSentMessages, toast, api]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -98,8 +94,8 @@ const SentTable = ({ path, person }: SentTableProps) => {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await axios.put(
-        `${url}/messages/set-user-into-recyclebin/${id}/${user}`
+      const response = await api.put(
+        `/messages/set-user-into-recyclebin/${id}/${user}`
       );
       if (response.status === 200) {
         handleDeleteMessage(id);
@@ -108,11 +104,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
         });
       }
     } catch (error) {
-      if (error instanceof Error) {
-        toast({
-          title: `${error.message}}`,
-        });
-      }
+      console.log("Error when trying message moved to recyclebin.");
     }
   };
 
