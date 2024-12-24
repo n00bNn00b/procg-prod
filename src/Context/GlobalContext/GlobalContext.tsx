@@ -105,7 +105,7 @@ export function GlobalContextProvider({
   const [usersInfo, setUsersInfo] = useState<IUsersInfoTypes[]>([]);
   const [isOpenModal, setIsOpenModal] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const user = token?.user_name;
+  const user = token?.user_name || "";
 
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
