@@ -1,6 +1,5 @@
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { Message } from "@/types/interfaces/users.interface";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import {
   Table,
@@ -35,11 +34,13 @@ import Pagination5 from "@/components/Pagination/Pagination5";
 import { toast } from "@/components/ui/use-toast";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useNavigate } from "react-router-dom";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 interface RecycleBinTableProps {
   path: string;
   person: string;
 }
 const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
+  const api = useAxiosPrivate();
   const { user } = useGlobalContext();
   const {
     handleDeleteMessage,
@@ -50,28 +51,23 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const url = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   useEffect(() => {
     const fetchRecycleBinMsg = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get<Message[]>(
-          `${url}/messages/recyclebin/${user}/${currentPage}`
+        const response = await api.get<Message[]>(
+          `/messages/recyclebin/${user}/${currentPage}`
         );
         setRecycleBinMsg(response.data);
       } catch (error) {
-        if (error instanceof Error) {
-          toast({
-            title: `${error.message}}`,
-          });
-        }
+        console.log("Error fetch recycle bin messages.");
       } finally {
         setIsLoading(false);
       }
     };
     fetchRecycleBinMsg();
-  }, [currentPage, setIsLoading, setRecycleBinMsg, url, user]);
+  }, [api, currentPage, setIsLoading, setRecycleBinMsg, user]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -98,8 +94,8 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
       const holdersNumber = msg.holders?.length ?? 0;
       const recycleBinNumber = msg.recyclebin?.length ?? 0;
       if (holdersNumber > 0) {
-        const response = await axios.put(
-          `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
+        const response = await api.put(
+          `/messages/remove-user-from-recyclebin/${msg.id}/${user}`
         );
         if (response.status === 200) {
           handleDeleteMessage(msg.id);
@@ -109,8 +105,8 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
         }
       } else {
         if (recycleBinNumber > 1) {
-          const response = await axios.put(
-            `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
+          const response = await api.put(
+            `/messages/remove-user-from-recyclebin/${msg.id}/${user}`
           );
           if (response.status === 200) {
             handleDeleteMessage(msg.id);
@@ -119,7 +115,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
             });
           }
         } else if (recycleBinNumber === 1) {
-          const response = await axios.delete(`${url}/messages/${msg.id}`);
+          const response = await api.delete(`/messages/${msg.id}`);
           if (response.status === 200) {
             handleDeleteMessage(msg.id);
             toast({
@@ -129,11 +125,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
         }
       }
     } catch (error) {
-      if (error instanceof Error) {
-        toast({
-          title: `${error.message}}`,
-        });
-      }
+      console.log("Error deleting message.");
     }
   };
   const emptyRecycleBin = async () => {
@@ -142,8 +134,8 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
         const holdersNumber = msg.holders?.length ?? 0;
         const recycleBinNumber = msg.recyclebin?.length ?? 0;
         if (holdersNumber > 0) {
-          const response = await axios.put(
-            `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
+          const response = await api.put(
+            `/messages/remove-user-from-recyclebin/${msg.id}/${user}`
           );
           if (response.status === 200) {
             handleDeleteMessage(msg.id);
@@ -153,8 +145,8 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
           }
         } else {
           if (recycleBinNumber > 1) {
-            const response = await axios.put(
-              `${url}/messages/remove-user-from-recyclebin/${msg.id}/${user}`
+            const response = await api.put(
+              `/messages/remove-user-from-recyclebin/${msg.id}/${user}`
             );
             if (response.status === 200) {
               handleDeleteMessage(msg.id);
@@ -163,7 +155,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
               });
             }
           } else if (recycleBinNumber === 1) {
-            const response = await axios.delete(`${url}/messages/${msg.id}`);
+            const response = await api.delete(`/messages/${msg.id}`);
             if (response.status === 200) {
               handleDeleteMessage(msg.id);
               toast({
@@ -174,13 +166,13 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
         }
       }
     } catch (error) {
-      console.error("Error deleting resource:", error);
+      console.error("Error deleting resource:");
     }
   };
   const handleNavigate = (id: string) => {
     navigate(`/notifications/recycle-bin/${id}`);
   };
-  console.log(recycleBinMsg.map((msg) => msg));
+
   return (
     <>
       <div className="ml-[11rem] border rounded-md shadow-sm p-4 mb-4">

@@ -25,7 +25,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
-import axios from "axios";
 import { Check, Edit, Trash, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TableRowCounter from "@/components/TableCounter/TableRowCounter";
@@ -35,6 +34,7 @@ import { useEffect, useState } from "react";
 import { Message } from "@/types/interfaces/users.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 interface DraftTableProps {
   path: string;
@@ -42,6 +42,7 @@ interface DraftTableProps {
 }
 
 const DraftTable = ({ path, person }: DraftTableProps) => {
+  const api = useAxiosPrivate();
   const {
     draftMessages,
     totalDraftMessages,
@@ -54,31 +55,26 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const url = import.meta.env.VITE_API_URL;
 
   //Fetch Draft Messages
   useEffect(() => {
     const fetchSentMessages = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get<Message[]>(
-          `${url}/messages/draft/${user}/${currentPage}`
+        const response = await api.get<Message[]>(
+          `/messages/draft/${user}/${currentPage}`
         );
         const result = response.data;
         setDraftMessages(result);
       } catch (error) {
-        if (error instanceof Error) {
-          toast({
-            title: `${error.message}}`,
-          });
-        }
+        console.log("Error fetch draft messages.");
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchSentMessages();
-  }, [currentPage, setDraftMessages, setIsLoading, url, user, toast]);
+  }, [currentPage, setDraftMessages, setIsLoading, user, toast, api]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -99,8 +95,8 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await axios.put(
-        `${url}/messages/set-user-into-recyclebin/${id}/${user}`
+      const response = await api.put(
+        `/messages/set-user-into-recyclebin/${id}/${user}`
       );
       if (response.status === 200) {
         handleDeleteMessage(id);
@@ -109,11 +105,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
         });
       }
     } catch (error) {
-      if (error instanceof Error) {
-        toast({
-          title: `${error.message}}`,
-        });
-      }
+      console.log("Error when trying message moved to recyclebin.");
     }
   };
 

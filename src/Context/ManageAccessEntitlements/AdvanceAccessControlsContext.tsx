@@ -10,7 +10,6 @@ import {
   IManageGlobalConditionLogicTypes,
   IManageGlobalConditionTypes,
 } from "@/types/interfaces/ManageAccessEntitlements.interface";
-import axios from "axios";
 import {
   createContext,
   Dispatch,
@@ -21,6 +20,7 @@ import {
 } from "react";
 import { ControlsContextProvider } from "./ManageControlsContext";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 interface IAACContextProviderProps {
   children: React.ReactNode;
 }
@@ -100,7 +100,7 @@ export const useAACContext = () => {
   return consumer;
 };
 export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
-  const url = import.meta.env.VITE_API_URL;
+  const api = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [stateChange, setStateChange] = useState<number>(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
@@ -134,8 +134,8 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   const fetchManageGlobalConditions = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get<IManageGlobalConditionTypes[]>(
-        `${url}/manage-global-conditions`
+      const response = await api.get<IManageGlobalConditionTypes[]>(
+        `/manage-global-conditions`
       );
       if (response) {
         return setManageGlobalConditions(response.data ?? []);
@@ -159,8 +159,8 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         datasource,
         status,
       } = postData;
-      const res = await axios.post<IManageGlobalConditionTypes>(
-        `${url}/manage-global-conditions`,
+      const res = await api.post<IManageGlobalConditionTypes>(
+        `/manage-global-conditions`,
         { manage_global_condition_id, name, description, datasource, status }
       );
       if (res.status === 201) {
@@ -170,14 +170,14 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
           description: `Added successfully.`,
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
-      if (error.response.status === 408) {
-        toast({
-          title: "Info",
-          description: `${error.response.data.message}`,
-        });
-      }
+      // if (error.response.status === 408) {
+      //   toast({
+      //     title: "Info",
+      //     description: `${error.response.data.message}`,
+      //   });
+      // }
     } finally {
       setIsLoading(false);
     }
@@ -187,11 +187,11 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     try {
       setIsLoading(true);
       const [logicsRes, attributesRes] = await Promise.all([
-        axios.get<IManageGlobalConditionLogicTypes[]>(
-          `${url}/manage-global-condition-logics`
+        api.get<IManageGlobalConditionLogicTypes[]>(
+          `/manage-global-condition-logics`
         ),
-        axios.get<IManageGlobalConditionLogicAttributesTypes[]>(
-          `${url}/manage-global-condition-logic-attributes`
+        api.get<IManageGlobalConditionLogicAttributesTypes[]>(
+          `/manage-global-condition-logic-attributes`
         ),
       ]);
       const attributesMap = new Map(
@@ -217,11 +217,14 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     const maxId = async () => {
+      const loggedInUser = localStorage.getItem("loggedInUser");
+      if (!loggedInUser || loggedInUser === "false") return;
       const [resGlobalCondition, resManageAccessModel] = await Promise.all([
-        axios.get(`${url}/manage-global-condition-logic-attributes`),
-        axios.get(`${url}/manage-access-model-logic-attributes`),
+        api.get(`/manage-global-condition-logic-attributes`),
+        api.get(`/manage-access-model-logic-attributes`),
       ]);
       const maxIdGlobalCondition = Math.max(
         ...resGlobalCondition.data.map(
@@ -246,6 +249,8 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     };
     maxId();
   }, [isActionLoading, stateChange]);
+
+  // Manage Global Condition Delete
   const manageGlobalConditionDeleteCalculate = async (id: number) => {
     try {
       const result = await fetchManageGlobalConditionLogics(id);
@@ -254,10 +259,11 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       console.log(error);
     }
   };
+
   // Manage Global Condition Delete
   const deleteManageGlobalCondition = async (id: number) => {
-    axios
-      .delete(`${url}/manage-global-conditions/${id}`)
+    api
+      .delete(`/manage-global-conditions/${id}`)
       .then((res) => {
         if (res.status === 200) {
           toast({
@@ -273,6 +279,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         setStateChange((prev) => prev + 1);
       });
   };
+
   // delete Logic And Attribute Data
   const deleteLogicAndAttributeData = async (
     logicId: number,
@@ -280,14 +287,15 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   ) => {
     try {
       const [isExistLogicId, isExistAttrId] = await Promise.all([
-        axios.delete(`${url}/manage-access-model-logics/${logicId}`),
-        axios.delete(`${url}/manage-access-model-logic-attributes/${attrId}`),
+        api.delete(`/manage-access-model-logics/${logicId}`),
+        api.delete(`/manage-access-model-logic-attributes/${attrId}`),
       ]);
       if (isExistLogicId.status === 200 && isExistAttrId.status === 200) {
         return isExistLogicId.status;
       }
-    } catch (error: any) {
-      return error.response.status;
+    } catch (error) {
+      console.log(error);
+      // return error.response.status;
     }
   };
 
@@ -295,8 +303,8 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
   const fetchManageAccessModels = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get<IManageAccessModelsTypes[]>(
-        `${url}/manage-access-models`
+      const response = await api.get<IManageAccessModelsTypes[]>(
+        `/manage-access-models`
       );
       if (response) {
         setManageAccessModels(response.data ?? []);
@@ -308,6 +316,8 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       setIsLoading(false);
     }
   };
+
+  // Create Manage Access Model
   const createManageAccessModel = async (
     postData: IManageAccessModelsTypes
   ) => {
@@ -326,7 +336,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         revision,
         revision_date,
       } = postData;
-      const res = await axios.post(`${url}/manage-access-models`, {
+      const res = await api.post(`/manage-access-models`, {
         model_name,
         description,
         type,
@@ -352,11 +362,13 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       setIsLoading(false);
     }
   };
+
+  // delete Manage Access Model
   const deleteManageAccessModel = async (items: IManageAccessModelsTypes[]) => {
     for (const item of items) {
       const { manage_access_model_id: id } = item;
-      axios
-        .delete(`${url}/manage-access-models/${id}`)
+      api
+        .delete(`/manage-access-models/${id}`)
         .then((res) => {
           if (res.status === 200) {
             toast({
@@ -373,15 +385,15 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
         });
     }
   };
+
+  // fetch Manage Access Model Logics
   const fetchManageAccessModelLogics = async (filterId: number) => {
     try {
       setIsLoading(true);
       const [logicsRes, attributesRes] = await Promise.all([
-        axios.get<IManageAccessModelLogicsTypes[]>(
-          `${url}/manage-access-model-logics`
-        ),
-        axios.get<IManageAccessModelLogicAttributesTypes[]>(
-          `${url}/manage-access-model-logic-attributes`
+        api.get<IManageAccessModelLogicsTypes[]>(`/manage-access-model-logics`),
+        api.get<IManageAccessModelLogicAttributesTypes[]>(
+          `/manage-access-model-logic-attributes`
         ),
       ]);
       const attributesMap = new Map(
@@ -407,6 +419,8 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       setIsLoading(false);
     }
   };
+
+  // Manage Access Model Delete
   const manageAccessModelLogicsDeleteCalculate = async (id: number) => {
     try {
       const result = await fetchManageAccessModelLogics(id);
@@ -415,22 +429,27 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
       console.log(error);
     }
   };
+
+  // delete Manage Access Model Logic And Attribute Data
   const deleteManageModelLogicAndAttributeData = async (
     logicId: number,
     attrId: number
   ) => {
     try {
       const [isExistLogicId, isExistAttrId] = await Promise.all([
-        axios.delete(`${url}/manage-access-model-logics/${logicId}`),
-        axios.delete(`${url}/manage-access-model-logic-attributes/${attrId}`),
+        api.delete(`/manage-access-model-logics/${logicId}`),
+        api.delete(`/manage-access-model-logic-attributes/${attrId}`),
       ]);
       if (isExistLogicId.status === 200 && isExistAttrId.status === 200) {
         return isExistLogicId.status;
       }
-    } catch (error: any) {
-      return error.response.status;
+    } catch (error) {
+      console.log(error);
+      // return error.response.status;
     }
   };
+
+  // Search Filter
   const searchFilter = async (data: IManageAccessModelSearchFilterTypes) => {
     const allAccessModel = await fetchManageAccessModels();
 
@@ -461,13 +480,16 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
     setManageAccessModels(filterResult ?? []);
     // return filterResult ?? [];
   };
+
+  // Fetch Data Source
   const fetchDataSource = async () => {
-    await axios.get<IDataSourceTypes[]>(`${url}/data-sources`).then((res) => {
+    await api.get<IDataSourceTypes[]>(`/data-sources`).then((res) => {
       if (res.status === 200) {
         setDataSources(res.data);
       }
     });
   };
+
   const value = {
     isLoading,
     setIsLoading,

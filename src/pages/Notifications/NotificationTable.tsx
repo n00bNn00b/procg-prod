@@ -24,7 +24,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import axios from "axios";
 import { Check, Trash, View, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +34,7 @@ import Pagination5 from "@/components/Pagination/Pagination5";
 import { useEffect, useState } from "react";
 import { Message } from "@/types/interfaces/users.interface";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 interface NotificationTableProps {
   path: string;
@@ -42,6 +42,7 @@ interface NotificationTableProps {
 }
 
 const NotificationTable = ({ path, person }: NotificationTableProps) => {
+  const api = useAxiosPrivate();
   const { user } = useGlobalContext();
   const {
     socketMessage,
@@ -55,31 +56,25 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const url = import.meta.env.VITE_API_URL;
   //Fetch Received Messages
   useEffect(() => {
     const fetchReceivedMessages = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get<Message[]>(
-          `${url}/messages/received/${user}/${currentPage}`
+        const response = await api.get<Message[]>(
+          `/messages/received/${user}/${currentPage}`
         );
         const result = response.data;
         setReceivedMessages(result);
       } catch (error) {
-        if (error instanceof Error) {
-          toast({
-            title: `${error.message}}`,
-          });
-        }
-        return [];
+        console.log("Error fecth inbox messages.");
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchReceivedMessages();
-  }, [currentPage, setIsLoading, setReceivedMessages, url, user, toast]);
+  }, [currentPage, setIsLoading, setReceivedMessages, user, toast, api]);
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -103,13 +98,13 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
   const handleUniqueMessages = async (parentid: string) => {
     navigate(`/notifications/inbox/${parentid}`);
     handleRead(parentid);
-    await axios.put(`${url}/messages/update-readers/${parentid}/${user}`);
+    await api.put(`/messages/update-readers/${parentid}/${user}`);
   };
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await axios.put(
-        `${url}/messages/set-user-into-recyclebin/${id}/${user}`
+      const response = await api.put(
+        `/messages/set-user-into-recyclebin/${id}/${user}`
       );
       if (response.status === 200) {
         handleDeleteMessage(id);
@@ -118,11 +113,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
         });
       }
     } catch (error) {
-      if (error instanceof Error) {
-        toast({
-          title: `${error.message}}`,
-        });
-      }
+      console.log("Error when trying message moved to recyclebin.");
     }
   };
 

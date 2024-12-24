@@ -7,7 +7,6 @@ import {
   IManageAccessEntitlementsPerPageTypes,
   IFetchCombinedAccessPointsElementAndDatasourceTypes,
 } from "@/types/interfaces/ManageAccessEntitlements.interface";
-import axios from "axios";
 import {
   createContext,
   Dispatch,
@@ -17,6 +16,8 @@ import {
   useState,
 } from "react";
 import { useGlobalContext } from "../GlobalContext/GlobalContext";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { Table } from "@tanstack/react-table";
 interface IManageAccessEntitlementsProviderProps {
   children: React.ReactNode;
 }
@@ -64,8 +65,10 @@ interface IContextTypes {
   setSave: Dispatch<SetStateAction<number>>;
   save2: number;
   setSave2: Dispatch<SetStateAction<number>>;
-  table: any;
-  setTable: Dispatch<React.SetStateAction<any>>;
+  table: Table<IManageAccessEntitlementsTypes> | undefined;
+  setTable: Dispatch<
+    SetStateAction<Table<IManageAccessEntitlementsTypes> | undefined>
+  >;
   deleteAccessPointsElement: (id: number) => Promise<number | undefined>;
   createAccessEntitlementElements: (
     entitlement_id: number,
@@ -92,7 +95,7 @@ interface IContextTypes {
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
   totalPage: number;
-  setTotalPage:Dispatch<SetStateAction<number>>;
+  setTotalPage: Dispatch<SetStateAction<number>>;
   currentPage: number;
   limit: number;
   setLimit: (number: number) => void;
@@ -110,7 +113,7 @@ export const useManageAccessEntitlementsContext = () => {
 export const ManageAccessEntitlementsProvider = ({
   children,
 }: IManageAccessEntitlementsProviderProps) => {
-  const url = import.meta.env.VITE_API_URL;
+  const api = useAxiosPrivate();
   const { token } = useGlobalContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoadingAccessPoints, setIsLoadingAccessPoints] =
@@ -134,7 +137,9 @@ export const ManageAccessEntitlementsProvider = ({
     useState<string>("");
   const [save, setSave] = useState<number>(0);
   const [save2, setSave2] = useState<number>(0);
-  const [table, setTable] = useState();
+  const [table, setTable] = useState<
+    Table<IManageAccessEntitlementsTypes> | undefined
+  >();
   const [editAccessPoint, setEditAccessPoint] = useState<boolean>(false);
   const [accessPointStatus, setAccessPointStatus] = useState<string>("");
   const [accessPoints, setAccessPoints] = useState<
@@ -148,8 +153,8 @@ export const ManageAccessEntitlementsProvider = ({
   const fetchManageAccessEntitlements = async (page: number, limit: number) => {
     setIsLoading(true);
     try {
-      const response = await axios.get<IManageAccessEntitlementsPerPageTypes>(
-        `${url}/manage-access-entitlements/${page}/${limit}`
+      const response = await api.get<IManageAccessEntitlementsPerPageTypes>(
+        `/manage-access-entitlements/${page}/${limit}`
       );
       const sortingData = response.data;
       return sortingData ?? {};
@@ -163,8 +168,8 @@ export const ManageAccessEntitlementsProvider = ({
   const fetchAccessPointsData = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get<IFetchAccessPointsElementTypes[]>(
-        `${url}/access-points-element`
+      const response = await api.get<IFetchAccessPointsElementTypes[]>(
+        `/access-points-element`
       );
       setAccessPoints(response.data);
       return response.data;
@@ -201,16 +206,16 @@ export const ManageAccessEntitlementsProvider = ({
       setIsLoading(true);
       try {
         if (fetchData) {
-          const response = await axios.get<
+          const response = await api.get<
             IFetchAccessEntitlementElementsTypes[]
-          >(`${url}/access-entitlement-elements/${fetchData.entitlement_id}`);
+          >(`/access-entitlement-elements/${fetchData.entitlement_id}`);
           const accessPointsId = response.data.map(
             (data) => data.access_point_id
           );
 
           // fetch access points data by IDS array
-          const filterAccessPointsById = await axios.get(
-            `${url}/access-points-element/${accessPointsId}/${page}/${limit}`
+          const filterAccessPointsById = await api.get(
+            `/access-points-element/${accessPointsId}/${page}/${limit}`
           );
           const totalCount = response.data.length;
           const totalPages = Math.ceil(totalCount / limit);
@@ -220,7 +225,7 @@ export const ManageAccessEntitlementsProvider = ({
             filterAccessPointsById.data as IFetchCombinedAccessPointsElementAndDatasourceTypes[]
           );
         }
-      } catch (error: any) {
+      } catch (error) {
         console.log(error);
       } finally {
         setIsLoading(false);
@@ -234,20 +239,20 @@ export const ManageAccessEntitlementsProvider = ({
       // setIsLoading(true);
       try {
         if (fetchData) {
-          const response = await axios.get<
+          const response = await api.get<
             IFetchAccessEntitlementElementsTypes[]
-          >(`${url}/access-entitlement-elements/${fetchData.entitlement_id}`);
+          >(`/access-entitlement-elements/${fetchData.entitlement_id}`);
           const accessPointsId = response.data.map(
             (data) => data.access_point_id
           );
 
           // fetch access points data by IDS array
-          const filterAccessPointsById = await axios.get(
-            `${url}/access-points-element/${accessPointsId}`
+          const filterAccessPointsById = await api.get(
+            `/access-points-element/${accessPointsId}`
           );
           return filterAccessPointsById.data ?? [];
         }
-      } catch (error: any) {
+      } catch (error) {
         console.log(error);
       } finally {
         setIsLoading(false);
@@ -269,8 +274,8 @@ export const ManageAccessEntitlementsProvider = ({
     } = postData;
     setIsLoading(true);
     try {
-      const res = await axios.post<IManageAccessEntitlementsTypes>(
-        `${url}/manage-access-entitlements`,
+      const res = await api.post<IManageAccessEntitlementsTypes>(
+        `/manage-access-entitlements`,
         {
           entitlement_name,
           description,
@@ -287,13 +292,13 @@ export const ManageAccessEntitlementsProvider = ({
         });
         setEditManageAccessEntitlement(false);
       }
-    } catch (error: any) {
-      if (error.response.status) {
-        toast({
-          title: "Info !!!",
-          description: `${error.message}`,
-        });
-      }
+    } catch (error) {
+      // if (error.response.status) {
+      //   toast({
+      //     title: "Info !!!",
+      //     description: `${error.message}`,
+      //   });
+      // }
       console.log(error);
     } finally {
       setSave((prevSave) => prevSave + 1);
@@ -316,8 +321,8 @@ export const ManageAccessEntitlementsProvider = ({
       created_by,
     } = putData;
     try {
-      const res = await axios.put<IManageAccessEntitlementsTypes>(
-        `${url}/manage-access-entitlements/${id}`,
+      const res = await api.put<IManageAccessEntitlementsTypes>(
+        `/manage-access-entitlements/${id}`,
         {
           entitlement_id,
           entitlement_name,
@@ -336,13 +341,13 @@ export const ManageAccessEntitlementsProvider = ({
         });
         setEditManageAccessEntitlement(false);
       }
-    } catch (error: any) {
-      if (error.response.status) {
-        toast({
-          title: "Info !!!",
-          description: `${error.message}`,
-        });
-      }
+    } catch (error) {
+      // if (error.response.status) {
+      //   toast({
+      //     title: "Info !!!",
+      //     description: `${error.message}`,
+      //   });
+      // }
       console.log(error);
     } finally {
       setSave((prevSave) => prevSave + 1);
@@ -352,9 +357,7 @@ export const ManageAccessEntitlementsProvider = ({
   const deleteManageAccessEntitlement = async (id: number) => {
     try {
       //fetch access entitlements
-      const response = await axios.get(
-        `${url}/access-entitlement-elements/${id}`
-      );
+      const response = await api.get(`/access-entitlement-elements/${id}`);
       console.log(response.data, "response");
       if (response.data.length > 0) {
         for (const element of response.data) {
@@ -364,7 +367,7 @@ export const ManageAccessEntitlementsProvider = ({
           );
         }
       }
-      const res = await axios.delete(`${url}/manage-access-entitlements/${id}`);
+      const res = await api.delete(`/manage-access-entitlements/${id}`);
       if (res.status === 200) {
         toast({
           title: "Info !!!",
@@ -394,8 +397,8 @@ export const ManageAccessEntitlementsProvider = ({
     } = postData;
     try {
       setIsLoading(true);
-      const res = await axios.post<ICreateAccessPointsElementTypes>(
-        `${url}/access-points-element`,
+      const res = await api.post<ICreateAccessPointsElementTypes>(
+        `/access-points-element`,
         {
           data_source_id,
           element_name,
@@ -418,13 +421,13 @@ export const ManageAccessEntitlementsProvider = ({
         setSave2((prevSave) => prevSave + 1);
       }
       return res.status;
-    } catch (error: any) {
-      if (error.response.status) {
-        toast({
-          title: "Info !!!",
-          description: `${error.message}`,
-        });
-      }
+    } catch (error) {
+      // if (error.response.status) {
+      //   toast({
+      //     title: "Info !!!",
+      //     description: `${error.message}`,
+      //   });
+      // }
       console.log(error);
     } finally {
       setIsLoading(false);
@@ -434,7 +437,7 @@ export const ManageAccessEntitlementsProvider = ({
   // delete access-points-element
   const deleteAccessPointsElement = async (id: number) => {
     try {
-      const res = await axios.delete(`${url}/access-points-element/${id}`);
+      const res = await api.delete(`/access-points-element/${id}`);
       if (res.status === 200) {
         toast({
           title: "Info !!!",
@@ -449,8 +452,8 @@ export const ManageAccessEntitlementsProvider = ({
   };
   //fetch access entitlement elements
   const fetchAccessEtitlementElenents = async () => {
-    const res = await axios.get<IFetchAccessEntitlementElementsTypes[]>(
-      `${url}/access-entitlement-elements`
+    const res = await api.get<IFetchAccessEntitlementElementsTypes[]>(
+      `/access-entitlement-elements`
     );
     return res.data;
   };
@@ -463,8 +466,8 @@ export const ManageAccessEntitlementsProvider = ({
     try {
       setIsLoadingAccessPoints(true);
       for (const id of accessPointsMaxId) {
-        await axios.post<IFetchAccessEntitlementElementsTypes>(
-          `${url}/access-entitlement-elements`,
+        await api.post<IFetchAccessEntitlementElementsTypes>(
+          `/access-entitlement-elements`,
           {
             entitlement_id: entitlement_id,
             access_point_id: id,
@@ -492,8 +495,8 @@ export const ManageAccessEntitlementsProvider = ({
     setIsLoadingAccessPoints(true);
     try {
       await Promise.all([
-        await axios
-          .delete(`${url}/access-entitlement-elements`, {
+        await api
+          .delete(`/access-entitlement-elements`, {
             data: { entitlementId, accessPointId },
           })
           .then((res) => {
@@ -505,7 +508,7 @@ export const ManageAccessEntitlementsProvider = ({
           .finally(() => {
             fetchAccessPointsEntitlementForDelete(selected[0]);
           }),
-        // await axios.delete(`${url}/access-points-element/${accessPointId}`),
+        // await api.delete(`/access-points-element/${accessPointId}`),
       ]);
     } catch (error) {
       console.log(error);
@@ -555,7 +558,8 @@ export const ManageAccessEntitlementsProvider = ({
     setSelectedAccessEntitlementElements,
     page,
     setPage,
-    totalPage,setTotalPage,
+    totalPage,
+    setTotalPage,
     currentPage,
     limit,
     setLimit,

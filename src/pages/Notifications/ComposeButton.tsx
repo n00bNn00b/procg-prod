@@ -15,18 +15,18 @@ import {
 import { ChangeEvent, useState } from "react";
 import { Check } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import Spinner from "@/components/Spinner/Spinner";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 // import { send } from "process";
 
 const ComposeButton = () => {
+  const api = useAxiosPrivate();
   const { users, token, user } = useGlobalContext();
   const { handlesendMessage, handleDraftMessage } = useSocketContext();
   const { toast } = useToast();
-  const url = import.meta.env.VITE_API_URL;
   const [recivers, setRecivers] = useState<string[]>([]);
   const [subject, setSubject] = useState<string>("");
   const [body, setBody] = useState<string>("");
@@ -34,7 +34,7 @@ const ComposeButton = () => {
   const [isSending, setIsSending] = useState(false);
   const [isDrafting, setIsDrafting] = useState(false);
   const [isAllClicked, setIsAllClicked] = useState(true);
-  const sender = token.user_name;
+  const sender = token?.user_name || "";
   const id = uuidv4();
 
   const totalusers = [...recivers, sender];
@@ -89,7 +89,7 @@ const ComposeButton = () => {
     };
     try {
       setIsSending(true);
-      const response = await axios.post(`${url}/messages`, data);
+      const response = await api.post(`/messages`, data);
       if (response.status === 201) {
         handlesendMessage(data);
         toast({
@@ -128,7 +128,7 @@ const ComposeButton = () => {
     };
     try {
       setIsDrafting(true);
-      const response = await axios.post(`${url}/messages`, data);
+      const response = await api.post(`/messages`, data);
       if (response.status === 201) {
         handleDraftMessage(data);
         toast({
