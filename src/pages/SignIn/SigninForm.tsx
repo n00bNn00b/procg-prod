@@ -41,7 +41,7 @@ const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
       setIsLoading(true);
       await api.post(`${url}/login`, data);
       const response = await api.get(`/auth/user`);
-      console.log("Response:", response.data);
+      console.log("User Login Successfully.");
       setToken(response.data);
       setIsWrongCredential(false);
       // localStorage.setItem("token", JSON.stringify(response.data));

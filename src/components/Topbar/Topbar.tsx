@@ -29,7 +29,7 @@ const Topbar = () => {
             <Menu className="text-2xl" />
           </button>
         )}
-        <Link to="/home">
+        <Link to="/">
           <img src={logo} alt="logo" className="h-[2rem] w-auto" />
         </Link>
         <p className="text-blue-600 font-semibold mt-3">Advanced Controls</p>
