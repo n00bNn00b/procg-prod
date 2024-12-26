@@ -104,7 +104,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     };
 
     fetchCounterMessages();
-  }, [user, location]);
+  }, [user, location, api]);
 
   //Listen to socket events
   useEffect(() => {

@@ -5,8 +5,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { QRCodeCanvas } from "qrcode.react";
 const LinkDevies = () => {
+  const { token } = useGlobalContext();
+  console.log(JSON.stringify(token));
   return (
     <Card className="h-[70vh]">
       <CardHeader>
@@ -16,7 +19,7 @@ const LinkDevies = () => {
       <CardContent>
         <div className="mt-auto">
           <QRCodeCanvas
-            value="shdfksldfnsdflksdf.sdfnsdflndsf"
+            value={JSON.stringify(token)}
             title={"Link Account"}
             size={200}
           />
