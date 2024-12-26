@@ -2,16 +2,17 @@ import React, { useState } from "react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { AxiosError } from "axios";
+import { toast } from "@/components/ui/use-toast";
 
 const UpdateProfile: React.FC = () => {
-  const { token } = useGlobalContext();
+  const { token, combinedUser, getUserInfo } = useGlobalContext();
   const api = useAxiosPrivate();
   const [formData, setFormData] = useState({
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    job_title: "",
-    profileImage: null as File | null,
+    user_name: combinedUser?.user_name || "",
+    first_name: combinedUser?.first_name || "",
+    last_name: combinedUser?.last_name || "",
+    email_addresses: combinedUser?.email_addresses || "",
+    profileImage: combinedUser?.profile_picture, // || null as File | null,
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -42,19 +43,38 @@ const UpdateProfile: React.FC = () => {
     }
 
     const form = new FormData();
+    form.append("user_name", formData.user_name);
     form.append("first_name", formData.first_name);
-    form.append("middle_name", formData.middle_name);
     form.append("last_name", formData.last_name);
-    form.append("job_title", formData.job_title);
+    form.append("email_addresses", formData.email_addresses);
     if (formData.profileImage) {
       form.append("profileImage", formData.profileImage);
     }
 
     try {
-      const response = await api.put(`/persons/${token.user_id}`, form, {
+      const response = await api.put(`/combined-user/${token.user_id}`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log("Profile updated:", response.data);
+      if (response.status === 200) {
+        getUserInfo(token?.user_id);
+        // setCombinedUser((prev) => {
+        //   if (!prev) return undefined;
+        //   return {
+        //     ...prev,
+        //     user_name: formData.user_name,
+        //     first_name: formData.first_name,
+        //     last_name: formData.last_name,
+        //     email_addresses: formData.email_addresses,
+        //     profile_picture: formData.profileImage,
+        //   };
+        // });
+
+        setIsLoading(false);
+        toast({
+          title: "Profile Updated",
+          description: "Your profile has been updated successfully.",
+        });
+      }
     } catch (err) {
       if (err instanceof AxiosError) {
         setError(err.response?.data?.message || "Failed to update profile.");
@@ -69,52 +89,54 @@ const UpdateProfile: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <div className="text-red-500">{error}</div>}
-      <input
-        type="text"
-        name="first_name"
-        placeholder="first_name"
-        value={formData.first_name}
-        onChange={handleChange}
-        className="border p-2"
-      />
-      <input
-        type="text"
-        name="middle_name"
-        placeholder="last name"
-        value={formData.middle_name}
-        onChange={handleChange}
-        className="border p-2"
-      />
-      <input
-        type="text"
-        name="last_name"
-        placeholder="last_name"
-        value={formData.last_name}
-        onChange={handleChange}
-        className="border p-2"
-      />
-      <input
-        type="text"
-        name="job_title"
-        placeholder="job_title"
-        value={formData.job_title}
-        onChange={handleChange}
-        className="border p-2"
-      />
-      <input
-        type="file"
-        name="profileImage"
-        accept="image/*"
-        onChange={handleChange}
-        className="border p-2"
-      />
-      {imagePreview && (
-        <img
-          src={imagePreview}
-          alt="Profile Preview"
-          className="w-32 h-32 rounded-full"
+      <div className="flex flex-col gap-2 w-64">
+        <input
+          type="text"
+          name="user_name"
+          placeholder="User Name"
+          value={formData.user_name}
+          onChange={handleChange}
+          className="border p-2"
         />
-      )}
+        <input
+          type="text"
+          name="first_name"
+          placeholder="First Name"
+          value={formData.first_name}
+          onChange={handleChange}
+          className="border p-2"
+        />
+        <input
+          type="text"
+          name="last_name"
+          placeholder="Last Name"
+          value={formData.last_name}
+          onChange={handleChange}
+          className="border p-2"
+        />
+        <input
+          type="text"
+          name="email_addresses"
+          placeholder="Email"
+          value={formData.email_addresses}
+          onChange={handleChange}
+          className="border p-2"
+        />
+        <input
+          type="file"
+          name="profileImage"
+          accept="image/*"
+          onChange={handleChange}
+          className="border p-2"
+        />
+        {imagePreview && (
+          <img
+            src={imagePreview}
+            alt="Profile Preview"
+            className="w-32 h-32 rounded-full"
+          />
+        )}
+      </div>
       <button
         type="submit"
         className="bg-blue-500 text-white px-4 py-2"

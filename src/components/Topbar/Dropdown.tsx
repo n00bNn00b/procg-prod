@@ -6,7 +6,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { NavLink, useNavigate } from "react-router-dom";
 import { LogOut, Settings, ShieldBan, User } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
@@ -15,7 +15,7 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 const Dropdown = () => {
   const api = useAxiosPrivate();
-  const { token, setToken } = useGlobalContext();
+  const { token, setToken, combinedUser } = useGlobalContext();
   const { handleDisconnect } = useSocketContext();
   const navigate = useNavigate();
 
@@ -44,9 +44,10 @@ const Dropdown = () => {
         <Avatar>
           <AvatarImage
             className="object-cover object-center"
-            src="https://github.com/shadcn.png"
+            src={`${
+              import.meta.env.VITE_API_URL + "/" + combinedUser?.profile_picture
+            }`}
           />
-          <AvatarFallback>PF</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40">

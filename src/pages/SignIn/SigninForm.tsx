@@ -12,6 +12,7 @@ import {
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { AxiosError } from "axios";
 
 interface SignInFormProps {
   setIsWrongCredential: React.Dispatch<React.SetStateAction<boolean>>;
@@ -39,7 +40,8 @@ const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
   const handleSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       setIsLoading(true);
-      await api.post(`${url}/login`, data);
+      const res = await api.post(`${url}/login`, data);
+      if (!res.data) return;
       const response = await api.get(`/auth/user`);
       console.log("Response:", response.data);
       setToken(response.data);
@@ -52,7 +54,10 @@ const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
         navigate(location?.state ? location?.state : "/", { replace: true });
       }
     } catch (error) {
-      console.log(error);
+      setIsWrongCredential(true);
+      if (error instanceof AxiosError && error.response) {
+        console.log(error);
+      }
     } finally {
       setIsLoading(false);
     }

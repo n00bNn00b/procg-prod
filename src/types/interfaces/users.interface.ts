@@ -27,6 +27,7 @@ export interface Users {
   last_updated_by?: number;
   last_updated_on?: string;
   tenant_id?: number;
+  profile_picture?: string;
 }
 export interface IUpdateUserTypes {
   user_name: string;
