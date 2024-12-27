@@ -4,7 +4,7 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { z } from "zod";
-import DefaultLogo from "../../../public/profile/loading.gif";
+import DefaultLogo from "/public/profile/loading.gif";
 
 const UpdateProfile: React.FC = () => {
   const api = useAxiosPrivate();
@@ -13,7 +13,7 @@ const UpdateProfile: React.FC = () => {
   const profileLogo = isCombinedUserLoading
     ? DefaultLogo
     : combinedUser?.profile_picture
-    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
+    ? `${import.meta.env.VITE_API_URL}/uploads/${combinedUser.profile_picture}`
     : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
 
   const [formData, setFormData] = useState({
