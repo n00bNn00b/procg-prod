@@ -1,5 +1,3 @@
-import { IUsersInfoTypes } from "@/types/interfaces/users.interface";
-import { FC } from "react";
 import {
   Card,
   CardContent,
@@ -11,10 +9,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-interface IAccountTypes {
-  userInfo: IUsersInfoTypes | undefined;
-}
-const Account: FC<IAccountTypes> = ({ userInfo }) => {
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+
+const Account = () => {
+  const { combinedUser: userInfo } = useGlobalContext();
   return (
     <div>
       <Card>

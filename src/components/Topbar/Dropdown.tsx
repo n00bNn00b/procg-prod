@@ -12,12 +12,17 @@ import { LogOut, Settings, ShieldBan, User } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import DefaultLogo from "../../../public/profile/loading.gif";
 
 const Dropdown = () => {
   const api = useAxiosPrivate();
-  const { token, setToken, combinedUser } = useGlobalContext();
+  const { token, setToken, combinedUser, isCombinedUserLoading } =
+    useGlobalContext();
   const { handleDisconnect } = useSocketContext();
   const navigate = useNavigate();
+  const profileLogo = `${
+    import.meta.env.VITE_API_URL + "/" + combinedUser?.profile_picture
+  }`;
 
   const userExample = {
     isLoggedIn: false,
@@ -44,9 +49,7 @@ const Dropdown = () => {
         <Avatar>
           <AvatarImage
             className="object-cover object-center"
-            src={`${
-              import.meta.env.VITE_API_URL + "/" + combinedUser?.profile_picture
-            }`}
+            src={isCombinedUserLoading ? DefaultLogo : profileLogo}
           />
         </Avatar>
       </DropdownMenuTrigger>

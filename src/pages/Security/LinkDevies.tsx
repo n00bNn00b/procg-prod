@@ -9,7 +9,7 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { QRCodeCanvas } from "qrcode.react";
 const LinkDevies = () => {
   const { token } = useGlobalContext();
-  console.log(JSON.stringify(token));
+
   return (
     <Card className="h-[70vh]">
       <CardHeader>

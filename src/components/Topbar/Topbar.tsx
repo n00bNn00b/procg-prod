@@ -32,20 +32,24 @@ const Topbar = () => {
         <Link to="/">
           <img src={logo} alt="logo" className="h-[2rem] w-auto" />
         </Link>
-        <p className="text-blue-600 font-semibold mt-3">Advanced Controls</p>
+        <p className="text-blue-600 font-semibold mt-3 hidden lg:block">
+          Advanced Controls
+        </p>
       </div>
 
-      <div className="flex gap-6 items-center">
+      <div className="flex gap-1 items-center">
         <NavLink
           to="/"
           className={({ isActive }) =>
             isActive
-              ? "bg-winter-100 px-4 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50"
-              : "px-4 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50"
+              ? "bg-winter-100 px-2 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50"
+              : "px-2 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50"
           }
         >
           <Home className="text-2xl" />
-          <p className="font-semibold">Home</p>
+          <p className="font-semibold hidden lg:block transition duration-300 ease-in-out">
+            Home
+          </p>
         </NavLink>
         <NavLink
           to="/action-items"
@@ -56,7 +60,9 @@ const Topbar = () => {
           }
         >
           <ListTodo className="text-2xl" />
-          <p className="font-semibold">Action Items</p>
+          <p className="font-semibold hidden lg:block transition duration-300 ease-in-out">
+            Action Items
+          </p>
         </NavLink>
         <NavLink
           to="/alerts"
@@ -67,7 +73,9 @@ const Topbar = () => {
           }
         >
           <Bell className="text-2xl" />
-          <p className="font-semibold">Alerts</p>
+          <p className="font-semibold hidden lg:block transition duration-300 ease-in-out">
+            Alerts
+          </p>
         </NavLink>
         <NavLink
           to="/notifications/inbox"
@@ -86,7 +94,9 @@ const Topbar = () => {
               {uniquMessages.length}
             </p>
           ) : null}
-          <p className="font-semibold">Notifications</p>
+          <p className="font-semibold hidden lg:block transition duration-300 ease-in-out">
+            Notifications
+          </p>
         </NavLink>
         <Dropdown />
       </div>
