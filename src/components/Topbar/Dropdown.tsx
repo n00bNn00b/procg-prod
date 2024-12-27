@@ -12,7 +12,8 @@ import { LogOut, Settings, ShieldBan, User } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import DefaultLogo from "../../../public/profile/loading.gif";
+const DefaultLogo = "/profile/loading.gif";
+
 // import { useEffect } from "react";
 
 const Dropdown = () => {
@@ -26,9 +27,9 @@ const Dropdown = () => {
   } = useGlobalContext();
   const { handleDisconnect } = useSocketContext();
   const navigate = useNavigate();
-  const profileLogo = combinedUser?.profile_picture
-    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
-    : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/profile.jpg`;
+  const profileLogo = isCombinedUserLoading
+    ? `${import.meta.env.VITE_API_URL}/uploads/profiles/default/profile.jpg`
+    : `${import.meta.env.VITE_API_URL}/${combinedUser?.profile_picture}`;
 
   // useEffect(() => {
   //   if (!combinedUser?.profile_picture) return;
