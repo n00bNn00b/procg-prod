@@ -4,10 +4,15 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { z } from "zod";
+import DefaultLogo from "../../../public/profile/loading.gif";
 
 const UpdateProfile: React.FC = () => {
   const api = useAxiosPrivate();
-  const { token, combinedUser, getUserInfo } = useGlobalContext();
+  const { token, combinedUser, setCombinedUser, isCombinedUserLoading } =
+    useGlobalContext();
+  const profileLogo = `${
+    import.meta.env.VITE_API_URL + "/" + combinedUser?.profile_picture
+  }`;
 
   const [formData, setFormData] = useState({
     user_name: combinedUser?.user_name || "",
@@ -16,9 +21,7 @@ const UpdateProfile: React.FC = () => {
     email_addresses: Array.isArray(combinedUser?.email_addresses)
       ? combinedUser.email_addresses.join(", ")
       : "",
-    profileImage: `${
-      import.meta.env.VITE_API_URL + "/" + combinedUser?.profile_picture
-    }`,
+    profileImage: isCombinedUserLoading ? DefaultLogo : profileLogo,
   });
 
   const [file, setFile] = useState<File | null>(null);
@@ -27,9 +30,9 @@ const UpdateProfile: React.FC = () => {
 
   // Define Zod schema for validation
   const profileSchema = z.object({
-    user_name: z.string().nonempty("User Name is required."),
-    first_name: z.string().nonempty("First Name is required."),
-    last_name: z.string().nonempty("Last Name is required."),
+    user_name: z.string(),
+    first_name: z.string(),
+    last_name: z.string(),
     profileImage: z.string().optional(),
     email_addresses: z
       .string()
@@ -67,7 +70,18 @@ const UpdateProfile: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    if (file) {
+      const allowedMimeTypes = ["image/jpeg", "image/png", "image/jpg"];
 
+      if (file.size > 513575) {
+        setIsLoading(false);
+        return setError("Image size should be less than 500kb");
+      }
+      if (!allowedMimeTypes.includes(file.type)) {
+        setIsLoading(false);
+        return setError("Only JPEG, PNG, and JPG images are allowed.");
+      }
+    }
     if (!token) {
       setError("You must be logged in to update your profile.");
       setIsLoading(false);
@@ -96,9 +110,22 @@ const UpdateProfile: React.FC = () => {
       const response = await api.put(`/combined-user/${token.user_id}`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      const profileImageUrl = `${
+        import.meta.env.VITE_API_URL
+      }/uploads/profiles/${combinedUser?.user_name}/${file?.name}`;
 
       if (response.status === 200) {
-        getUserInfo(token?.user_id);
+        setCombinedUser((prev) => {
+          if (!prev) return undefined;
+          return {
+            ...prev,
+            user_name: formData.user_name,
+            first_name: formData.first_name,
+            last_name: formData.last_name,
+            email_addresses: formData.email_addresses,
+            profile_picture: profileImageUrl,
+          };
+        });
         toast({
           title: "Profile Updated",
           description: "Your profile has been updated successfully.",
@@ -120,13 +147,12 @@ const UpdateProfile: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <div className="text-red-500">{error}</div>}
-      <div className="flex flex-col items-center gap-6">
+    <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+      <div className="flex flex-col items-center gap-2">
         {/* Profile Image */}
         <div className="relative w-32 h-32">
           <img
-            src={formData.profileImage}
+            src={isCombinedUserLoading ? DefaultLogo : formData.profileImage}
             alt="Profile"
             className="w-full h-full rounded-full object-cover border-2 border-gray-300"
           />
@@ -159,39 +185,66 @@ const UpdateProfile: React.FC = () => {
             />
           </label>
         </div>
-        <div className="w-full max-w-md space-y-4">
-          <input
-            type="text"
-            name="user_name"
-            placeholder="User Name"
-            value={formData.user_name}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
-          />
-          <input
-            type="text"
-            name="first_name"
-            placeholder="First Name"
-            value={formData.first_name}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
-          />
-          <input
-            type="text"
-            name="last_name"
-            placeholder="Last Name"
-            value={formData.last_name}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
-          />
-          <input
-            type="text"
-            name="email_addresses"
-            placeholder="Email - example@email.com, example2@email.com"
-            value={formData.email_addresses}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
-          />
+        {error ? (
+          <div className="text-red-500">{error}</div>
+        ) : (
+          <div className="text-slate-300">
+            Image size should be less than 500kb and only JPEG, PNG, and JPG
+          </div>
+        )}
+        <div className="w-full max-w-lg space-y-2 justify-center">
+          <div className="flex gap-2 items-center">
+            <label htmlFor="user_name" className="w-[7rem]">
+              User Name
+            </label>
+            <input
+              type="text"
+              name="user_name"
+              placeholder="User Name"
+              value={formData.user_name}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
+            />
+          </div>
+          <div className="flex gap-2 items-center">
+            <label htmlFor="user_name" className="w-[7rem]">
+              First Name
+            </label>
+            <input
+              type="text"
+              name="first_name"
+              placeholder="First Name"
+              value={formData.first_name}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
+            />
+          </div>
+          <div className="flex gap-2 items-center">
+            <label htmlFor="user_name" className="w-[7rem]">
+              Last Name
+            </label>
+            <input
+              type="text"
+              name="last_name"
+              placeholder="Last Name"
+              value={formData.last_name}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
+            />
+          </div>
+          <div className="flex gap-2 items-center">
+            <label htmlFor="user_name" className="w-[7rem]">
+              Emails
+            </label>
+            <input
+              type="text"
+              name="email_addresses"
+              placeholder="Email - example@email.com, example2@email.com"
+              value={formData.email_addresses}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300"
+            />
+          </div>
         </div>
         <button
           type="submit"

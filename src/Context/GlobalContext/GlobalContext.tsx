@@ -46,6 +46,7 @@ interface GlobalContex {
   ) => Promise<IManageAccessEntitlementsPerPageTypes | undefined>;
   fetchDataSource: (id: number) => Promise<IDataSourceTypes>;
   isLoading: boolean;
+  isCombinedUserLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   createDataSource: (postData: IDataSourcePostTypes) => Promise<void>;
   updateDataSource: (
@@ -56,6 +57,9 @@ interface GlobalContex {
   createUser: (postData: IAddUserTypes) => void;
   fetchTenants: () => Promise<ITenantsTypes[] | undefined>;
   combinedUser: IUsersInfoTypes | undefined;
+  setCombinedUser: React.Dispatch<
+    React.SetStateAction<IUsersInfoTypes | undefined>
+  >;
   usersInfo: IUsersInfoTypes[];
   fetchCombinedUser: () => Promise<void>;
   //lazy loading
@@ -70,7 +74,6 @@ interface GlobalContex {
   isOpenModal: string;
   setIsOpenModal: Dispatch<SetStateAction<string>>;
   resetPassword: (resetData: IUserPasswordResetTypes) => Promise<void>;
-  getUserInfo: (user_id: number) => Promise<IUsersInfoTypes | undefined>;
   isUserLoading: boolean;
 }
 const userExample = {
@@ -101,6 +104,7 @@ export function GlobalContextProvider({
 
   const [users, setUsers] = useState<Users[]>([]);
   const [combinedUser, setCombinedUser] = useState<IUsersInfoTypes>();
+  const [isCombinedUserLoading, setIsCombinedUserLoading] = useState(false);
   const [usersInfo, setUsersInfo] = useState<IUsersInfoTypes[]>([]);
   const [isOpenModal, setIsOpenModal] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -131,6 +135,7 @@ export function GlobalContextProvider({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        setIsCombinedUserLoading(true);
         if (token?.user_id === 0) return;
         const [users, combinedUser] = await Promise.all([
           api.get<Users[]>(`/users`),
@@ -140,11 +145,13 @@ export function GlobalContextProvider({
         setUsers(users.data);
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsCombinedUserLoading(false);
       }
     };
 
     fetchUsers();
-  }, [api, token?.user_id]);
+  }, [api, token?.user_id, combinedUser?.profile_picture?.length]);
 
   // access entitlement elements lazy loading
   const fetchCombinedUser = async () => {
@@ -167,18 +174,6 @@ export function GlobalContextProvider({
     }
   };
   //user info
-  const getUserInfo = async (user_id: number) => {
-    try {
-      setIsLoading(true);
-      const res = await api.get<IUsersInfoTypes>(`/combined-user/${user_id}`);
-      setCombinedUser(res.data);
-      return res.data;
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
   const createUser = async (postData: IAddUserTypes) => {
     setIsLoading(true);
     const {
@@ -472,6 +467,7 @@ export function GlobalContextProvider({
         fetchDataSources,
         fetchDataSource,
         isLoading,
+        isCombinedUserLoading,
         setIsLoading,
         createDataSource,
         updateDataSource,
@@ -479,6 +475,7 @@ export function GlobalContextProvider({
         createUser,
         fetchTenants,
         combinedUser,
+        setCombinedUser,
         usersInfo,
         fetchCombinedUser,
         page,
@@ -492,7 +489,6 @@ export function GlobalContextProvider({
         isOpenModal,
         setIsOpenModal,
         resetPassword,
-        getUserInfo,
         isUserLoading,
       }}
     >

@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/card";
 import { QRCodeCanvas } from "qrcode.react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { IUsersInfoTypes } from "@/types/interfaces/users.interface";
-import Account from "./Account";
 import { useEffect, useState } from "react";
+import DefaultLogo from "../../../public/profile/loading.gif";
 import UpdateProfile from "./UpdateProfile";
+
 interface IAccessProfiles {
   user_name?: string;
   email?: string;
@@ -25,25 +25,26 @@ interface IAccessProfiles {
   phone_3?: string;
 }
 const Profile = () => {
-  const { token, getUserInfo, combinedUser } = useGlobalContext();
-  const [userInfo, setUserInfo] = useState<IUsersInfoTypes | undefined>();
+  const { token, combinedUser, isCombinedUserLoading } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(false);
   const [accessProfiles, setAccessProfiles] = useState<IAccessProfiles>({});
+  const profileLogo = `${
+    import.meta.env.VITE_API_URL + "/" + combinedUser?.profile_picture
+  }`;
+
   useEffect(() => {
     const getUser = async () => {
       try {
+        if (!token) return;
         setIsLoading(true);
-        const res = await getUserInfo(token?.user_id || 0);
-
-        if (res) {
+        if (combinedUser) {
           const accessProfiles: IAccessProfiles = {};
-          accessProfiles.user_name = res?.user_name;
-          for (let i = 0; i < res?.email_addresses.length; i++) {
+          accessProfiles.user_name = combinedUser?.user_name;
+          for (let i = 0; i < combinedUser?.email_addresses.length; i++) {
             accessProfiles[`email_${i + 1}` as keyof IAccessProfiles] =
-              res.email_addresses[i];
+              combinedUser.email_addresses[i];
           }
 
-          setUserInfo(res);
           setAccessProfiles(accessProfiles);
         }
       } catch (error) {
@@ -53,14 +54,13 @@ const Profile = () => {
       }
     };
     getUser();
-  }, []);
+  }, [combinedUser, token]);
   return (
     <Tabs defaultValue="profile" className="w-full">
       <div className="bg-slate-100 rounded">
         <TabsList className="grid w-[30rem] grid-cols-3">
           <TabsTrigger value="profile">Access Profiles</TabsTrigger>
           <TabsTrigger value="customize">Customize</TabsTrigger>
-          <TabsTrigger value="update">Update</TabsTrigger>
         </TabsList>
       </div>
       <TabsContent value="profile">
@@ -80,18 +80,14 @@ const Profile = () => {
                   <Avatar>
                     <AvatarImage
                       className="object-cover object-center w-20 h-20 rounded-full mx-auto border border-8px"
-                      src={`${
-                        import.meta.env.VITE_API_URL +
-                        "/" +
-                        combinedUser?.profile_picture
-                      }`}
+                      src={isCombinedUserLoading ? DefaultLogo : profileLogo}
                     />
                   </Avatar>
                   <h4 className="font-bold text-center">
-                    {userInfo?.first_name} {userInfo?.last_name}
+                    {combinedUser?.first_name} {combinedUser?.last_name}
                   </h4>
                   <h4 className="text-center">
-                    Job Title : {userInfo?.job_title}
+                    Job Title : {combinedUser?.job_title}
                   </h4>
                 </div>
                 <div className="p-4 flex flex-col">
@@ -109,9 +105,6 @@ const Profile = () => {
         </Card>
       </TabsContent>
       <TabsContent value="customize">
-        <Account userInfo={userInfo} />
-      </TabsContent>
-      <TabsContent value="update">
         <UpdateProfile />
       </TabsContent>
     </Tabs>
