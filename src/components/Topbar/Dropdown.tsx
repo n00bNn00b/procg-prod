@@ -39,7 +39,7 @@ const Dropdown = () => {
         profile_picture: profileLogo,
       };
     });
-  }, [combinedUser?.profile_picture]);
+  }, [combinedUser?.user_id]);
 
   const userExample = {
     isLoggedIn: false,
