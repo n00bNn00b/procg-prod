@@ -28,9 +28,11 @@ const Profile = () => {
   const { token, combinedUser, isCombinedUserLoading } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(false);
   const [accessProfiles, setAccessProfiles] = useState<IAccessProfiles>({});
-  const profileLogo = `${
-    import.meta.env.VITE_API_URL + "/" + combinedUser?.profile_picture
-  }`;
+  const profileLogo = isCombinedUserLoading
+    ? DefaultLogo
+    : combinedUser?.profile_picture
+    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
+    : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
 
   useEffect(() => {
     const getUser = async () => {
@@ -80,7 +82,7 @@ const Profile = () => {
                   <Avatar>
                     <AvatarImage
                       className="object-cover object-center w-20 h-20 rounded-full mx-auto border border-8px"
-                      src={isCombinedUserLoading ? DefaultLogo : profileLogo}
+                      src={profileLogo}
                     />
                   </Avatar>
                   <h4 className="font-bold text-center">

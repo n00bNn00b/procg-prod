@@ -12,36 +12,21 @@ import { LogOut, Settings, ShieldBan, User } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-const DefaultLogo = "/profile/loading.gif";
+const DefaultLogo = "../../../public/profile/loading.gif";
 
 // import { useEffect } from "react";
 
 const Dropdown = () => {
   const api = useAxiosPrivate();
-  const {
-    token,
-    setToken,
-    combinedUser,
-    // setCombinedUser,
-    isCombinedUserLoading,
-  } = useGlobalContext();
+  const { token, setToken, combinedUser, isCombinedUserLoading } =
+    useGlobalContext();
   const { handleDisconnect } = useSocketContext();
   const navigate = useNavigate();
   const profileLogo = isCombinedUserLoading
-    ? `${import.meta.env.VITE_API_URL}/uploads/profiles/default/profile.jpg`
-    : `${import.meta.env.VITE_API_URL}/${combinedUser?.profile_picture}`;
-
-  // useEffect(() => {
-  //   if (!combinedUser?.profile_picture) return;
-  //   console.log(combinedUser, "inside");
-  //   setCombinedUser((prev) => {
-  //     if (!prev) return prev;
-  //     return {
-  //       ...prev,
-  //       profile_picture: profileLogo,
-  //     };
-  //   });
-  // }, [combinedUser?.user_id]);
+    ? DefaultLogo
+    : combinedUser?.profile_picture
+    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
+    : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
 
   const userExample = {
     isLoggedIn: false,
@@ -68,7 +53,7 @@ const Dropdown = () => {
         <Avatar className="border">
           <AvatarImage
             className="object-cover object-center"
-            src={isCombinedUserLoading ? DefaultLogo : profileLogo}
+            src={profileLogo}
           />
         </Avatar>
       </DropdownMenuTrigger>

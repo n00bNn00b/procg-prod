@@ -10,9 +10,11 @@ const UpdateProfile: React.FC = () => {
   const api = useAxiosPrivate();
   const { token, combinedUser, setCombinedUser, isCombinedUserLoading } =
     useGlobalContext();
-  const profileLogo = `${
-    import.meta.env.VITE_API_URL + "/" + combinedUser?.profile_picture
-  }`;
+  const profileLogo = isCombinedUserLoading
+    ? DefaultLogo
+    : combinedUser?.profile_picture
+    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
+    : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
 
   const [formData, setFormData] = useState({
     user_name: combinedUser?.user_name || "",
@@ -21,7 +23,7 @@ const UpdateProfile: React.FC = () => {
     email_addresses: Array.isArray(combinedUser?.email_addresses)
       ? combinedUser.email_addresses.join(", ")
       : "",
-    profileImage: isCombinedUserLoading ? DefaultLogo : profileLogo,
+    profileImage: profileLogo,
   });
 
   const [file, setFile] = useState<File | null>(null);
