@@ -13,16 +13,34 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import DefaultLogo from "../../../public/profile/loading.gif";
+import { useEffect } from "react";
 
 const Dropdown = () => {
   const api = useAxiosPrivate();
-  const { token, setToken, combinedUser, isCombinedUserLoading } =
-    useGlobalContext();
+  const {
+    token,
+    setToken,
+    combinedUser,
+    setCombinedUser,
+    isCombinedUserLoading,
+  } = useGlobalContext();
   const { handleDisconnect } = useSocketContext();
   const navigate = useNavigate();
   const profileLogo = `${
     import.meta.env.VITE_API_URL + "/" + combinedUser?.profile_picture
   }`;
+  console.log(combinedUser?.profile_picture);
+  useEffect(() => {
+    if (combinedUser?.user_id) {
+      setCombinedUser((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          profile_picture: profileLogo,
+        };
+      });
+    }
+  }, [combinedUser?.user_id]);
 
   const userExample = {
     isLoggedIn: false,
@@ -46,7 +64,7 @@ const Dropdown = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none">
-        <Avatar>
+        <Avatar className="border">
           <AvatarImage
             className="object-cover object-center"
             src={isCombinedUserLoading ? DefaultLogo : profileLogo}
