@@ -10,7 +10,7 @@ import {
 import { QRCodeCanvas } from "qrcode.react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
-import DefaultLogo from "../../../public/profile/loading.gif";
+import DefaultLogo from "/public/profile/loading.gif";
 import UpdateProfile from "./UpdateProfile";
 
 interface IAccessProfiles {
@@ -31,7 +31,7 @@ const Profile = () => {
   const profileLogo = isCombinedUserLoading
     ? DefaultLogo
     : combinedUser?.profile_picture
-    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
+    ? `${import.meta.env.VITE_API_URL}/uploads/${combinedUser.profile_picture}`
     : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
 
   useEffect(() => {

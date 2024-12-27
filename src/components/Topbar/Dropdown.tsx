@@ -12,7 +12,7 @@ import { LogOut, Settings, ShieldBan, User } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-const DefaultLogo = "../../../public/profile/loading.gif";
+const DefaultLogo = "/public/profile/loading.gif";
 
 // import { useEffect } from "react";
 
@@ -25,9 +25,9 @@ const Dropdown = () => {
   const profileLogo = isCombinedUserLoading
     ? DefaultLogo
     : combinedUser?.profile_picture
-    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
+    ? `${import.meta.env.VITE_API_URL}/uploads/${combinedUser.profile_picture}`
     : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
-
+  console.log(combinedUser, "combinedUser");
   const userExample = {
     isLoggedIn: false,
     user_id: 0,
