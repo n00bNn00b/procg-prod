@@ -151,7 +151,7 @@ export function GlobalContextProvider({
     };
 
     fetchUsers();
-  }, [api, token?.user_id, combinedUser?.profile_picture?.length]);
+  }, [api, token?.user_id, combinedUser?.profile_picture]);
 
   // access entitlement elements lazy loading
   const fetchCombinedUser = async () => {
