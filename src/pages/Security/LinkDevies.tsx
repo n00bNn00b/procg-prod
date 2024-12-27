@@ -19,7 +19,7 @@ const LinkDevies = () => {
       <CardContent>
         <div className="mt-auto">
           <QRCodeCanvas
-            value={JSON.stringify(token)}
+            value={JSON.stringify(token.access_token)}
             title={"Link Account"}
             size={200}
           />

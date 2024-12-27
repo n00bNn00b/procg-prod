@@ -99,7 +99,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         setTotalRecycleBinMsg(recyclebinTotal.data.total);
       } catch (error) {
         console.log(error);
-        return;
       }
     };
 
