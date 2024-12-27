@@ -13,7 +13,7 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import DefaultLogo from "../../../public/profile/loading.gif";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 
 const Dropdown = () => {
   const api = useAxiosPrivate();
@@ -21,25 +21,26 @@ const Dropdown = () => {
     token,
     setToken,
     combinedUser,
-    setCombinedUser,
+    // setCombinedUser,
     isCombinedUserLoading,
   } = useGlobalContext();
   const { handleDisconnect } = useSocketContext();
   const navigate = useNavigate();
-  const profileLogo = `${
-    import.meta.env.VITE_API_URL + "/" + combinedUser?.profile_picture
-  }`;
-  useEffect(() => {
-    if (!combinedUser?.profile_picture) return;
-    console.log(combinedUser, "inside");
-    setCombinedUser((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        profile_picture: profileLogo,
-      };
-    });
-  }, [combinedUser?.user_id]);
+  const profileLogo = combinedUser?.profile_picture
+    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
+    : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/profile.jpg`;
+
+  // useEffect(() => {
+  //   if (!combinedUser?.profile_picture) return;
+  //   console.log(combinedUser, "inside");
+  //   setCombinedUser((prev) => {
+  //     if (!prev) return prev;
+  //     return {
+  //       ...prev,
+  //       profile_picture: profileLogo,
+  //     };
+  //   });
+  // }, [combinedUser?.user_id]);
 
   const userExample = {
     isLoggedIn: false,
