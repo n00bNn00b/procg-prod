@@ -25,7 +25,7 @@ interface IAccessProfiles {
   phone_3?: string;
 }
 const Profile = () => {
-  const { token, getUserInfo } = useGlobalContext();
+  const { token, getUserInfo, combinedUser } = useGlobalContext();
   const [userInfo, setUserInfo] = useState<IUsersInfoTypes | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [accessProfiles, setAccessProfiles] = useState<IAccessProfiles>({});
@@ -37,7 +37,7 @@ const Profile = () => {
 
         if (res) {
           const accessProfiles: IAccessProfiles = {};
-          accessProfiles.user_name = res.user_name;
+          accessProfiles.user_name = res?.user_name;
           for (let i = 0; i < res?.email_addresses.length; i++) {
             accessProfiles[`email_${i + 1}` as keyof IAccessProfiles] =
               res.email_addresses[i];
@@ -80,7 +80,11 @@ const Profile = () => {
                   <Avatar>
                     <AvatarImage
                       className="object-cover object-center w-20 h-20 rounded-full mx-auto border border-8px"
-                      src="https://github.com/shadcn.png"
+                      src={`${
+                        import.meta.env.VITE_API_URL +
+                        "/" +
+                        combinedUser?.profile_picture
+                      }`}
                     />
                   </Avatar>
                   <h4 className="font-bold text-center">

@@ -35,8 +35,10 @@ export const columns: ColumnDef<IUsersInfoTypes>[] = [
       );
     },
     cell: ({ row }) => {
-      const emailAddresses: Array<string> = row.getValue("email_addresses");
-      const splitedEmailAddresses = emailAddresses.join(", ");
+      const emailAddresses = row.getValue("email_addresses");
+      const splitedEmailAddresses = Array.isArray(emailAddresses)
+        ? emailAddresses.join(", ")
+        : "";
       return <div className="lowercase">{splitedEmailAddresses}</div>;
     },
   },

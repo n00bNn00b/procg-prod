@@ -13,7 +13,6 @@ import {
   Users,
   IAddUserTypes,
   ITenantsTypes,
-  IPersonsTypes,
   IUsersInfoTypes,
   IUpdateUserTypes,
   IUserPasswordResetTypes,
@@ -56,7 +55,7 @@ interface GlobalContex {
   deleteDataSource: (id: number) => Promise<void>;
   createUser: (postData: IAddUserTypes) => void;
   fetchTenants: () => Promise<ITenantsTypes[] | undefined>;
-  person: IPersonsTypes | undefined;
+  combinedUser: IUsersInfoTypes | undefined;
   usersInfo: IUsersInfoTypes[];
   fetchCombinedUser: () => Promise<void>;
   //lazy loading
@@ -101,7 +100,7 @@ export function GlobalContextProvider({
   const [isUserLoading, setIsUserLoading] = useState(true);
 
   const [users, setUsers] = useState<Users[]>([]);
-  const [person, setPerson] = useState<IPersonsTypes>();
+  const [combinedUser, setCombinedUser] = useState<IUsersInfoTypes>();
   const [usersInfo, setUsersInfo] = useState<IUsersInfoTypes[]>([]);
   const [isOpenModal, setIsOpenModal] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -128,22 +127,16 @@ export function GlobalContextProvider({
     };
     getUser();
   }, [api]);
-
   //Fetch Users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         if (token?.user_id === 0) return;
-        const users = await api.get<Users[]>(`/users`);
-        if (token?.user_id) {
-          const res = async () => {
-            const person = await api.get<IPersonsTypes>(
-              `/persons/${token?.user_id}`
-            );
-            setPerson(person?.data);
-          };
-          res();
-        }
+        const [users, combinedUser] = await Promise.all([
+          api.get<Users[]>(`/users`),
+          api.get<IUsersInfoTypes>(`/combined-user/${token?.user_id}`),
+        ]);
+        setCombinedUser(combinedUser?.data);
         setUsers(users.data);
       } catch (error) {
         console.log(error);
@@ -178,6 +171,7 @@ export function GlobalContextProvider({
     try {
       setIsLoading(true);
       const res = await api.get<IUsersInfoTypes>(`/combined-user/${user_id}`);
+      setCombinedUser(res.data);
       return res.data;
     } catch (error) {
       console.log(error);
@@ -236,6 +230,7 @@ export function GlobalContextProvider({
       fetchCombinedUser();
     }
   };
+
   const updateUser = async (id: number, userInfo: IUpdateUserTypes) => {
     setIsLoading(true);
     try {
@@ -483,7 +478,7 @@ export function GlobalContextProvider({
         deleteDataSource,
         createUser,
         fetchTenants,
-        person,
+        combinedUser,
         usersInfo,
         fetchCombinedUser,
         page,
