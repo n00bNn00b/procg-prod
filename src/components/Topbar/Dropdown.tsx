@@ -29,18 +29,17 @@ const Dropdown = () => {
   const profileLogo = `${
     import.meta.env.VITE_API_URL + "/" + combinedUser?.profile_picture
   }`;
-  console.log(combinedUser?.profile_picture);
   useEffect(() => {
-    if (combinedUser?.user_id) {
-      setCombinedUser((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          profile_picture: profileLogo,
-        };
-      });
-    }
-  }, [combinedUser?.user_id]);
+    if (!combinedUser?.profile_picture) return;
+    console.log(combinedUser, "inside");
+    setCombinedUser((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        profile_picture: profileLogo,
+      };
+    });
+  }, [combinedUser?.profile_picture]);
 
   const userExample = {
     isLoggedIn: false,
