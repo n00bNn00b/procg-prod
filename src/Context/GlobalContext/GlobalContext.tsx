@@ -104,7 +104,7 @@ export function GlobalContextProvider({
 
   const [users, setUsers] = useState<Users[]>([]);
   const [combinedUser, setCombinedUser] = useState<IUsersInfoTypes>();
-  const [isCombinedUserLoading, setIsCombinedUserLoading] = useState(false);
+  const [isCombinedUserLoading, setIsCombinedUserLoading] = useState(true);
   const [usersInfo, setUsersInfo] = useState<IUsersInfoTypes[]>([]);
   const [isOpenModal, setIsOpenModal] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -135,7 +135,6 @@ export function GlobalContextProvider({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        setIsCombinedUserLoading(true);
         if (token?.user_id === 0) return;
         const [users, combinedUser] = await Promise.all([
           api.get<Users[]>(`/users`),
