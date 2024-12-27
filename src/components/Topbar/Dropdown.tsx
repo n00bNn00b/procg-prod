@@ -25,7 +25,7 @@ const Dropdown = () => {
   const profileLogo = isCombinedUserLoading
     ? DefaultLogo
     : combinedUser?.profile_picture
-    ? `${import.meta.env.VITE_API_URL}/uploads/${combinedUser.profile_picture}`
+    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
     : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
   console.log(combinedUser, "combinedUser");
   const userExample = {
