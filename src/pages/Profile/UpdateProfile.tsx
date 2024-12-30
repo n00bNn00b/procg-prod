@@ -14,7 +14,7 @@ const UpdateProfile: React.FC = () => {
     ? DefaultLogo
     : combinedUser?.profile_picture
     ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
-    : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
+    : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/profile.jpg`;
 
   const [formData, setFormData] = useState({
     user_name: combinedUser?.user_name || "",

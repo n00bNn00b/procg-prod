@@ -97,6 +97,7 @@ export function GlobalContextProvider({
   children,
 }: GlobalContextProviderProps) {
   // const { setIsOpenModal } = useManageAccessEntitlementsContext();
+
   const api = useAxiosPrivate();
   const [open, setOpen] = useState<boolean>(false);
   const [token, setToken] = useState<Token>(userExample);
@@ -114,14 +115,51 @@ export function GlobalContextProvider({
   const [limit, setLimit] = useState<number>(10);
   const [totalPage, setTotalPage] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  console.log(document.cookie);
+
+  useEffect(() => {
+    // Handle Google OAuth Callback
+    const handleGoogleCallback = async () => {
+      const queryParams = new URLSearchParams(window.location.search);
+      if (
+        !queryParams.get("user_id") &&
+        !queryParams.get("email") &&
+        !queryParams.get("access_token")
+      )
+        return;
+      const userId = queryParams.get("user_id");
+      const userEmail = queryParams.get("email");
+      const userAccessToken = queryParams.get("access_token");
+
+      if (!userId || !userEmail || !userAccessToken) return;
+
+      try {
+        const response = await api.get<Token>("/auth/user");
+        setToken(response.data);
+
+        if (response.data) {
+          toast({ title: "Login Success", description: "You are logged in." });
+        }
+      } catch (error) {
+        console.error("Error during Google login callback:", error);
+        toast({
+          title: "Login Failed",
+          description: "Google login failed. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsUserLoading(false);
+      }
+    };
+    handleGoogleCallback();
+  }, [api]);
+
   useEffect(() => {
     const getUser = async () => {
       try {
         const res = await api.get<Token>("/auth/user");
         setToken(res.data);
       } catch (error) {
-        console.log(error, "error");
+        console.log("Please login.");
       } finally {
         setIsUserLoading(false);
       }

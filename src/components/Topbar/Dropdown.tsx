@@ -18,6 +18,7 @@ const DefaultLogo = "/public/profile/loading.gif";
 
 const Dropdown = () => {
   const api = useAxiosPrivate();
+  const apiUrl = import.meta.env.VITE_API_URL;
   const { token, setToken, combinedUser, isCombinedUserLoading } =
     useGlobalContext();
   const { handleDisconnect } = useSocketContext();
@@ -25,9 +26,9 @@ const Dropdown = () => {
   const profileLogo = isCombinedUserLoading
     ? DefaultLogo
     : combinedUser?.profile_picture
-    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
-    : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
-  console.log(combinedUser, "combinedUser");
+    ? `${apiUrl}/${combinedUser.profile_picture}`
+    : `${apiUrl}/uploads/profiles/default/profile.jpg`;
+  // console.log(combinedUser, "combinedUser");
   const userExample = {
     isLoggedIn: false,
     user_id: 0,
@@ -56,8 +57,8 @@ const Dropdown = () => {
           />
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-40">
-        <DropdownMenuLabel className=" font-bold font-workSans text-lg">
+      <DropdownMenuContent className="w-48 mr-1">
+        <DropdownMenuLabel className=" font-bold font-workSans text-lg text-center">
           {token.user_name}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
