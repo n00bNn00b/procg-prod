@@ -41,7 +41,6 @@ const Dropdown = () => {
   };
   const handleSignOut = async () => {
     await api.get(`/logout`);
-    localStorage.removeItem("loggedInUser");
     handleDisconnect();
     setToken(userExample);
     navigate("/login");

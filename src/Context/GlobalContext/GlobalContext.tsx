@@ -114,13 +114,10 @@ export function GlobalContextProvider({
   const [limit, setLimit] = useState<number>(10);
   const [totalPage, setTotalPage] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
+  console.log(document.cookie);
   useEffect(() => {
     const getUser = async () => {
       try {
-        const loggedInUser = localStorage.getItem("loggedInUser");
-        if (!loggedInUser || loggedInUser === "false")
-          return console.log("Please Login ");
         const res = await api.get<Token>("/auth/user");
         setToken(res.data);
       } catch (error) {
@@ -130,7 +127,7 @@ export function GlobalContextProvider({
       }
     };
     getUser();
-  }, [api]);
+  }, [api, token?.user_id]);
   //Fetch Users
   useEffect(() => {
     const fetchUsers = async () => {

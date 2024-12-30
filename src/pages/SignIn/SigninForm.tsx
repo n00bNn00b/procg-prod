@@ -46,9 +46,6 @@ const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
       console.log("Response:", response.data);
       setToken(response.data);
       setIsWrongCredential(false);
-      // localStorage.setItem("token", JSON.stringify(response.data));
-      // localStorage.setItem("user_name", response.data.user_name);
-      localStorage.setItem("loggedInUser", "true");
       setIsLoading(false);
       if (response.data) {
         navigate(location?.state ? location?.state : "/", { replace: true });

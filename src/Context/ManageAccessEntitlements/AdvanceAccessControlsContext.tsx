@@ -21,6 +21,7 @@ import {
 import { ControlsContextProvider } from "./ManageControlsContext";
 import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { useGlobalContext } from "../GlobalContext/GlobalContext";
 interface IAACContextProviderProps {
   children: React.ReactNode;
 }
@@ -100,6 +101,7 @@ export const useAACContext = () => {
   return consumer;
 };
 export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
+  const { token } = useGlobalContext();
   const api = useAxiosPrivate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [stateChange, setStateChange] = useState<number>(0);
@@ -220,8 +222,7 @@ export const AACContextProvider = ({ children }: IAACContextProviderProps) => {
 
   useEffect(() => {
     const maxId = async () => {
-      const loggedInUser = localStorage.getItem("loggedInUser");
-      if (!loggedInUser || loggedInUser === "false") return;
+      if (token?.user_id === 0) return;
       const [resGlobalCondition, resManageAccessModel] = await Promise.all([
         api.get(`/manage-global-condition-logic-attributes`),
         api.get(`/manage-access-model-logic-attributes`),

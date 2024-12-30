@@ -18,16 +18,14 @@ const useRefreshToken = () => {
 
   const refreshToken = async () => {
     try {
-      const isLoggedIn = localStorage.getItem("loggedInUser");
       const response = await api.get(`/login/refresh-token`);
-      if (!response && isLoggedIn === "true") {
+      if (!response) {
         await api.get(`/logout`);
 
         toast({
           title: "Session Expired",
           description: "Please login again",
         });
-        localStorage.removeItem("loggedInUser");
         setToken(userExample);
         // setTimeout(() => {
         //   window.location.href = "/login";

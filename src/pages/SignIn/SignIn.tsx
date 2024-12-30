@@ -4,12 +4,13 @@ import { useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Navigate } from "react-router-dom";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
 const SignIn = () => {
+  const { token } = useGlobalContext();
   const [isWrongCredential, setIsWrongCredential] = useState(false);
 
-  const loggedInUser = localStorage.getItem("loggedInUser");
-  if (loggedInUser && loggedInUser === "true") {
+  if (token?.user_id !== 0) {
     return <Navigate state={location.pathname} to="/" replace />;
   }
   return (
