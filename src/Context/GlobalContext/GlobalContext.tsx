@@ -140,10 +140,10 @@ export function GlobalContextProvider({
           toast({ title: "Login Success", description: "You are logged in." });
         }
       } catch (error) {
-        console.error("Error during Google login callback:", error);
+        console.error("Error during Login callback:", error);
         toast({
           title: "Login Failed",
-          description: "Google login failed. Please try again.",
+          description: "Login failed. Please try again.",
           variant: "destructive",
         });
       } finally {
