@@ -15,11 +15,16 @@ const Layout = () => {
     );
   }
 
-  if (token?.user_id === 0) {
+  if (
+    token?.user_id === 0 &&
+    token.access_token === "" &&
+    token.isLoggedIn === false &&
+    token.issuedAt === ""
+  ) {
     return <Navigate state={location.pathname} to="/login" replace />;
   }
 
-  return <>{token?.user_id !== 0 && <MainApp />}</>;
+  return <MainApp />;
 };
 
 export default Layout;
