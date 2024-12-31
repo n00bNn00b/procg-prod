@@ -68,7 +68,7 @@ const ComposeButton = () => {
 
   const handleSelectAll = () => {
     setIsAllClicked(true);
-    const allusers = users.map((user) => user.user_name);
+    const allusers = filterdUser.map((user) => user.user_name);
     setRecivers(allusers);
   };
 
