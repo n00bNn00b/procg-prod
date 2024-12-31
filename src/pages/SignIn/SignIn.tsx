@@ -6,13 +6,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Navigate } from "react-router-dom";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import Spinner from "@/components/Spinner/Spinner";
-import google from "/social-icon/google.svg";
-import github from "/social-icon/github.svg";
+// import google from "/social-icon/google.svg";
+// import github from "/social-icon/github.svg";
 
 const SignIn = () => {
   const { token, isUserLoading } = useGlobalContext();
   const [isWrongCredential, setIsWrongCredential] = useState(false);
-  const url = import.meta.env.VITE_API_URL;
+  // const url = import.meta.env.VITE_API_URL;
   if (isUserLoading) {
     return (
       <div className="flex flex-row min-h-screen justify-center items-center">
@@ -41,7 +41,8 @@ const SignIn = () => {
           <button className="w-full py-2 rounded-md bg-dark-400 hover:bg-dark-400/90 text-white mt-4 ">
             Continue with SSO
           </button>
-          <div className="flex justify-between items-center mt-4">
+          {/* Social Login---------START */}
+          {/* <div className="flex justify-between items-center mt-4">
             <div className="bg-slate-300 h-[2px] w-[198px]"></div>
             <p className="text-slate-400 ">OR</p>
             <div className="bg-slate-300 h-[2px] w-[198px]"></div>
@@ -59,7 +60,8 @@ const SignIn = () => {
             >
               <img src={github} alt="" />
             </div>
-          </div>
+          </div> */}
+          {/* Social Login---------END */}
           {isWrongCredential ? (
             <Alert variant="destructive" className="mt-4 bg-slate-100">
               <AlertCircle className="h-4 w-4" />
