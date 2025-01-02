@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/form";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useLocation, useNavigate } from "react-router-dom";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+// import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { AxiosError } from "axios";
+import { api } from "@/Api/Api";
 
 interface SignInFormProps {
   setIsWrongCredential: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,7 +25,7 @@ const loginSchema = z.object({
 });
 
 const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
-  const api = useAxiosPrivate();
+  // const api = useAxiosPrivate();
   const { setToken, isLoading, setIsLoading } = useGlobalContext();
   const navigate = useNavigate();
   const location = useLocation();

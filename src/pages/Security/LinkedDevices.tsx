@@ -1,3 +1,4 @@
+import LinkDevices from "@/components/LinkedDevices/LinkDevices";
 import {
   Card,
   CardContent,
@@ -12,7 +13,9 @@ const LinkedDevies = () => {
         <CardTitle>Linked Devices</CardTitle>
         {/* <CardDescription>Card Description</CardDescription> */}
       </CardHeader>
-      <CardContent>Linked devices</CardContent>
+      <CardContent>
+        <LinkDevices />
+      </CardContent>
       <CardFooter>{/* <p>Card Footer</p> */}</CardFooter>
     </Card>
   );

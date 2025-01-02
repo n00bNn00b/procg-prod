@@ -16,6 +16,7 @@ import {
   IUsersInfoTypes,
   IUpdateUserTypes,
   IUserPasswordResetTypes,
+  IUserLinkedDevices,
 } from "@/types/interfaces/users.interface";
 import {
   IDataSourcePostTypes,
@@ -28,6 +29,7 @@ import { ManageAccessEntitlementsProvider } from "../ManageAccessEntitlements/Ma
 import { AACContextProvider } from "../ManageAccessEntitlements/AdvanceAccessControlsContext";
 import { SocketContextProvider } from "../SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { detect } from "detect-browser";
 
 interface GlobalContextProviderProps {
   children: ReactNode;
@@ -75,8 +77,9 @@ interface GlobalContex {
   setIsOpenModal: Dispatch<SetStateAction<string>>;
   resetPassword: (resetData: IUserPasswordResetTypes) => Promise<void>;
   isUserLoading: boolean;
+  presentDevice: IUserLinkedDevices;
 }
-const userExample = {
+export const userExample = {
   isLoggedIn: false,
   user_id: 0,
   user_name: "",
@@ -87,6 +90,19 @@ const userExample = {
   iat: 0,
   exp: 0,
 };
+
+const browser = detect();
+const userAgent = navigator.userAgent;
+
+const deviceInfo = {
+  device_type: /Mobi|Android/i.test(userAgent) ? "Mobile" : "Desktop",
+  browser_name: browser?.name || "Unknown",
+  browser_version: browser?.version || "Unknown",
+  os: browser?.os || "Unknown",
+  user_agent: userAgent,
+  is_active: 1,
+};
+
 const GlobalContex = createContext({} as GlobalContex);
 
 export function useGlobalContext() {
@@ -116,43 +132,9 @@ export function GlobalContextProvider({
   const [totalPage, setTotalPage] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  useEffect(() => {
-    // Handle Google OAuth Callback
-    const handleGoogleCallback = async () => {
-      const queryParams = new URLSearchParams(window.location.search);
-      if (
-        !queryParams.get("user_id") &&
-        !queryParams.get("email") &&
-        !queryParams.get("access_token")
-      )
-        return;
-      const userId = queryParams.get("user_id");
-      const userEmail = queryParams.get("email");
-      const userAccessToken = queryParams.get("access_token");
+  const presentDevice = deviceInfo;
 
-      if (!userId || !userEmail || !userAccessToken) return;
-
-      try {
-        const response = await api.get<Token>("/auth/user");
-        setToken(response.data);
-
-        if (response.data) {
-          toast({ title: "Login Success", description: "You are logged in." });
-        }
-      } catch (error) {
-        console.error("Error during Login callback:", error);
-        toast({
-          title: "Login Failed",
-          description: "Login failed. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsUserLoading(false);
-      }
-    };
-    handleGoogleCallback();
-  }, [api]);
-
+  //get user
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -166,6 +148,7 @@ export function GlobalContextProvider({
     };
     getUser();
   }, [api, token?.user_id]);
+
   //Fetch Users
   useEffect(() => {
     const fetchUsers = async () => {
@@ -487,7 +470,6 @@ export function GlobalContextProvider({
       console.log(error);
     }
   };
-  // Create User
 
   return (
     <GlobalContex.Provider
@@ -524,6 +506,7 @@ export function GlobalContextProvider({
         setIsOpenModal,
         resetPassword,
         isUserLoading,
+        presentDevice,
       }}
     >
       <SocketContextProvider>

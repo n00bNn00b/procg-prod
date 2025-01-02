@@ -2,10 +2,36 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import MainApp from "./MainApp";
 import { Navigate, useLocation } from "react-router-dom";
 import Spinner from "@/components/Spinner/Spinner";
+import { useEffect } from "react";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 
 const Layout = () => {
-  const { token, isUserLoading } = useGlobalContext();
+  const { token, isUserLoading, presentDevice } = useGlobalContext();
+  const { addDevice } = useSocketContext();
   const location = useLocation();
+  const api = useAxiosPrivate();
+
+  //Add device
+  useEffect(() => {
+    const addUserDevice = async (user_id: number) => {
+      try {
+        if (!token || token.user_id === 0) return;
+        await api
+          .post("/devices/add-device", {
+            user_id,
+            deviceInfo: { ...presentDevice, is_active: 1 },
+          })
+          .then((res) => {
+            addDevice(res.data);
+          });
+      } catch (error) {
+        console.log("Adding device error");
+      }
+    };
+
+    addUserDevice(token.user_id);
+  }, [token?.user_id]);
 
   if (isUserLoading) {
     return (
