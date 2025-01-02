@@ -87,3 +87,16 @@ export interface IUserPasswordResetTypes {
   old_password: string;
   new_password: string;
 }
+
+export interface IUserLinkedDevices {
+  id?: number;
+  user_id?: number;
+  os: string;
+  browser_name: string;
+  device_type: string;
+  browser_version: string;
+  user_agent: string;
+  is_active?: number;
+  added_at?: string;
+  user?: string;
+}
