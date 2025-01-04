@@ -45,6 +45,7 @@ interface SocketContext {
   addDevice: (data: IUserLinkedDevices) => void;
   inactiveDevice: (data: IUserLinkedDevices) => void;
   linkedDevices: IUserLinkedDevices[];
+  setLinkedDevices: React.Dispatch<React.SetStateAction<IUserLinkedDevices[]>>;
 }
 
 const SocketContext = createContext({} as SocketContext);
@@ -117,33 +118,32 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   useEffect(() => {
     const checkUserDevice = async () => {
       try {
+        setLinkedDevices([]);
         if (!token || token?.user_id === 0) return;
 
         const res = await api.get(`/devices/${token?.user_id}`);
-        if (res.data) {
-          setLinkedDevices(res.data);
-          const response = res.data.some((device: IUserLinkedDevices) => {
-            if (
-              device?.device_type === presentDevice?.device_type &&
-              device?.browser_name === presentDevice?.browser_name &&
-              device?.os === presentDevice?.os &&
-              device?.is_active === 1
-            ) {
-              return true;
-            }
-            return false;
-          });
 
-          if (!response) {
-            try {
-              console.log("checking");
-              await api.get(`/logout`);
-              handleDisconnect();
-              setToken(userExample);
-              window.location.href = "/login";
-            } catch (error) {
-              console.log(error);
-            }
+        setLinkedDevices(res.data);
+        const response = res.data.some((device: IUserLinkedDevices) => {
+          if (
+            device?.device_type === presentDevice?.device_type &&
+            device?.browser_name === presentDevice?.browser_name &&
+            device?.os === presentDevice?.os &&
+            device?.is_active === 1
+          ) {
+            return true;
+          }
+          return false;
+        });
+
+        if (!response) {
+          try {
+            await api.get(`/logout`);
+            handleDisconnect();
+            setToken(userExample);
+            window.location.href = "/login";
+          } catch (error) {
+            console.log(error);
           }
         }
       } catch (error) {
@@ -152,7 +152,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     };
 
     checkUserDevice();
-  }, [user, location, api, token?.user_id, isDeviceSwitchClick]);
+  }, [location, api, token?.user_id, isDeviceSwitchClick]);
 
   //Listen to socket events
   useEffect(() => {
@@ -410,6 +410,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
         addDevice,
         inactiveDevice,
         linkedDevices,
+        setLinkedDevices,
       }}
     >
       {children}

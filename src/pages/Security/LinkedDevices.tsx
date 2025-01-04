@@ -1,4 +1,4 @@
-import LinkDevices from "@/components/LinkedDevices/LinkDevices";
+import UserLinkedDevices from "@/components/LinkedDevices/UserLinkedDevices";
 import {
   Card,
   CardContent,
@@ -8,13 +8,13 @@ import {
 } from "@/components/ui/card";
 const LinkedDevies = () => {
   return (
-    <Card className="h-[70vh]">
+    <Card>
       <CardHeader>
         <CardTitle>Linked Devices</CardTitle>
         {/* <CardDescription>Card Description</CardDescription> */}
       </CardHeader>
       <CardContent>
-        <LinkDevices />
+        <UserLinkedDevices />
       </CardContent>
       <CardFooter>{/* <p>Card Footer</p> */}</CardFooter>
     </Card>

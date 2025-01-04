@@ -17,12 +17,14 @@ import { ChangeEvent, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 interface ReplyDialogProps {
+  subject: string;
   parentid: string;
   involvedUsers: string[];
   setTotalMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
 const ReplyDialog = ({
+  subject,
   parentid,
   involvedUsers,
   setTotalMessages,
@@ -31,7 +33,7 @@ const ReplyDialog = ({
   const { handlesendMessage } = useSocketContext();
   const { toast } = useToast();
   const url = import.meta.env.VITE_API_URL;
-  const [subject, setSubject] = useState<string>("");
+  // const [subject, setSubject] = useState<string>("");
   const [body, setBody] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const sender = token.user_name;
@@ -74,7 +76,7 @@ const ReplyDialog = ({
       }
     } finally {
       setIsSending(false);
-      setSubject("");
+      // setSubject("");
       setBody("");
     }
   };
@@ -92,10 +94,11 @@ const ReplyDialog = ({
           <input
             type="text"
             className="rounded-sm outline-none border pl-2 h-8 w-full text-sm"
+            disabled
             value={subject}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setSubject(e.target.value)
-            }
+            // onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            //   setSubject(e.target.value)
+            // }
           />
         </div>
         <div className="flex flex-col gap-2 w-full text-dark-400">
@@ -111,7 +114,7 @@ const ReplyDialog = ({
         <DialogFooter>
           <button
             onClick={handleSend}
-            className="flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md bg-dark-100 text-white hover:scale-95 duration-300"
+            className="flex gap-1 items-center px-5 py-2 rounded-xl bg-dark-100 text-white hover:scale-95 duration-300"
           >
             {isSending ? (
               <Spinner size="20" color="#ffffff" />
