@@ -99,4 +99,6 @@ export interface IUserLinkedDevices {
   is_active?: number;
   added_at?: string;
   user?: string;
+  ip_address?: string;
+  location?: string;
 }

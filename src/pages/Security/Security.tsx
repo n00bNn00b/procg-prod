@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ChangePassword from "./ChangePassword";
-import LinkDevies from "./LinkDevies";
-import LinkedDevices from "./LinkedDevices";
+import UserLinkedDevices from "@/components/LinkedDevices/UserLinkedDevices";
+import LinkDevices from "./LinkDevices";
 
 export default function Security() {
   return (
@@ -17,10 +17,10 @@ export default function Security() {
         <ChangePassword />
       </TabsContent>
       <TabsContent value="link-devices">
-        <LinkDevies />
+        <LinkDevices />
       </TabsContent>
       <TabsContent value="linked-devices">
-        <LinkedDevices />
+        <UserLinkedDevices />
       </TabsContent>
     </Tabs>
   );

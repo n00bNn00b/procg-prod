@@ -219,6 +219,7 @@ const SingleMessage = () => {
                     <TooltipTrigger asChild>
                       <span>
                         <ReplyDialog
+                          subject={message.subject}
                           parentid={parrentMessage.id}
                           involvedUsers={totalInvolvedUsers}
                           setTotalMessages={setTotalMessages}

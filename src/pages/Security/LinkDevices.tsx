@@ -7,11 +7,11 @@ import {
 } from "@/components/ui/card";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { QRCodeCanvas } from "qrcode.react";
-const LinkDevies = () => {
+const LinkDevices = () => {
   const { token } = useGlobalContext();
 
   return (
-    <Card className="h-[70vh]">
+    <Card>
       <CardHeader>
         <CardTitle>Link a Device</CardTitle>
         {/* <CardDescription>Card Description</CardDescription> */}
@@ -29,4 +29,4 @@ const LinkDevies = () => {
     </Card>
   );
 };
-export default LinkDevies;
+export default LinkDevices;
