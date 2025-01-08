@@ -73,7 +73,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const url_location = window.location.pathname;
   const socket_url = import.meta.env.VITE_SOCKET_URL;
   const [linkedDevices, setLinkedDevices] = useState<IUserLinkedDevices[]>([]);
-  const [isDeviceSwitchClick, setIsDeviceSwitchClick] = useState(false);
   const getUserIP = useUserIP();
   const getLocation = useUserLocation();
 
@@ -149,6 +148,23 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     userInfo(token.user_id);
   }, [token?.user_id, api, url_location]);
 
+  const deviceSync = async (data: IUserLinkedDevices) => {
+    try {
+      if (!token || (token?.user_id === 0 && !presentDevice.id)) return;
+      if (data.id === presentDevice.id) {
+        try {
+          await api.get(`/logout`);
+          handleDisconnect();
+          setToken(userExample);
+          window.location.href = "/login";
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    } catch (error) {
+      console.log("error");
+    }
+  };
   useEffect(() => {
     const checkUserDevice = async () => {
       try {
@@ -179,13 +195,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     };
 
     checkUserDevice();
-  }, [
-    api,
-    url_location,
-    token?.user_id,
-    presentDevice?.id,
-    isDeviceSwitchClick,
-  ]);
+  }, [api, url_location, token?.user_id, presentDevice?.id]);
 
   //Listen to socket events
   useEffect(() => {
@@ -319,6 +329,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     });
 
     socket.on("inactiveDevice", (data) => {
+      deviceSync(data);
       setLinkedDevices((prev) => {
         if (
           prev.some(
@@ -331,7 +342,6 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           return [data, ...removed];
         }
       });
-      setIsDeviceSwitchClick(true);
     });
 
     // socket.on("deletedMessage", (id) => {

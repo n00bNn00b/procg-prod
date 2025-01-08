@@ -40,7 +40,7 @@ const UserLinkedDevices = () => {
     };
 
     getDevices();
-  }, [isLoading]);
+  }, [api, isLoading, setLinkedDevices]);
 
   const switchFunc = async (data: IUserLinkedDevices) => {
     try {
@@ -89,29 +89,31 @@ const UserLinkedDevices = () => {
             </TableRow>
           ) : (
             <>
-              {linkedDevices?.map((device, i) => (
-                <TableRow key={device.id}>
-                  <TableCell className="font-medium">{i + 1}</TableCell>
-                  <TableCell className="font-medium">
-                    {device.device_type}
-                  </TableCell>
-                  <TableCell>{device.os}</TableCell>
-                  <TableCell>{device.browser_name}</TableCell>
-                  <TableCell>{device.browser_version}</TableCell>
-                  <TableCell>{device.ip_address}</TableCell>
-                  <TableCell>{device.location}</TableCell>
-                  <TableCell className="flex flex-row-reverse">
-                    <Switch
-                      disabled={device.is_active === 0 && true}
-                      checked={device.is_active === 1 ? true : false}
-                      onCheckedChange={() => {
-                        // setIsActive(true);
-                        switchFunc(device);
-                      }}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {linkedDevices
+                ?.sort((a, b) => b.id - a.id)
+                .map((device, i) => (
+                  <TableRow key={device.id}>
+                    <TableCell className="font-medium">{i + 1}</TableCell>
+                    <TableCell className="font-medium">
+                      {device.device_type}
+                    </TableCell>
+                    <TableCell>{device.os}</TableCell>
+                    <TableCell>{device.browser_name}</TableCell>
+                    <TableCell>{device.browser_version}</TableCell>
+                    <TableCell>{device.ip_address}</TableCell>
+                    <TableCell>{device.location}</TableCell>
+                    <TableCell className="flex flex-row-reverse">
+                      <Switch
+                        disabled={device.is_active === 0 && true}
+                        checked={device.is_active === 1 ? true : false}
+                        onCheckedChange={() => {
+                          // setIsActive(true);
+                          switchFunc(device);
+                        }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
             </>
           )}
         </TableBody>
