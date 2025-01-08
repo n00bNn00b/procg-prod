@@ -89,7 +89,7 @@ export interface IUserPasswordResetTypes {
 }
 
 export interface IUserLinkedDevices {
-  id?: number;
+  id: number;
   user_id?: number;
   os: string;
   browser_name: string;

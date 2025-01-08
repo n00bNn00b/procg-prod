@@ -55,6 +55,7 @@ const useUserDevice = () => {
 
     // Update State
     const userDevice = {
+      id: 0,
       device_type,
       browser_name,
       browser_version,
