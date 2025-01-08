@@ -48,6 +48,7 @@ const SingleDraft = () => {
   const url = import.meta.env.VITE_API_URL;
   const idString = useParams();
   const id = idString.id;
+  const [parentid, setParentid] = useState<string>("");
   const [status, setStatus] = useState<string>("");
   const [recivers, setRecivers] = useState<string[]>([]);
   const [subject, setSubject] = useState<string>("");
@@ -68,7 +69,7 @@ const SingleDraft = () => {
       try {
         const response = await axios.get<Message>(`${url}/messages/${id}`);
         const result = response.data;
-
+        setParentid(result.parentid);
         setStatus(result.status);
         setRecivers(result.recivers);
         setSubject(result.subject);
@@ -130,7 +131,7 @@ const SingleDraft = () => {
       body,
       date: new Date(),
       status: status,
-      parentid: id as string,
+      parentid,
       involvedusers: uniqueUsers,
       readers: recivers,
       holders: [sender],
@@ -170,7 +171,7 @@ const SingleDraft = () => {
       body,
       date: new Date(),
       status: "Sent",
-      parentid: newID,
+      parentid,
       involvedusers: uniqueUsers,
       readers: recivers,
       holders: uniqueUsers,

@@ -93,7 +93,7 @@ const ReplyDialog = ({
       body,
       date: new Date(),
       status: "ReplayDraft",
-      parentid: id,
+      parentid,
       involvedusers: involvedUsers,
       readers: recivers,
       holders: [sender],
