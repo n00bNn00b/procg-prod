@@ -180,8 +180,8 @@ export function SocketContextProvider({ children }: SocketContextProps) {
 
     checkUserDevice();
   }, [
-    url_location,
     api,
+    url_location,
     token?.user_id,
     presentDevice?.id,
     isDeviceSwitchClick,
