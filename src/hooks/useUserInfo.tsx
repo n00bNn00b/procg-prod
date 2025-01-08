@@ -9,10 +9,8 @@ const useUserInfo = () => {
 
   const getIP = async (): Promise<string | null> => {
     try {
-      const response = await fetch(
-        // "https://api.ipify.org?format=json"
-        "https://api64.ipify.org/?format=json"
-      );
+      const VITE_API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${VITE_API_URL}/login/get-user-ip-info`);
 
       const data = await response.json();
       return data.ip;
@@ -68,7 +66,7 @@ const useUserInfo = () => {
       const deviceData = {
         ...presentDevice,
         ip_address: ipAddress ? ipAddress : "Unknown",
-        location: geolocation ? geolocation : "Unknown",
+        location: geolocation ? geolocation : "Unknown (Location off)",
       };
 
       const response = await api.post("/devices/add-device", {

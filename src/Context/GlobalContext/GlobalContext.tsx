@@ -29,7 +29,7 @@ import { ManageAccessEntitlementsProvider } from "../ManageAccessEntitlements/Ma
 import { AACContextProvider } from "../ManageAccessEntitlements/AdvanceAccessControlsContext";
 import { SocketContextProvider } from "../SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import { detect } from "detect-browser";
+import useUserDevice from "@/hooks/useUserDevice";
 
 interface GlobalContextProviderProps {
   children: ReactNode;
@@ -78,7 +78,10 @@ interface GlobalContex {
   resetPassword: (resetData: IUserPasswordResetTypes) => Promise<void>;
   isUserLoading: boolean;
   presentDevice: IUserLinkedDevices;
+  setPresentDevice: Dispatch<SetStateAction<IUserLinkedDevices>>;
 }
+
+// eslint-disable-next-line react-refresh/only-export-components
 export const userExample = {
   isLoggedIn: false,
   user_id: 0,
@@ -91,20 +94,9 @@ export const userExample = {
   exp: 0,
 };
 
-const browser = detect();
-const userAgent = navigator.userAgent;
-
-const deviceInfo = {
-  device_type: /Mobi|Android/i.test(userAgent) ? "Mobile" : "Desktop",
-  browser_name: browser?.name || "Unknown",
-  browser_version: browser?.version || "Unknown",
-  os: browser?.os || "Unknown",
-  user_agent: userAgent,
-  is_active: 1,
-};
-
 const GlobalContex = createContext({} as GlobalContex);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useGlobalContext() {
   return useContext(GlobalContex);
 }
@@ -113,7 +105,7 @@ export function GlobalContextProvider({
   children,
 }: GlobalContextProviderProps) {
   // const { setIsOpenModal } = useManageAccessEntitlementsContext();
-
+  const userDevice = useUserDevice();
   const api = useAxiosPrivate();
   const [open, setOpen] = useState<boolean>(false);
   const [token, setToken] = useState<Token>(userExample);
@@ -132,7 +124,9 @@ export function GlobalContextProvider({
   const [totalPage, setTotalPage] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const presentDevice = deviceInfo;
+  const [presentDevice, setPresentDevice] = useState<IUserLinkedDevices>(
+    userDevice()
+  );
 
   //get user (when refresh page user must be needed)
   useEffect(() => {
@@ -507,6 +501,7 @@ export function GlobalContextProvider({
         resetPassword,
         isUserLoading,
         presentDevice,
+        setPresentDevice,
       }}
     >
       <SocketContextProvider>
