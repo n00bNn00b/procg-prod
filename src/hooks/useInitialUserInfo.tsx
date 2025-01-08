@@ -6,7 +6,7 @@ import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 const useInitialUserInfo = () => {
   const getUserIP = useUserIP();
   const api = useAxiosPrivate();
-  const { presentDevice } = useGlobalContext();
+  const { presentDevice, setPresentDevice } = useGlobalContext();
   const { addDevice } = useSocketContext();
   const initialUserInfo = async (user_id: number) => {
     try {
@@ -14,7 +14,7 @@ const useInitialUserInfo = () => {
       const deviceData = {
         ...presentDevice,
         ip_address: ipAddress ? ipAddress : "Unknown",
-        location: "Unknown",
+        location: "Unknown (Location off)",
       };
 
       const response = await api.post("/devices/add-device", {
@@ -22,6 +22,7 @@ const useInitialUserInfo = () => {
         deviceInfo: deviceData,
       });
 
+      setPresentDevice(response.data);
       addDevice(response.data);
     } catch (error) {
       console.log(error);

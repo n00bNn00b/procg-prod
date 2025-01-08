@@ -13,6 +13,8 @@ import {
 } from "@/types/interfaces/users.interface";
 import { io } from "socket.io-client";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import useUserIP from "@/hooks/useUserIP";
+import useUserLocation from "@/hooks/useUserLocation";
 
 interface SocketContextProps {
   children: ReactNode;
@@ -57,7 +59,8 @@ export function useSocketContext() {
 
 export function SocketContextProvider({ children }: SocketContextProps) {
   const api = useAxiosPrivate();
-  const { user, token, setToken, presentDevice } = useGlobalContext();
+  const { user, token, setToken, presentDevice, setPresentDevice } =
+    useGlobalContext();
   const [receivedMessages, setReceivedMessages] = useState<Message[]>([]);
   const [totalReceivedMessages, setTotalReceivedMessages] = useState<number>(0);
   const [sentMessages, setSentMessages] = useState<Message[]>([]);
@@ -67,10 +70,12 @@ export function SocketContextProvider({ children }: SocketContextProps) {
   const [socketMessage, setSocketMessages] = useState<Message[]>([]);
   const [recycleBinMsg, setRecycleBinMsg] = useState<Message[]>([]);
   const [totalRecycleBinMsg, setTotalRecycleBinMsg] = useState<number>(0);
-  const location = window.location.pathname;
+  const url_location = window.location.pathname;
   const socket_url = import.meta.env.VITE_SOCKET_URL;
   const [linkedDevices, setLinkedDevices] = useState<IUserLinkedDevices[]>([]);
   const [isDeviceSwitchClick, setIsDeviceSwitchClick] = useState(false);
+  const getUserIP = useUserIP();
+  const getLocation = useUserLocation();
 
   // Memoize the socket connection so that it's created only once
   const socket = useMemo(() => {
@@ -94,56 +99,78 @@ export function SocketContextProvider({ children }: SocketContextProps) {
           sentTotal,
           draftTotal,
           recyclebinTotal,
+          linkedDevices,
         ] = await Promise.all([
           api.get(`/messages/notification/${user}`),
           api.get(`/messages/total-received/${user}`),
           api.get(`/messages/total-sent/${user}`),
           api.get(`/messages/total-draft/${user}`),
           api.get(`/messages/total-recyclebin/${user}`),
+          api.get(`/devices/${token?.user_id}`),
         ]);
         setSocketMessages(notificationTotal.data);
         setTotalReceivedMessages(receivedTotal.data.total);
         setTotalSentMessages(sentTotal.data.total);
         setTotalDraftMessages(draftTotal.data.total);
         setTotalRecycleBinMsg(recyclebinTotal.data.total);
+        setLinkedDevices(linkedDevices.data);
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchCounterMessages();
-  }, [user, location, api]);
+  }, [user, url_location, api]);
 
   // device Action
   useEffect(() => {
+    const userInfo = async (user_id: number) => {
+      try {
+        if (!token || token?.user_id === 0) return;
+        const ipAddress = await getUserIP();
+        const geolocation = await getLocation();
+
+        const deviceData = {
+          ...presentDevice,
+          ip_address: ipAddress ? ipAddress : "Unknown",
+          location: geolocation ? geolocation : "Unknown (Location off)",
+        };
+
+        const response = await api.post("/devices/add-device", {
+          user_id,
+          deviceInfo: deviceData,
+        });
+        setPresentDevice(response.data);
+        addDevice(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    userInfo(token.user_id);
+  }, [token?.user_id, api, url_location]);
+
+  useEffect(() => {
     const checkUserDevice = async () => {
       try {
-        setLinkedDevices([]);
-        if (!token || token?.user_id === 0) return;
+        if (!token || token?.user_id === 0 || !presentDevice?.id) return;
 
-        const res = await api.get(`/devices/${token?.user_id}`);
+        if (presentDevice.id && linkedDevices.length > 0) {
+          const response = linkedDevices.some((device: IUserLinkedDevices) => {
+            if (device?.id === presentDevice?.id && device?.is_active === 1) {
+              return true;
+            }
+            return false;
+          });
 
-        setLinkedDevices(res.data);
-        const response = res.data.some((device: IUserLinkedDevices) => {
-          if (
-            device?.device_type === presentDevice?.device_type &&
-            device?.browser_name === presentDevice?.browser_name &&
-            device?.os === presentDevice?.os &&
-            device?.is_active === 1
-          ) {
-            return true;
-          }
-          return false;
-        });
-
-        if (!response) {
-          try {
-            await api.get(`/logout`);
-            handleDisconnect();
-            setToken(userExample);
-            window.location.href = "/login";
-          } catch (error) {
-            console.log(error);
+          if (!response) {
+            try {
+              await api.get(`/logout`);
+              handleDisconnect();
+              setToken(userExample);
+              window.location.href = "/login";
+            } catch (error) {
+              console.log(error);
+            }
           }
         }
       } catch (error) {
@@ -152,7 +179,13 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     };
 
     checkUserDevice();
-  }, [location, api, token?.user_id, isDeviceSwitchClick]);
+  }, [
+    url_location,
+    api,
+    token?.user_id,
+    presentDevice?.id,
+    isDeviceSwitchClick,
+  ]);
 
   //Listen to socket events
   useEffect(() => {
