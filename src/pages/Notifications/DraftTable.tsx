@@ -163,7 +163,11 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
                     </TableCell>
                     <TableCell className="py-2">
                       <span className="font-medium mr-1">
-                        {msg.subject === "" ? "(no subject)" : msg.subject}
+                        {msg.subject === ""
+                          ? "(no subject)"
+                          : msg.status === "ReplayDraft"
+                          ? `${"Re:" + " " + msg.subject}`
+                          : msg.subject}
                       </span>
                     </TableCell>
                     <TableCell className="w-[115px] py-2">

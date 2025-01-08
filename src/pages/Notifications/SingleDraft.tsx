@@ -48,6 +48,7 @@ const SingleDraft = () => {
   const url = import.meta.env.VITE_API_URL;
   const idString = useParams();
   const id = idString.id;
+  const [status, setStatus] = useState<string>("");
   const [recivers, setRecivers] = useState<string[]>([]);
   const [subject, setSubject] = useState<string>("");
   const [body, setBody] = useState<string>("");
@@ -61,11 +62,14 @@ const SingleDraft = () => {
   const sender = token.user_name;
   const totalusers = [...recivers, sender];
   const uniqueUsers = [...new Set(totalusers)];
+  console.log(status, "status");
   useEffect(() => {
     const fetchMessage = async () => {
       try {
         const response = await axios.get<Message>(`${url}/messages/${id}`);
         const result = response.data;
+
+        setStatus(result.status);
         setRecivers(result.recivers);
         setSubject(result.subject);
         setBody(result.body);
@@ -83,7 +87,7 @@ const SingleDraft = () => {
 
     fetchMessage();
   }, [id, url]);
-
+  console.log(status, "isStatusReplay");
   const actualUsers = users.filter((usr) => usr.user_name !== user);
 
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -125,18 +129,14 @@ const SingleDraft = () => {
       subject,
       body,
       date: new Date(),
-      status: "Draft",
+      status: status,
       parentid: id as string,
       involvedusers: uniqueUsers,
       readers: recivers,
       holders: [sender],
       recyclebin: [],
     };
-    setOldMsgState({
-      receivers: recivers,
-      subject,
-      body,
-    });
+
     // handlesendMessage(data);
     try {
       setSaveDraftLoading(true);
@@ -159,6 +159,7 @@ const SingleDraft = () => {
     }
     // navigate("/notifications/draft");
   };
+
   const handleSend = async () => {
     const newID = uuidv4();
     const data = {
@@ -255,6 +256,7 @@ const SingleDraft = () => {
     };
     handleUserChange();
   }, [recivers, oldMsgState?.receivers]);
+
   return (
     <div className="w-full flex justify-center">
       {isLoading ? (
@@ -297,7 +299,7 @@ const SingleDraft = () => {
                 </Tooltip>
               </TooltipProvider>
             </div>
-            <CardTitle className=" font-bold">Draft Message</CardTitle>
+            <CardTitle className=" font-bold">Draft Message Check</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-4">
@@ -357,9 +359,14 @@ const SingleDraft = () => {
               <div className="flex flex-col gap-2 w-full text-dark-400">
                 <label className="font-semibold ">Subject</label>
                 <input
+                  disabled={status === "ReplayDraft" ? true : false}
                   type="text"
                   className="rounded-sm outline-none border pl-2 h-8 w-full text-sm"
-                  value={subject}
+                  value={
+                    status === "ReplayDraft"
+                      ? `${"Re:" + " " + subject}`
+                      : subject
+                  }
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setSubject(e.target.value)
                   }
@@ -403,12 +410,11 @@ const SingleDraft = () => {
                 <p className="font-semibold ">Save</p>
               </button>
               <button
-                disabled={
-                  recivers.length === 0 || body === "" || subject === ""
-                }
+                // if body empty then disabled
+                disabled={body === ""}
                 onClick={handleSend}
                 className={`${
-                  recivers.length === 0 || body === "" || subject === ""
+                  body === ""
                     ? " bg-dark-400 cursor-not-allowed"
                     : " bg-dark-100 cursor-pointer"
                 } flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md text-white hover:scale-95 duration-300`}
