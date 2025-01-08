@@ -1,8 +1,7 @@
 const useUserIP = () => {
-  const VITE_API_URL = import.meta.env.VITE_API_URL;
   const getUserIP = async (): Promise<string | null> => {
     try {
-      const response = await fetch(`${VITE_API_URL}/login/get-user-ip-info`);
+      const response = await fetch(`https://api64.ipify.org/?format=json`);
 
       const data = await response.json();
       return data.ip;
