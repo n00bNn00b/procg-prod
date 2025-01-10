@@ -2,6 +2,7 @@ const useUserDevice = () => {
   const userDevice = () => {
     const user_agent = navigator.userAgent || navigator.vendor;
     const platform = navigator.platform || "unknown";
+    const width = window.innerWidth;
     let device_type = "Desktop";
     let browser_name = "Unknown";
     let browser_version = "Unknown";
@@ -9,6 +10,10 @@ const useUserDevice = () => {
 
     // Detect Device Type
     if (
+      /macintosh|macintel|macppc|mac68k|macppc64|mac68k64/i.test(user_agent)
+    ) {
+      device_type = "Mac";
+    } else if (
       /Mobile|Android|iP(hone|od)|IEMobile|Windows Phone|BlackBerry/i.test(
         user_agent
       )
@@ -16,6 +21,15 @@ const useUserDevice = () => {
       device_type = "Mobile";
     } else if (/iPad|Tablet|PlayBook|Silk/i.test(user_agent)) {
       device_type = "Tablet";
+    } else if (
+      width >= 1440 &&
+      /Windows NT 10.0|Windows NT 6.3|Windows NT 6.2|Windows NT 6.1|Windows NT 6.0|Windows NT 5.1|Windows NT 5.0|X11|Linux/i.test(
+        user_agent
+      )
+    ) {
+      device_type = "Desktop";
+    } else {
+      device_type = "Laptop";
     }
 
     // Detect Browser Name and Version

@@ -63,7 +63,7 @@ const SingleDraft = () => {
   const sender = token.user_name;
   const totalusers = [...recivers, sender];
   const uniqueUsers = [...new Set(totalusers)];
-  console.log(status, "status");
+
   useEffect(() => {
     const fetchMessage = async () => {
       try {
@@ -88,7 +88,7 @@ const SingleDraft = () => {
 
     fetchMessage();
   }, [id, url]);
-  console.log(status, "isStatusReplay");
+
   const actualUsers = users.filter((usr) => usr.user_name !== user);
 
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -120,45 +120,6 @@ const SingleDraft = () => {
     setIsAllClicked(true);
     const allusers = users.map((user) => user.user_name);
     setRecivers(allusers);
-  };
-
-  const handleDraft = async () => {
-    const data = {
-      id: id as string,
-      sender,
-      recivers,
-      subject,
-      body,
-      date: new Date(),
-      status: status,
-      parentid,
-      involvedusers: uniqueUsers,
-      readers: recivers,
-      holders: [sender],
-      recyclebin: [],
-    };
-
-    // handlesendMessage(data);
-    try {
-      setSaveDraftLoading(true);
-      const response = await axios.put(`${url}/messages/${id}`, data);
-      if (response.status === 200) {
-        handleDraftMessage(data);
-        toast({
-          title: "Message saved to drafts",
-        });
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      if (error instanceof Error) {
-        toast({
-          title: error.message,
-        });
-      }
-    } finally {
-      setSaveDraftLoading(false);
-    }
-    // navigate("/notifications/draft");
   };
 
   const handleSend = async () => {
@@ -200,6 +161,45 @@ const SingleDraft = () => {
       setBody("");
       setIsSending(false);
     }
+  };
+
+  const handleDraft = async () => {
+    const data = {
+      id: id as string,
+      sender,
+      recivers,
+      subject,
+      body,
+      date: new Date(),
+      status: status,
+      parentid,
+      involvedusers: uniqueUsers,
+      readers: recivers,
+      holders: [sender],
+      recyclebin: [],
+    };
+
+    // handlesendMessage(data);
+    try {
+      setSaveDraftLoading(true);
+      const response = await axios.put(`${url}/messages/${id}`, data);
+      if (response.status === 200) {
+        handleDraftMessage(data);
+        toast({
+          title: "Message saved to drafts",
+        });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      if (error instanceof Error) {
+        toast({
+          title: error.message,
+        });
+      }
+    } finally {
+      setSaveDraftLoading(false);
+    }
+    // navigate("/notifications/draft");
   };
 
   const handleDelete = async () => {
@@ -340,38 +340,42 @@ const SingleDraft = () => {
 
                 <div className="flex gap-2 w-[calc(100%-11rem)] justify-end">
                   <div className="rounded-sm max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1">
-                    {recivers.map((rec) => (
-                      <div
-                        key={rec}
-                        className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full"
-                      >
-                        <p className="font-semibold ">{rec}</p>
+                    {recivers
+                      .filter((usr) => usr !== user)
+                      .map((rec) => (
                         <div
-                          onClick={() => handleRemoveReciever(rec)}
-                          className="flex h-[65%] items-end cursor-pointer"
+                          key={rec}
+                          className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full"
                         >
-                          <Delete size={18} />
+                          <p className="font-semibold ">{rec}</p>
+                          <div
+                            onClick={() => handleRemoveReciever(rec)}
+                            className="flex h-[65%] items-end cursor-pointer"
+                          >
+                            <Delete size={18} />
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 </div>
               </div>
               <div className="flex flex-col gap-2 w-full text-dark-400">
                 <label className="font-semibold ">Subject</label>
-                <input
-                  disabled={status === "ReplayDraft" ? true : false}
-                  type="text"
-                  className="rounded-sm outline-none border pl-2 h-8 w-full text-sm"
-                  value={
-                    status === "ReplayDraft"
-                      ? `${"Re:" + " " + subject}`
-                      : subject
-                  }
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setSubject(e.target.value)
-                  }
-                />
+                <div className="rounded-sm outline-none border pl-2 h-8 w-full text-sm flex items-center">
+                  {subject.includes("Re:") && <p className="text-sm">Re: </p>}
+                  <input
+                    type="text"
+                    className="outline-none pl-1 w-full text-sm"
+                    value={
+                      subject.includes("Re:")
+                        ? subject.split("Re: ")[1]
+                        : subject
+                    }
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setSubject(e.target.value)
+                    }
+                  />
+                </div>
               </div>
               <div className="flex flex-col gap-2 w-full text-dark-400">
                 <label className="font-semibold ">Body</label>

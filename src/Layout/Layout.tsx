@@ -2,18 +2,10 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import MainApp from "./MainApp";
 import { Navigate, useLocation } from "react-router-dom";
 import Spinner from "@/components/Spinner/Spinner";
-// import { useEffect } from "react";
-// import useUserInfo from "@/hooks/useUserInfo";
 
 const Layout = () => {
   const { token, isUserLoading } = useGlobalContext();
   const location = useLocation();
-  // const userInfo = useUserInfo();
-
-  // useEffect(() => {
-  //   if (!token || token.user_id === 0) return;
-  //   userInfo(token.user_id);
-  // }, []);
 
   if (isUserLoading) {
     return (
