@@ -222,6 +222,7 @@ const SingleMessage = () => {
                           subject={message.subject}
                           parentid={parrentMessage.id}
                           involvedUsers={totalInvolvedUsers}
+                          setTotalInvolvedUsers={setTotalInvolvedUsers}
                           setTotalMessages={setTotalMessages}
                         />
                       </span>

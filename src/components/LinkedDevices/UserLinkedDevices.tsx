@@ -14,6 +14,21 @@ import { IUserLinkedDevices } from "@/types/interfaces/users.interface";
 import { useEffect, useState } from "react";
 import useUserInfo from "@/hooks/useUserInfo";
 import Spinner from "../Spinner/Spinner";
+import Desktop from "/icons/device-icon/desktop.svg";
+import Laptop from "/icons/device-icon/laptop.svg";
+import Mac from "/icons/device-icon/mac.svg";
+import Mobile from "/icons/device-icon/android.svg";
+import Tablet from "/icons/device-icon/tablet.svg";
+import Windows from "/icons/os-icon/windows.svg";
+import MacOS from "/icons/os-icon/mac.svg";
+import Linux from "/icons/os-icon/linux.svg";
+import Android from "/icons/device-icon/android.svg";
+import iOS from "/icons/device-icon/iphone.svg";
+import Edge from "/icons/browser-icon/edge.svg";
+import Chrome from "/icons/browser-icon/chrome.svg";
+import Safari from "/icons/browser-icon/safari.svg";
+import Firefox from "/icons/browser-icon/mozila.svg";
+import Opera from "/icons/browser-icon/opera.svg";
 
 const UserLinkedDevices = () => {
   const api = useAxiosPrivate();
@@ -21,7 +36,6 @@ const UserLinkedDevices = () => {
   const { inactiveDevice, linkedDevices, setLinkedDevices } =
     useSocketContext();
   const [isLoading, setIsLoading] = useState(true);
-  // const [isActive, setIsActive] = useState<boolean>(false);
   const userInfo = useUserInfo();
 
   useEffect(() => {
@@ -61,7 +75,6 @@ const UserLinkedDevices = () => {
       res();
     } catch (error) {
       console.log("Error while deactivating device");
-      // setIsActive(false);
     }
   };
 
@@ -73,7 +86,7 @@ const UserLinkedDevices = () => {
             <TableHead>No</TableHead>
             <TableHead>Device Type</TableHead>
             <TableHead>OS</TableHead>
-            <TableHead>Browser Name</TableHead>
+            <TableHead>Browser</TableHead>
             <TableHead>Browser Version</TableHead>
             <TableHead>IP Address</TableHead>
             <TableHead>Location</TableHead>
@@ -95,10 +108,56 @@ const UserLinkedDevices = () => {
                   <TableRow key={device.id}>
                     <TableCell className="font-medium">{i + 1}</TableCell>
                     <TableCell className="font-medium">
-                      {device.device_type}
+                      <img
+                        src={
+                          device.device_type === "Desktop"
+                            ? Desktop
+                            : device.device_type === "Laptop"
+                            ? Laptop
+                            : device.device_type === "Mac"
+                            ? Mac
+                            : device.device_type === "Mobile"
+                            ? Mobile
+                            : Tablet
+                        }
+                        alt="image"
+                        className="w-6"
+                      />
                     </TableCell>
-                    <TableCell>{device.os}</TableCell>
-                    <TableCell>{device.browser_name}</TableCell>
+                    <TableCell>
+                      <img
+                        src={
+                          device.os === "Windows"
+                            ? Windows
+                            : device.os === "MacOS"
+                            ? MacOS
+                            : device.os === "Linux"
+                            ? Linux
+                            : device.os === "Android"
+                            ? Android
+                            : iOS
+                        }
+                        alt="image"
+                        className="w-6"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <img
+                        src={
+                          device.browser_name === "Microsoft Edge"
+                            ? Edge
+                            : device.browser_name === "Google Chrome"
+                            ? Chrome
+                            : device.browser_name === "Apple Safari"
+                            ? Safari
+                            : device.browser_name === "Mozilla Firefox"
+                            ? Firefox
+                            : Opera
+                        }
+                        alt="image"
+                        className="w-6"
+                      />
+                    </TableCell>
                     <TableCell>{device.browser_version}</TableCell>
                     <TableCell>{device.ip_address}</TableCell>
                     <TableCell>{device.location}</TableCell>
