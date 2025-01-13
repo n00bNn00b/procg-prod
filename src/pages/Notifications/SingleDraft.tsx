@@ -27,7 +27,7 @@ import {
 import { Message } from "@/types/interfaces/users.interface";
 import Spinner from "@/components/Spinner/Spinner";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 
 interface IOldMsgTypes {
   receivers?: string[];
@@ -123,9 +123,9 @@ const SingleDraft = () => {
   };
 
   const handleSend = async () => {
-    const newID = uuidv4();
+    // const newID = uuidv4();
     const data = {
-      id: newID,
+      id: id as string,
       sender,
       recivers,
       subject,
@@ -140,12 +140,12 @@ const SingleDraft = () => {
     };
     try {
       setIsSending(true);
-      const newMsg = await axios.post(`${url}/messages`, data);
       const deletedMsg = await axios.delete(`${url}/messages/${id}`);
+      const newMsg = await axios.post(`${url}/messages`, data);
       if (newMsg.data && deletedMsg.data) {
         handleDraftMsgId(id as string);
         handlesendMessage(data);
-        console.log(data, "data");
+
         toast({
           title: "Message Sent",
         });
