@@ -29,6 +29,8 @@ import Chrome from "/icons/browser-icon/chrome.svg";
 import Safari from "/icons/browser-icon/safari.svg";
 import Firefox from "/icons/browser-icon/mozila.svg";
 import Opera from "/icons/browser-icon/opera.svg";
+import Undefined from "/icons/undefined.svg";
+import App from "../../../public/favicon-black.svg";
 
 const UserLinkedDevices = () => {
   const api = useAxiosPrivate();
@@ -116,9 +118,12 @@ const UserLinkedDevices = () => {
                             ? Laptop
                             : device.device_type === "Mac"
                             ? Mac
-                            : device.device_type === "Mobile"
+                            : device.device_type === "Mobile" ||
+                              device.device_type === "Handset"
                             ? Mobile
-                            : Tablet
+                            : device.device_type === "Tablet"
+                            ? Tablet
+                            : Undefined
                         }
                         alt="image"
                         className="w-6"
@@ -133,7 +138,8 @@ const UserLinkedDevices = () => {
                             ? MacOS
                             : device.os === "Linux"
                             ? Linux
-                            : device.os === "Android"
+                            : device.os === "Android" ||
+                              device.os === "Android OS"
                             ? Android
                             : iOS
                         }
@@ -152,6 +158,8 @@ const UserLinkedDevices = () => {
                             ? Safari
                             : device.browser_name === "Mozilla Firefox"
                             ? Firefox
+                            : device.browser_name === "App"
+                            ? App
                             : Opera
                         }
                         alt="image"
