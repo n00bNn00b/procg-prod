@@ -13,21 +13,22 @@ import { useEffect, useState } from "react";
 import DefaultLogo from "/public/profile/loading.gif";
 import UpdateProfile from "./UpdateProfile";
 
-interface IAccessProfiles {
-  user_name?: string;
-  email?: string;
-  email_1?: string;
-  email_2?: string;
-  email_3?: string;
-  email_4?: string;
-  phone_1?: string;
-  phone_2?: string;
-  phone_3?: string;
-}
+// interface IAccessProfiles {
+//   user_name?: string;
+//   email?: string;
+//   email_1?: string;
+//   email_2?: string;
+//   email_3?: string;
+//   email_4?: string;
+//   phone_1?: string;
+//   phone_2?: string;
+//   phone_3?: string;
+// }
 const Profile = () => {
   const { token, combinedUser, isCombinedUserLoading } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [accessProfiles, setAccessProfiles] = useState<IAccessProfiles>({});
+  // const [accessProfiles, setAccessProfiles] = useState<IAccessProfiles>({});
+  const [accessProfiles, setAccessProfiles] = useState<string>();
   const profileLogo = isCombinedUserLoading
     ? DefaultLogo
     : combinedUser?.profile_picture
@@ -40,14 +41,15 @@ const Profile = () => {
         if (!token) return;
         setIsLoading(true);
         if (combinedUser) {
-          const accessProfiles: IAccessProfiles = {};
-          accessProfiles.user_name = combinedUser?.user_name;
-          for (let i = 0; i < combinedUser?.email_addresses.length; i++) {
-            accessProfiles[`email_${i + 1}` as keyof IAccessProfiles] =
-              combinedUser.email_addresses[i];
-          }
-
-          setAccessProfiles(accessProfiles);
+          // for {"user_name":"example_user_name","email_1":"example@gmail.com","email_2":"example2nd@gmail.com"}
+          // const accessProfiles: IAccessProfiles = {};
+          // accessProfiles.user_name = combinedUser?.user_name;
+          // for (let i = 0; i < combinedUser?.email_addresses.length; i++) {
+          //   accessProfiles[`email_${i + 1}` as keyof IAccessProfiles] =
+          //     combinedUser.email_addresses[i];
+          // }
+          // setAccessProfiles(accessProfiles);
+          setAccessProfiles(combinedUser?.email_addresses.toString());
         }
       } catch (error) {
         console.log(error);
