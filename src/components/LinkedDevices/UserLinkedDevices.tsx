@@ -19,11 +19,11 @@ import Laptop from "/icons/device-icon/laptop.svg";
 import Mac from "/icons/device-icon/mac.svg";
 import Mobile from "/icons/device-icon/android.svg";
 import Tablet from "/icons/device-icon/tablet.svg";
+import iOS from "/icons/device-icon/iphone.svg";
 import Windows from "/icons/os-icon/windows.svg";
 import MacOS from "/icons/os-icon/mac.svg";
 import Linux from "/icons/os-icon/linux.svg";
-import Android from "/icons/device-icon/android.svg";
-import iOS from "/icons/device-icon/iphone.svg";
+import Android from "/icons/os-icon/android.svg";
 import Edge from "/icons/browser-icon/edge.svg";
 import Chrome from "/icons/browser-icon/chrome.svg";
 import Safari from "/icons/browser-icon/safari.svg";
@@ -141,7 +141,9 @@ const UserLinkedDevices = () => {
                             : device.os === "Android" ||
                               device.os === "Android OS"
                             ? Android
-                            : iOS
+                            : device.os === "iOS" || device.os === "iPhone"
+                            ? iOS
+                            : Undefined
                         }
                         alt="image"
                         className="w-6"
@@ -158,9 +160,11 @@ const UserLinkedDevices = () => {
                             ? Safari
                             : device.browser_name === "Mozilla Firefox"
                             ? Firefox
+                            : device.browser_name === "Opera"
+                            ? Opera
                             : device.browser_name === "App"
                             ? App
-                            : Opera
+                            : Undefined
                         }
                         alt="image"
                         className="w-6"
