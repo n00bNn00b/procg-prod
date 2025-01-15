@@ -19,7 +19,7 @@ import Laptop from "/icons/device-icon/laptop.svg";
 import Mac from "/icons/device-icon/mac.svg";
 import Mobile from "/icons/device-icon/android.svg";
 import Tablet from "/icons/device-icon/tablet.svg";
-import iOS from "/icons/device-icon/iphone.svg";
+import iOS from "/icons/os-icon/mac.svg";
 import Windows from "/icons/os-icon/windows.svg";
 import MacOS from "/icons/os-icon/mac.svg";
 import Linux from "/icons/os-icon/linux.svg";
