@@ -33,6 +33,15 @@ import RecycleBin from "@/pages/Notifications/RecycleBin";
 import SingleRecycleBin from "@/pages/Notifications/SingleRecycleBin";
 import SignIn from "@/pages/SignIn/SignIn";
 import Layout from "@/Layout/Layout";
+import ManageConfigurations from "@/pages/AsynchronousRequestManager/Administration/ManageConfigurations";
+import ManageSchedulers from "@/pages/AsynchronousRequestManager/Administration/ManageSchedulers";
+import ManageWorkers from "@/pages/AsynchronousRequestManager/Administration/ManageWorkers";
+import RegisterEditAsynchronousTasks from "@/pages/AsynchronousRequestManager/Development/RegisterEditAsynchronousTasks";
+import TaskParameters from "@/pages/AsynchronousRequestManager/Development/TaskParameters";
+import ScheduleATask from "@/pages/AsynchronousRequestsAndTaskSchedules/ScheduleATask";
+import ViewEditScheduledTasks from "@/pages/AsynchronousRequestsAndTaskSchedules/ViewEditScheduledTasks";
+import RunAnAdHocRequest from "@/pages/AsynchronousRequestsAndTaskSchedules/RunAnAdHocRequest";
+import ViewRequests from "@/pages/AsynchronousRequestsAndTaskSchedules/ViewRequests";
 
 const routes = createBrowserRouter([
   {
@@ -196,6 +205,62 @@ const routes = createBrowserRouter([
           {
             path: "manage-local-conditions",
             element: <ManageLocalConditions />,
+          },
+        ],
+      },
+      {
+        path: "asynchronous-request-manager",
+        children: [
+          {
+            path: "administration",
+            children: [
+              {
+                path: "manage-configurations",
+                element: <ManageConfigurations />,
+              },
+              {
+                path: "manage-schedulers",
+                element: <ManageSchedulers />,
+              },
+              {
+                path: "manage-workers",
+                element: <ManageWorkers />,
+              },
+            ],
+          },
+          {
+            path: "development",
+            children: [
+              {
+                path: "register-tasks",
+                element: <RegisterEditAsynchronousTasks />,
+              },
+              {
+                path: "task-parameters",
+                element: <TaskParameters />,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: "asynchronous-requests-and-task-schedules",
+        children: [
+          {
+            path: "schedule-a-task",
+            element: <ScheduleATask />,
+          },
+          {
+            path: "view-edit-scheduled-tasks",
+            element: <ViewEditScheduledTasks />,
+          },
+          {
+            path: "run-an-ad-hoc-request",
+            element: <RunAnAdHocRequest />,
+          },
+          {
+            path: "view-requests",
+            element: <ViewRequests />,
           },
         ],
       },

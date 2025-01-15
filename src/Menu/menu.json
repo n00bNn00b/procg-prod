@@ -148,5 +148,91 @@
         "path": "/manage-administration/manage-local-conditions"
       }
     ]
+  },
+  {
+    "submenu": "Asynchronous Request Manager (ARM)",
+    "submenuIcon": "/sidebar/asynchronous-manager.svg",
+    "paths": [
+      "/asynchronous-request-manager/administration/manage-configurations",
+      "/asynchronous-request-manager/administration/manage-schedulers",
+      "/asynchronous-request-manager/administration/manage-workers",
+      "/asynchronous-request-manager/development/register-tasks",
+      "/asynchronous-request-manager/development/task-parameters"
+    ],
+    "menuItems": [
+      {
+        "name": "Administration",
+        "icon": "/icons/administration.svg",
+        "paths": [
+          "/asynchronous-request-manager/administration/manage-configurations",
+          "/asynchronous-request-manager/administration/manage-schedulers",
+          "/asynchronous-request-manager/administration/manage-workers"
+        ],
+        "subItems": [
+          {
+            "name": "Manage Configurations",
+            "path": "/asynchronous-request-manager/administration/manage-configurations"
+          },
+          {
+            "name": "Manage Schedulers",
+            "path": "/asynchronous-request-manager/administration/manage-schedulers"
+          },
+          {
+            "name": "Manage Workers",
+            "path": "/asynchronous-request-manager/administration/manage-workers"
+          }
+        ]
+      },
+      {
+        "name": "Development",
+        "icon": "/icons/development.svg",
+        "paths": [
+          "/asynchronous-request-manager/development/register-tasks",
+          "/asynchronous-request-manager/development/task-parameters"
+        ],
+        "subItems": [
+          {
+            "name": "Register/Edit Asynchronous Tasks",
+            "path": "/asynchronous-request-manager/development/register-tasks"
+          },
+          {
+            "name": "Task Parameters",
+            "path": "/asynchronous-request-manager/development/task-parameters"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "submenu": "Asynchronous Requests and Task Schedules",
+    "submenuIcon": "/sidebar/asychronous-task-schedule.svg",
+    "paths": [
+      "/asynchronous-requests-and-task-schedules/schedule-a-task",
+      "/asynchronous-requests-and-task-schedules/view-edit-scheduled-tasks",
+      "/asynchronous-requests-and-task-schedules/run-an-ad-hoc-request",
+      "/asynchronous-requests-and-task-schedules/view-requests"
+    ],
+    "menuItems": [
+      {
+        "name": "Schedule a Task",
+        "icon": "sidebar/setup-and-administration.svg",
+        "path": "/asynchronous-requests-and-task-schedules/schedule-a-task"
+      },
+      {
+        "name": "View/Edit Scheduled Tasks",
+        "icon": "sidebar/setup-and-administration.svg",
+        "path": "/asynchronous-requests-and-task-schedules/view-edit-scheduled-tasks"
+      },
+      {
+        "name": "Run an ad-hoc Request",
+        "icon": "sidebar/setup-and-administration.svg",
+        "path": "/asynchronous-requests-and-task-schedules/run-an-ad-hoc-request"
+      },
+      {
+        "name": "View Requests",
+        "icon": "sidebar/setup-and-administration.svg",
+        "path": "/asynchronous-requests-and-task-schedules/view-requests"
+      }
+    ]
   }
 ]
