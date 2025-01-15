@@ -45,7 +45,7 @@ const Sidbar = () => {
   const getSubMenuItemStyle = (paths: string[]) => {
     if (paths.includes(pathname)) {
       console.log(paths, pathname, "paths, pathname");
-      return "bg-winter-100";
+      return "bg-winter-300";
     }
   };
 
