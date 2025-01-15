@@ -3,10 +3,17 @@ import { Link, useLocation } from "react-router-dom";
 import menu from "@/Menu/menu.json";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
-interface MenuItems {
+interface SubMenuItems {
   name: string;
   icon: string;
   path: string;
+}
+export interface MenuItems {
+  name: string;
+  icon: string;
+  path: string;
+  paths?: string[] | undefined;
+  subItems?: SubMenuItems[];
 }
 
 interface MenuData {
@@ -21,7 +28,7 @@ const Sidbar = () => {
   const location = useLocation();
   const pathname = location.pathname;
 
-  const menuData: MenuData[] = menu;
+  const menuData = menu as MenuData[];
 
   const getMenuitemStyle = (path: string) => {
     if (pathname === path) {
@@ -32,6 +39,13 @@ const Sidbar = () => {
   const getSubMenuStyle = (paths: string[]) => {
     if (paths.includes(pathname)) {
       return "bg-winter-100 border-l-4 border-red-600";
+    }
+  };
+
+  const getSubMenuItemStyle = (paths: string[]) => {
+    if (paths.includes(pathname)) {
+      console.log(paths, pathname, "paths, pathname");
+      return "bg-winter-100";
     }
   };
 
@@ -48,18 +62,45 @@ const Sidbar = () => {
             className={getSubMenuStyle(menu.paths)}
             key={menu.submenu}
             label={menu.submenu}
-            icon={<img src={menu.submenuIcon} className="w-[20px] h-[20px]" />}
+            icon={
+              menu.submenuIcon && (
+                <img
+                  src={menu.submenuIcon}
+                  alt={`${menu.submenu} icon`}
+                  className="w-[20px] h-[20px]"
+                />
+              )
+            }
           >
-            {menu.menuItems.map((item) => (
-              <MenuItem
-                className={getMenuitemStyle(item.path)}
-                style={{ fontSize: "11px" }}
-                key={item.name}
-                component={<Link to={item.path} />}
-              >
-                <p>{item.name}</p>
-              </MenuItem>
-            ))}
+            {menu.menuItems.map((subMenuItem) =>
+              subMenuItem.subItems ? (
+                <SubMenu
+                  className={getSubMenuItemStyle(subMenuItem.paths!)}
+                  key={subMenuItem.name}
+                  label={subMenuItem.name}
+                >
+                  {subMenuItem.subItems.map((subItem) => (
+                    <MenuItem
+                      className={getMenuitemStyle(subItem.path)}
+                      style={{ fontSize: "11px" }}
+                      key={subItem.name}
+                      component={<Link to={subItem.path} />}
+                    >
+                      {subItem.name}
+                    </MenuItem>
+                  ))}
+                </SubMenu>
+              ) : (
+                <MenuItem
+                  className={getMenuitemStyle(subMenuItem.path)}
+                  style={{ fontSize: "11px" }}
+                  key={subMenuItem.name}
+                  component={<Link to={subMenuItem.path} />}
+                >
+                  {subMenuItem.name}
+                </MenuItem>
+              )
+            )}
           </SubMenu>
         ))}
       </Menu>
