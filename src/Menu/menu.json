@@ -88,6 +88,7 @@
         "name": "Controls",
         "icon": "/sidebar/controls.png",
         "paths": [
+          "/enterprise-security-controls/controls",
           "/enterprise-security-controls/controls/manage-controls",
           "/enterprise-security-controls/controls/manage-results"
         ],
@@ -107,6 +108,7 @@
         "name": "Access Models",
         "icon": "/sidebar/access-model.png",
         "paths": [
+          "/enterprise-security-controls/access-models",
           "/enterprise-security-controls/access-models/manage-access-models"
         ],
         "subItems": [
@@ -149,7 +151,7 @@
     ]
   },
   {
-    "submenu": "Asynchronous Request Manager (ARM)",
+    "submenu": "Async. Request Manager (ARM)",
     "submenuIcon": "/sidebar/asynchronous-manager.svg",
     "paths": [
       "/asynchronous-request-manager",
@@ -166,6 +168,7 @@
         "icon": "/icons/administration.svg",
         "paths": [
           "/asynchronous-request-manager/administration/manage-configurations",
+          "/asynchronous-request-manager/administration",
           "/asynchronous-request-manager/administration/manage-schedulers",
           "/asynchronous-request-manager/administration/manage-workers"
         ],
@@ -188,6 +191,7 @@
         "name": "Development",
         "icon": "/icons/development.svg",
         "paths": [
+          "/asynchronous-request-manager/development",
           "/asynchronous-request-manager/development/register-tasks",
           "/asynchronous-request-manager/development/task-parameters"
         ],
@@ -205,9 +209,10 @@
     ]
   },
   {
-    "submenu": "Asynchronous Requests and Task Schedules",
+    "submenu": "Async. Requests and Task Schedules",
     "submenuIcon": "/sidebar/asychronous-task-schedule.svg",
     "paths": [
+      "/asynchronous-requests-and-task-schedules",
       "/asynchronous-requests-and-task-schedules/schedule-a-task",
       "/asynchronous-requests-and-task-schedules/view-edit-scheduled-tasks",
       "/asynchronous-requests-and-task-schedules/run-an-ad-hoc-request",
