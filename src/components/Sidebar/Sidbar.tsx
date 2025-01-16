@@ -1,4 +1,10 @@
-import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
+import {
+  Sidebar,
+  Menu,
+  MenuItem,
+  SubMenu,
+  menuClasses,
+} from "react-pro-sidebar";
 import { Link, useLocation } from "react-router-dom";
 import menu from "@/Menu/menu.json";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
@@ -71,6 +77,13 @@ const Sidbar = () => {
                 />
               )
             }
+            rootStyles={{
+              ["." + menuClasses.label]: {
+                whiteSpace: "wrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              },
+            }}
           >
             {menu.menuItems.map((subMenuItem) =>
               subMenuItem.subItems ? (
