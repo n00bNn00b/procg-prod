@@ -10,8 +10,8 @@ import Home from "@/pages/Home/Home";
 import SingleSent from "@/pages/Notifications/SingleSent";
 import DataSources from "@/pages/Tools/ManageDataSources/DataSources";
 import Users from "@/pages/Tools/Users/SetupAndAdministration";
-import ManageGlobaConditions from "@/pages/ManageAdministration/ManageGlobalConditions/ManageGlobalConditions";
-import ManageLocalConditions from "@/pages/ManageAdministration/ManageLocalConditions/ManageLocalConditions";
+import ManageGlobaConditions from "@/pages/EnterpriseSecurityControls/ManageGlobalConditions/ManageGlobalConditions";
+import ManageLocalConditions from "@/pages/EnterpriseSecurityControls/ManageLocalConditions/ManageLocalConditions";
 import Alerts from "@/pages/Alerts/Alerts";
 import Error from "@/pages/Error/Error";
 import RiskManagement from "@/pages/Finance/RiskManagement/RiskManagement";
@@ -19,16 +19,15 @@ import ControlManagement from "@/pages/Finance/ControlManagement/ControlManageme
 import IssueManagement from "@/pages/Finance/IssueManagement/IssueManagement";
 import ResultManagement from "@/pages/ContinuousMonitoring/ResultManagement/ResultManagement";
 import ContinuousControlManagement from "@/pages/ContinuousMonitoring/ContinuousControlManagement/ContinuousControlManagement";
-import ManageControls from "@/pages/Controls/ManageControls/ManageControls";
-import CreateAccessGlobalConditions from "@/pages/ManageAdministration/CreateAccessGlobalConditions/CreateAccessGlobalConditions";
-import ManageAccessPathConditions from "@/pages/ManageAdministration/ManageAccessPathConditions/ManageAccessPathConditions";
-import ManageUserDefinedObjects from "@/pages/ManageAdministration/ManageUserDefinedObjects/ManageUserDefinedObjects";
-import ManageCCMJobs from "@/pages/ManageAdministration/ManageCCMJobs/ManageCCMJobs";
-import ManageAccessModels from "@/pages/AccessModels/ManageAccessModels/ManageAccessModels";
-import ManageAccessEntitlements from "@/pages/ManageAdministration/ManageAccessEntitlements/ManageAccessEntitlements";
+import ManageControls from "@/pages/EnterpriseSecurityControls/Controls/ManageControls/ManageControls";
+import CreateAccessGlobalConditions from "@/pages/EnterpriseSecurityControls/CreateAccessGlobalConditions/CreateAccessGlobalConditions";
+import ManageAccessPathConditions from "@/pages/EnterpriseSecurityControls/ManageAccessPathConditions/ManageAccessPathConditions";
+import ManageUserDefinedObjects from "@/pages/EnterpriseSecurityControls/ManageUserDefinedObjects/ManageUserDefinedObjects";
+import ManageAccessModels from "@/pages/EnterpriseSecurityControls/AccessModels/ManageAccessModels/ManageAccessModels";
+import ManageAccessEntitlements from "@/pages/EnterpriseSecurityControls/ManageAccessEntitlements/ManageAccessEntitlements";
 import Security from "@/pages/Security/Security";
 import Settings from "@/pages/Settings/Settings";
-import ManageResults from "@/pages/Controls/ManageResults/ManageResults";
+import ManageResults from "@/pages/EnterpriseSecurityControls/Controls/ManageResults/ManageResults";
 import RecycleBin from "@/pages/Notifications/RecycleBin";
 import SingleRecycleBin from "@/pages/Notifications/SingleRecycleBin";
 import SignIn from "@/pages/SignIn/SignIn";
@@ -42,6 +41,13 @@ import ScheduleATask from "@/pages/AsynchronousRequestsAndTaskSchedules/Schedule
 import ViewEditScheduledTasks from "@/pages/AsynchronousRequestsAndTaskSchedules/ViewEditScheduledTasks";
 import RunAnAdHocRequest from "@/pages/AsynchronousRequestsAndTaskSchedules/RunAnAdHocRequest";
 import ViewRequests from "@/pages/AsynchronousRequestsAndTaskSchedules/ViewRequests";
+import EnterpriseSecurityControls from "@/pages/EnterpriseSecurityControls/EnterpriseSecurityControls";
+import AccessModels from "@/pages/EnterpriseSecurityControls/AccessModels/AccessModels";
+import Controls from "@/pages/EnterpriseSecurityControls/Controls/Controls";
+import AsynchronousRequestsAndTaskSchedules from "@/pages/AsynchronousRequestsAndTaskSchedules/AsynchronousRequestsAndTaskSchedules";
+import AsynchronousRequestManager from "@/pages/AsynchronousRequestManager/AsynchronousRequestManager";
+import Administration from "@/pages/AsynchronousRequestManager/Administration/Administration";
+import Development from "@/pages/AsynchronousRequestManager/Development/Development";
 
 const routes = createBrowserRouter([
   {
@@ -153,31 +159,44 @@ const routes = createBrowserRouter([
           },
         ],
       },
+
       {
-        path: "controls",
+        path: "enterprise-security-controls",
         children: [
           {
-            path: "manage-controls",
-            element: <ManageControls />,
+            path: "",
+            element: <EnterpriseSecurityControls />,
           },
           {
-            path: "manage-results",
-            element: <ManageResults />,
+            path: "controls",
+            children: [
+              {
+                path: "",
+                element: <Controls />,
+              },
+              {
+                path: "manage-controls",
+                element: <ManageControls />,
+              },
+              {
+                path: "manage-results",
+                element: <ManageResults />,
+              },
+            ],
           },
-        ],
-      },
-      {
-        path: "access-models",
-        children: [
           {
-            path: "manage-access-models",
-            element: <ManageAccessModels />,
+            path: "access-models",
+            children: [
+              {
+                path: "",
+                element: <AccessModels />,
+              },
+              {
+                path: "manage-access-models",
+                element: <ManageAccessModels />,
+              },
+            ],
           },
-        ],
-      },
-      {
-        path: "manage-administration",
-        children: [
           {
             path: "manage-access-entitlements",
             element: <ManageAccessEntitlements />,
@@ -199,10 +218,6 @@ const routes = createBrowserRouter([
             element: <ManageUserDefinedObjects />,
           },
           {
-            path: "manage-ccm-jobs",
-            element: <ManageCCMJobs />,
-          },
-          {
             path: "manage-local-conditions",
             element: <ManageLocalConditions />,
           },
@@ -212,8 +227,16 @@ const routes = createBrowserRouter([
         path: "asynchronous-request-manager",
         children: [
           {
+            path: "",
+            element: <AsynchronousRequestManager />,
+          },
+          {
             path: "administration",
             children: [
+              {
+                path: "",
+                element: <Administration />,
+              },
               {
                 path: "manage-configurations",
                 element: <ManageConfigurations />,
@@ -232,6 +255,10 @@ const routes = createBrowserRouter([
             path: "development",
             children: [
               {
+                path: "",
+                element: <Development />,
+              },
+              {
                 path: "register-tasks",
                 element: <RegisterEditAsynchronousTasks />,
               },
@@ -246,6 +273,10 @@ const routes = createBrowserRouter([
       {
         path: "asynchronous-requests-and-task-schedules",
         children: [
+          {
+            path: "",
+            element: <AsynchronousRequestsAndTaskSchedules />,
+          },
           {
             path: "schedule-a-task",
             element: <ScheduleATask />,

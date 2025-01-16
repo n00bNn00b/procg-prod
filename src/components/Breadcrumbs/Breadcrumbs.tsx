@@ -27,10 +27,10 @@ const Breadcurmbs = () => {
                 {last ? (
                   <span>{title}</span>
                 ) : (
-                  <span>{title}</span>
-                  // <Link to={to} className="text-url">
-                  //   {title}
-                  // </Link>
+                  // <span>{title}</span>
+                  <Link to={to} className="text-blue-600 underline">
+                    {title}
+                  </Link>
                 )}
               </li>
             );
