@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import JobTitleTypes from "@/pages/Tools/Users/job_title.json";
+import JobTitleTypes from "@/pages/Tools/SecurityConsole/ManageUsers/job_title.json";
 import { Dispatch, FC, SetStateAction } from "react";
 import { ITenantsTypes } from "@/types/interfaces/users.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";

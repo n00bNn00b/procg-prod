@@ -8,8 +8,8 @@ import SingleDraft from "@/pages/Notifications/SingleDraft";
 import ActionItems from "@/pages/ActionItems/ActionItems";
 import Home from "@/pages/Home/Home";
 import SingleSent from "@/pages/Notifications/SingleSent";
-import DataSources from "@/pages/Tools/ManageDataSources/DataSources";
-import Users from "@/pages/Tools/Users/SetupAndAdministration";
+import ManageDataSources from "@/pages/Tools/ManageDataSources/ManageDataSources";
+import Users from "@/pages/Tools/SecurityConsole/ManageUsers/SetupAndAdministration";
 import ManageGlobaConditions from "@/pages/EnterpriseSecurityControls/ManageGlobalConditions/ManageGlobalConditions";
 import ManageLocalConditions from "@/pages/EnterpriseSecurityControls/ManageLocalConditions/ManageLocalConditions";
 import Alerts from "@/pages/Alerts/Alerts";
@@ -20,9 +20,6 @@ import IssueManagement from "@/pages/Finance/IssueManagement/IssueManagement";
 import ResultManagement from "@/pages/ContinuousMonitoring/ResultManagement/ResultManagement";
 import ContinuousControlManagement from "@/pages/ContinuousMonitoring/ContinuousControlManagement/ContinuousControlManagement";
 import ManageControls from "@/pages/EnterpriseSecurityControls/Controls/ManageControls/ManageControls";
-import CreateAccessGlobalConditions from "@/pages/EnterpriseSecurityControls/CreateAccessGlobalConditions/CreateAccessGlobalConditions";
-import ManageAccessPathConditions from "@/pages/EnterpriseSecurityControls/ManageAccessPathConditions/ManageAccessPathConditions";
-import ManageUserDefinedObjects from "@/pages/EnterpriseSecurityControls/ManageUserDefinedObjects/ManageUserDefinedObjects";
 import ManageAccessModels from "@/pages/EnterpriseSecurityControls/AccessModels/ManageAccessModels/ManageAccessModels";
 import ManageAccessEntitlements from "@/pages/EnterpriseSecurityControls/ManageAccessEntitlements/ManageAccessEntitlements";
 import Security from "@/pages/Security/Security";
@@ -48,6 +45,16 @@ import AsynchronousRequestsAndTaskSchedules from "@/pages/AsynchronousRequestsAn
 import AsynchronousRequestManager from "@/pages/AsynchronousRequestManager/AsynchronousRequestManager";
 import Administration from "@/pages/AsynchronousRequestManager/Administration/Administration";
 import Development from "@/pages/AsynchronousRequestManager/Development/Development";
+import ManageControlEnvironments from "@/pages/EnterpriseSecurityControls/Setup/ManageControlEnvironments/ManageControlEnvironments";
+import Setup from "@/pages/EnterpriseSecurityControls/Setup/Setup";
+import ManageAccessPoints from "@/pages/EnterpriseSecurityControls/ManageAccessPoints/ManageAccessPoints";
+import Tools from "@/pages/Tools/Tools";
+import SecurityConsole from "@/pages/Tools/SecurityConsole/SecurityConsole";
+import EnterpriseAccessMonitoring from "@/pages/EnterpriseAccessMonitoring/EnterpriseAccessMonitoring";
+import PrivilegedAccessReview from "@/pages/EnterpriseAccessMonitoring/PrivilegedAccessReview";
+import ServiceAccountsAudit from "@/pages/EnterpriseAccessMonitoring/ServiceAccountsAudit";
+import UserAccessVisibility from "@/pages/EnterpriseAccessMonitoring/UserAccessVisibility";
+import AuditorReporting from "@/pages/EnterpriseAccessMonitoring/AuditorReporting";
 
 const routes = createBrowserRouter([
   {
@@ -150,22 +157,48 @@ const routes = createBrowserRouter([
         path: "tools",
         children: [
           {
-            path: "users",
-            element: <Users />,
+            path: "",
+            element: <Tools />,
           },
           {
-            path: "datasources",
-            element: <DataSources />,
+            path: "security-console",
+            children: [
+              {
+                path: "",
+                element: <SecurityConsole />,
+              },
+              {
+                path: "manage-users",
+                element: <Users />,
+              },
+            ],
+          },
+          {
+            path: "manage-data-sources",
+            element: <ManageDataSources />,
           },
         ],
       },
-
       {
         path: "enterprise-security-controls",
         children: [
           {
             path: "",
             element: <EnterpriseSecurityControls />,
+          },
+
+          {
+            path: "access-models",
+            children: [
+              {
+                path: "",
+                element: <AccessModels />,
+              },
+              {
+                path: "manage-access-models",
+                element: <ManageAccessModels />,
+              },
+            ],
           },
           {
             path: "controls",
@@ -185,15 +218,15 @@ const routes = createBrowserRouter([
             ],
           },
           {
-            path: "access-models",
+            path: "setup",
             children: [
               {
                 path: "",
-                element: <AccessModels />,
+                element: <Setup />,
               },
               {
-                path: "manage-access-models",
-                element: <ManageAccessModels />,
+                path: "manage-control-environments",
+                element: <ManageControlEnvironments />,
               },
             ],
           },
@@ -202,20 +235,12 @@ const routes = createBrowserRouter([
             element: <ManageAccessEntitlements />,
           },
           {
-            path: "manage-access-global-conditions",
+            path: "manage-access-points",
+            element: <ManageAccessPoints />,
+          },
+          {
+            path: "manage-global-conditions",
             element: <ManageGlobaConditions />,
-          },
-          {
-            path: "create-access-global-conditions",
-            element: <CreateAccessGlobalConditions />,
-          },
-          {
-            path: "manage-access-path-conditions",
-            element: <ManageAccessPathConditions />,
-          },
-          {
-            path: "manage-user-defined-objects",
-            element: <ManageUserDefinedObjects />,
           },
           {
             path: "manage-local-conditions",
@@ -292,6 +317,32 @@ const routes = createBrowserRouter([
           {
             path: "view-requests",
             element: <ViewRequests />,
+          },
+        ],
+      },
+      {
+        path: "enterprise-access-monitoring",
+        children: [
+          {
+            path: "",
+            element: <EnterpriseAccessMonitoring />,
+          },
+          {
+            path: "privileged-access-review",
+            element: <PrivilegedAccessReview />,
+          },
+
+          {
+            path: "service-accounts-audit",
+            element: <ServiceAccountsAudit />,
+          },
+          {
+            path: "user-access-visibility",
+            element: <UserAccessVisibility />,
+          },
+          {
+            path: "auditor-reporting",
+            element: <AuditorReporting />,
           },
         ],
       },

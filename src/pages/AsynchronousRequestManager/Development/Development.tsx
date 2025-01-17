@@ -1,23 +1,28 @@
-import { Link } from "react-router-dom";
-
+import SubSubMenuItem from "@/components/Breadcrumbs/SubSubMenuItem/SubSubMenuItem";
+import { MenuData } from "@/components/Sidebar/Sidbar";
+import menu from "@/Menu/menu.json";
 const Development = () => {
-  const paths = [
-    {
-      name: "Register Tasks",
-      path: "/asynchronous-request-manager/development/register-tasks",
-    },
-    {
-      name: "Task Parameters",
-      path: "/asynchronous-request-manager/development/task-parameters",
-    },
-  ];
+  const menus = menu as MenuData[];
+
   return (
-    <div className="flex flex-col gap-2">
-      {paths.map((path) => (
-        <Link to={path.path} className="text-blue-600">
-          <h3>{path.name}</h3>
-        </Link>
-      ))}
+    <div>
+      {menus.map((item) => {
+        return (
+          <div key={item.submenu}>
+            {item.submenu === "Async. Request Manager (ARM)" &&
+              item.menuItems.map((menu) => {
+                return (
+                  <div key={menu.name}>
+                    {/* Change menu name here */}
+                    {menu.name === "Development" && menu.subItems && (
+                      <SubSubMenuItem {...menu} />
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        );
+      })}
     </div>
   );
 };

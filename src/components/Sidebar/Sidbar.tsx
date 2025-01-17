@@ -22,7 +22,7 @@ export interface MenuItems {
   subItems?: SubMenuItems[];
 }
 
-interface MenuData {
+export interface MenuData {
   submenu: string;
   submenuIcon: string;
   menuItems: MenuItems[];
@@ -50,7 +50,7 @@ const Sidbar = () => {
 
   const getSubMenuItemStyle = (paths: string[]) => {
     if (paths.includes(pathname)) {
-      console.log(paths, pathname, "paths, pathname");
+      // console.log(paths, pathname, "paths, pathname");
       return "bg-winter-300";
     }
   };

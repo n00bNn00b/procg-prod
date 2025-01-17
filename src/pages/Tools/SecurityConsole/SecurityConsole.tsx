@@ -1,7 +1,7 @@
 import SubSubMenuItem from "@/components/Breadcrumbs/SubSubMenuItem/SubSubMenuItem";
 import { MenuData } from "@/components/Sidebar/Sidbar";
 import menu from "@/Menu/menu.json";
-const Administration = () => {
+const SecurityConsole = () => {
   const menus = menu as MenuData[];
 
   return (
@@ -9,12 +9,13 @@ const Administration = () => {
       {menus.map((item) => {
         return (
           <div key={item.submenu}>
-            {item.submenu === "Async. Request Manager (ARM)" &&
+            {/* Change submenu name here */}
+            {item.submenu === "Tools" &&
               item.menuItems.map((menu) => {
                 return (
                   <div key={menu.name}>
                     {/* Change menu name here */}
-                    {menu.name === "Administration" && menu.subItems && (
+                    {menu.name === "Security Console" && menu.subItems && (
                       <SubSubMenuItem {...menu} />
                     )}
                   </div>
@@ -26,4 +27,4 @@ const Administration = () => {
     </div>
   );
 };
-export default Administration;
+export default SecurityConsole;

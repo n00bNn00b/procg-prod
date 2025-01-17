@@ -1,8 +1,7 @@
 import SubMenuItem from "@/components/Breadcrumbs/SubMenuItem/SubMenuItem";
 import { MenuData } from "@/components/Sidebar/Sidbar";
 import menu from "@/Menu/menu.json";
-
-const AsynchronousRequestManager = () => {
+const Tools = () => {
   const menus = menu as MenuData[];
 
   return (
@@ -10,14 +9,12 @@ const AsynchronousRequestManager = () => {
       {menus.map((item) => {
         return (
           <div key={item.submenu}>
-            {item.submenu === "Async. Request Manager (ARM)" && (
-              <SubMenuItem {...item} />
-            )}
+            {/* Change submenu name here */}
+            {item.submenu === "Tools" && <SubMenuItem {...item} />}
           </div>
         );
       })}
     </div>
   );
 };
-
-export default AsynchronousRequestManager;
+export default Tools;
