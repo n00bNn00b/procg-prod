@@ -49,7 +49,7 @@ import { IDataSourceTypes } from "@/types/interfaces/datasource.interface";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import Pagination5 from "@/components/Pagination/Pagination5";
 
-const DataSources = () => {
+const ManageDataSources = () => {
   const { fetchDataSources, deleteDataSource } = useGlobalContext();
   const [data, setData] = React.useState<IDataSourceTypes[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -603,4 +603,4 @@ const DataSources = () => {
     </div>
   );
 };
-export default DataSources;
+export default ManageDataSources;

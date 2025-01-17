@@ -1,7 +1,7 @@
 import SubSubMenuItem from "@/components/Breadcrumbs/SubSubMenuItem/SubSubMenuItem";
 import { MenuData } from "@/components/Sidebar/Sidbar";
 import menu from "@/Menu/menu.json";
-const Administration = () => {
+const Setup = () => {
   const menus = menu as MenuData[];
 
   return (
@@ -9,12 +9,12 @@ const Administration = () => {
       {menus.map((item) => {
         return (
           <div key={item.submenu}>
-            {item.submenu === "Async. Request Manager (ARM)" &&
+            {item.submenu === "Enterprise Security Controls" &&
               item.menuItems.map((menu) => {
                 return (
                   <div key={menu.name}>
-                    {/* Change menu name here */}
-                    {menu.name === "Administration" && menu.subItems && (
+                    {/* Nested Sub Menu Here */}
+                    {menu.name === "Setup" && menu.subItems && (
                       <SubSubMenuItem {...menu} />
                     )}
                   </div>
@@ -26,4 +26,4 @@ const Administration = () => {
     </div>
   );
 };
-export default Administration;
+export default Setup;

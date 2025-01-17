@@ -1,23 +1,28 @@
-import { Link } from "react-router-dom";
-
+import SubSubMenuItem from "@/components/Breadcrumbs/SubSubMenuItem/SubSubMenuItem";
+import { MenuData } from "@/components/Sidebar/Sidbar";
+import menu from "@/Menu/menu.json";
 const Controls = () => {
-  const paths = [
-    {
-      name: "Manage Controls",
-      path: "/enterprise-security-controls/controls/manage-controls",
-    },
-    {
-      name: "Manage Results",
-      path: "/enterprise-security-controls/access-models/manage-access-models",
-    },
-  ];
+  const menus = menu as MenuData[];
+
   return (
-    <div className="flex flex-col gap-2">
-      {paths.map((path) => (
-        <Link to={path.path} className="text-blue-600">
-          <h3>{path.name}</h3>
-        </Link>
-      ))}
+    <div>
+      {menus.map((item) => {
+        return (
+          <div key={item.submenu}>
+            {item.submenu === "Enterprise Security Controls" &&
+              item.menuItems.map((menu) => {
+                return (
+                  <div key={menu.name}>
+                    {/* Change menu name here */}
+                    {menu.name === "Controls" && menu.subItems && (
+                      <SubSubMenuItem {...menu} />
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        );
+      })}
     </div>
   );
 };
