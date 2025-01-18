@@ -45,16 +45,20 @@
     "submenuIcon": "/sidebar/manage-administration.png",
     "paths": [
       "/enterprise-security-controls",
+      "/enterprise-security-controls/access-models",
+      "/enterprise-security-controls/access-models/manage-access-models",
       "/enterprise-security-controls/controls",
       "/enterprise-security-controls/controls/manage-controls",
       "/enterprise-security-controls/controls/manage-results",
-      "/enterprise-security-controls/access-models/manage-access-models",
-      "/enterprise-security-controls/access-models",
+      "/enterprise-security-controls/setup",
+      "/enterprise-security-controls/setup/manage-control-environments",
       "/enterprise-security-controls/manage-access-entitlements",
       "/enterprise-security-controls/manage-access-global-conditions",
       "/enterprise-security-controls/create-access-global-conditions",
       "/enterprise-security-controls/manage-access-path-conditions",
       "/enterprise-security-controls/manage-user-defined-objects",
+      "/enterprise-security-controls/manage-access-points",
+      "/enterprise-security-controls/manage-global-conditions",
       "/enterprise-security-controls/manage-local-conditions"
     ],
     "menuItems": [
@@ -190,6 +194,7 @@
       "/asynchronous-request-manager/administration/manage-configurations",
       "/asynchronous-request-manager/administration/manage-schedulers",
       "/asynchronous-request-manager/administration/manage-workers",
+      "/asynchronous-request-manager/development",
       "/asynchronous-request-manager/development/register-tasks",
       "/asynchronous-request-manager/development/task-parameters"
     ],
