@@ -17,8 +17,8 @@ const MainApp = () => {
           <div
             className={
               open
-                ? "ml-[16.5rem] w-[calc(100vw-16.5rem)] min-h-[calc(100vh-4rem)] duration-1000"
-                : "ml-24 duration-1000 min-h-[calc(100vh-4rem)] w-[calc(100vw-6rem)]"
+                ? "ml-[17.5rem] w-[calc(100vw-16.5rem)] min-h-[calc(100vh-4rem)] duration-1000"
+                : "ml-[6rem] w-[calc(100vw-10rem)] min-h-[calc(100vh-4rem)] duration-1000"
             }
           >
             <Breadcurmbs />
