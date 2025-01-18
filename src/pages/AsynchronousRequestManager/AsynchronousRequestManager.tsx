@@ -10,7 +10,7 @@ const AsynchronousRequestManager = () => {
       {menus.map((item) => {
         return (
           <div key={item.submenu}>
-            {item.submenu === "Async. Request Manager (ARM)" && (
+            {item.submenu === "Asynchronous Request Manager (ARM)" && (
               <SubMenuItem {...item} />
             )}
           </div>

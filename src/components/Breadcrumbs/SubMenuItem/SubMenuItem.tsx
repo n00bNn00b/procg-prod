@@ -1,22 +1,9 @@
 import { MenuData } from "@/components/Sidebar/Sidbar";
-import { Minus, Plus } from "lucide-react";
-import { useState } from "react";
+import { Plus } from "lucide-react";
+// import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const SubMenuItem = (item: MenuData) => {
-  // Adjusted props to destructure item
-  const [expendMenuName, setExpendMenuName] = useState<string[]>([]);
-
-  const handleExpendMenu = (name: string) => {
-    setExpendMenuName((prev) => {
-      if (prev.includes(name)) {
-        return prev;
-      } else {
-        return [...prev, name];
-      }
-    });
-  };
-
   return (
     <>
       {item.menuItems.map((menu) => {
@@ -31,8 +18,19 @@ const SubMenuItem = (item: MenuData) => {
                 <p>{menu.name}</p>
               </Link>
             )}
-            {/* Sub Menu Here */}
-            {menu.subItems && (
+            <div className="flex flex-col">
+              {/* Sub Menu Here */}
+              {menu.paths && (
+                <Link
+                  to={menu.name.split(" ").join("-").toLowerCase()}
+                  className="flex gap-2 items-center max-w-max "
+                >
+                  <Plus size={15} />
+                  <p>{menu.name}</p>
+                </Link>
+              )}
+            </div>
+            {/* {menu.subItems && (
               <div
                 className="flex items-center gap-2 cursor-pointer"
                 onClick={() => handleExpendMenu(menu.name)}
@@ -44,8 +42,8 @@ const SubMenuItem = (item: MenuData) => {
                 )}
                 <p>{menu.name}</p>
               </div>
-            )}
-            {expendMenuName.includes(menu.name) &&
+            )} */}
+            {/* {expendMenuName.includes(menu.name) &&
               menu.subItems &&
               menu.subItems.map((subMenuItem) => {
                 return (
@@ -60,7 +58,7 @@ const SubMenuItem = (item: MenuData) => {
                     )}
                   </div>
                 );
-              })}
+              })} */}
           </div>
         );
       })}

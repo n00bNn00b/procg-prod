@@ -9,7 +9,7 @@ const Administration = () => {
       {menus.map((item) => {
         return (
           <div key={item.submenu}>
-            {item.submenu === "Async. Request Manager (ARM)" &&
+            {item.submenu === "Asynchronous Request Manager (ARM)" &&
               item.menuItems.map((menu) => {
                 return (
                   <div key={menu.name}>
