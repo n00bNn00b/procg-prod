@@ -36,7 +36,7 @@ const Sidbar = () => {
 
   const menuData = menu as MenuData[];
 
-  const getMenuitemStyle = (path: string) => {
+  const getMenuItemStyle = (path: string) => {
     if (pathname === path) {
       return "text-red-600";
     }
@@ -62,7 +62,13 @@ const Sidbar = () => {
       className="h-[calc(100vh-3rem)] text-[13px] bg-white z-40"
       style={{ position: "fixed" }}
     >
-      <Menu>
+      <Menu
+        rootStyles={{
+          ["." + menuClasses.button]: {
+            paddingRight: "10px ",
+          },
+        }}
+      >
         {menuData.map((menu) => (
           <SubMenu
             className={getSubMenuStyle(menu.paths)}
@@ -80,9 +86,27 @@ const Sidbar = () => {
             rootStyles={{
               ["." + menuClasses.label]: {
                 whiteSpace: "wrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
+                marginLeft: open ? "0px" : "10px",
+                // paddingRight: "2px",
+                // open? {display: "block"} : { display: "none" },
+                // display none when collapsed
+                // display: open ? "block" : "hide",
+                // duration 5s delay
+                // transition: "0.5s",
               },
+              ["." + menuClasses.icon]: {
+                marginRight: open ? 0 : 5,
+                paddingRight: "10px",
+                transition: " 0.5s",
+              },
+              // ["." + menuClasses.subMenuRoot]: {
+              //   marginLeft: "30px",
+              //   borderLeft: "2px solid green",
+              // },
+              // ["." + menuClasses.menuItemRoot]: {
+              //   margin: "0px 30px",
+              //   borderLeft: "2px solid green",
+              // },
             }}
           >
             {menu.menuItems.map((subMenuItem) =>
@@ -91,13 +115,29 @@ const Sidbar = () => {
                   className={getSubMenuItemStyle(subMenuItem.paths!)}
                   key={subMenuItem.name}
                   label={subMenuItem.name}
+                  rootStyles={{
+                    ["." + menuClasses.subMenuRoot]: {
+                      width: open ? "200px" : "50px",
+                    },
+                    ["." + menuClasses.root]: {
+                      paddingLeft: "20px",
+                    },
+                    // ["." + menuClasses.label]: {
+                    //   paddingLeft: "5px",
+                    // },
+                  }}
                 >
                   {subMenuItem.subItems.map((subItem) => (
                     <MenuItem
-                      className={getMenuitemStyle(subItem.path)}
+                      className={getMenuItemStyle(subItem.path)}
                       style={{ fontSize: "11px" }}
                       key={subItem.name}
                       component={<Link to={subItem.path} />}
+                      // rootStyles={{
+                      //   ["." + menuClasses.label]: {
+                      //     paddingLeft: "5px",
+                      //   },
+                      // }}
                     >
                       {subItem.name}
                     </MenuItem>
@@ -105,10 +145,15 @@ const Sidbar = () => {
                 </SubMenu>
               ) : (
                 <MenuItem
-                  className={getMenuitemStyle(subMenuItem.path)}
+                  className={getMenuItemStyle(subMenuItem.path)}
                   style={{ fontSize: "11px" }}
                   key={subMenuItem.name}
                   component={<Link to={subMenuItem.path} />}
+                  // rootStyles={{
+                  //   ["." + menuClasses.label]: {
+                  //     paddingLeft: "5px",
+                  //   },
+                  // }}
                 >
                   {subMenuItem.name}
                 </MenuItem>

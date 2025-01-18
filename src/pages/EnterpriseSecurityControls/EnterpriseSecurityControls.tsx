@@ -9,7 +9,7 @@ const EnterpriseSecurityControls = () => {
       {menus.map((item) => {
         return (
           <div key={item.submenu}>
-            {item.submenu === "Enterprise Security Controls" && (
+            {item.submenu === "Enterprise Security Controls" && (
               <SubMenuItem {...item} />
             )}
           </div>

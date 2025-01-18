@@ -41,36 +41,7 @@
     ]
   },
   {
-    "submenu": "Tools",
-    "submenuIcon": "/sidebar/tools.svg",
-    "paths": [
-      "/tools",
-      "/tools/security-console",
-      "/tools/security-console/manage-users",
-      "/tools/manage-data-sources"
-    ],
-    "menuItems": [
-      {
-        "_comment": "This is for the nested menu",
-        "name": "Security Console",
-        "paths": [
-          "/tools/security-console/manage-users"
-        ],
-        "subItems": [
-          {
-            "name": "Manage Users",
-            "path": "/tools/security-console/manage-users"
-          }
-        ]
-      },
-      {
-        "name": "Manage Data Sources",
-        "path": "/tools/manage-data-sources"
-      }
-    ]
-  },
-  {
-    "submenu": "Enterprise Security Controls",
+    "submenu": "Enterprise Security Controls",
     "submenuIcon": "/sidebar/manage-administration.png",
     "paths": [
       "/enterprise-security-controls",
@@ -153,7 +124,65 @@
     ]
   },
   {
-    "submenu": "Async. Request Manager (ARM)",
+    "submenu": "Enterprise Access Monitoring (EAM)",
+    "submenuIcon": "/sidebar/enterprise-access-monitoring.svg",
+    "paths": [
+      "/enterprise-access-monitoring",
+      "/enterprise-access-monitoring/privileged-access-review",
+      "/enterprise-access-monitoring/service-accounts-audit",
+      "/enterprise-access-monitoring/user-access-visibility",
+      "/enterprise-access-monitoring/auditor-reporting"
+    ],
+    "menuItems": [
+      {
+        "name": "Privileged Access Review",
+        "path": "/enterprise-access-monitoring/privileged-access-review"
+      },
+      {
+        "name": "Service Accounts Audit",
+        "path": "/enterprise-access-monitoring/service-accounts-audit"
+      },
+      {
+        "name": "User Access Visibility",
+        "path": "/enterprise-access-monitoring/user-access-visibility"
+      },
+      {
+        "name": "Auditor Reporting",
+        "path": "/enterprise-access-monitoring/auditor-reporting"
+      }
+    ]
+  },
+  {
+    "submenu": "Tools",
+    "submenuIcon": "/sidebar/tools.svg",
+    "paths": [
+      "/tools",
+      "/tools/security-console",
+      "/tools/security-console/manage-users",
+      "/tools/manage-data-sources"
+    ],
+    "menuItems": [
+      {
+        "_comment": "This is for the nested menu",
+        "name": "Security Console",
+        "paths": [
+          "/tools/security-console/manage-users"
+        ],
+        "subItems": [
+          {
+            "name": "Manage Users",
+            "path": "/tools/security-console/manage-users"
+          }
+        ]
+      },
+      {
+        "name": "Manage Data Sources",
+        "path": "/tools/manage-data-sources"
+      }
+    ]
+  },
+  {
+    "submenu": "Asynchronous Request Manager (ARM)",
     "submenuIcon": "/sidebar/asynchronous-manager.svg",
     "paths": [
       "/asynchronous-request-manager",
@@ -209,7 +238,7 @@
     ]
   },
   {
-    "submenu": "Async. Requests and Task Schedules",
+    "submenu": "Asynchronous Requests and Task Schedules",
     "submenuIcon": "/sidebar/asychronous-task-schedule.svg",
     "paths": [
       "/asynchronous-requests-and-task-schedules",
@@ -232,37 +261,8 @@
         "path": "/asynchronous-requests-and-task-schedules/run-an-ad-hoc-request"
       },
       {
-        "name": "View Requests",
+        "name": "View Requests",
         "path": "/asynchronous-requests-and-task-schedules/view-requests"
-      }
-    ]
-  },
-  {
-    "submenu": "Enterprise Access Monitoring (EAM)",
-    "submenuIcon": "/sidebar/enterprise-access-monitoring.svg",
-    "paths": [
-      "/enterprise-access-monitoring",
-      "/enterprise-access-monitoring/privileged-access-review",
-      "/enterprise-access-monitoring/service-accounts-audit",
-      "/enterprise-access-monitoring/user-access-visibility",
-      "/enterprise-access-monitoring/auditor-reporting"
-    ],
-    "menuItems": [
-      {
-        "name": "Privileged Access Review",
-        "path": "/enterprise-access-monitoring/privileged-access-review"
-      },
-      {
-        "name": "Service Accounts Audit",
-        "path": "/enterprise-access-monitoring/service-accounts-audit"
-      },
-      {
-        "name": "User Access Visibility",
-        "path": "/enterprise-access-monitoring/user-access-visibility"
-      },
-      {
-        "name": "Auditor Reporting",
-        "path": "/enterprise-access-monitoring/auditor-reporting"
       }
     ]
   }
