@@ -100,7 +100,7 @@
         "name": "Setup",
         "paths": [
           "/enterprise-security-controls/setup",
-          "/enterprise-security-controls/setup/"
+          "/enterprise-security-controls/setup/manage-control-environments"
         ],
         "subItems": [
           {
