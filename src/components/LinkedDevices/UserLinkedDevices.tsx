@@ -61,7 +61,7 @@ const UserLinkedDevices = () => {
   const switchFunc = async (data: IUserLinkedDevices) => {
     try {
       const res = async () => {
-        const res = await api.post(
+        const res = await api.put(
           `/devices/inactive-device/${token.user_id}/${data.id}`,
           {
             ...data,

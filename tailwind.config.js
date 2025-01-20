@@ -18,12 +18,12 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        montserrat: ['Montserrat', 'sans-serif'],
-        hind: ['Hind', 'sans-serif'],
-        lato: ['Lato', 'sans-serif'],
-        openSans: ['Open Sans', 'sans-serif'],
-        workSans: ['Work Sans', 'sans-serif'],
-        josefinSans: ['Josefin Sans', 'sans-serif'],
+        montserrat: ["Montserrat", "sans-serif"],
+        hind: ["Hind", "sans-serif"],
+        lato: ["Lato", "sans-serif"],
+        openSans: ["Open Sans", "sans-serif"],
+        workSans: ["Work Sans", "sans-serif"],
+        josefinSans: ["Josefin Sans", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -36,35 +36,36 @@ module.exports = {
           200: "#698EA0",
           300: "#486C85",
           400: "#2B4C69",
-          500: "#07223C"
+          500: "#07223C",
         },
         light: {
           100: "#FCFEFB",
           200: "#F5F7F4",
           300: "#E5E5E5",
           400: "#D1D1D1",
-          500: "#C2C2C2"
+          500: "#C2C2C2",
         },
         dark: {
           100: "#0D0D0D",
           200: "#1C1C1C",
           300: "#262626",
-          400: "#585858"
+          400: "#585858",
         },
         Red: {
           100: "#FF0F0D",
           200: "#E60B0B",
           300: "#BF0A0A",
           400: "#800606",
-          500: "#400303"
+          500: "#400303",
         },
         winter: {
           100: "#CEDEF2",
           200: "#B4C4D9",
           300: "#99AABF",
           400: "#8090A6",
-          500: "#68788C"
+          500: "#68788C",
         },
+        hover: "#F3F3F3",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

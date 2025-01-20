@@ -15,7 +15,7 @@ const Topbar = () => {
   const location = useLocation();
 
   return (
-    <div className="flex justify-between items-center h-[3rem] w-[100vw] px-6 bg-white shadow-md fixed z-40 ">
+    <div className="flex justify-between items-center h-[3rem] w-[100vw] px-5 bg-white shadow-md fixed z-40 ">
       <div className="flex gap-2 items-center">
         {open ? (
           <button className="bg-winter-100 w-8 h-8 rounded-full hover:rotate-[360deg] duration-500 flex justify-center items-center">
@@ -42,8 +42,8 @@ const Topbar = () => {
           to="/"
           className={({ isActive }) =>
             isActive
-              ? "bg-winter-100 px-2 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50"
-              : "px-2 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50"
+              ? "bg-winter-100 px-2 py-2 rounded-md flex gap-2 items-center hover:bg-hover"
+              : "px-2 py-2 rounded-md flex gap-2 items-center hover:bg-hover"
           }
         >
           <Home className="text-2xl" />
@@ -55,8 +55,8 @@ const Topbar = () => {
           to="/action-items"
           className={({ isActive }) =>
             isActive
-              ? "bg-winter-100 px-4 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50"
-              : "px-4 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50"
+              ? "bg-winter-100 px-4 py-2 rounded-md flex gap-2 items-center hover:bg-hover"
+              : "px-4 py-2 rounded-md flex gap-2 items-center hover:bg-hover"
           }
         >
           <ListTodo className="text-2xl" />
@@ -68,8 +68,8 @@ const Topbar = () => {
           to="/alerts"
           className={({ isActive }) =>
             isActive
-              ? "bg-winter-100 px-4 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50"
-              : "px-4 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50"
+              ? "bg-winter-100 px-4 py-2 rounded-md flex gap-2 items-center hover:bg-hover"
+              : "px-4 py-2 rounded-md flex gap-2 items-center hover:bg-hover"
           }
         >
           <Bell className="text-2xl" />
@@ -84,8 +84,8 @@ const Topbar = () => {
             location.pathname === "/notifications/sent" ||
             location.pathname === "/notifications/drafts" ||
             location.pathname === "/notifications/recycle-bin"
-              ? "bg-winter-100 px-4 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50 relative"
-              : "px-4 py-2 rounded-md flex gap-2 items-center hover:bg-winter-100/50 relative"
+              ? "bg-winter-100 px-4 py-2 rounded-md flex gap-2 items-center hover:bg-hover relative"
+              : "px-4 py-2 rounded-md flex gap-2 items-center hover:bg-hover relative"
           }
         >
           <Mail className="text-2xl" />

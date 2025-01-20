@@ -45,7 +45,9 @@ const Sidbar = () => {
 
   const getSubMenuStyle = (paths: string[]) => {
     if (paths.includes(pathname)) {
-      return "bg-winter-100 border-l-4 border-red-600 duration-300";
+      return "bg-winter-100 border-l-4 border-red-600 duration-500";
+    } else {
+      return "border-l-4 border-transparent duration-500";
     }
   };
 
@@ -64,7 +66,8 @@ const Sidbar = () => {
       style={{ position: "fixed" }}
       rootStyles={{
         ["." + sidebarClasses.container]: {
-          width: open ? "16.5rem" : "5.2rem",
+          width: open ? "16.5rem" : "5rem",
+          // right sidebar border
           borderRight: "1px solid #e5e7eb",
           transition: "1s",
         },
@@ -75,6 +78,7 @@ const Sidbar = () => {
         rootStyles={{
           ["." + menuClasses.button]: {
             paddingRight: "10px",
+            paddingLeft: "14px",
           },
         }}
       >
@@ -95,13 +99,12 @@ const Sidbar = () => {
             rootStyles={{
               ["." + menuClasses.label]: {
                 whiteSpace: "wrap",
-                marginLeft: open ? "0px" : "7px",
+                marginLeft: open ? 0 : 7,
               },
-              // ["." + menuClasses.icon]: {
-              //   marginRight: open ? 0 : 5,
-              //   // paddingRight: open ? 0 : 5,
-              //   transition: " 0.5s",
-              // },
+              ["." + menuClasses.icon]: {
+                marginRight: open ? 5 : 9,
+                transition: " 0.5s",
+              },
             }}
           >
             {menu.menuItems.map((subMenuItem) =>
@@ -111,12 +114,11 @@ const Sidbar = () => {
                   key={subMenuItem.name}
                   label={subMenuItem.name}
                   rootStyles={{
-                    ["." + menuClasses.root]: {
-                      paddingLeft: open ? "0px" : "20px",
-                    },
                     ["." + menuClasses.label]: {
-                      paddingLeft: open ? "25px" : "0px",
-                      marginLeft: "0px",
+                      paddingLeft: open ? 40 : 0,
+                    },
+                    ["." + menuClasses.SubMenuExpandIcon]: {
+                      paddingRight: open ? 30 : 10,
                     },
                   }}
                 >
@@ -127,8 +129,8 @@ const Sidbar = () => {
                       component={<Link to={subItem.path} />}
                       rootStyles={{
                         ["." + menuClasses.label]: {
-                          paddingLeft: open ? "15px" : "0px",
-                          fontSize: "12px",
+                          paddingLeft: open ? 40 : 0,
+                          fontSize: 12,
                         },
                       }}
                     >
@@ -143,8 +145,8 @@ const Sidbar = () => {
                   component={<Link to={subMenuItem.path} />}
                   rootStyles={{
                     ["." + menuClasses.label]: {
-                      marginLeft: open ? "35px" : "0px",
-                      fontSize: "12px",
+                      marginLeft: open ? 40 : 7,
+                      fontSize: 12,
                     },
                   }}
                 >

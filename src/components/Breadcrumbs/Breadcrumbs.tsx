@@ -9,7 +9,7 @@ const Breadcurmbs = () => {
     <div className="py-3 sticky top-[48px] overflow-hidden z-10 bg-white ">
       {/* <div className="py-2 sticky top-[7.9%] backdrop-blur-xl overflow-hidden"> */}
       <nav>
-        <ul className="flex ">
+        <ul className="flex">
           <li className="text-blue-600 underline">
             <Link to="/" className="flex gap-1">
               <span>Home</span>
