@@ -32,9 +32,7 @@ const Topbar = () => {
         <Link to="/">
           <img src={logo} alt="logo" className="h-[2rem] w-auto" />
         </Link>
-        <p className="text-blue-600 font-semibold mt-3 hidden lg:block">
-          Advanced Controls
-        </p>
+        <p className="text-blue-600 font-semibold mt-3">Advanced Controls</p>
       </div>
 
       <div className="flex gap-1 items-center">

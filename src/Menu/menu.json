@@ -42,7 +42,7 @@
   },
   {
     "submenu": "Enterprise Security Controls",
-    "submenuIcon": "/sidebar/manage-administration.png",
+    "submenuIcon": "/sidebar/manage-administration.svg",
     "paths": [
       "/enterprise-security-controls",
       "/enterprise-security-controls/access-models",

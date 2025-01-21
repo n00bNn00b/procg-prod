@@ -45,9 +45,9 @@ const Sidbar = () => {
 
   const getSubMenuStyle = (paths: string[]) => {
     if (paths.includes(pathname)) {
-      return "bg-winter-100 border-l-4 border-red-600 duration-500";
+      return "bg-winter-100 duration-500";
     } else {
-      return "border-l-4 border-transparent duration-500";
+      return " ";
     }
   };
 
@@ -78,7 +78,7 @@ const Sidbar = () => {
         rootStyles={{
           ["." + menuClasses.button]: {
             paddingRight: "10px",
-            paddingLeft: "14px",
+            paddingLeft: "18px",
           },
         }}
       >
@@ -115,10 +115,11 @@ const Sidbar = () => {
                   label={subMenuItem.name}
                   rootStyles={{
                     ["." + menuClasses.label]: {
-                      paddingLeft: open ? 40 : 0,
+                      paddingLeft: open ? 50 : 0,
+                      marginLeft: 0,
                     },
                     ["." + menuClasses.SubMenuExpandIcon]: {
-                      paddingRight: open ? 30 : 10,
+                      paddingRight: open ? 20 : 10,
                     },
                   }}
                 >
@@ -129,7 +130,7 @@ const Sidbar = () => {
                       component={<Link to={subItem.path} />}
                       rootStyles={{
                         ["." + menuClasses.label]: {
-                          paddingLeft: open ? 40 : 0,
+                          paddingLeft: open ? 65 : 10,
                           fontSize: 12,
                         },
                       }}
@@ -145,7 +146,7 @@ const Sidbar = () => {
                   component={<Link to={subMenuItem.path} />}
                   rootStyles={{
                     ["." + menuClasses.label]: {
-                      marginLeft: open ? 40 : 7,
+                      marginLeft: open ? 40 : 0,
                       fontSize: 12,
                     },
                   }}
