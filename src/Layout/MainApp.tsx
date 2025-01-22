@@ -12,13 +12,13 @@ const MainApp = () => {
     <>
       <div className="font-workSans">
         <Topbar />
-        <div className="flex gap-4 pt-[3rem]">
+        <div className="pt-[3rem]">
           <Sidbar />
           <div
             className={
               open
-                ? "ml-[17.5rem] w-[calc(100vw-16.5rem)] min-h-[calc(100vh-4rem)] duration-1000"
-                : "ml-[6rem] w-[calc(100vw-10rem)] min-h-[calc(100vh-4rem)] duration-1000"
+                ? "ml-[17.5rem] w-[calc(100vw-18.5rem)] min-h-[calc(100vh-4rem)] duration-1000"
+                : "ml-[6rem] w-[calc(100vw-7.5rem)] min-h-[calc(100vh-4rem)] duration-1000"
             }
           >
             <Breadcurmbs />

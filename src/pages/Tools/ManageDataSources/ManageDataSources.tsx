@@ -300,7 +300,7 @@ const ManageDataSources = () => {
     data.length > 0 ? Math.max(...data.map((item) => item.data_source_id)) : 0;
 
   return (
-    <div className="px-3">
+    <div className="w-full">
       {/* top icon and columns*/}
       <div className="flex gap-3 items-center py-2">
         <div className="flex gap-3">

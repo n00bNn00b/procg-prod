@@ -47,7 +47,7 @@ const data: IManageLocalConditonsType[] = [
     access_point_type: "Function",
     access_point: "Requisition Summary",
     from_access_point_type: "Responsibility",
-    from_access_point: "ALK Procurement S",
+    from_access_point: "ALK Procurement",
     status: "Active",
     comments:
       "This is a read only function; as tested with Suzanne Lemay on 3/11/24",
@@ -93,7 +93,9 @@ export const columns: ColumnDef<IManageLocalConditonsType>[] = [
   },
   {
     accessorKey: "access_point_type",
-    header: "Access Point Type",
+    header: () => {
+      return <div className="min-w-max">Access Point Type</div>;
+    },
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("access_point_type")}</div>
     ),
@@ -107,14 +109,18 @@ export const columns: ColumnDef<IManageLocalConditonsType>[] = [
   },
   {
     accessorKey: "from_access_point_type",
-    header: "From Access Point Type",
+    header: () => {
+      return <div className="min-w-max">From Access Point Type</div>;
+    },
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("from_access_point_type")}</div>
     ),
   },
   {
     accessorKey: "from_access_point",
-    header: "From Access Point",
+    header: () => {
+      return <div className="min-w-max">From Access Point</div>;
+    },
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("from_access_point")}</div>
     ),
@@ -238,7 +244,10 @@ export function ManageLocalConditions() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className="border h-9 py-0 px-1 border-slate-400 bg-slate-200"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -259,7 +268,7 @@ export function ManageLocalConditions() {
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="border py-0 px-1">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

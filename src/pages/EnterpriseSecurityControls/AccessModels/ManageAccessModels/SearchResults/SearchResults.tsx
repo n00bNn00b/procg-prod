@@ -71,13 +71,13 @@ export const columns: ColumnDef<IManageAccessModelsTypes>[] = [
     accessorKey: "model_name",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
+        <div
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="p-0 flex mix-w-max items-center cursor-pointer"
         >
           Model Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+          <ArrowUpDown className=" h-4 w-4" />
+        </div>
       );
     },
     cell: ({ row }) => (
@@ -402,7 +402,7 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
                     return (
                       <TableHead
                         key={header.id}
-                        className="border border-slate-400 bg-slate-200 p-1 w-fit"
+                        className="border h-9 py-0 px-1 border-slate-400 bg-slate-200"
                       >
                         {header.isPlaceholder
                           ? null
@@ -463,7 +463,7 @@ const SearchResults: React.FC<IManageAccessModelProps> = () => {
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell, index) => (
-                      <TableCell key={cell.id} className="border p-1 w-fit">
+                      <TableCell key={cell.id} className="border p-0 w-fit h-9">
                         {index === 0 ? (
                           <Checkbox
                             className="m-1"
