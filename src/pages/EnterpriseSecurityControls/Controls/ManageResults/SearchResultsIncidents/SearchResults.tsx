@@ -145,7 +145,7 @@ const SearchResults = () => {
                   return (
                     <TableHead
                       key={header.id}
-                      className="border border-slate-400 bg-slate-200 p-1 w-fit"
+                      className="border h-9 py-0 px-1 border-slate-400 bg-slate-200"
                     >
                       {header.isPlaceholder
                         ? null
