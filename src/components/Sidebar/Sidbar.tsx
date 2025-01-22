@@ -115,7 +115,7 @@ const Sidbar = () => {
                   label={subMenuItem.name}
                   rootStyles={{
                     ["." + menuClasses.label]: {
-                      paddingLeft: open ? 50 : 0,
+                      paddingLeft: open ? 55 : 0,
                       marginLeft: 0,
                     },
                     ["." + menuClasses.SubMenuExpandIcon]: {
@@ -130,7 +130,7 @@ const Sidbar = () => {
                       component={<Link to={subItem.path} />}
                       rootStyles={{
                         ["." + menuClasses.label]: {
-                          paddingLeft: open ? 65 : 10,
+                          paddingLeft: open ? 75 : 15,
                           fontSize: 12,
                         },
                       }}
@@ -146,7 +146,8 @@ const Sidbar = () => {
                   component={<Link to={subMenuItem.path} />}
                   rootStyles={{
                     ["." + menuClasses.label]: {
-                      marginLeft: open ? 40 : 0,
+                      paddingLeft: open ? 55 : 0,
+                      marginLeft: 0,
                       fontSize: 12,
                     },
                   }}
