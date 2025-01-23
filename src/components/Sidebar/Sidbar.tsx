@@ -77,8 +77,8 @@ const Sidbar = () => {
       <Menu
         rootStyles={{
           ["." + menuClasses.button]: {
-            paddingRight: "10px",
             paddingLeft: "18px",
+            paddingRight: "10px",
           },
         }}
       >
@@ -105,6 +105,9 @@ const Sidbar = () => {
                 marginRight: open ? 5 : 9,
                 transition: " 0.5s",
               },
+              ["." + menuClasses.subMenuContent]: {
+                width: open ? 250 : 250,
+              },
             }}
           >
             {menu.menuItems.map((subMenuItem) =>
@@ -115,11 +118,11 @@ const Sidbar = () => {
                   label={subMenuItem.name}
                   rootStyles={{
                     ["." + menuClasses.label]: {
-                      paddingLeft: open ? 55 : 0,
+                      paddingLeft: open ? 40 : 10,
                       marginLeft: 0,
                     },
                     ["." + menuClasses.SubMenuExpandIcon]: {
-                      paddingRight: open ? 20 : 10,
+                      paddingRight: open ? 10 : 10,
                     },
                   }}
                 >
@@ -130,12 +133,12 @@ const Sidbar = () => {
                       component={<Link to={subItem.path} />}
                       rootStyles={{
                         ["." + menuClasses.label]: {
-                          paddingLeft: open ? 75 : 15,
+                          paddingLeft: open ? 63 : 35,
                           fontSize: 12,
                         },
                       }}
                     >
-                      {subItem.name}
+                      <li className="list-disc">{subItem.name}</li>
                     </MenuItem>
                   ))}
                 </SubMenu>
@@ -146,13 +149,18 @@ const Sidbar = () => {
                   component={<Link to={subMenuItem.path} />}
                   rootStyles={{
                     ["." + menuClasses.label]: {
-                      paddingLeft: open ? 55 : 0,
+                      paddingLeft: open ? 55 : 12,
                       marginLeft: 0,
                       fontSize: 12,
                     },
                   }}
                 >
-                  {subMenuItem.name}
+                  {/* <DotIcon
+                    size={19}
+                    strokeWidth={6}
+                    className="inline-block mb-[2px]"
+                  /> */}
+                  <li className="list-disc">{subMenuItem.name}</li>
                 </MenuItem>
               )
             )}
