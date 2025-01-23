@@ -66,7 +66,7 @@ const Sidbar = () => {
       style={{ position: "fixed" }}
       rootStyles={{
         ["." + sidebarClasses.container]: {
-          width: open ? "16.5rem" : "5rem",
+          width: open ? "18rem" : "5rem",
           // right sidebar border
           borderRight: "1px solid #e5e7eb",
           transition: "1s",
@@ -77,8 +77,11 @@ const Sidbar = () => {
       <Menu
         rootStyles={{
           ["." + menuClasses.button]: {
-            paddingLeft: "18px",
-            paddingRight: "10px",
+            paddingLeft: 18,
+            paddingRight: 10,
+          },
+          ["." + menuClasses.subMenuContent]: {
+            width: open ? 290 : 250,
           },
         }}
       >
@@ -105,9 +108,6 @@ const Sidbar = () => {
                 marginRight: open ? 5 : 9,
                 transition: " 0.5s",
               },
-              ["." + menuClasses.subMenuContent]: {
-                width: open ? 250 : 250,
-              },
             }}
           >
             {menu.menuItems.map((subMenuItem) =>
@@ -118,11 +118,10 @@ const Sidbar = () => {
                   label={subMenuItem.name}
                   rootStyles={{
                     ["." + menuClasses.label]: {
-                      paddingLeft: open ? 40 : 10,
-                      marginLeft: 0,
+                      paddingLeft: open ? 40 : 0,
                     },
                     ["." + menuClasses.SubMenuExpandIcon]: {
-                      paddingRight: open ? 10 : 10,
+                      paddingRight: 10,
                     },
                   }}
                 >
@@ -133,7 +132,7 @@ const Sidbar = () => {
                       component={<Link to={subItem.path} />}
                       rootStyles={{
                         ["." + menuClasses.label]: {
-                          paddingLeft: open ? 63 : 35,
+                          paddingLeft: open ? 63 : 25,
                           fontSize: 12,
                         },
                       }}
@@ -149,17 +148,12 @@ const Sidbar = () => {
                   component={<Link to={subMenuItem.path} />}
                   rootStyles={{
                     ["." + menuClasses.label]: {
-                      paddingLeft: open ? 55 : 12,
+                      paddingLeft: open ? 53 : 20,
                       marginLeft: 0,
                       fontSize: 12,
                     },
                   }}
                 >
-                  {/* <DotIcon
-                    size={19}
-                    strokeWidth={6}
-                    className="inline-block mb-[2px]"
-                  /> */}
                   <li className="list-disc">{subMenuItem.name}</li>
                 </MenuItem>
               )
