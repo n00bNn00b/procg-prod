@@ -39,14 +39,17 @@ const Sidbar = () => {
 
   const getMenuItemStyle = (path: string) => {
     if (pathname === path) {
-      return "text-red-600";
+      return "text-red-600 bg-white rounded-md";
+    } else {
+      return "bg-[#F3F8FF]";
     }
   };
 
   const getSubMenuStyle = (paths: string[]) => {
     if (paths.includes(pathname)) {
-      return "bg-winter-100 duration-500";
+      return "bg-winter-100 duration-500 rounded-md";
     } else {
+      // return "bg-[#E4E4E766]";
       return " ";
     }
   };
@@ -54,7 +57,9 @@ const Sidbar = () => {
   const getSubMenuItemStyle = (paths: string[]) => {
     if (paths.includes(pathname)) {
       // console.log(paths, pathname, "paths, pathname");
-      return "bg-winter-300";
+      return "bg-[#F3F8FF] ";
+    } else {
+      return "bg-[#F3F8FF]";
     }
   };
 
@@ -70,6 +75,8 @@ const Sidbar = () => {
           // right sidebar border
           borderRight: "1px solid #e5e7eb",
           transition: "1s",
+          paddingRight: 10,
+          paddingLeft: 10,
         },
         border: "none",
       }}
@@ -77,11 +84,19 @@ const Sidbar = () => {
       <Menu
         rootStyles={{
           ["." + menuClasses.button]: {
-            paddingLeft: 18,
+            paddingLeft: 0,
             paddingRight: 10,
+            ":hover": {
+              background: "#B4C4D9",
+            },
           },
           ["." + menuClasses.subMenuContent]: {
-            width: open ? 290 : 250,
+            width: open ? "100%" : 250,
+            borderEndStartRadius: 5,
+            borderEndEndRadius: 5,
+            paddingRight: open ? 10 : 5,
+            paddingLeft: open ? 20 : 5,
+            backgroundColor: "#F3F8FF",
           },
         }}
       >
@@ -100,61 +115,73 @@ const Sidbar = () => {
               )
             }
             rootStyles={{
+              ["." + menuClasses.button]: {
+                ":hover": {
+                  borderRadius: 5,
+                },
+              },
               ["." + menuClasses.label]: {
                 whiteSpace: "wrap",
                 marginLeft: open ? 0 : 7,
-              },
-              ["." + menuClasses.icon]: {
-                marginRight: open ? 5 : 9,
-                transition: " 0.5s",
               },
             }}
           >
             {menu.menuItems.map((subMenuItem) =>
               subMenuItem.subItems ? (
                 <SubMenu
-                  className={getSubMenuItemStyle(subMenuItem.paths!)}
+                  className={`my-1 ${getSubMenuItemStyle(subMenuItem.paths!)}`}
                   key={subMenuItem.name}
                   label={subMenuItem.name}
                   rootStyles={{
                     ["." + menuClasses.label]: {
-                      paddingLeft: open ? 40 : 0,
+                      paddingLeft: open ? 25 : 0,
                     },
-                    ["." + menuClasses.SubMenuExpandIcon]: {
-                      paddingRight: 10,
+                    ["." + menuClasses.menuItemRoot]: {
+                      width: open ? "100%" : "95.5%",
                     },
                   }}
                 >
                   {subMenuItem.subItems.map((subItem) => (
                     <MenuItem
-                      className={getMenuItemStyle(subItem.path)}
+                      className={`my-1 ${getMenuItemStyle(subItem.path)}`}
                       key={subItem.name}
                       component={<Link to={subItem.path} />}
                       rootStyles={{
                         ["." + menuClasses.label]: {
-                          paddingLeft: open ? 63 : 25,
+                          paddingLeft: open ? 20 : 17,
+                          marginLeft: 0,
                           fontSize: 12,
                         },
                       }}
                     >
-                      <li className="list-disc">{subItem.name}</li>
+                      <div className="flex gap-2 items-center">
+                        <span
+                          className={`w-[1px] h-[1px] p-[2px] rounded-full bg-current  `}
+                        />
+                        <>{subItem.name}</>
+                      </div>
                     </MenuItem>
                   ))}
                 </SubMenu>
               ) : (
                 <MenuItem
-                  className={getMenuItemStyle(subMenuItem.path)}
+                  className={`my-1 ${getMenuItemStyle(subMenuItem.path)}`}
                   key={subMenuItem.name}
                   component={<Link to={subMenuItem.path} />}
                   rootStyles={{
                     ["." + menuClasses.label]: {
-                      paddingLeft: open ? 53 : 20,
+                      paddingLeft: open ? 27 : 10,
                       marginLeft: 0,
                       fontSize: 12,
                     },
                   }}
                 >
-                  <li className="list-disc">{subMenuItem.name}</li>
+                  <div className="flex gap-2 items-center">
+                    <span
+                      className={`w-[1px] h-[1px] p-[2px] rounded-full bg-current  `}
+                    />
+                    <>{subMenuItem.name}</>
+                  </div>
                 </MenuItem>
               )
             )}
