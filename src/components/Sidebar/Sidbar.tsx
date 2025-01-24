@@ -154,9 +154,9 @@ const Sidbar = () => {
                         },
                       }}
                     >
-                      <div className="flex gap-2 items-center">
+                      <div className="flex gap-2">
                         <span
-                          className={`w-[1px] h-[1px] p-[2px] rounded-full bg-current  `}
+                          className={`w-[1px] h-[1px] p-[2px] rounded-full bg-current mt-[7px]`}
                         />
                         <>{subItem.name}</>
                       </div>
@@ -176,9 +176,9 @@ const Sidbar = () => {
                     },
                   }}
                 >
-                  <div className="flex gap-2 items-center">
+                  <div className="flex gap-2">
                     <span
-                      className={`w-[1px] h-[1px] p-[2px] rounded-full bg-current  `}
+                      className={`w-[1px] h-[1px] p-[2px] rounded-full bg-current mt-[7px]`}
                     />
                     <>{subMenuItem.name}</>
                   </div>
