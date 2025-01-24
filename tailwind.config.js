@@ -65,7 +65,8 @@ module.exports = {
           400: "#8090A6",
           500: "#68788C",
         },
-        hover: "#F3F3F3",
+        hover: "#B4C4D9",
+        active: "#DC2626",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

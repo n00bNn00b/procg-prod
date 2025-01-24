@@ -1,7 +1,6 @@
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -62,13 +61,13 @@ const Dropdown = () => {
           {token.user_name}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <div className="p-2 rounded hover:bg-hover text-sm">
           <NavLink
             to="/access-profiles"
             className={({ isActive }) =>
               isActive
-                ? "flex gap-2 items-center w-full text-Red-400"
-                : "flex gap-2 items-center w-full text-winter-500"
+                ? "flex gap-2 items-center w-full text-active"
+                : "flex gap-2 items-center w-full"
             }
           >
             <User size={18} />
@@ -76,43 +75,43 @@ const Dropdown = () => {
               Access Profiles
             </p>
           </NavLink>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
+        </div>
+        <div className="p-2 rounded hover:bg-hover text-sm">
           <NavLink
             to="/security"
             className={({ isActive }) =>
               isActive
-                ? "flex gap-2 items-center w-full text-Red-400"
-                : "flex gap-2 items-center w-full text-winter-500"
+                ? "flex gap-2 items-center w-full text-active"
+                : "flex gap-2 items-center w-full"
             }
           >
             <ShieldBan size={18} />
             <p className="font-semibold font-workSans text-md">Security</p>
           </NavLink>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
+        </div>
+        <div className="p-2 rounded hover:bg-hover text-sm">
           <NavLink
             to="/settings"
             className={({ isActive }) =>
               isActive
-                ? "flex gap-2 items-center w-full text-Red-400"
-                : "flex gap-2 items-center w-full text-winter-500"
+                ? "flex gap-2 items-center w-full text-active"
+                : "flex gap-2 items-center w-full"
             }
           >
             <Settings size={18} />
             <p className="font-semibold font-workSans text-md">Settings</p>
           </NavLink>
-        </DropdownMenuItem>
+        </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <div className="p-2 rounded hover:bg-hover text-sm">
           <button
             onClick={handleSignOut}
-            className="flex gap-2 items-center w-full text-Red-200"
+            className="flex gap-2 items-center w-full text-Red-300"
           >
             <LogOut size={18} />
             <p className="font-semibold font-workSans text-md">Logout</p>
           </button>
-        </DropdownMenuItem>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
