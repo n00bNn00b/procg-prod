@@ -1,4 +1,10 @@
+import { TaskTable } from "@/components/ARM/TaskTable/TaskTable";
+
 const RegisterEditAsynchronousTasks = () => {
-  return <div>Register/Edit Asynchronous Tasks</div>;
+  return (
+    <div>
+      <TaskTable />
+    </div>
+  );
 };
 export default RegisterEditAsynchronousTasks;
