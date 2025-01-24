@@ -102,7 +102,7 @@ const Sidbar = () => {
       >
         {menuData.map((menu) => (
           <SubMenu
-            className={getSubMenuStyle(menu.paths)}
+            className={`my-1 ${getSubMenuStyle(menu.paths)}`}
             key={menu.submenu}
             label={menu.submenu}
             icon={
