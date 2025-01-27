@@ -60,7 +60,7 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
   const { reset } = form;
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    const submitData = {
+    const postData = {
       parameters: [
         {
           parameter_name: data.parameter_name,
@@ -70,13 +70,18 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
       ],
       created_by: token.user_id,
     };
+    const putData = {
+      parameter_name: data.parameter_name,
+      data_type: data.data_type,
+      description: data.description,
+    };
 
     const addTaskParams = async () => {
       try {
         setIsLoading(true);
         const res = await api.post(
           `/arm-task-parameters/add-task-params/${selectedTask}`,
-          submitData
+          postData
         );
         console.log(res.data, "rrr");
         toast({
@@ -100,7 +105,7 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
         setIsLoading(true);
         await api.put(
           `/arm-task-parameters/update-task-params/${selectedTask}/${selected[0].arm_param_id}`,
-          submitData.parameters
+          putData
         );
 
         toast({
