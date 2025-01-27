@@ -284,11 +284,11 @@ const routes = createBrowserRouter([
                 element: <Development />,
               },
               {
-                path: "register-tasks",
+                path: "register-edit-asynchronous-tasks",
                 element: <RegisterEditAsynchronousTasks />,
               },
               {
-                path: "task-parameters",
+                path: "manage-task-parameters",
                 element: <TaskParameters />,
               },
             ],
