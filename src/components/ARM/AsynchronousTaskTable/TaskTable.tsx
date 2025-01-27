@@ -44,34 +44,33 @@ import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import columns from "./Columns";
 import CustomModal from "@/components/CustomModal/CustomModal";
 import Pagination5 from "@/components/Pagination/Pagination5";
-import { IARMTypes } from "@/types/interfaces/ARM.interface";
-import CreateTask from "../CreateTask/CreateTask";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { IARMAsynchronousTasksTypes } from "@/types/interfaces/ARM.interface";
+import AsynchronousTaskModal from "../AsynchronousTaskModal/AsynchronousTaskModal";
 import { toast } from "@/components/ui/use-toast";
+import { useARMContext } from "@/Context/ARMContext/ARMContext";
 
 export function TaskTable() {
-  const api = useAxiosPrivate();
-  const arm_url = import.meta.env.VITE_API_URL;
-  const [data, setData] = React.useState<IARMTypes[] | []>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const {
+    getAsyncTasks,
+    isLoading,
+    setIsLoading,
+    deleteAsyncTasks,
+    isSubmit,
+    setIsSubmit,
+  } = useARMContext();
+  const [data, setData] = React.useState<IARMAsynchronousTasksTypes[] | []>([]);
 
   React.useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
       try {
-        const res = await api.get<IARMTypes[]>(
-          `${arm_url}/arm-tasks/show-tasks`
-        );
-        if (res.data)
-          setData(res.data.sort((a, b) => b.arm_task_id - a.arm_task_id));
+        const res = await getAsyncTasks();
+        if (res) setData(res);
       } catch (error) {
         console.log(error);
-      } finally {
-        setIsLoading(false);
       }
     };
     fetchData();
-  }, [api, arm_url]);
+  }, [isSubmit]);
 
   const { page, setPage, totalPage, isOpenModal, setIsOpenModal } =
     useGlobalContext();
@@ -88,8 +87,10 @@ export function TaskTable() {
     pageSize: 10, //default page size
   });
 
-  const [selected, setSelected] = React.useState<IARMTypes[]>([]);
-  const handleRowSelection = (rowSelection: IARMTypes) => {
+  const [selected, setSelected] = React.useState<IARMAsynchronousTasksTypes[]>(
+    []
+  );
+  const handleRowSelection = (rowSelection: IARMAsynchronousTasksTypes) => {
     setSelected((prevSelected) => {
       if (prevSelected.includes(rowSelection)) {
         return prevSelected.filter((item) => item !== rowSelection);
@@ -102,11 +103,7 @@ export function TaskTable() {
   const handleDelete = async () => {
     setIsLoading(true);
     try {
-      await Promise.all(
-        selected.map(async (item) => {
-          await api.put(`${arm_url}/arm-tasks/cancel-task/${item.task_name}`);
-        })
-      );
+      await deleteAsyncTasks(selected);
 
       //table toggle empty
       table.getRowModel().rows.map((row) => row.toggleSelected(false));
@@ -121,6 +118,7 @@ export function TaskTable() {
         description: `Error : ${error}`,
       });
     } finally {
+      setIsSubmit(1);
       setIsLoading(false);
     }
   };
@@ -160,7 +158,7 @@ export function TaskTable() {
     <div className="px-3">
       {isOpenModal === "register_task" ? (
         <CustomModal>
-          <CreateTask
+          <AsynchronousTaskModal
             task_name="Register Task"
             selected={selected}
             isLoading={isLoading}
@@ -171,7 +169,7 @@ export function TaskTable() {
       ) : (
         isOpenModal === "edit_task" && (
           <CustomModal>
-            <CreateTask
+            <AsynchronousTaskModal
               task_name="Edit Task"
               selected={selected}
               isLoading={isLoading}

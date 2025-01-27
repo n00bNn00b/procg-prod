@@ -15,29 +15,30 @@ import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 import { FC } from "react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import { api } from "@/Api/Api";
 import { toast } from "@/components/ui/use-toast";
 import { AxiosError } from "axios";
-import { IARMTypes } from "@/types/interfaces/ARM.interface";
+import { IARMAsynchronousTasksTypes } from "@/types/interfaces/ARM.interface";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { useARMContext } from "@/Context/ARMContext/ARMContext";
 
 interface ICreateTaskProps {
   task_name: string;
-  selected: IARMTypes[];
+  selected: IARMAsynchronousTasksTypes[];
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   handleCloseModal: () => void;
 }
-const CreateTask: FC<ICreateTaskProps> = ({
+const AsynchronousTaskModal: FC<ICreateTaskProps> = ({
   task_name,
   selected,
   isLoading,
   setIsLoading,
   handleCloseModal,
 }) => {
-  const arm_url = import.meta.env.VITE_API_URL;
+  const api = useAxiosPrivate();
   const { isOpenModal } = useGlobalContext();
+  const { setIsSubmit } = useARMContext();
 
-  console.log(selected, "selected");
   const FormSchema = z.object({
     user_task_name: z.string(),
     task_name: z.string(),
@@ -82,9 +83,9 @@ const CreateTask: FC<ICreateTaskProps> = ({
     };
 
     const registerTask = async () => {
-      setIsLoading(true);
       try {
-        await api.post(`${arm_url}/arm-tasks/register-task`, postData);
+        setIsLoading(true);
+        await api.post(`/arm-tasks/register-task`, postData);
 
         toast({
           title: "Info !!!",
@@ -100,13 +101,14 @@ const CreateTask: FC<ICreateTaskProps> = ({
       } finally {
         setIsLoading(false);
         reset();
+        setIsSubmit(1);
       }
     };
     const editTask = async () => {
       setIsLoading(true);
       try {
         await api.put(
-          `${arm_url}/arm-tasks/edit-task/${selected[0]?.task_name}`,
+          `/arm-tasks/edit-task/${selected[0]?.task_name}`,
           putData
         );
 
@@ -124,6 +126,7 @@ const CreateTask: FC<ICreateTaskProps> = ({
       } finally {
         setIsLoading(false);
         reset();
+        setIsSubmit(2);
       }
     };
 
@@ -241,4 +244,4 @@ const CreateTask: FC<ICreateTaskProps> = ({
     </div>
   );
 };
-export default CreateTask;
+export default AsynchronousTaskModal;
