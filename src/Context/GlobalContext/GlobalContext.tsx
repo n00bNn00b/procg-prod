@@ -30,6 +30,7 @@ import { AACContextProvider } from "../ManageAccessEntitlements/AdvanceAccessCon
 import { SocketContextProvider } from "../SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import useUserDevice from "@/hooks/useUserDevice";
+import { ARMContextProvider } from "../ARMContext/ARMContext";
 
 interface GlobalContextProviderProps {
   children: ReactNode;
@@ -507,8 +508,10 @@ export function GlobalContextProvider({
       <SocketContextProvider>
         <ManageAccessEntitlementsProvider>
           <AACContextProvider>
-            <Toaster />
-            {children}
+            <ARMContextProvider>
+              <Toaster />
+              {children}
+            </ARMContextProvider>
           </AACContextProvider>
         </ManageAccessEntitlementsProvider>
       </SocketContextProvider>

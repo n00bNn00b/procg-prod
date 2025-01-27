@@ -1,7 +1,7 @@
-import { IARMTypes } from "@/types/interfaces/ARM.interface";
+import { IARMTaskParametersTypes } from "@/types/interfaces/ARM.interface";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { ColumnDef } from "@tanstack/react-table";
-export const columns: ColumnDef<IARMTypes>[] = [
+export const columns: ColumnDef<IARMTaskParametersTypes>[] = [
   {
     id: "select",
     cell: ({ row }) => (
@@ -15,44 +15,35 @@ export const columns: ColumnDef<IARMTypes>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "user_task_name",
+    accessorKey: "parameter_name",
     header: () => {
-      return <div className="min-w-max">User Task Name</div>;
+      return <div className="min-w-max">Parameter Name</div>;
     },
-    cell: ({ row }) => <div>{row.getValue("user_task_name")}</div>,
+    cell: ({ row }) => <div>{row.getValue("parameter_name")}</div>,
   },
   {
     accessorKey: "task_name",
     header: () => {
-      return <div className="min-w-max">Task Name</div>;
+      return <div className="w-[11rem]">Task Name</div>;
     },
     cell: ({ row }) => <div>{row.getValue("task_name")}</div>,
   },
   {
-    accessorKey: "execution_method",
-    header: () => {
-      return <div className="min-w-max">Method</div>;
-    },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("execution_method")}</div>
-    ),
-  },
-  {
-    accessorKey: "script_name",
-    header: () => {
-      return <div className="w-[15rem]">Script Name</div>;
-    },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("script_name")}</div>
-    ),
-  },
-  {
     accessorKey: "description",
     header: () => {
-      return <div className="min-w-max">Description</div>;
+      return <div className="w-[25rem]">Description</div>;
     },
     cell: ({ row }) => (
       <div className="capitalize w-[25rem]">{row.getValue("description")}</div>
+    ),
+  },
+  {
+    accessorKey: "data_type",
+    header: () => {
+      return <div className="min-w-max">data_type</div>;
+    },
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("data_type")}</div>
     ),
   },
   {
@@ -91,16 +82,6 @@ export const columns: ColumnDef<IARMTypes>[] = [
     cell: ({ row }) => {
       const data: string = row.getValue("last_update_date");
       return <div className="capitalize  min-w-max">{data?.slice(0, 16)} </div>;
-    },
-  },
-  {
-    accessorKey: "cancelled_yn",
-    header: "Action",
-    cell: ({ row }) => {
-      const data: string = row.getValue("cancelled_yn");
-      return (
-        <div className="capitalize">{data === "Y" ? "Inactive" : "Active"}</div>
-      );
     },
   },
 ];
