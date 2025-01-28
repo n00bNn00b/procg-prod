@@ -1,4 +1,10 @@
+import { ViewEditScheduledTasksTable } from "@/components/AsynchronousRequestsAndTaskSchedules/ViewEditScheduledTasks/ViewEditScheduledTasksTable";
+
 const ViewEditScheduledTasks = () => {
-  return <div>View Edit Scheduled Tasks</div>;
+  return (
+    <div>
+      <ViewEditScheduledTasksTable />
+    </div>
+  );
 };
 export default ViewEditScheduledTasks;

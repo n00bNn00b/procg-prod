@@ -151,14 +151,14 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
               name="parameter_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>parameter_name</FormLabel>
+                  <FormLabel>Parameter Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       required
                       autoFocus
                       type="text"
-                      placeholder="parameter_name"
+                      placeholder="Parameter Name"
                     />
                   </FormControl>
                 </FormItem>
@@ -169,13 +169,13 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
               name="data_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>data_type</FormLabel>
+                  <FormLabel>Data Type</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       required
                       type="text"
-                      placeholder="data_type"
+                      placeholder="Data Type"
                     />
                   </FormControl>
                 </FormItem>

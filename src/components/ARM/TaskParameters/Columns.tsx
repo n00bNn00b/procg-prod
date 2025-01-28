@@ -40,7 +40,7 @@ export const columns: ColumnDef<IARMTaskParametersTypes>[] = [
   {
     accessorKey: "data_type",
     header: () => {
-      return <div className="min-w-max">data_type</div>;
+      return <div className="min-w-max">Data Type</div>;
     },
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("data_type")}</div>
