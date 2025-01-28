@@ -2,6 +2,7 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import {
   IARMAsynchronousTasksTypes,
   IARMTaskParametersTypes,
+  IAsynchronousRequestsAndTaskSchedulesTypes,
 } from "@/types/interfaces/ARM.interface";
 import React, { ReactNode, createContext, useContext, useState } from "react";
 interface ARMContextProviderProps {
@@ -26,6 +27,12 @@ interface ARMContext {
   ) => Promise<IARMTaskParametersTypes[] | undefined>;
   isSubmit: number;
   setIsSubmit: React.Dispatch<React.SetStateAction<number>>;
+  getAsynchronousRequestsAndTaskSchedules: () => Promise<
+    IAsynchronousRequestsAndTaskSchedulesTypes[] | undefined
+  >;
+  deleteAsynchronousRequestsAndTaskSchedules: (
+    selectedItems: IAsynchronousRequestsAndTaskSchedulesTypes[]
+  ) => Promise<void>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -86,6 +93,35 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
       return [];
     }
   };
+  const getAsynchronousRequestsAndTaskSchedules = async () => {
+    try {
+      const res = await api.get<IAsynchronousRequestsAndTaskSchedulesTypes[]>(
+        `/asynchronous-requests-and-task-schedules`
+      );
+      return res.data ?? [];
+    } catch (error) {
+      console.log("Task Parameters Item Not found");
+      return [];
+    }
+  };
+  const deleteAsynchronousRequestsAndTaskSchedules = async (
+    selectedItems: IAsynchronousRequestsAndTaskSchedulesTypes[]
+  ) => {
+    try {
+      setIsLoading(true);
+      await Promise.all(
+        selectedItems.map(async (item) => {
+          await api.put(
+            `/asynchronous-requests-and-task-schedules/cancel-task-schedule/${item.task_name}/${item.redbeat_schedule_name}`
+          );
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const values = {
     getAsyncTasks,
@@ -99,6 +135,8 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
     getTaskParameters,
     isSubmit,
     setIsSubmit,
+    getAsynchronousRequestsAndTaskSchedules,
+    deleteAsynchronousRequestsAndTaskSchedules,
   };
   return <ARMContext.Provider value={values}>{children}</ARMContext.Provider>;
 }

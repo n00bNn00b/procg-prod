@@ -1,0 +1,239 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormMessage,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { FC, useState } from "react";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { toast } from "@/components/ui/use-toast";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+interface ITaskRequestTypes {
+  user_schedule_name: string;
+}
+const TaskRequest: FC<ITaskRequestTypes> = ({ user_schedule_name }) => {
+  const api = useAxiosPrivate();
+  const { token } = useGlobalContext();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const FormSchema = z.object({
+    user_schedule_name: z.string(),
+    task_name: z.string(),
+    args: z.string().or(z.array(z.string())),
+    employee_id: z.string(),
+    schedule: z.string(),
+    cancelled_yn: z.string(),
+  });
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      user_schedule_name: user_schedule_name,
+      task_name: "tasks.task_02.run_script",
+      args: ["/d01/def/app/server/flask/python_scripts/test_01.py"],
+      employee_id: "1",
+      schedule: "0",
+      cancelled_yn: "N",
+    },
+  });
+  const { reset } = form;
+
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    if (data.user_schedule_name !== "ad_hoc" && data.schedule === "0") {
+      toast({
+        title: "Info !!!",
+        description: `Schedule value should be greater than 0.`,
+      });
+      return;
+    }
+    const rawArgs = Array.isArray(data.args) ? data.args.join(",") : data.args;
+    const args = rawArgs.split(",").map((item) => item.trim());
+    const postData = {
+      user_schedule_name: data.user_schedule_name,
+      task_name: data.task_name,
+      args,
+      kwargs_values: {
+        employee_id: Number(data.employee_id),
+      },
+      schedule: Number(data.schedule),
+      cancelled_yn: data.cancelled_yn,
+      created_by: token.user_id,
+    };
+
+    const addTaskParams = async () => {
+      try {
+        setIsLoading(true);
+        console.log(postData, "postData");
+        const res = await api.post(
+          `/asynchronous-requests-and-task-schedules/create-ad-hoc-task-schedule`,
+          postData
+        );
+        console.log(res.data, "res");
+        toast({
+          title: "Info !!!",
+          description: `Added successfully.`,
+        });
+      } catch (error) {
+        toast({
+          title: "Info !!!",
+          description: `Error : Failed to run ad-hoc request.`,
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+        reset();
+      }
+    };
+    try {
+      await addTaskParams();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+      reset();
+    }
+  };
+  return (
+    <div className="w-[50%] mx-auto p-4 rounded border mb-10">
+      <div className="p-2">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+            <FormField
+              control={form.control}
+              name="user_schedule_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>User Schedule Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      required
+                      disabled={user_schedule_name === "ad_hoc"}
+                      type="text"
+                      placeholder="User Schedule Name"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="task_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Task Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      required
+                      type="text"
+                      placeholder="Task Name"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="args"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Argument</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      required
+                      type="text"
+                      placeholder="Argument"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="employee_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Employee Id</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      required
+                      type="number"
+                      placeholder="Employee Id"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="schedule"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Schedule</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      required
+                      type="text"
+                      placeholder="Schedule"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cancelled_yn"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cancelled</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Cancelled" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Y">Y</SelectItem>
+                        <SelectItem value="N">N</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <Button type="submit">
+              {isLoading ? (
+                <l-tailspin size="15" stroke="3" speed="0.9" color="white" />
+              ) : (
+                "Submit"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </div>
+  );
+};
+export default TaskRequest;

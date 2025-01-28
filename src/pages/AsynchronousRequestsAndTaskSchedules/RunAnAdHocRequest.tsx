@@ -1,4 +1,10 @@
+import TaskRequest from "@/components/AsynchronousRequestsAndTaskSchedules/TaskRequest/TaskRequest";
+
 const RunAnAdHocRequest = () => {
-  return <div>Run An Ad Hoc Request</div>;
+  return (
+    <div>
+      <TaskRequest user_schedule_name="ad_hoc" />
+    </div>
+  );
 };
 export default RunAnAdHocRequest;
