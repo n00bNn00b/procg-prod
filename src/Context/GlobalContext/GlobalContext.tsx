@@ -69,6 +69,7 @@ interface GlobalContex {
   page: number;
   setPage: Dispatch<React.SetStateAction<number>>;
   totalPage: number;
+  setTotalPage: Dispatch<React.SetStateAction<number>>;
   currentPage: number;
   limit: number;
   setLimit: Dispatch<React.SetStateAction<number>>;
@@ -492,6 +493,7 @@ export function GlobalContextProvider({
         page,
         setPage,
         totalPage,
+        setTotalPage,
         currentPage,
         limit,
         setLimit,

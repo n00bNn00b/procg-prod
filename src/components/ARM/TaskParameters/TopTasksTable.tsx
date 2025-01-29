@@ -71,11 +71,12 @@ export function TopTable() {
   const { getAsyncTasks, isLoading, setSelectedTask } = useARMContext();
   const { page, setPage, totalPage } = useGlobalContext();
   const [data, setData] = React.useState<IARMAsynchronousTasksTypes[] | []>([]);
-
+  const limit = 3;
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getAsyncTasks();
+        const res = await getAsyncTasks(page, limit);
+        table.getRowModel().rows.map((row) => row.toggleSelected(false));
         if (res) setData(res);
       } catch (error) {
         console.log(error);
@@ -84,7 +85,7 @@ export function TopTable() {
       }
     };
     fetchData();
-  }, []);
+  }, [page]);
 
   const [selectedRowId, setSelectedRowId] = React.useState<string>("");
   const [sorting, setSorting] = React.useState<SortingState>([]);
