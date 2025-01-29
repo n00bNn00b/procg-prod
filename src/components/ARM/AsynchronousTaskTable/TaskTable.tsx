@@ -58,22 +58,22 @@ export function TaskTable() {
     isSubmit,
     setIsSubmit,
   } = useARMContext();
+  const { page, setPage, totalPage, isOpenModal, setIsOpenModal } =
+    useGlobalContext();
   const [data, setData] = React.useState<IARMAsynchronousTasksTypes[] | []>([]);
-
+  const limit = 10;
+  console.log(totalPage, "totalPage");
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getAsyncTasks();
+        const res = await getAsyncTasks(page, limit);
         if (res) setData(res);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
-  }, [isSubmit]);
-
-  const { page, setPage, totalPage, isOpenModal, setIsOpenModal } =
-    useGlobalContext();
+  }, [isSubmit, page]);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

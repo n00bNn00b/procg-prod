@@ -109,121 +109,128 @@ const TaskRequest: FC<ITaskRequestTypes> = ({ user_schedule_name }) => {
     }
   };
   return (
-    <div className="w-[50%] mx-auto p-4 rounded border mb-10">
+    <div className="w-[50%] mx-auto p-4 rounded border my-10 ">
       <div className="p-2">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-            <FormField
-              control={form.control}
-              name="user_schedule_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>User Schedule Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      required
-                      disabled={user_schedule_name === "ad_hoc"}
-                      type="text"
-                      placeholder="User Schedule Name"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="task_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Task Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      required
-                      type="text"
-                      placeholder="Task Name"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="args"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Argument</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      required
-                      type="text"
-                      placeholder="Argument"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="employee_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Employee Id</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      required
-                      type="number"
-                      placeholder="Employee Id"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="schedule"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Schedule</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      required
-                      type="text"
-                      placeholder="Schedule"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="cancelled_yn"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cancelled</FormLabel>
-                  <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Cancelled" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Y">Y</SelectItem>
-                        <SelectItem value="N">N</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <Button type="submit">
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="user_schedule_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>User Schedule Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        required
+                        disabled={user_schedule_name === "ad_hoc"}
+                        type="text"
+                        placeholder="User Schedule Name"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="task_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Task Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        required
+                        type="text"
+                        placeholder="Task Name"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="args"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Argument</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        required
+                        type="text"
+                        placeholder="Argument"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="employee_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Employee Id</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        required
+                        type="number"
+                        placeholder="Employee Id"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="schedule"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Schedule</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        required
+                        type="text"
+                        placeholder="Schedule"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cancelled_yn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cancelled</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Cancelled" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Y">Y</SelectItem>
+                          <SelectItem value="N">N</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Button type="submit" className="mt-5 flex justify-self-end">
               {isLoading ? (
                 <l-tailspin size="15" stroke="3" speed="0.9" color="white" />
               ) : (

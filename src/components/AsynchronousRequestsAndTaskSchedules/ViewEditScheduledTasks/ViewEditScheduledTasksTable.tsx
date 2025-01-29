@@ -61,12 +61,14 @@ export function ViewEditScheduledTasksTable() {
   const [data, setData] = React.useState<
     IAsynchronousRequestsAndTaskSchedulesTypes[] | []
   >([]);
-
+  const [page, setPage] = React.useState<number>(1);
+  const { totalPage, isOpenModal, setIsOpenModal } = useGlobalContext();
+  const limit = 4;
   React.useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const res = await getAsynchronousRequestsAndTaskSchedules();
+        const res = await getAsynchronousRequestsAndTaskSchedules(page, limit);
         if (res) setData(res);
       } catch (error) {
         console.log(error);
@@ -76,9 +78,6 @@ export function ViewEditScheduledTasksTable() {
     };
     fetchData();
   }, [isSubmit]);
-
-  const { page, setPage, totalPage, isOpenModal, setIsOpenModal } =
-    useGlobalContext();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

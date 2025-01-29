@@ -56,9 +56,10 @@ export function TaskParametersTable() {
   const [data, setData] = React.useState<IARMTaskParametersTypes[] | []>([]);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const { page, setPage, totalPage, isOpenModal, setIsOpenModal } =
-    useGlobalContext();
+  const { totalPage, isOpenModal, setIsOpenModal } = useGlobalContext();
 
+  const [page, setPage] = React.useState<number>(1);
+  const limit = 4;
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -98,13 +99,13 @@ export function TaskParametersTable() {
       }
     });
   };
-
   React.useEffect(() => {
     const fetchData = async () => {
       if (selectedTask === "") return setData([]);
       try {
         setIsLoading(true);
-        const res = await getTaskParameters(selectedTask);
+        const res = await getTaskParameters(selectedTask, page, limit);
+
         if (res) setData(res);
       } catch (error) {
         // setData([]);
@@ -114,7 +115,7 @@ export function TaskParametersTable() {
       }
     };
     fetchData();
-  }, [selectedTask, isSubmit]);
+  }, [selectedTask, isSubmit, page]);
 
   const handleDelete = async () => {
     setIsLoading(true);
