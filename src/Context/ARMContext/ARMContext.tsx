@@ -124,7 +124,6 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
     page: number,
     limit: number
   ) => {
-    console.log(page, limit, "page and limit");
     try {
       const [allTasksSchedules, taskSchedules] = await Promise.all([
         api.get<IAsynchronousRequestsAndTaskSchedulesTypes[]>(
