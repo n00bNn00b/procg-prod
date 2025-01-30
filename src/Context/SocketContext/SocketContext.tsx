@@ -165,10 +165,11 @@ export function SocketContextProvider({ children }: SocketContextProps) {
       console.log("error");
     }
   };
+
   useEffect(() => {
     const checkUserDevice = async () => {
       try {
-        if (!token || token?.user_id === 0 || !presentDevice?.id) return;
+        if (!token || token?.user_id === 0 || presentDevice?.id === 0) return;
 
         if (presentDevice.id && linkedDevices.length > 0) {
           const response = linkedDevices.some((device: IUserLinkedDevices) => {
