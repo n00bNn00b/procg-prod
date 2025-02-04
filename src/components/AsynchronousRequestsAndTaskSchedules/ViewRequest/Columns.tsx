@@ -1,7 +1,7 @@
-import { IARMAsynchronousTasksTypes } from "@/types/interfaces/ARM.interface";
+import { IARMViewRequestsTypes } from "@/types/interfaces/ARM.interface";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { ColumnDef } from "@tanstack/react-table";
-export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
+export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
   {
     id: "select",
     cell: ({ row }) => (
@@ -15,11 +15,11 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "task_id",
+    accessorKey: "request_id",
     header: () => {
-      return <div className="min-w-max">task_id</div>;
+      return <div className="min-w-max">Request Id</div>;
     },
-    cell: ({ row }) => <div>{row.getValue("task_id")}</div>,
+    cell: ({ row }) => <div>{row.getValue("request_id")}</div>,
   },
   {
     accessorKey: "task_name",
@@ -29,37 +29,59 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
     cell: ({ row }) => <div>{row.getValue("task_name")}</div>,
   },
   {
+    accessorKey: "kwargs",
+    header: () => {
+      return <div className="min-w-max">Kwargs</div>;
+    },
+    cell: ({ row }) => {
+      const data: string = JSON.stringify(row.getValue("kwargs"));
+      return <div className="min-w-max">{data}</div>;
+    },
+  },
+  {
+    accessorKey: "schedule_name",
+    header: () => {
+      return <div className="min-w-max">Schedule Name</div>;
+    },
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("schedule_name")}</div>
+    ),
+  },
+  {
+    accessorKey: "schedule",
+    header: () => {
+      return <div className="min-w-max">Schedule</div>;
+    },
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("schedule")}</div>
+    ),
+  },
+  {
     accessorKey: "status",
     header: () => {
-      return <div className="min-w-max">status</div>;
+      return <div>Status</div>;
     },
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("status")}</div>
     ),
   },
   {
-    accessorKey: "args",
-    header: () => {
-      return <div className="w-[15rem]">args </div>;
-    },
-    cell: ({ row }) => <div className="capitalize">{row.getValue("args")}</div>,
-  },
-  {
     accessorKey: "result",
     header: () => {
-      return <div className="min-w-max">result</div>;
+      return <div className="min-w-max">Result</div>;
     },
     cell: ({ row }) => (
-      <div className="capitalize w-[25rem]">{row.getValue("result")}</div>
+      <div className="min-w-max">{row.getValue("result")}</div>
     ),
   },
+
   {
-    accessorKey: "schedule",
+    accessorKey: "executor",
     header: () => {
-      return <div className="min-w-max">schedule</div>;
+      return <div className="min-w-max">Executor</div>;
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("schedule")}</div>
+      <div className="capitalize">{row.getValue("executor")}</div>
     ),
   },
   {
@@ -67,9 +89,10 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
     header: () => {
       return <div className="min-w-max">Created On</div>;
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("timestamp")}</div>
-    ),
+    cell: ({ row }) => {
+      const data: string = row.getValue("timestamp");
+      return <div className="capitalize  min-w-max">{data?.slice(0, 16)} </div>;
+    },
   },
 ];
 export default columns;

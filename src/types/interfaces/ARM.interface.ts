@@ -1,10 +1,12 @@
 export interface IARMAsynchronousTasksTypes {
   arm_task_id: number;
   script_name: string;
+  script_path?: string;
   task_name: string;
   user_task_name: string;
   description: string;
   execution_method: string;
+  executor?: string;
   cancelled_yn: string;
   created_by?: number;
   creation_date: string;
@@ -37,4 +39,19 @@ export interface IAsynchronousRequestsAndTaskSchedulesTypes {
   schedule: number;
   task_name: string;
   user_schedule_name: string;
+}
+export interface IARMAsynchronousTasksParametersTypes {
+  user_task_name: string;
+  parameter_name: string;
+  data_type: string;
+}
+export interface IARMViewRequestsTypes {
+  request_id: number;
+  task_name: string;
+  schedule_name: string;
+  schedule: number;
+  status: string;
+  result: string;
+  executor: string;
+  timestamp: string;
 }

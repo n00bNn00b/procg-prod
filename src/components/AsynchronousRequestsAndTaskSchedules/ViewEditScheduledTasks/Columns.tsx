@@ -42,11 +42,11 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
     {
       accessorKey: "kwargs",
       header: () => {
-        return <div className="min-w-max">Employee Id</div>;
+        return <div className="min-w-max">Kwargs</div>;
       },
       cell: ({ row }) => {
-        const data: { employee_id: number } = row.getValue("kwargs");
-        return <div>{data.employee_id}</div>;
+        const data: string = JSON.stringify(row.getValue("kwargs"));
+        return <div>{data}</div>;
       },
     },
     {
@@ -114,7 +114,7 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
     {
       accessorKey: "cancelled_yn",
       header: () => {
-        return <div className="min-w-max">Last Updated Date</div>;
+        return <div className="min-w-max">Cancelled</div>;
       },
       cell: ({ row }) => {
         const data: string = row.getValue("cancelled_yn");

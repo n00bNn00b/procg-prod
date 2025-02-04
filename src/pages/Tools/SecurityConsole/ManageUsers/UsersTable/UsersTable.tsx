@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/table";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import columns from "./Columns";
-import CustomModal from "@/components/CustomModal/CustomModal";
+import CustomModal3 from "@/components/CustomModal/CustomModal3";
 import AddUser from "@/components/AddUser/AddUser";
 import { IUsersInfoTypes } from "@/types/interfaces/users.interface";
 import Pagination5 from "@/components/Pagination/Pagination5";
@@ -131,14 +131,14 @@ export function UsersTable() {
   return (
     <div className="px-3">
       {isOpenModal === "create_user" ? (
-        <CustomModal>
+        <CustomModal3>
           <AddUser selected={selected} handleCloseModal={handleCloseModal} />
-        </CustomModal>
+        </CustomModal3>
       ) : (
         isOpenModal === "edit_user" && (
-          <CustomModal>
+          <CustomModal3>
             <AddUser selected={selected} handleCloseModal={handleCloseModal} />
-          </CustomModal>
+          </CustomModal3>
         )
       )}
       {/* top icon and columns*/}

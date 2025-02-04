@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/table";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import columns from "./Columns";
-import CustomModal from "@/components/CustomModal/CustomModal";
+import CustomModal3 from "@/components/CustomModal/CustomModal3";
 import Pagination5 from "@/components/Pagination/Pagination5";
 import { IARMTaskParametersTypes } from "@/types/interfaces/ARM.interface";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
@@ -101,10 +101,15 @@ export function TaskParametersTable() {
   };
   React.useEffect(() => {
     const fetchData = async () => {
-      if (selectedTask === "") return setData([]);
+      if (!selectedTask?.user_task_name) return setData([]);
       try {
         setIsLoading(true);
-        const res = await getTaskParameters(selectedTask, page, limit);
+        const res = await getTaskParameters(
+          selectedTask.user_task_name,
+          selectedTask.task_name,
+          page,
+          limit
+        );
 
         if (res) setData(res);
       } catch (error) {
@@ -115,7 +120,7 @@ export function TaskParametersTable() {
       }
     };
     fetchData();
-  }, [selectedTask, isSubmit, page]);
+  }, [selectedTask?.arm_task_id, isSubmit, page]);
 
   const handleDelete = async () => {
     setIsLoading(true);
@@ -176,24 +181,24 @@ export function TaskParametersTable() {
 
   return (
     <div className="px-3">
-      {selectedTask !== "" && isOpenModal === "add_task_params" ? (
-        <CustomModal>
+      {selectedTask?.user_task_name && isOpenModal === "add_task_params" ? (
+        <CustomModal3>
           <TaskParametersModal
-            task_name="Add Task Params"
-            selected={selectedRows}
+            task_name="Add Parameter"
+            selected={selectedRows[0]}
             handleCloseModal={handleCloseModal}
           />
-        </CustomModal>
+        </CustomModal3>
       ) : (
-        selectedTask !== "" &&
+        selectedTask?.user_task_name &&
         isOpenModal === "update_task_params" && (
-          <CustomModal>
+          <CustomModal3>
             <TaskParametersModal
-              task_name="Update Task Params"
-              selected={selectedRows}
+              task_name="Update Parameter"
+              selected={selectedRows[0]}
               handleCloseModal={handleCloseModal}
             />
-          </CustomModal>
+          </CustomModal3>
         )
       )}
       {/* top icon and columns*/}
@@ -204,7 +209,7 @@ export function TaskParametersTable() {
               <button>
                 <PlusIcon
                   className={`${
-                    selectedTask === ""
+                    !selectedTask?.arm_task_id
                       ? "text-slate-200 cursor-not-allowed"
                       : "cursor-pointer"
                   }`}
@@ -278,7 +283,10 @@ export function TaskParametersTable() {
           }
           className="max-w-sm px-4 py-2"
         />
-        <h3>{selectedTask.length > 0 && `Task Name : ${selectedTask}`}</h3>
+        <h3 className="font-bold">
+          {selectedTask?.arm_task_id &&
+            `Selected : ${selectedTask?.user_task_name}`}
+        </h3>
         {/* Columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

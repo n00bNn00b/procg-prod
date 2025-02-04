@@ -68,20 +68,21 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
 ];
 
 export function TopTable() {
-  const { getAsyncTasks, isLoading, setSelectedTask } = useARMContext();
+  const { getAsyncTasksLazyLoading, isLoading, setSelectedTask } =
+    useARMContext();
   const { page, setPage, totalPage } = useGlobalContext();
   const [data, setData] = React.useState<IARMAsynchronousTasksTypes[] | []>([]);
   const limit = 3;
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getAsyncTasks(page, limit);
+        const res = await getAsyncTasksLazyLoading(page, limit);
         table.getRowModel().rows.map((row) => row.toggleSelected(false));
         if (res) setData(res);
       } catch (error) {
         console.log(error);
       } finally {
-        setSelectedTask("");
+        setSelectedTask(undefined);
       }
     };
     fetchData();
@@ -116,10 +117,10 @@ export function TopTable() {
   });
   const handleRowSelection = (task: IARMAsynchronousTasksTypes) => {
     setSelectedTask((prev) => {
-      if (prev === task.task_name) {
-        return "";
+      if (prev?.arm_task_id === task.arm_task_id) {
+        return undefined;
       } else {
-        return task.task_name;
+        return task;
       }
     });
   };

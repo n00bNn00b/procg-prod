@@ -1,4 +1,10 @@
+import { ViewRequestTable } from "@/components/AsynchronousRequestsAndTaskSchedules/ViewRequest/ViewRequestTable";
+
 const ViewRequests = () => {
-  return <div>View Requests</div>;
+  return (
+    <div>
+      <ViewRequestTable />
+    </div>
+  );
 };
 export default ViewRequests;

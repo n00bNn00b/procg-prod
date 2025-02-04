@@ -1,4 +1,4 @@
-import CustomModal2 from "@/components/CustomModal/CustomModal2";
+import CustomModal1 from "@/components/CustomModal/CustomModal1";
 import AccessPointsEditModal from "./AccessPointsEditModalTable";
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import { X } from "lucide-react";
@@ -16,7 +16,7 @@ const AccessEntitlementElemantModal = () => {
   return (
     <div>
       {isOpenModal === "access_points" && (
-        <CustomModal2>
+        <CustomModal1>
           <div className="flex justify-between p-2 bg-slate-300 rounded-t-lg">
             <h2 className="text-lg font-bold capitalize">
               Entitlement Name :{" "}
@@ -28,7 +28,7 @@ const AccessEntitlementElemantModal = () => {
           <div className="p-2">
             <AccessPointsEditModal />
           </div>
-        </CustomModal2>
+        </CustomModal1>
       )}
     </div>
   );

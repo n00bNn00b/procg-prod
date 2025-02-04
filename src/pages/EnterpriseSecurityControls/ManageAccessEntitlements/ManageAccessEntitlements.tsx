@@ -1,7 +1,7 @@
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
 import AccessPointsEntitle from "./AccessPointsEntitle/AccessPointsEntitle";
 import ManageAccessEntitlementsTable from "./ManageAccessEntitlementsTable";
-import CustomModal from "@/components/CustomModal/CustomModal";
+import CustomModal3 from "@/components/CustomModal/CustomModal3";
 import { X } from "lucide-react";
 import ManageAccessPointsEntitleModal from "./ManageAccessPointsEntitleModal";
 // import TestTable from "./testtable";
@@ -20,7 +20,7 @@ const ManageAccessEntitlements = () => {
       {/* <TestTable /> */}
       <div>
         {editManageAccessEntitlement && (
-          <CustomModal>
+          <CustomModal3>
             <div className="flex justify-between p-2 bg-slate-300 rounded-t-lg">
               <h2 className="text-lg font-bold">
                 {mangeAccessEntitlementAction === "edit"
@@ -38,7 +38,7 @@ const ManageAccessEntitlements = () => {
             <div className="p-2">
               <ManageAccessPointsEntitleModal selectedItem={selectedItem} />
             </div>
-          </CustomModal>
+          </CustomModal3>
         )}
       </div>
     </div>
