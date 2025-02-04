@@ -23,7 +23,7 @@ import { useARMContext } from "@/Context/ARMContext/ARMContext";
 
 interface ITaskParametersModalProps {
   task_name: string;
-  selected: IARMTaskParametersTypes[];
+  selected: IARMTaskParametersTypes;
   handleCloseModal: () => void;
 }
 const TaskParametersModal: FC<ITaskParametersModalProps> = ({
@@ -52,9 +52,9 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
             description: "",
           }
         : {
-            parameter_name: selected[0].parameter_name,
-            data_type: selected[0].data_type,
-            description: selected[0].description,
+            parameter_name: selected.parameter_name,
+            data_type: selected.data_type,
+            description: selected.description,
           },
   });
   const { reset } = form;
@@ -80,10 +80,10 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
       try {
         setIsLoading(true);
         const res = await api.post(
-          `/arm-task-parameters/add-task-params/${selectedTask}`,
+          `/arm-tasks/add-task-params/${selectedTask?.user_task_name}`,
           postData
         );
-        console.log(res.data, "rrr");
+        console.log(res.data, "added task parameter item");
         toast({
           title: "Info !!!",
           description: `Added successfully.`,
@@ -104,7 +104,7 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
       try {
         setIsLoading(true);
         await api.put(
-          `/arm-task-parameters/update-task-params/${selectedTask}/${selected[0].arm_param_id}`,
+          `/arm-tasks/update-task-params/${selectedTask?.task_name}/${selected.arm_param_id}`,
           putData
         );
 
@@ -143,44 +143,46 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
         <h2>{task_name}</h2>
         <X onClick={() => handleCloseModal()} className="cursor-pointer" />
       </div>
-      <div className="p-2">
+      <div className="px-11 p-5">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-            <FormField
-              control={form.control}
-              name="parameter_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Parameter Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      required
-                      autoFocus
-                      type="text"
-                      placeholder="Parameter Name"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="data_type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Data Type</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      required
-                      type="text"
-                      placeholder="Data Type"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-10">
+              <FormField
+                control={form.control}
+                name="parameter_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Parameter Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        required
+                        autoFocus
+                        type="text"
+                        placeholder="Parameter Name"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="data_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Data Type</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        required
+                        type="text"
+                        placeholder="Data Type"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="description"
@@ -193,13 +195,15 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
                 </FormItem>
               )}
             />
-            <Button type="submit">
-              {isLoading ? (
-                <l-tailspin size="15" stroke="3" speed="0.9" color="white" />
-              ) : (
-                "Submit"
-              )}
-            </Button>
+            <div className="flex justify-end">
+              <Button type="submit">
+                {isLoading ? (
+                  <l-tailspin size="15" stroke="3" speed="0.9" color="white" />
+                ) : (
+                  "Submit"
+                )}
+              </Button>
+            </div>
           </form>
         </Form>
       </div>

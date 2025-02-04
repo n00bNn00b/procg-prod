@@ -1,11 +1,11 @@
 import { useManageAccessEntitlementsContext } from "@/Context/ManageAccessEntitlements/ManageAccessEntitlementsContext";
-import CustomModal from "@/components/CustomModal/CustomModal";
+import CustomModal3 from "@/components/CustomModal/CustomModal3";
 
 import AccessPointsEntitleModal from "./CreateAccessPointsEntitleModal";
 import AccessPointsEntitleTable from "./AccessPointsEntitleTable";
 import { X } from "lucide-react";
 import AccessPointsEditModal from "../EditEntitlementWithAccessPoints/AccessPointsEditModalTable";
-import CustomModal2 from "@/components/CustomModal/CustomModal2";
+import CustomModal1 from "@/components/CustomModal/CustomModal1";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
 const AccessPointsEntitle = () => {
@@ -23,7 +23,7 @@ const AccessPointsEntitle = () => {
         {/* Modal */}
         <div>
           {isOpenModal === "access_points" && (
-            <CustomModal2>
+            <CustomModal1>
               <div className="flex justify-between p-2 bg-slate-300 rounded-t-lg">
                 <h2 className="text-lg font-bold capitalize">
                   Entitlement Name :{" "}
@@ -40,12 +40,12 @@ const AccessPointsEntitle = () => {
               <div className="p-2">
                 <AccessPointsEditModal />
               </div>
-            </CustomModal2>
+            </CustomModal1>
           )}
         </div>
         <div>
           {isOpenModal === "create_access_point" && (
-            <CustomModal>
+            <CustomModal3>
               <div className="flex justify-between p-2 bg-slate-300 rounded-t-lg">
                 <h2 className="text-lg font-bold">Create Access Point</h2>
                 <X
@@ -59,7 +59,7 @@ const AccessPointsEntitle = () => {
               <div className="p-2">
                 <AccessPointsEntitleModal />
               </div>
-            </CustomModal>
+            </CustomModal3>
           )}
         </div>
       </div>

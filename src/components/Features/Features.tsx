@@ -1,10 +1,10 @@
-import CustomModal from "../CustomModal/CustomModal";
+import CustomModal3 from "../CustomModal/CustomModal3";
 
 const Features = () => {
   return (
-    <CustomModal>
+    <CustomModal3>
       <div>New Features Available</div>
-    </CustomModal>
+    </CustomModal3>
   );
 };
 export default Features;

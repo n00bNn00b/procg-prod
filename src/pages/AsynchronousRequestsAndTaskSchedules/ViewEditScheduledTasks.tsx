@@ -3,7 +3,7 @@ import { ViewEditScheduledTasksTable } from "@/components/AsynchronousRequestsAn
 const ViewEditScheduledTasks = () => {
   return (
     <div>
-      <ViewEditScheduledTasksTable />
+      <ViewEditScheduledTasksTable limit={10} action="Edit Task Schedule" />
     </div>
   );
 };

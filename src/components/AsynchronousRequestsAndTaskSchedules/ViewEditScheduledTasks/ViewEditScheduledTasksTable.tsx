@@ -10,7 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, FileEdit, Trash } from "lucide-react";
+import { ChevronDown, FileEdit, PlusIcon, Trash } from "lucide-react";
 
 import {
   AlertDialog,
@@ -42,14 +42,23 @@ import {
 } from "@/components/ui/table";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import columns from "./Columns";
-import CustomModal from "@/components/CustomModal/CustomModal";
 import Pagination5 from "@/components/Pagination/Pagination5";
 import { IAsynchronousRequestsAndTaskSchedulesTypes } from "@/types/interfaces/ARM.interface";
 import { toast } from "@/components/ui/use-toast";
 import { useARMContext } from "@/Context/ARMContext/ARMContext";
-import EditSchedule from "../TaskRequest/EditSchedule";
+import TaskRequest from "../TaskRequest/TaskRequest";
+import CustomModal2 from "@/components/CustomModal/CustomModal2";
+import CustomModal3 from "@/components/CustomModal/CustomModal3";
 
-export function ViewEditScheduledTasksTable() {
+interface IScheduleTableProps {
+  limit: number;
+  action: string;
+}
+
+export function ViewEditScheduledTasksTable({
+  limit,
+  action,
+}: IScheduleTableProps) {
   const {
     getAsynchronousRequestsAndTaskSchedules,
     isLoading,
@@ -63,7 +72,6 @@ export function ViewEditScheduledTasksTable() {
   >([]);
   const [page, setPage] = React.useState<number>(1);
   const { totalPage, isOpenModal, setIsOpenModal } = useGlobalContext();
-  const limit = 4;
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -94,6 +102,7 @@ export function ViewEditScheduledTasksTable() {
   const [selected, setSelected] = React.useState<
     IAsynchronousRequestsAndTaskSchedulesTypes[]
   >([]);
+
   const handleRowSelection = (
     rowSelection: IAsynchronousRequestsAndTaskSchedulesTypes
   ) => {
@@ -105,7 +114,6 @@ export function ViewEditScheduledTasksTable() {
       }
     });
   };
-
   const handleDelete = async () => {
     setIsLoading(true);
     try {
@@ -162,34 +170,50 @@ export function ViewEditScheduledTasksTable() {
 
   return (
     <div className="px-3">
-      {isOpenModal === "edit_task_schedule" && (
-        <CustomModal>
-          <EditSchedule
-            action="Edit Schedule"
-            selected={selected[0]}
+      {isOpenModal === "schedule_a_task" && (
+        <CustomModal2>
+          <TaskRequest
+            action="Schedule A Task"
+            user_schedule_name="run_script"
             handleCloseModal={handleCloseModal}
           />
-        </CustomModal>
+        </CustomModal2>
+      )}
+      {isOpenModal === "edit_task_schedule" && (
+        <CustomModal3>
+          <TaskRequest
+            action="Edit Schedule"
+            selected={selected[0]}
+            user_schedule_name="run_script"
+            handleCloseModal={handleCloseModal}
+          />
+        </CustomModal3>
       )}
       {/* top icon and columns*/}
       <div className="flex gap-3 items-center py-2">
         <div className="flex gap-3">
           <div className="flex gap-3 items-center px-4 py-2 border rounded">
             <div className="flex gap-3">
-              {/* <PlusIcon
-                className="cursor-pointer"
-                onClick={() => handleOpenModal("create_task")}
-              /> */}
-              <button disabled={selected.length > 1 || selected.length === 0}>
-                <FileEdit
-                  className={`${
-                    selected.length > 1 || selected.length === 0
-                      ? "text-slate-200 cursor-not-allowed"
-                      : "cursor-pointer"
-                  }`}
-                  onClick={() => handleOpenModal("edit_task_schedule")}
-                />
-              </button>
+              {action !== "Edit Task Schedule" && (
+                <button>
+                  <PlusIcon
+                    className="cursor-pointer"
+                    onClick={() => handleOpenModal("schedule_a_task")}
+                  />
+                </button>
+              )}
+              {action === "Edit Task Schedule" && (
+                <button disabled={selected.length > 1 || selected.length === 0}>
+                  <FileEdit
+                    className={`${
+                      selected.length > 1 || selected.length === 0
+                        ? "text-slate-200 cursor-not-allowed"
+                        : "cursor-pointer"
+                    }`}
+                    onClick={() => handleOpenModal("edit_task_schedule")}
+                  />
+                </button>
+              )}
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <button disabled={selected.length === 0}>
@@ -232,12 +256,16 @@ export function ViewEditScheduledTasksTable() {
           </div>
         </div>
         <Input
-          placeholder="Filter Task Name"
+          placeholder="Filter User Schedule Name"
           value={
-            (table.getColumn("task_name")?.getFilterValue() as string) ?? ""
+            (table
+              .getColumn("user_schedule_name")
+              ?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table.getColumn("task_name")?.setFilterValue(event.target.value)
+            table
+              .getColumn("user_schedule_name")
+              ?.setFilterValue(event.target.value)
           }
           className="max-w-sm px-4 py-2"
         />
@@ -339,6 +367,7 @@ export function ViewEditScheduledTasksTable() {
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
+                    // aria-disabled={row.original.user_schedule_name === "ad-hoc"}
                   >
                     {row.getVisibleCells().map((cell, index) => (
                       <TableCell key={cell.id} className="border p-1 h-8">

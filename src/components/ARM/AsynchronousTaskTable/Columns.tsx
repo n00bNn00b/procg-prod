@@ -19,7 +19,9 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
     header: () => {
       return <div className="min-w-max">User Task Name</div>;
     },
-    cell: ({ row }) => <div>{row.getValue("user_task_name")}</div>,
+    cell: ({ row }) => (
+      <div className="min-w-max">{row.getValue("user_task_name")}</div>
+    ),
   },
   {
     accessorKey: "task_name",
@@ -69,9 +71,10 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
     header: () => {
       return <div className="min-w-max">Last Updated By</div>;
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("last_updated_by")}</div>
-    ),
+    cell: ({ row }) => {
+      const data: string = row.getValue("last_updated_by");
+      return <div className="capitalize">{data ? data : "null"}</div>;
+    },
   },
   {
     accessorKey: "creation_date",
@@ -95,12 +98,9 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
   },
   {
     accessorKey: "cancelled_yn",
-    header: "Action",
+    header: "Cancelled",
     cell: ({ row }) => {
-      const data: string = row.getValue("cancelled_yn");
-      return (
-        <div className="capitalize">{data === "Y" ? "Inactive" : "Active"}</div>
-      );
+      return <div className="capitalize">{row.getValue("cancelled_yn")}</div>;
     },
   },
 ];

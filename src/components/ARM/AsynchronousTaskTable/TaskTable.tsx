@@ -42,16 +42,16 @@ import {
 } from "@/components/ui/table";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import columns from "./Columns";
-import CustomModal from "@/components/CustomModal/CustomModal";
 import Pagination5 from "@/components/Pagination/Pagination5";
 import { IARMAsynchronousTasksTypes } from "@/types/interfaces/ARM.interface";
-import AsynchronousTaskModal from "../AsynchronousTaskModal/AsynchronousTaskModal";
+import AsynchronousRegisterEditTaskModal from "../AsynchronousRegisterEditTaskModal/AsynchronousRegisterEditTaskModal";
 import { toast } from "@/components/ui/use-toast";
 import { useARMContext } from "@/Context/ARMContext/ARMContext";
+import CustomModal2 from "@/components/CustomModal/CustomModal2";
 
 export function TaskTable() {
   const {
-    getAsyncTasks,
+    getAsyncTasksLazyLoading,
     isLoading,
     setIsLoading,
     deleteAsyncTasks,
@@ -62,11 +62,11 @@ export function TaskTable() {
     useGlobalContext();
   const [data, setData] = React.useState<IARMAsynchronousTasksTypes[] | []>([]);
   const limit = 10;
-  console.log(totalPage, "totalPage");
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getAsyncTasks(page, limit);
+        const res = await getAsyncTasksLazyLoading(page, limit);
         if (res) setData(res);
       } catch (error) {
         console.log(error);
@@ -153,30 +153,30 @@ export function TaskTable() {
     //table toggle false
     table.toggleAllRowsSelected(false);
   };
-  console.log(selected, "selected");
+
   return (
     <div className="px-3">
       {isOpenModal === "register_task" ? (
-        <CustomModal>
-          <AsynchronousTaskModal
+        <CustomModal2>
+          <AsynchronousRegisterEditTaskModal
             task_name="Register Task"
             selected={selected}
             isLoading={isLoading}
             setIsLoading={setIsLoading}
             handleCloseModal={handleCloseModal}
           />
-        </CustomModal>
+        </CustomModal2>
       ) : (
         isOpenModal === "edit_task" && (
-          <CustomModal>
-            <AsynchronousTaskModal
+          <CustomModal2>
+            <AsynchronousRegisterEditTaskModal
               task_name="Edit Task"
               selected={selected}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
               handleCloseModal={handleCloseModal}
             />
-          </CustomModal>
+          </CustomModal2>
         )
       )}
       {/* top icon and columns*/}

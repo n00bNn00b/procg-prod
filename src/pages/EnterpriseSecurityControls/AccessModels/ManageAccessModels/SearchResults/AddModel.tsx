@@ -1,4 +1,4 @@
-import CustomModal from "@/components/CustomModal/CustomModal";
+import CustomModal3 from "@/components/CustomModal/CustomModal3";
 import { X } from "lucide-react";
 import { FC } from "react";
 import AddForm from "./AddForm";
@@ -9,7 +9,7 @@ interface IManageAccessModelProps {
 }
 const AddModel: FC<IManageAccessModelProps> = ({ setOpenAddModal, items }) => {
   return (
-    <CustomModal>
+    <CustomModal3>
       <div className="flex justify-between p-2 bg-slate-300 rounded-t-lg">
         <h2 className="text-lg font-bold">Add Access Model</h2>
         <X
@@ -22,7 +22,7 @@ const AddModel: FC<IManageAccessModelProps> = ({ setOpenAddModal, items }) => {
       <div className="p-2">
         <AddForm items={items} />
       </div>
-    </CustomModal>
+    </CustomModal3>
   );
 };
 export default AddModel;
