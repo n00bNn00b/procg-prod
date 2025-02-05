@@ -10,7 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, FileEdit, PlusIcon, Trash } from "lucide-react";
+import { ChevronDown, CircleOff, FileEdit } from "lucide-react";
 
 import {
   AlertDialog,
@@ -47,18 +47,9 @@ import { IAsynchronousRequestsAndTaskSchedulesTypes } from "@/types/interfaces/A
 import { toast } from "@/components/ui/use-toast";
 import { useARMContext } from "@/Context/ARMContext/ARMContext";
 import TaskRequest from "../TaskRequest/TaskRequest";
-import CustomModal2 from "@/components/CustomModal/CustomModal2";
 import CustomModal3 from "@/components/CustomModal/CustomModal3";
 
-interface IScheduleTableProps {
-  limit: number;
-  action: string;
-}
-
-export function ViewEditScheduledTasksTable({
-  limit,
-  action,
-}: IScheduleTableProps) {
+export function ViewEditScheduledTasksTable() {
   const {
     getAsynchronousRequestsAndTaskSchedules,
     isLoading,
@@ -70,6 +61,7 @@ export function ViewEditScheduledTasksTable({
   const [data, setData] = React.useState<
     IAsynchronousRequestsAndTaskSchedulesTypes[] | []
   >([]);
+  const limit = 10;
   const [page, setPage] = React.useState<number>(1);
   const { totalPage, isOpenModal, setIsOpenModal } = useGlobalContext();
   React.useEffect(() => {
@@ -85,7 +77,7 @@ export function ViewEditScheduledTasksTable({
       }
     };
     fetchData();
-  }, [isSubmit]);
+  }, [isSubmit, page]);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -132,7 +124,7 @@ export function ViewEditScheduledTasksTable({
         description: `Error : ${error}`,
       });
     } finally {
-      setIsSubmit(1);
+      setIsSubmit(Math.random() + 23 * 3000);
       setIsLoading(false);
     }
   };
@@ -170,19 +162,10 @@ export function ViewEditScheduledTasksTable({
 
   return (
     <div className="px-3">
-      {isOpenModal === "schedule_a_task" && (
-        <CustomModal2>
-          <TaskRequest
-            action="Schedule A Task"
-            user_schedule_name="run_script"
-            handleCloseModal={handleCloseModal}
-          />
-        </CustomModal2>
-      )}
       {isOpenModal === "edit_task_schedule" && (
         <CustomModal3>
           <TaskRequest
-            action="Edit Schedule"
+            action="Edit Task Schedule"
             selected={selected[0]}
             user_schedule_name="run_script"
             handleCloseModal={handleCloseModal}
@@ -194,30 +177,20 @@ export function ViewEditScheduledTasksTable({
         <div className="flex gap-3">
           <div className="flex gap-3 items-center px-4 py-2 border rounded">
             <div className="flex gap-3">
-              {action !== "Edit Task Schedule" && (
-                <button>
-                  <PlusIcon
-                    className="cursor-pointer"
-                    onClick={() => handleOpenModal("schedule_a_task")}
-                  />
-                </button>
-              )}
-              {action === "Edit Task Schedule" && (
-                <button disabled={selected.length > 1 || selected.length === 0}>
-                  <FileEdit
-                    className={`${
-                      selected.length > 1 || selected.length === 0
-                        ? "text-slate-200 cursor-not-allowed"
-                        : "cursor-pointer"
-                    }`}
-                    onClick={() => handleOpenModal("edit_task_schedule")}
-                  />
-                </button>
-              )}
+              <button disabled={selected.length > 1 || selected.length === 0}>
+                <FileEdit
+                  className={`${
+                    selected.length > 1 || selected.length === 0
+                      ? "text-slate-200 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
+                  onClick={() => handleOpenModal("edit_task_schedule")}
+                />
+              </button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <button disabled={selected.length === 0}>
-                    <Trash
+                    <CircleOff
                       className={`${
                         selected.length === 0
                           ? "cursor-not-allowed text-slate-200"
@@ -228,9 +201,7 @@ export function ViewEditScheduledTasksTable({
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
+                    <AlertDialogTitle>Do you want to cancel ?</AlertDialogTitle>
                     <AlertDialogDescription>
                       {selected.map((item, index) => (
                         <span
@@ -240,8 +211,6 @@ export function ViewEditScheduledTasksTable({
                           {index + 1}. task name : {item.task_name}
                         </span>
                       ))}
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

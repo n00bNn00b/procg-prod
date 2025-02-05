@@ -20,12 +20,14 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
       header: () => {
         return <div className="min-w-max">User Schedule Name</div>;
       },
-      cell: ({ row }) => <div>{row.getValue("user_schedule_name")}</div>,
+      cell: ({ row }) => (
+        <div className="min-w-max"> {row.getValue("user_schedule_name")}</div>
+      ),
     },
     {
       accessorKey: "redbeat_schedule_name",
       header: () => {
-        return <div className="min-w-max">Redbeat Schedule Name</div>;
+        return <div className="w-[30rem]">Redbeat Schedule Name</div>;
       },
       cell: ({ row }) => {
         const data: string = row.getValue("redbeat_schedule_name");
@@ -54,9 +56,7 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
       header: () => {
         return <div className="min-w-max">Schedule Time</div>;
       },
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("schedule")}</div>
-      ),
+      cell: ({ row }) => <div className="">{row.getValue("schedule")}</div>,
     },
     {
       accessorKey: "args",
@@ -65,7 +65,7 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
       },
       cell: ({ row }) => {
         const args: Array<string> = row.getValue("args");
-        return <div className="capitalize">{args[0]}</div>;
+        return <div className="">{args[0]}</div>;
       },
     },
     {
@@ -73,9 +73,7 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
       header: () => {
         return <div className="min-w-max">Created By</div>;
       },
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("created_by")}</div>
-      ),
+      cell: ({ row }) => <div className="">{row.getValue("created_by")}</div>,
     },
     {
       accessorKey: "creation_date",
@@ -84,9 +82,7 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
       },
       cell: ({ row }) => {
         const data: string = row.getValue("creation_date");
-        return (
-          <div className="capitalize min-w-max">{data?.slice(0, 16)} </div>
-        );
+        return <div className="min-w-max">{data?.slice(0, 16)} </div>;
       },
     },
     {
@@ -106,9 +102,7 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
       },
       cell: ({ row }) => {
         const data: string = row.getValue("last_update_date");
-        return (
-          <div className="capitalize  min-w-max">{data?.slice(0, 16)} </div>
-        );
+        return <div className=" min-w-max">{data?.slice(0, 16)} </div>;
       },
     },
     {
@@ -118,7 +112,7 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
       },
       cell: ({ row }) => {
         const data: string = row.getValue("cancelled_yn");
-        return <div className="capitalize  min-w-max">{data} </div>;
+        return <div className=" min-w-max">{data} </div>;
       },
     },
   ];

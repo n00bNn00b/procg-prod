@@ -20,6 +20,13 @@ import { AxiosError } from "axios";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { IARMTaskParametersTypes } from "@/types/interfaces/ARM.interface";
 import { useARMContext } from "@/Context/ARMContext/ARMContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ITaskParametersModalProps {
   task_name: string;
@@ -88,6 +95,7 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
           title: "Info !!!",
           description: `Added successfully.`,
         });
+        handleCloseModal();
       } catch (error) {
         toast({
           title: "Info !!!",
@@ -97,7 +105,7 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
       } finally {
         setIsLoading(false);
         reset();
-        setIsSubmit(3);
+        setIsSubmit(Math.random() + 23 * 3000);
       }
     };
     const updateParams = async () => {
@@ -112,6 +120,7 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
           title: "Info !!!",
           description: `Added successfully.`,
         });
+        handleCloseModal();
       } catch (error) {
         if (error instanceof AxiosError) {
           toast({
@@ -122,19 +131,18 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
       } finally {
         setIsLoading(false);
         reset();
-        setIsSubmit(4);
+        setIsSubmit(Math.random() + 23 * 3000);
       }
     };
 
     try {
-      isOpenModal === "add_task_params" && addTaskParams();
-      isOpenModal === "update_task_params" && updateParams();
+      if (isOpenModal === "add_task_params") {
+        addTaskParams();
+      } else if (isOpenModal === "update_task_params") {
+        updateParams();
+      }
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsLoading(false);
-      reset();
-      setIsSubmit(1);
     }
   };
   return (
@@ -172,12 +180,20 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
                   <FormItem>
                     <FormLabel>Data Type</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        required
-                        type="text"
-                        placeholder="Data Type"
-                      />
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Data Type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="VARCHAR">VARCHAR</SelectItem>
+                          <SelectItem value="integer">integer</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                   </FormItem>
                 )}

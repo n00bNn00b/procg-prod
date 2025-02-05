@@ -32,8 +32,7 @@ interface ARMContext {
   setSelectedTaskParameters: React.Dispatch<
     React.SetStateAction<IARMTaskParametersTypes[] | undefined>
   >;
-  getTaskParameters: (
-    user_task_name: string,
+  getTaskParametersLazyLoading: (
     task_name: string,
     page: number,
     limit: number
@@ -129,15 +128,14 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
     }
   };
 
-  const getTaskParameters = async (
-    user_task_name: string,
+  const getTaskParametersLazyLoading = async (
     task_name: string,
     page: number,
     limit: number
   ) => {
     try {
       const [countTasksParameters, tasksParameters] = await Promise.all([
-        api.get<IARMTaskParametersTypes[]>(`/arm-tasks/${user_task_name}`),
+        api.get<IARMTaskParametersTypes[]>(`/arm-tasks/${task_name}`),
         api.get<IARMTaskParametersTypes[]>(
           `/arm-tasks/${task_name}/${page}/${limit}`
         ),
@@ -153,10 +151,10 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
     }
   };
 
-  const getTaskParametersByTaskName = async (user_task_name: string) => {
+  const getTaskParametersByTaskName = async (task_name: string) => {
     try {
       const res = await api.get<IARMAsynchronousTasksParametersTypes[]>(
-        `/arm-tasks/${user_task_name}`
+        `/arm-tasks/${task_name}`
       );
 
       return res.data ?? [];
@@ -194,6 +192,7 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
       setIsLoading(true);
       await Promise.all(
         selectedItems.map(async (item) => {
+          console.log(item, "item");
           await api.put(
             `/asynchronous-requests-and-task-schedules/cancel-task-schedule/${item.task_name}/${item.redbeat_schedule_name}`
           );
@@ -237,7 +236,7 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
     setSelectedTask,
     selectedTaskParameters,
     setSelectedTaskParameters,
-    getTaskParameters,
+    getTaskParametersLazyLoading,
     getTaskParametersByTaskName,
     isSubmit,
     setIsSubmit,

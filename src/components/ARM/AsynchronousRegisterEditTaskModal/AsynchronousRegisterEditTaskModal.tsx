@@ -63,11 +63,11 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
     defaultValues:
       isOpenModal === "register_task"
         ? {
-            user_task_name: "Get Employee Name",
-            task_name: "get_employee_name",
+            user_task_name: "",
+            task_name: "",
             execution_method: "Python",
             executor: "executors.python.run_script",
-            script_name: "get_employee_name.py",
+            script_name: "",
             script_path: "script_path_01",
             description: "",
           }
@@ -106,6 +106,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
           title: "Info !!!",
           description: `Added successfully.`,
         });
+        handleCloseModal();
       } catch (error) {
         if (error instanceof AxiosError) {
           toast({
@@ -117,7 +118,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
       } finally {
         setIsLoading(false);
         reset();
-        setIsSubmit(1);
+        setIsSubmit(Math.random() + 23 * 3000);
       }
     };
     const editTask = async () => {
@@ -132,6 +133,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
           title: "Info !!!",
           description: `Added successfully.`,
         });
+        handleCloseModal();
       } catch (error) {
         if (error instanceof AxiosError) {
           toast({
@@ -143,13 +145,16 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
       } finally {
         setIsLoading(false);
         reset();
-        setIsSubmit(2);
+        setIsSubmit(Math.random() + 23 * 3000);
       }
     };
 
     try {
-      isOpenModal === "register_task" && registerTask();
-      isOpenModal === "edit_task" && editTask();
+      if (isOpenModal === "register_task") {
+        registerTask();
+      } else if (isOpenModal === "edit_task") {
+        editTask();
+      }
     } catch (error) {
       console.log(error);
       if (error instanceof AxiosError) {

@@ -10,7 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, FileEdit, PlusIcon, Trash } from "lucide-react";
+import { ChevronDown, CircleOff, FileEdit, PlusIcon } from "lucide-react";
 
 import {
   AlertDialog,
@@ -118,7 +118,7 @@ export function TaskTable() {
         description: `Error : ${error}`,
       });
     } finally {
-      setIsSubmit(1);
+      setIsSubmit(Math.random() + 23 * 3000);
       setIsLoading(false);
     }
   };
@@ -201,7 +201,7 @@ export function TaskTable() {
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <button disabled={selected.length === 0}>
-                    <Trash
+                    <CircleOff
                       className={`${
                         selected.length === 0
                           ? "cursor-not-allowed text-slate-200"
@@ -212,9 +212,7 @@ export function TaskTable() {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
+                    <AlertDialogTitle>Do you want to cancel ?</AlertDialogTitle>
                     <AlertDialogDescription>
                       {selected.map((item, index) => (
                         <span
@@ -224,8 +222,6 @@ export function TaskTable() {
                           {index + 1}. user task name : {item.user_task_name}
                         </span>
                       ))}
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

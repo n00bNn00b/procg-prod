@@ -36,7 +36,7 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
       return <div className="min-w-max">Execution Method</div>;
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("execution_method")}</div>
+      <div className="">{row.getValue("execution_method")}</div>
     ),
   },
   {
@@ -44,9 +44,7 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
     header: () => {
       return <div className="w-[15rem]">Script Name</div>;
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("script_name")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("script_name")}</div>,
   },
   {
     accessorKey: "description",
@@ -54,7 +52,7 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
       return <div className="min-w-max">Description</div>;
     },
     cell: ({ row }) => (
-      <div className="capitalize w-[25rem]">{row.getValue("description")}</div>
+      <div className="w-[25rem]">{row.getValue("description")}</div>
     ),
   },
   {
@@ -62,9 +60,7 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
     header: () => {
       return <div className="min-w-max">Created By</div>;
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("created_by")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("created_by")}</div>,
   },
   {
     accessorKey: "last_updated_by",
@@ -73,7 +69,7 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
     },
     cell: ({ row }) => {
       const data: string = row.getValue("last_updated_by");
-      return <div className="capitalize">{data ? data : "null"}</div>;
+      return <div className="">{data ? data : "null"}</div>;
     },
   },
   {
@@ -83,7 +79,7 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
     },
     cell: ({ row }) => {
       const data: string = row.getValue("creation_date");
-      return <div className="capitalize min-w-max">{data?.slice(0, 16)} </div>;
+      return <div className="min-w-max">{data?.slice(0, 16)} </div>;
     },
   },
   {
@@ -93,14 +89,14 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
     },
     cell: ({ row }) => {
       const data: string = row.getValue("last_update_date");
-      return <div className="capitalize  min-w-max">{data?.slice(0, 16)} </div>;
+      return <div className=" min-w-max">{data?.slice(0, 16)} </div>;
     },
   },
   {
     accessorKey: "cancelled_yn",
     header: "Cancelled",
     cell: ({ row }) => {
-      return <div className="capitalize">{row.getValue("cancelled_yn")}</div>;
+      return <div className="">{row.getValue("cancelled_yn")}</div>;
     },
   },
 ];

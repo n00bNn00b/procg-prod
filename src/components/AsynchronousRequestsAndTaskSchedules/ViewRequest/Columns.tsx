@@ -41,29 +41,23 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
   {
     accessorKey: "schedule_name",
     header: () => {
-      return <div className="min-w-max">Schedule Name</div>;
+      return <div className="w-[30rem]">Schedule Name</div>;
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("schedule_name")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("schedule_name")}</div>,
   },
   {
     accessorKey: "schedule",
     header: () => {
       return <div className="min-w-max">Schedule</div>;
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("schedule")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("schedule")}</div>,
   },
   {
     accessorKey: "status",
     header: () => {
       return <div>Status</div>;
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("status")}</div>,
   },
   {
     accessorKey: "result",
@@ -80,9 +74,7 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
     header: () => {
       return <div className="min-w-max">Executor</div>;
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("executor")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("executor")}</div>,
   },
   {
     accessorKey: "timestamp",
@@ -91,7 +83,7 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
     },
     cell: ({ row }) => {
       const data: string = row.getValue("timestamp");
-      return <div className="capitalize  min-w-max">{data?.slice(0, 16)} </div>;
+      return <div className="  min-w-max">{data?.slice(0, 16)} </div>;
     },
   },
 ];
