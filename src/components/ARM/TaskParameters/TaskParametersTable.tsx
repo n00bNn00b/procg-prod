@@ -52,7 +52,8 @@ import TaskParametersModal from "../TaskParametersModal/TaskParametersModal";
 
 export function TaskParametersTable() {
   const api = useAxiosPrivate();
-  const { selectedTask, getTaskParameters, isSubmit } = useARMContext();
+  const { selectedTask, getTaskParametersLazyLoading, isSubmit } =
+    useARMContext();
   const [data, setData] = React.useState<IARMTaskParametersTypes[] | []>([]);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -104,8 +105,7 @@ export function TaskParametersTable() {
       if (!selectedTask?.user_task_name) return setData([]);
       try {
         setIsLoading(true);
-        const res = await getTaskParameters(
-          selectedTask.user_task_name,
+        const res = await getTaskParametersLazyLoading(
           selectedTask.task_name,
           page,
           limit

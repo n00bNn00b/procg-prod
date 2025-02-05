@@ -93,10 +93,10 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      user_schedule_name: user_schedule_name,
+      user_schedule_name: "",
       user_task_name: "",
-      parameters: action === "Edit Schedule" ? selected?.kwargs : {},
-      schedule: action === "Edit Schedule" ? selected?.schedule : "",
+      parameters: action === "Edit Task Schedule" ? selected?.kwargs : {},
+      schedule: action === "Edit Task Schedule" ? selected?.schedule : "",
     },
   });
 
@@ -120,10 +120,10 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
       schedule: Number(data.schedule),
     };
     const updateScheduleTaskPostData = {
-      parameters: data.parameters,
       schedule_minutes: Number(data.schedule),
+      parameters: data.parameters,
     };
-    console.log(updateScheduleTaskPostData, "updateScheduleTaskPostData");
+    console.log(adHocPostData, "adHocPostData");
     try {
       setIsLoading(true);
       let response;
@@ -150,7 +150,6 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
           title: "Success",
           description: "Task schedule created successfully.",
         });
-        form.reset();
       } else {
         throw new Error("Unexpected API response");
       }
@@ -162,14 +161,15 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
       });
     } finally {
       setIsLoading(false);
-      setIsSubmit(Math.random() + 3 * 234);
+      form.reset();
+      setIsSubmit(Math.random() + 23 * 3000);
     }
   };
 
-  const handleGetParameters = async (value: string) => {
+  const handleGetParameters = async (task_name: string) => {
     try {
       setIsLoading(true);
-      const results = await getTaskParametersByTaskName(value);
+      const results = await getTaskParametersByTaskName(task_name);
       const updatedParameters: Record<string, string | number> = {};
 
       if (results) {
@@ -191,12 +191,12 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
   return (
     <div
       className={`${
-        user_schedule_name === "run_script" ? "" : "w-[50%] mx-auto my-10"
+        action === "Edit Task Schedule" ? "" : "w-[50%] mx-auto my-10"
       } `}
     >
-      {user_schedule_name !== "Ad Hoc" && (
+      {action === "Edit Task Schedule" && (
         <div className="p-2 bg-slate-300 rounded-t mx-auto text-center font-bold flex justify-between">
-          <h2>{action}</h2>
+          <h2>Edit Task Schedule</h2>
           <X onClick={() => handleCloseModal()} className="cursor-pointer" />
         </div>
       )}
@@ -223,43 +223,45 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
                   )}
                 />
               )}
-            {(action === "Schedule A Task" || "Ad Hoc") &&
-              action !== "Edit Schedule" && (
-                <FormField
-                  control={form.control}
-                  name="user_task_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>User Task Name</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            handleGetParameters(value);
-                          }}
-                          defaultValue={field.value}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a Task" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {asyncTaskNames?.map((item) => (
-                              <SelectItem
-                                key={item.arm_task_id}
-                                value={item.user_task_name}
-                              >
-                                {item.user_task_name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              )}
+            {action !== "Edit Task Schedule" && (
+              <FormField
+                control={form.control}
+                name="user_task_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>User Task Name</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => {
+                          const parsedValue: IARMAsynchronousTasksTypes =
+                            JSON.parse(value);
+                          // console.log(value, "value");
+                          field.onChange(parsedValue.user_task_name);
+                          handleGetParameters(parsedValue.task_name);
+                        }}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a Task" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {asyncTaskNames?.map((item) => (
+                            <SelectItem
+                              key={item.arm_task_id}
+                              value={JSON.stringify(item)}
+                            >
+                              {item.user_task_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
-          <div className="pb-1">
+          <div className="grid grid-cols-2 gap-4 pb-2">
             {user_schedule_name !== "Ad Hoc" && (
               <FormField
                 control={form.control}
@@ -352,9 +354,11 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
               )}
             </TableBody>
           </Table>
-          <Button type="submit" className="mt-5">
-            {isLoading ? <div>Loading...</div> : "Submit"}
-          </Button>
+          <div className="flex justify-end">
+            <Button type="submit" className="mt-5">
+              {isLoading ? <div>Loading...</div> : "Submit"}
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

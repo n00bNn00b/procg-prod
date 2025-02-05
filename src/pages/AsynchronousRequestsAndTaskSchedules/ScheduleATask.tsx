@@ -1,11 +1,13 @@
-import { ViewEditScheduledTasksTable } from "@/components/AsynchronousRequestsAndTaskSchedules/ViewEditScheduledTasks/ViewEditScheduledTasksTable";
+import TaskRequest from "@/components/AsynchronousRequestsAndTaskSchedules/TaskRequest/TaskRequest";
 
 const ScheduleATask = () => {
   return (
     <div>
-      <div>
-        <ViewEditScheduledTasksTable limit={4} action="Schedule A Task" />
-      </div>
+      <TaskRequest
+        action="Schedule A Task"
+        user_schedule_name="run_script"
+        handleCloseModal={() => {}}
+      />
     </div>
   );
 };

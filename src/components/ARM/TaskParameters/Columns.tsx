@@ -34,7 +34,7 @@ export const columns: ColumnDef<IARMTaskParametersTypes>[] = [
       return <div className="w-[25rem]">Description</div>;
     },
     cell: ({ row }) => (
-      <div className="capitalize w-[25rem]">{row.getValue("description")}</div>
+      <div className="w-[25rem]">{row.getValue("description")}</div>
     ),
   },
   {
@@ -42,18 +42,14 @@ export const columns: ColumnDef<IARMTaskParametersTypes>[] = [
     header: () => {
       return <div className="min-w-max">Data Type</div>;
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("data_type")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("data_type")}</div>,
   },
   {
     accessorKey: "created_by",
     header: () => {
       return <div className="min-w-max">Created By</div>;
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("created_by")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("created_by")}</div>,
   },
   {
     accessorKey: "last_updated_by",
@@ -61,7 +57,7 @@ export const columns: ColumnDef<IARMTaskParametersTypes>[] = [
       return <div className="min-w-max">Last Updated By</div>;
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("last_updated_by")}</div>
+      <div className="">{row.getValue("last_updated_by")}</div>
     ),
   },
   {
@@ -71,7 +67,7 @@ export const columns: ColumnDef<IARMTaskParametersTypes>[] = [
     },
     cell: ({ row }) => {
       const data: string = row.getValue("creation_date");
-      return <div className="capitalize min-w-max">{data?.slice(0, 16)} </div>;
+      return <div className="min-w-max">{data?.slice(0, 16)} </div>;
     },
   },
   {
@@ -81,7 +77,7 @@ export const columns: ColumnDef<IARMTaskParametersTypes>[] = [
     },
     cell: ({ row }) => {
       const data: string = row.getValue("last_update_date");
-      return <div className="capitalize  min-w-max">{data?.slice(0, 16)} </div>;
+      return <div className=" min-w-max">{data?.slice(0, 16)} </div>;
     },
   },
 ];
