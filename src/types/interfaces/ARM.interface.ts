@@ -47,11 +47,17 @@ export interface IARMAsynchronousTasksParametersTypes {
 }
 export interface IARMViewRequestsTypes {
   request_id: number;
-  task_name: string;
-  schedule_name: string;
-  schedule: number;
+  task_id: string;
   status: string;
-  result: string;
+  user_task_name: string;
+  task_name: string;
   executor: string;
+  user_schedule_name: string;
+  redbeat_schedule_name: string;
+  schedule: number;
+  args: string;
+  kwargs: string;
+  parameters: string;
+  result: string;
   timestamp: string;
 }

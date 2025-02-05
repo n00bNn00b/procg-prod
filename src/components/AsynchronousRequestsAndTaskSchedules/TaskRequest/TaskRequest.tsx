@@ -79,7 +79,7 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
     form.reset({
       ...form.getValues(),
       parameters: parameters,
-      // kwargs: action === "Edit Schedule" ? selected?.kwargs : parameters,
+      // kwargs: action === "Edit Task Schedule" ? selected?.kwargs : parameters,
     });
   }, [parameters]);
 
@@ -133,32 +133,58 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
     );
     try {
       setIsLoading(true);
-      let response;
 
       if (action === "Ad Hoc") {
-        response = await api.post(
+        const response = await api.post(
           `/asynchronous-requests-and-task-schedules/create-task-schedule`,
           adHocPostData
         );
+        if (response) {
+          toast({
+            title: "Success",
+            description: "Ad-Hoc task created successfully.",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to create task schedule.",
+            variant: "destructive",
+          });
+        }
       } else if (action === "Schedule A Task") {
-        response = await api.post(
+        const response = await api.post(
           `/asynchronous-requests-and-task-schedules/create-task-schedule`,
           scheduleTaskPostData
         );
-      } else if (action === "Edit Schedule") {
-        response = await api.put(
+        if (response) {
+          toast({
+            title: "Success",
+            description: "Schedule A Task successfully.",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to create task schedule.",
+            variant: "destructive",
+          });
+        }
+      } else if (action === "Edit Task Schedule") {
+        const response = await api.put(
           `/asynchronous-requests-and-task-schedules/update-task-schedule/${selected?.task_name}/${selected?.redbeat_schedule_name}`,
           updateScheduleTaskPostData
         );
-      }
-
-      if (response) {
-        toast({
-          title: "Success",
-          description: "Task schedule created successfully.",
-        });
-      } else {
-        throw new Error("Unexpected API response");
+        if (response) {
+          toast({
+            title: "Success",
+            description: "Edit Task successfully.",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to create task schedule.",
+            variant: "destructive",
+          });
+        }
       }
     } catch (error) {
       toast({
