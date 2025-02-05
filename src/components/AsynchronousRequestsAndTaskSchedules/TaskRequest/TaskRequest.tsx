@@ -85,7 +85,7 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
 
   const FormSchema = z.object({
     user_schedule_name: z.string(),
-    user_task_name: z.string(),
+    task_name: z.string(),
     parameters: z.record(z.union([z.string(), z.number()])),
     schedule: z.string().or(z.number()),
   });
@@ -94,7 +94,7 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       user_schedule_name: "",
-      user_task_name: "",
+      task_name: "",
       parameters: action === "Edit Task Schedule" ? selected?.kwargs : {},
       schedule: action === "Edit Task Schedule" ? selected?.schedule : "",
     },
@@ -110,12 +110,12 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
     }
 
     const adHocPostData = {
-      user_task_name: data.user_task_name,
+      task_name: data.task_name,
       parameters: data.parameters,
     };
     const scheduleTaskPostData = {
       user_schedule_name: data.user_schedule_name,
-      user_task_name: data.user_task_name,
+      task_name: data.task_name,
       parameters: data.parameters,
       schedule: Number(data.schedule),
     };
@@ -123,7 +123,14 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
       schedule_minutes: Number(data.schedule),
       parameters: data.parameters,
     };
-    console.log(adHocPostData, "adHocPostData");
+    console.log(
+      adHocPostData,
+      scheduleTaskPostData,
+      updateScheduleTaskPostData,
+      "adHocPostData",
+      "scheduleTaskPostData",
+      "updateScheduleTaskPostData"
+    );
     try {
       setIsLoading(true);
       let response;
@@ -223,21 +230,20 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
                   )}
                 />
               )}
+          </div>
+          <div className="grid grid-cols-2 gap-4 pb-2">
             {action !== "Edit Task Schedule" && (
               <FormField
                 control={form.control}
-                name="user_task_name"
+                name="task_name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>User Task Name</FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={(value) => {
-                          const parsedValue: IARMAsynchronousTasksTypes =
-                            JSON.parse(value);
-                          // console.log(value, "value");
-                          field.onChange(parsedValue.user_task_name);
-                          handleGetParameters(parsedValue.task_name);
+                          field.onChange(value);
+                          handleGetParameters(value);
                         }}
                         defaultValue={field.value}
                       >
@@ -248,7 +254,7 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
                           {asyncTaskNames?.map((item) => (
                             <SelectItem
                               key={item.arm_task_id}
-                              value={JSON.stringify(item)}
+                              value={item.task_name}
                             >
                               {item.user_task_name}
                             </SelectItem>
@@ -260,8 +266,6 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
                 )}
               />
             )}
-          </div>
-          <div className="grid grid-cols-2 gap-4 pb-2">
             {user_schedule_name !== "Ad Hoc" && (
               <FormField
                 control={form.control}
@@ -284,7 +288,7 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
           </div>
           <Table>
             <TableHeader>
-              <TableRow className="bg-winter-100">
+              <TableRow className="bg-winter-100  hover:bg-winter-100">
                 <TableHead className="border border-winter-400">
                   Parameter Name
                 </TableHead>

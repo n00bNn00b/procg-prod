@@ -86,11 +86,10 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
     const addTaskParams = async () => {
       try {
         setIsLoading(true);
-        const res = await api.post(
-          `/arm-tasks/add-task-params/${selectedTask?.user_task_name}`,
+        await api.post(
+          `/arm-tasks/add-task-params/${selectedTask?.task_name}`,
           postData
         );
-        console.log(res.data, "added task parameter item");
         toast({
           title: "Info !!!",
           description: `Added successfully.`,
