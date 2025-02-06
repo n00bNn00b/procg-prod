@@ -16,6 +16,23 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
       enableHiding: false,
     },
     {
+      accessorKey: "user_task_name",
+      header: () => {
+        return <div className="min-w-max">User Task Name</div>;
+      },
+      cell: ({ row }) => {
+        const args: Array<string> = row.getValue("args");
+        return <div className="min-w-max">{args[1]}</div>;
+      },
+    },
+    {
+      accessorKey: "task_name",
+      header: () => {
+        return <div className="min-w-max">Task Name</div>;
+      },
+      cell: ({ row }) => <div>{row.getValue("task_name")}</div>,
+    },
+    {
       accessorKey: "user_schedule_name",
       header: () => {
         return <div className="min-w-max">User Schedule Name</div>;
@@ -35,16 +52,9 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
       },
     },
     {
-      accessorKey: "task_name",
-      header: () => {
-        return <div className="min-w-max">Task Name</div>;
-      },
-      cell: ({ row }) => <div>{row.getValue("task_name")}</div>,
-    },
-    {
       accessorKey: "kwargs",
       header: () => {
-        return <div className="min-w-max">Kwargs</div>;
+        return <div className="min-w-max">Parameters</div>;
       },
       cell: ({ row }) => {
         const data: string = JSON.stringify(row.getValue("kwargs"));
@@ -61,7 +71,7 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
     {
       accessorKey: "args",
       header: () => {
-        return <div className="w-[15rem]">Argument</div>;
+        return <div className="w-[15rem]">Script Name</div>;
       },
       cell: ({ row }) => {
         const args: Array<string> = row.getValue("args");

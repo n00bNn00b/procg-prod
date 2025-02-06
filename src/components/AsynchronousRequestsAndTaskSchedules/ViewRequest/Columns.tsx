@@ -101,16 +101,6 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
     },
   },
   {
-    accessorKey: "kwargs",
-    header: () => {
-      return <div className="min-w-max">Kwargs</div>;
-    },
-    cell: ({ row }) => {
-      const data: string = JSON.stringify(row.getValue("kwargs"));
-      return <div className="min-w-max">{data}</div>;
-    },
-  },
-  {
     accessorKey: "parameters",
     header: () => {
       return <div className="min-w-max">Parameters</div>;
@@ -133,7 +123,7 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
   {
     accessorKey: "timestamp",
     header: () => {
-      return <div className="min-w-max">Created On</div>;
+      return <div className="min-w-max">Timestamp</div>;
     },
     cell: ({ row }) => {
       const data: string = row.getValue("timestamp");

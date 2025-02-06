@@ -271,7 +271,7 @@ export function TaskParametersTable() {
           </div>
         </div>
         <Input
-          placeholder="Filter parameter Name"
+          placeholder="Filter Parameter Name"
           value={
             (table.getColumn("parameter_name")?.getFilterValue() as string) ??
             ""
@@ -294,7 +294,7 @@ export function TaskParametersTable() {
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="max-h-72 overflow-y-auto">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())

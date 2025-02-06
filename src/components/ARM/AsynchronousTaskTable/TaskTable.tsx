@@ -61,7 +61,7 @@ export function TaskTable() {
   const { page, setPage, totalPage, isOpenModal, setIsOpenModal } =
     useGlobalContext();
   const [data, setData] = React.useState<IARMAsynchronousTasksTypes[] | []>([]);
-  const limit = 10;
+  const limit = 8;
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -122,6 +122,7 @@ export function TaskTable() {
       setIsLoading(false);
     }
   };
+
   const table = useReactTable({
     data,
     columns,
@@ -142,8 +143,23 @@ export function TaskTable() {
       rowSelection,
       pagination,
     },
+    initialState: {
+      columnVisibility: {
+        id: false,
+      },
+    },
   });
 
+  //default unselect
+  // const hiddenColumns = [];
+
+  // React.useEffect(() => {
+  //   table.getAllColumns().forEach((column) => {
+  //     if (hiddenColumns.includes(column.id)) {
+  //       column.toggleVisibility(false);
+  //     }
+  //   });
+  // }, [table]);
   const handleOpenModal = (modelName: string) => {
     setIsOpenModal(modelName);
   };
@@ -255,7 +271,7 @@ export function TaskTable() {
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="max-h-72 overflow-y-auto">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
@@ -331,7 +347,7 @@ export function TaskTable() {
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-[21rem] text-center"
+                    className="h-[16rem] text-center"
                   >
                     <l-tailspin
                       size="40"
