@@ -38,7 +38,7 @@ export function ViewRequestTable() {
   const { getViewRequests, isLoading } = useARMContext();
   const [data, setData] = React.useState<IARMViewRequestsTypes[] | []>([]);
   const { page, setPage, totalPage } = useGlobalContext();
-  const limit = 10;
+  const limit = 8;
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -84,6 +84,16 @@ export function ViewRequestTable() {
       pagination,
     },
   });
+  // default hidden columns
+  const hiddenColumns = ["redbeat_schedule_name", "task_id", "args"];
+
+  React.useEffect(() => {
+    table.getAllColumns().forEach((column) => {
+      if (hiddenColumns.includes(column.id)) {
+        column.toggleVisibility(false);
+      }
+    });
+  }, [table]);
 
   return (
     <div className="px-3">
@@ -106,7 +116,7 @@ export function ViewRequestTable() {
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="max-h-72 overflow-y-auto">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
@@ -114,7 +124,7 @@ export function ViewRequestTable() {
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
-                    className="capitalize"
+                    className="capitalize overflow-y-auto h-9"
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) =>
                       column.toggleVisibility(!!value)
@@ -175,7 +185,7 @@ export function ViewRequestTable() {
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-[21rem] text-center"
+                    className="h-[17rem] text-center"
                   >
                     <l-tailspin
                       size="40"

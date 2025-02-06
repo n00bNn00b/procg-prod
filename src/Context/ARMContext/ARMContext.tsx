@@ -192,7 +192,6 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
       setIsLoading(true);
       await Promise.all(
         selectedItems.map(async (item) => {
-          console.log(item, "item");
           await api.put(
             `/asynchronous-requests-and-task-schedules/cancel-task-schedule/${item.task_name}/${item.redbeat_schedule_name}`
           );

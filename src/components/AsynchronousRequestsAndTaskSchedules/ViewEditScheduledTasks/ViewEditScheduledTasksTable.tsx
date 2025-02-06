@@ -61,7 +61,7 @@ export function ViewEditScheduledTasksTable() {
   const [data, setData] = React.useState<
     IAsynchronousRequestsAndTaskSchedulesTypes[] | []
   >([]);
-  const limit = 10;
+  const limit = 8;
   const [page, setPage] = React.useState<number>(1);
   const { totalPage, isOpenModal, setIsOpenModal } = useGlobalContext();
   React.useEffect(() => {
@@ -116,7 +116,7 @@ export function ViewEditScheduledTasksTable() {
       setSelected([]);
       toast({
         title: "Info !!!",
-        description: `Deleted successfully.`,
+        description: `Cancel successfully.`,
       });
     } catch (error) {
       toast({
@@ -148,7 +148,16 @@ export function ViewEditScheduledTasksTable() {
       rowSelection,
       pagination,
     },
-  });
+  }); // default hidden columns
+  const hiddenColumns = ["redbeat_schedule_name"];
+
+  React.useEffect(() => {
+    table.getAllColumns().forEach((column) => {
+      if (hiddenColumns.includes(column.id)) {
+        column.toggleVisibility(false);
+      }
+    });
+  }, [table]);
 
   const handleOpenModal = (modelName: string) => {
     setIsOpenModal(modelName);
@@ -245,7 +254,7 @@ export function ViewEditScheduledTasksTable() {
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="max-h-72 overflow-y-auto">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
@@ -321,7 +330,7 @@ export function ViewEditScheduledTasksTable() {
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-[21rem] text-center"
+                    className="h-[17rem] text-center"
                   >
                     <l-tailspin
                       size="40"
