@@ -154,8 +154,8 @@ const SentTable = ({ path, person }: SentTableProps) => {
               {sentMessages.map((msg, i) => (
                 <TableRow key={i}>
                   <TableCell className="py-2">
-                    {(msg.recivers || []).slice(0, 2).join(", ")}
-                    {(msg.recivers || []).length > 2 && ", ..."}
+                    {msg.recivers[0].name}
+                    {(msg.recivers || []).length > 1 && ", ..."}
                   </TableCell>
 
                   <TableCell className="py-2">

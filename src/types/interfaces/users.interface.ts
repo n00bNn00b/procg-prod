@@ -1,3 +1,8 @@
+export interface ProfilePicture {
+  original: string;
+  thumbnail: string;
+}
+
 export interface Token {
   isLoggedIn: boolean;
   access_token: string;
@@ -8,14 +13,8 @@ export interface Token {
   iat: number;
   exp: number;
   issuedAt: string;
+  profile_picture: ProfilePicture;
 }
-// export interface Token {
-//   access_token?: string;
-//   tenant_id?: number;
-//   user_id?: number;
-//   user_type?: string;
-//   user_name: string;
-// }
 
 export interface Users {
   user_id: number;
@@ -27,7 +26,7 @@ export interface Users {
   last_updated_by?: number;
   last_updated_on?: string;
   tenant_id?: number;
-  profile_picture?: string;
+  profile_picture: ProfilePicture;
 }
 export interface IUpdateUserTypes {
   user_name: string;
@@ -42,10 +41,15 @@ export interface ICombinedUser extends Users {
   person: IPersonsTypes;
 }
 
+export interface UserModel {
+  name: string;
+  profile_picture: string;
+}
+
 export interface Message {
   id: string;
-  sender: string;
-  recivers: string[];
+  sender: UserModel;
+  recivers: UserModel[];
   subject: string;
   body: string;
   date: Date;

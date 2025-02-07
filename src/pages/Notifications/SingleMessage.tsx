@@ -30,7 +30,7 @@ const SingleMessage = () => {
   const [totalMessages, setTotalMessages] = useState<Message[]>([]);
   const [parrentMessage, setParrentMessage] = useState<Message>({
     id: "",
-    sender: "",
+    sender: { name: "", profile_picture: "" },
     recivers: [],
     subject: "",
     body: "",
@@ -238,8 +238,8 @@ const SingleMessage = () => {
               <div className="flex justify-between">
                 <div className="flex flex-col text-dark-400">
                   <p>From</p>
-                  <p className={getUniqueColor(message.sender)}>
-                    {message.sender}
+                  <p className={getUniqueColor(message.sender.name)}>
+                    {message.sender.name}
                   </p>
                   <img
                     src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -251,11 +251,11 @@ const SingleMessage = () => {
                   <p className="text-right">To</p>
                   <div className="flex gap-2 max-w-[400px] items-center">
                     {message.recivers.slice(0, 2).map((recvr) => (
-                      <div key={recvr} className="flex">
+                      <div key={recvr.name} className="flex">
                         <div className="flex flex-col text-dark-400 items-center">
-                          <p className={getUniqueColor(message.sender)}>
-                            {recvr.slice(0, 8)}
-                            {recvr.length > 8 && ".."}
+                          <p className={getUniqueColor(message.sender.name)}>
+                            {recvr.name.slice(0, 8)}
+                            {recvr.name.length > 8 && ".."}
                           </p>
                           <img
                             src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -276,7 +276,7 @@ const SingleMessage = () => {
                             <TooltipContent className=" h-60 overflow-y-scroll scrollbar-thin p-4">
                               {message.recivers.map((rcvr) => (
                                 <div
-                                  key={rcvr}
+                                  key={rcvr.name}
                                   className="flex my-2 text-dark-400"
                                 >
                                   {/* {message.recivers[0] === rcvr ||
@@ -288,9 +288,11 @@ const SingleMessage = () => {
                                       className="w-10 h-10 rounded-full object-cover object-center"
                                     />
                                     <p
-                                      className={getUniqueColor(message.sender)}
+                                      className={getUniqueColor(
+                                        message.sender.name
+                                      )}
                                     >
-                                      {rcvr}
+                                      {rcvr.name}
                                     </p>
                                   </div>
                                   {/* )} */}

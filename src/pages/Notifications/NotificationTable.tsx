@@ -167,8 +167,8 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
                 >
                   <>
                     <TableCell className="py-2">
-                      {msg.sender.slice(0, 8)}
-                      {msg.sender.length > 8 && "..."}
+                      {msg.sender.name.slice(0, 8)}
+                      {msg.sender.name.length > 8 && "..."}
                     </TableCell>
                     <TableCell className="py-2">
                       <span className="font-medium mr-1">{msg.subject}</span>

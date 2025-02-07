@@ -11,23 +11,17 @@ import { LogOut, Settings, ShieldBan, User } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-const Loading = "/public/profile/loading.gif";
+// const Loading = "/public/profile/loading.gif";
 
 // import { useEffect } from "react";
 
 const Dropdown = () => {
   const api = useAxiosPrivate();
   const apiUrl = import.meta.env.VITE_API_URL;
-  const { token, setToken, combinedUser, isCombinedUserLoading } =
-    useGlobalContext();
+  const { token, setToken } = useGlobalContext();
   const { handleDisconnect } = useSocketContext();
   const navigate = useNavigate();
-  const profileLogo = isCombinedUserLoading
-    ? Loading
-    : combinedUser?.profile_picture
-    ? `${apiUrl}/${combinedUser.profile_picture}`
-    : `${apiUrl}/uploads/profiles/default/loading.gif`;
-  // console.log(combinedUser, "combinedUser");
+
   const userExample = {
     isLoggedIn: false,
     user_id: 0,
@@ -38,6 +32,7 @@ const Dropdown = () => {
     issuedAt: "",
     iat: 0,
     exp: 0,
+    profile_picture: { original: "", thumbnail: "" },
   };
   const handleSignOut = async () => {
     await api.get(`/logout`);
@@ -52,7 +47,7 @@ const Dropdown = () => {
         <Avatar className="border">
           <AvatarImage
             className="object-cover object-center"
-            src={profileLogo}
+            src={`${apiUrl}/${token.profile_picture.original}`}
           />
         </Avatar>
       </DropdownMenuTrigger>
