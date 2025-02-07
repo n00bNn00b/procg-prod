@@ -64,7 +64,7 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
     {
       accessorKey: "schedule",
       header: () => {
-        return <div className="min-w-max">Schedule Time</div>;
+        return <div className="min-w-max">Schedule</div>;
       },
       cell: ({ row }) => <div className="">{row.getValue("schedule")}</div>,
     },

@@ -85,7 +85,13 @@ export function ViewRequestTable() {
     },
   });
   // default hidden columns
-  const hiddenColumns = ["redbeat_schedule_name", "task_id", "args"];
+  const hiddenColumns = [
+    "redbeat_schedule_name",
+    "task_id",
+    "args",
+    "task_name",
+    "executor",
+  ];
 
   React.useEffect(() => {
     table.getAllColumns().forEach((column) => {
@@ -100,12 +106,15 @@ export function ViewRequestTable() {
       {/* top icon and columns*/}
       <div className="flex gap-3 items-center py-2">
         <Input
-          placeholder="Filter Task Name"
+          placeholder="Filter User Task Name"
           value={
-            (table.getColumn("task_name")?.getFilterValue() as string) ?? ""
+            (table.getColumn("user_task_name")?.getFilterValue() as string) ??
+            ""
           }
           onChange={(event) =>
-            table.getColumn("task_name")?.setFilterValue(event.target.value)
+            table
+              .getColumn("user_task_name")
+              ?.setFilterValue(event.target.value)
           }
           className="max-w-sm px-4 py-2"
         />

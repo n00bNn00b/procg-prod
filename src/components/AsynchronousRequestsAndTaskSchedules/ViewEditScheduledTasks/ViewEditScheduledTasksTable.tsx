@@ -149,7 +149,15 @@ export function ViewEditScheduledTasksTable() {
       pagination,
     },
   }); // default hidden columns
-  const hiddenColumns = ["redbeat_schedule_name"];
+  const hiddenColumns = [
+    "redbeat_schedule_name",
+    "kwargs",
+    "args",
+    "created_by",
+    "creation_date",
+    "last_updated_by",
+    "last_update_date",
+  ];
 
   React.useEffect(() => {
     table.getAllColumns().forEach((column) => {
