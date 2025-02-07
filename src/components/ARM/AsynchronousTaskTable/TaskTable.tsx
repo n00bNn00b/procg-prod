@@ -150,16 +150,22 @@ export function TaskTable() {
     },
   });
 
-  //default unselect
-  // const hiddenColumns = [];
+  // default unselect
+  const hiddenColumns = [
+    "created_by",
+    "last_updated_by",
+    "creation_date",
+    "last_update_date",
+    "cancelled_yn",
+  ];
 
-  // React.useEffect(() => {
-  //   table.getAllColumns().forEach((column) => {
-  //     if (hiddenColumns.includes(column.id)) {
-  //       column.toggleVisibility(false);
-  //     }
-  //   });
-  // }, [table]);
+  React.useEffect(() => {
+    table.getAllColumns().forEach((column) => {
+      if (hiddenColumns.includes(column.id)) {
+        column.toggleVisibility(false);
+      }
+    });
+  }, [table]);
   const handleOpenModal = (modelName: string) => {
     setIsOpenModal(modelName);
   };
