@@ -158,8 +158,8 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
                     <TableCell className="py-2">
                       {msg.recivers.length === 0
                         ? "(no user)"
-                        : msg.recivers.slice(0, 2).join(", ")}
-                      {msg.recivers.length > 2 && ", ..."}
+                        : msg.recivers[0].name}
+                      {msg.recivers.length > 1 && ", ..."}
                     </TableCell>
                     <TableCell className="py-2">
                       <span className="font-medium mr-1">

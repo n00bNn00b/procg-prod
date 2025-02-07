@@ -24,13 +24,13 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Message } from "@/types/interfaces/users.interface";
+import { Message, UserModel } from "@/types/interfaces/users.interface";
 import Spinner from "@/components/Spinner/Spinner";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 // import { v4 as uuidv4 } from "uuid";
 
 interface IOldMsgTypes {
-  receivers?: string[];
+  receivers?: UserModel[];
   subject?: string;
   body?: string;
 }
@@ -50,7 +50,7 @@ const SingleDraft = () => {
   const id = idString.id;
   const [parentid, setParentid] = useState<string>("");
   const [status, setStatus] = useState<string>("");
-  const [recivers, setRecivers] = useState<string[]>([]);
+  const [recivers, setRecivers] = useState<UserModel[]>([]);
   const [subject, setSubject] = useState<string>("");
   const [body, setBody] = useState<string>("");
   const [query, setQuery] = useState<string>("");
@@ -60,9 +60,13 @@ const SingleDraft = () => {
   const [saveDraftLoading, setSaveDraftLoading] = useState(false);
   const [oldMsgState, setOldMsgState] = useState<IOldMsgTypes | undefined>({});
   const [userChanged, setuserChanged] = useState<boolean>(false);
-  const sender = token.user_name;
-  const totalusers = [...recivers, sender];
-  const uniqueUsers = [...new Set(totalusers)];
+  const sender = {
+    name: token?.user_name,
+    profile_picture: token?.profile_picture.thumbnail,
+  };
+  const receiverNames = recivers.map((rcvr) => rcvr.name);
+  const totalusers = [...receiverNames, token?.user_name];
+  const involvedusers = [...new Set(totalusers)];
 
   useEffect(() => {
     const fetchMessage = async () => {
@@ -99,27 +103,37 @@ const SingleDraft = () => {
     user.user_name.toLowerCase().includes(query.toLowerCase())
   );
 
-  const handleReciever = (reciever: string) => {
-    if (isAllClicked) {
-      const newArray = recivers.filter((rcvr) => rcvr !== reciever);
+  const handleReciever = (reciever: UserModel) => {
+    if (receiverNames.includes(reciever.name)) {
+      const newArray = recivers.filter((rcvr) => rcvr.name !== reciever.name);
       setRecivers(newArray);
-    }
-    if (recivers.includes(reciever)) {
-      return;
+      setQuery("");
     } else {
       setRecivers((prevArray) => [...prevArray, reciever]);
+      setQuery("");
     }
-  };
-
-  const handleRemoveReciever = (reciever: string) => {
-    const newRecipients = recivers.filter((rcvr) => rcvr !== reciever);
-    setRecivers(newRecipients);
   };
 
   const handleSelectAll = () => {
-    setIsAllClicked(true);
-    const allusers = users.map((user) => user.user_name);
-    setRecivers(allusers);
+    if (!isAllClicked) {
+      setIsAllClicked(true);
+      const newReceivers = actualUsers.map((usr) => {
+        return {
+          name: usr.user_name,
+          profile_picture: usr.profile_picture.thumbnail,
+        };
+      });
+      setRecivers(newReceivers);
+    } else {
+      setIsAllClicked(false);
+      setRecivers([]);
+    }
+    setQuery("");
+  };
+
+  const handleRemoveReciever = (reciever: string) => {
+    const newRecipients = recivers.filter((rcvr) => rcvr.name !== reciever);
+    setRecivers(newRecipients);
   };
 
   const handleSend = async () => {
@@ -133,9 +147,9 @@ const SingleDraft = () => {
       date: new Date(),
       status: "Sent",
       parentid,
-      involvedusers: uniqueUsers,
-      readers: recivers,
-      holders: uniqueUsers,
+      involvedusers,
+      readers: receiverNames,
+      holders: involvedusers,
       recyclebin: [],
     };
     try {
@@ -173,9 +187,9 @@ const SingleDraft = () => {
       date: new Date(),
       status: status,
       parentid,
-      involvedusers: uniqueUsers,
-      readers: recivers,
-      holders: [sender],
+      involvedusers,
+      readers: receiverNames,
+      holders: involvedusers,
       recyclebin: [],
     };
 
@@ -325,12 +339,17 @@ const SingleDraft = () => {
                     </div>
                     {filterdUser.map((user) => (
                       <div
-                        onClick={() => handleReciever(user.user_name)}
+                        onClick={() =>
+                          handleReciever({
+                            name: user.user_name,
+                            profile_picture: user.profile_picture.thumbnail,
+                          })
+                        }
                         key={user.user_id}
                         className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer"
                       >
                         <p>{user.user_name}</p>
-                        {recivers.includes(user.user_name) ? (
+                        {receiverNames.includes(user.user_name) ? (
                           <Check size={14} color="#038C5A" />
                         ) : null}
                       </div>
@@ -341,15 +360,15 @@ const SingleDraft = () => {
                 <div className="flex gap-2 w-[calc(100%-11rem)] justify-end">
                   <div className="rounded-sm max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1">
                     {recivers
-                      .filter((usr) => usr !== user)
+                      .filter((usr) => usr.name !== user)
                       .map((rec) => (
                         <div
-                          key={rec}
+                          key={rec.name}
                           className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full"
                         >
-                          <p className="font-semibold ">{rec}</p>
+                          <p className="font-semibold ">{rec.name}</p>
                           <div
-                            onClick={() => handleRemoveReciever(rec)}
+                            onClick={() => handleRemoveReciever(rec.name)}
                             className="flex h-[65%] items-end cursor-pointer"
                           >
                             <Delete size={18} />
