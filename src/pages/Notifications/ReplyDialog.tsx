@@ -20,20 +20,18 @@ import { v4 as uuidv4 } from "uuid";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ReplyDialogProps {
-  subject: string;
   parrentMessage: Message;
   setTotalMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
 const ReplyDialog = ({
-  subject: sub,
   parrentMessage,
   setTotalMessages,
 }: ReplyDialogProps) => {
   const api = useAxiosPrivate();
   const { token, user } = useGlobalContext();
   const { handlesendMessage, handleDraftMessage } = useSocketContext();
-  const [subject, setSubject] = useState<string>(sub);
+  const [subject, setSubject] = useState<string>(parrentMessage.subject);
   const [body, setBody] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const [isDrafting, setIsDrafting] = useState(false);

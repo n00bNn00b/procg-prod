@@ -215,7 +215,6 @@ const SingleSent = () => {
                     <TooltipTrigger asChild>
                       <span>
                         <ReplyDialog
-                          subject={message.subject}
                           setTotalMessages={setTotalMessages}
                           parrentMessage={parrentMessage}
                         />

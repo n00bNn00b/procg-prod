@@ -5,7 +5,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NavLink, useNavigate } from "react-router-dom";
 import { LogOut, Settings, ShieldBan, User } from "lucide-react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
@@ -18,7 +18,7 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 const Dropdown = () => {
   const api = useAxiosPrivate();
   const apiUrl = import.meta.env.VITE_API_URL;
-  const { token, setToken } = useGlobalContext();
+  const { token, setToken, combinedUser } = useGlobalContext();
   const { handleDisconnect } = useSocketContext();
   const navigate = useNavigate();
 
@@ -47,8 +47,9 @@ const Dropdown = () => {
         <Avatar className="border">
           <AvatarImage
             className="object-cover object-center"
-            src={`${apiUrl}/${token.profile_picture.original}`}
+            src={`${apiUrl}/${combinedUser?.profile_picture.original}`}
           />
+          <AvatarFallback>{token.user_name.slice(0, 1)}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-48 mr-1">
