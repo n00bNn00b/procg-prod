@@ -1,5 +1,11 @@
 import * as React from "react";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -148,7 +154,8 @@ export function ViewEditScheduledTasksTable() {
       rowSelection,
       pagination,
     },
-  }); // default hidden columns
+  });
+  // default hidden columns
   const hiddenColumns = [
     "redbeat_schedule_name",
     "kwargs",
@@ -166,6 +173,11 @@ export function ViewEditScheduledTasksTable() {
       }
     });
   }, [table]);
+
+  React.useEffect(() => {
+    table.toggleAllPageRowsSelected(false);
+    setSelected([]);
+  }, [page]);
 
   const handleOpenModal = (modelName: string) => {
     setIsOpenModal(modelName);
@@ -195,39 +207,68 @@ export function ViewEditScheduledTasksTable() {
           <div className="flex gap-3 items-center px-4 py-2 border rounded">
             <div className="flex gap-3">
               <button disabled={selected.length > 1 || selected.length === 0}>
-                <FileEdit
-                  className={`${
-                    selected.length > 1 || selected.length === 0
-                      ? "text-slate-200 cursor-not-allowed"
-                      : "cursor-pointer"
-                  }`}
-                  onClick={() => handleOpenModal("edit_task_schedule")}
-                />
+                {" "}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <FileEdit
+                        className={`${
+                          selected.length > 1 || selected.length === 0
+                            ? "text-slate-200 cursor-not-allowed"
+                            : "cursor-pointer"
+                        }`}
+                        onClick={() => handleOpenModal("edit_task_schedule")}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Edit Schedule Task</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <button disabled={selected.length === 0}>
-                    <CircleOff
-                      className={`${
-                        selected.length === 0
-                          ? "cursor-not-allowed text-slate-200"
-                          : "cursor-pointer"
-                      }`}
-                    />
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <CircleOff
+                            className={`${
+                              selected.length === 0
+                                ? "cursor-not-allowed text-slate-200"
+                                : "cursor-pointer"
+                            }`}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Cancel Schedule Task</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Do you want to cancel ?</AlertDialogTitle>
+                    <AlertDialogTitle>Cancel scheduled task?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      {selected.map((item, index) => (
-                        <span
-                          key={item.arm_task_sche_id}
-                          className="block text-red-500"
-                        >
-                          {index + 1}. task name : {item.task_name}
-                        </span>
-                      ))}
+                      <>Selected User Task Schedule:</>
+                      <br />
+                      <br />
+                      {selected
+                        .filter(
+                          (item) => item.cancelled_yn.toLowerCase() !== "y"
+                        )
+                        .map((item, index) => (
+                          <span
+                            key={item.arm_task_sche_id}
+                            className="block text-red-500"
+                          >
+                            {index + 1}. User task name : {item.args[1]}
+                          </span>
+                        ))}
+                      <br />
+                      This action cannot be undone. This will permanently cancel
+                      your scheduled task.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -319,8 +360,12 @@ export function ViewEditScheduledTasksTable() {
                                 const selectedRows = table
                                   .getSelectedRowModel()
                                   .rows.map((row) => row.original);
-                                console.log(selectedRows);
-                                setSelected(selectedRows);
+                                setSelected(
+                                  selectedRows.filter(
+                                    (item) =>
+                                      item.cancelled_yn.toLowerCase() !== "y"
+                                  )
+                                );
                               }, 0);
                             }}
                             className="mr-1"
@@ -359,11 +404,13 @@ export function ViewEditScheduledTasksTable() {
                       <TableCell key={cell.id} className="border p-1 h-8">
                         {index === 0 ? (
                           <Checkbox
-                            className=""
-                            checked={row.getIsSelected()}
-                            onCheckedChange={(value) =>
-                              row.toggleSelected(!!value)
+                            disabled={
+                              row.original.cancelled_yn.toLowerCase() === "y"
                             }
+                            checked={row.getIsSelected()}
+                            onCheckedChange={(value) => {
+                              row.toggleSelected(!!value);
+                            }}
                             onClick={() => handleRowSelection(row.original)}
                           />
                         ) : (

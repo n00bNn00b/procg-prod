@@ -10,19 +10,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, CircleOff, FileEdit, PlusIcon } from "lucide-react";
-
+import { ChevronDown, FileEdit, PlusIcon } from "lucide-react";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -45,19 +39,12 @@ import columns from "./Columns";
 import Pagination5 from "@/components/Pagination/Pagination5";
 import { IARMAsynchronousTasksTypes } from "@/types/interfaces/ARM.interface";
 import AsynchronousRegisterEditTaskModal from "../AsynchronousRegisterEditTaskModal/AsynchronousRegisterEditTaskModal";
-import { toast } from "@/components/ui/use-toast";
 import { useARMContext } from "@/Context/ARMContext/ARMContext";
 import CustomModal2 from "@/components/CustomModal/CustomModal2";
 
 export function TaskTable() {
-  const {
-    getAsyncTasksLazyLoading,
-    isLoading,
-    setIsLoading,
-    deleteAsyncTasks,
-    isSubmit,
-    setIsSubmit,
-  } = useARMContext();
+  const { getAsyncTasksLazyLoading, isLoading, setIsLoading, isSubmit } =
+    useARMContext();
   const { page, setPage, totalPage, isOpenModal, setIsOpenModal } =
     useGlobalContext();
   const [data, setData] = React.useState<IARMAsynchronousTasksTypes[] | []>([]);
@@ -98,29 +85,6 @@ export function TaskTable() {
         return [...prevSelected, rowSelection];
       }
     });
-  };
-
-  const handleDelete = async () => {
-    setIsLoading(true);
-    try {
-      await deleteAsyncTasks(selected);
-
-      //table toggle empty
-      table.getRowModel().rows.map((row) => row.toggleSelected(false));
-      setSelected([]);
-      toast({
-        title: "Info !!!",
-        description: `Deleted successfully.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Info !!!",
-        description: `Error : ${error}`,
-      });
-    } finally {
-      setIsSubmit(Math.random() + 23 * 3000);
-      setIsLoading(false);
-    }
   };
 
   const table = useReactTable({
@@ -206,54 +170,38 @@ export function TaskTable() {
         <div className="flex gap-3">
           <div className="flex gap-3 items-center px-4 py-2 border rounded">
             <div className="flex gap-3">
-              <PlusIcon
-                className="cursor-pointer"
-                onClick={() => handleOpenModal("register_task")}
-              />
-              <button disabled={selected.length > 1 || selected.length === 0}>
-                <FileEdit
-                  className={`${
-                    selected.length > 1 || selected.length === 0
-                      ? "text-slate-200 cursor-not-allowed"
-                      : "cursor-pointer"
-                  }`}
-                  onClick={() => handleOpenModal("edit_task")}
-                />
-              </button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <button disabled={selected.length === 0}>
-                    <CircleOff
-                      className={`${
-                        selected.length === 0
-                          ? "cursor-not-allowed text-slate-200"
-                          : "cursor-pointer"
-                      }`}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <PlusIcon
+                      className="cursor-pointer"
+                      onClick={() => handleOpenModal("register_task")}
                     />
-                  </button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Do you want to cancel ?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {selected.map((item, index) => (
-                        <span
-                          key={item.user_task_name}
-                          className="block text-red-500"
-                        >
-                          {index + 1}. user task name : {item.user_task_name}
-                        </span>
-                      ))}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
-                      Continue
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Register Task</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <button disabled={selected.length > 1 || selected.length === 0}>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <FileEdit
+                        className={`${
+                          selected.length > 1 || selected.length === 0
+                            ? "text-slate-200 cursor-not-allowed"
+                            : "cursor-pointer"
+                        }`}
+                        onClick={() => handleOpenModal("edit_task")}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Edit Task</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </button>
             </div>
           </div>
         </div>

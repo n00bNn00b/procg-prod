@@ -28,6 +28,7 @@ export interface MenuData {
   submenuIcon: string;
   menuItems: MenuItems[];
   paths: string[];
+  path: string;
 }
 
 const Sidbar = () => {
