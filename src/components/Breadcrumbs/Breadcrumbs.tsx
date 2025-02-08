@@ -1,43 +1,63 @@
 import { Link, useLocation } from "react-router-dom";
-import { convertToTitleDictionary } from "./Services/SlugService";
+import menuData from "../../Menu/menu.json";
 import { ChevronRight } from "lucide-react";
 
-const Breadcurmbs = () => {
+const Breadcrumb = () => {
   const location = useLocation();
-  const pathnames = location.pathname.split("/").filter((x) => x);
+  const pathSegments = location.pathname.split("/").filter(Boolean);
+
+  const breadcrumbs = [{ name: "Home", path: "/" }];
+  let currentPath = "";
+
+  for (const segment of pathSegments) {
+    currentPath += `/${segment}`;
+    let found = false;
+
+    menuData.forEach((menu) => {
+      if (menu.path === currentPath) {
+        breadcrumbs.push({ name: menu.submenu, path: menu.path });
+        found = true;
+      }
+      menu.menuItems.forEach((item) => {
+        if (item.path === currentPath) {
+          breadcrumbs.push({ name: item.name, path: item.path });
+          found = true;
+        }
+        item.subItems?.forEach((sub) => {
+          if (sub.path === currentPath) {
+            breadcrumbs.push({ name: sub.name, path: sub.path });
+            found = true;
+          }
+        });
+      });
+    });
+    if (!found)
+      breadcrumbs.push({ name: segment.replace(/-/g, " "), path: currentPath });
+  }
+
   return (
-    <div className="py-3 sticky top-[48px] overflow-hidden z-10 bg-white ">
-      {/* <div className="py-2 sticky top-[7.9%] backdrop-blur-xl overflow-hidden"> */}
-      <nav>
-        <ul className="flex">
-          <li className="text-blue-600 underline">
-            <Link to="/" className="flex gap-1">
-              <span>Home</span>
+    <nav className="my-2 flex items-center">
+      {breadcrumbs.map((item, index) => (
+        <span key={item.path}>
+          {index < breadcrumbs.length - 1 ? (
+            <Link
+              to={item.path}
+              className="breadcrumb-link underline text-blue-600"
+            >
+              {item.name}
             </Link>
-          </li>
-          {pathnames.map((value: string, index: number) => {
-            const last = index === pathnames.length - 1;
-            const to = `/${pathnames.slice(0, index + 1).join("/")}`;
-            const title = convertToTitleDictionary(value);
-            return (
-              <li key={to} className="flex">
-                <span className="mx-2">
-                  <ChevronRight strokeWidth={1} />
-                </span>
-                {last ? (
-                  <span>{title}</span>
-                ) : (
-                  // <span>{title}</span>
-                  <Link to={to} className="text-blue-600 underline">
-                    {title}
-                  </Link>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-    </div>
+          ) : (
+            <span className="breadcrumb-current">{item.name}</span>
+          )}
+          {index < breadcrumbs.length - 1 && (
+            <span>
+              <ChevronRight strokeWidth={1} className="mx-2 inline-block" />
+            </span>
+          )}
+        </span>
+      ))}
+    </nav>
   );
 };
-export default Breadcurmbs;
+
+export default Breadcrumb;

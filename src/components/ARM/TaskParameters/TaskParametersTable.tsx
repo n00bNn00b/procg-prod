@@ -1,5 +1,11 @@
 import * as React from "react";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -10,19 +16,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, FileEdit, PlusIcon, Trash } from "lucide-react";
+import { ChevronDown, FileEdit, PlusIcon } from "lucide-react";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -45,13 +40,10 @@ import columns from "./Columns";
 import CustomModal3 from "@/components/CustomModal/CustomModal3";
 import Pagination5 from "@/components/Pagination/Pagination5";
 import { IARMTaskParametersTypes } from "@/types/interfaces/ARM.interface";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import { toast } from "@/components/ui/use-toast";
 import { useARMContext } from "@/Context/ARMContext/ARMContext";
 import TaskParametersModal from "../TaskParametersModal/TaskParametersModal";
 
 export function TaskParametersTable() {
-  const api = useAxiosPrivate();
   const { selectedTask, getTaskParametersLazyLoading, isSubmit } =
     useARMContext();
   const [data, setData] = React.useState<IARMTaskParametersTypes[] | []>([]);
@@ -122,31 +114,6 @@ export function TaskParametersTable() {
     fetchData();
   }, [selectedTask?.arm_task_id, isSubmit, page]);
 
-  const handleDelete = async () => {
-    setIsLoading(true);
-    try {
-      await Promise.all(
-        selectedRows.map(async (item) => {
-          await api.put(`/arm-tasks/cancel-task/${item.task_name}`);
-        })
-      );
-
-      //table toggle empty
-      table.getRowModel().rows.map((row) => row.toggleSelected(false));
-      setSelectedRows([]);
-      toast({
-        title: "Info !!!",
-        description: `Deleted successfully.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Info !!!",
-        description: `Error : ${error}`,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
   const table = useReactTable({
     data,
     columns,
@@ -168,7 +135,22 @@ export function TaskParametersTable() {
       pagination,
     },
   });
+  // default hidden columns
+  const hiddenColumns = [
+    "task_name",
+    "created_by",
+    "last_updated_by",
+    "creation_date",
+    "last_update_date",
+  ];
 
+  React.useEffect(() => {
+    table.getAllColumns().forEach((column) => {
+      if (hiddenColumns.includes(column.id)) {
+        column.toggleVisibility(false);
+      }
+    });
+  }, [table]);
   const handleOpenModal = (modelName: string) => {
     setIsOpenModal(modelName);
   };
@@ -207,66 +189,46 @@ export function TaskParametersTable() {
           <div className="flex gap-3 items-center px-4 py-2 border rounded">
             <div className="flex gap-3">
               <button>
-                <PlusIcon
-                  className={`${
-                    !selectedTask?.arm_task_id
-                      ? "text-slate-200 cursor-not-allowed"
-                      : "cursor-pointer"
-                  }`}
-                  onClick={() => handleOpenModal("add_task_params")}
-                />
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <PlusIcon
+                        className={`${
+                          !selectedTask?.arm_task_id
+                            ? "text-slate-200 cursor-not-allowed"
+                            : "cursor-pointer"
+                        }`}
+                        onClick={() => handleOpenModal("add_task_params")}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Add parameter</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </button>
 
               <button
                 disabled={selectedRows.length > 1 || selectedRows.length === 0}
               >
-                <FileEdit
-                  className={`${
-                    selectedRows.length > 1 || selectedRows.length === 0
-                      ? "text-slate-200 cursor-not-allowed"
-                      : "cursor-pointer"
-                  }`}
-                  onClick={() => handleOpenModal("update_task_params")}
-                />
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <FileEdit
+                        className={`${
+                          selectedRows.length > 1 || selectedRows.length === 0
+                            ? "text-slate-200 cursor-not-allowed"
+                            : "cursor-pointer"
+                        }`}
+                        onClick={() => handleOpenModal("update_task_params")}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Edit Parameter</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <button disabled={selectedRows.length === 0}>
-                    <Trash
-                      className={`${
-                        selectedRows.length === 0
-                          ? "cursor-not-allowed text-slate-200"
-                          : "cursor-pointer"
-                      }`}
-                    />
-                  </button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {selectedRows.map((item, index) => (
-                        <span
-                          key={item.arm_param_id}
-                          className="block text-red-500"
-                        >
-                          {index + 1}. user task name : {item.parameter_name}
-                        </span>
-                      ))}
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
-                      Continue
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
             </div>
           </div>
         </div>

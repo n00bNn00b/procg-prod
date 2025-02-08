@@ -2,6 +2,7 @@
   {
     "submenu": "Finance",
     "submenuIcon": "/sidebar/finance.svg",
+    "path": "/finance",
     "paths": [
       "/finance/risk-management",
       "/finance/control-management",
@@ -25,6 +26,7 @@
   {
     "submenu": "Continuous Monitoring",
     "submenuIcon": "/sidebar/continuous-monitoring.svg",
+    "path": "/continuous-monitoring",
     "paths": [
       "/continuous-monitoring/continuous-control-management",
       "/continuous-monitoring/result-management"
@@ -43,6 +45,7 @@
   {
     "submenu": "Enterprise Security Controls",
     "submenuIcon": "/sidebar/manage-administration.svg",
+    "path": "/enterprise-security-controls",
     "paths": [
       "/enterprise-security-controls",
       "/enterprise-security-controls/access-models",
@@ -65,6 +68,7 @@
       {
         "_comment": "This is for the nested menu",
         "name": "Access Models",
+        "path": "/enterprise-security-controls/access-models",
         "paths": [
           "/enterprise-security-controls/access-models",
           "/enterprise-security-controls/access-models/manage-access-models"
@@ -79,6 +83,7 @@
       {
         "_comment": "This is for the nested menu",
         "name": "Controls",
+        "path": "/enterprise-security-controls/controls",
         "paths": [
           "/enterprise-security-controls/controls",
           "/enterprise-security-controls/controls/manage-controls",
@@ -98,6 +103,7 @@
       {
         "_comment": "This is for the nested menu",
         "name": "Setup",
+        "path": "/enterprise-security-controls/setup",
         "paths": [
           "/enterprise-security-controls/setup",
           "/enterprise-security-controls/setup/manage-control-environments"
@@ -130,6 +136,7 @@
   {
     "submenu": "Enterprise Access Monitoring (EAM)",
     "submenuIcon": "/sidebar/enterprise-access-monitoring.svg",
+    "path": "/enterprise-access-monitoring",
     "paths": [
       "/enterprise-access-monitoring",
       "/enterprise-access-monitoring/privileged-access-review",
@@ -159,6 +166,7 @@
   {
     "submenu": "Tools",
     "submenuIcon": "/sidebar/tools.svg",
+    "path": "/tools",
     "paths": [
       "/tools",
       "/tools/security-console",
@@ -169,6 +177,7 @@
       {
         "_comment": "This is for the nested menu",
         "name": "Security Console",
+        "path": "/tools/security-console",
         "paths": [
           "/tools/security-console/manage-users"
         ],
@@ -188,6 +197,7 @@
   {
     "submenu": "Asynchronous Request Manager (ARM)",
     "submenuIcon": "/sidebar/asynchronous-manager.svg",
+    "path": "/asynchronous-request-manager",
     "paths": [
       "/asynchronous-request-manager",
       "/asynchronous-request-manager/administration",
@@ -201,6 +211,7 @@
     "menuItems": [
       {
         "name": "Administration",
+        "path": "/asynchronous-request-manager/administration",
         "paths": [
           "/asynchronous-request-manager/administration/manage-configurations",
           "/asynchronous-request-manager/administration",
@@ -224,6 +235,7 @@
       },
       {
         "name": "Development",
+        "path": "/asynchronous-request-manager/development",
         "paths": [
           "/asynchronous-request-manager/development",
           "/asynchronous-request-manager/development/register-edit-asynchronous-tasks",
@@ -245,6 +257,7 @@
   {
     "submenu": "Asynchronous Requests and Task Schedules",
     "submenuIcon": "/sidebar/asychronous-task-schedule.svg",
+    "path": "/asynchronous-requests-and-task-schedules",
     "paths": [
       "/asynchronous-requests-and-task-schedules",
       "/asynchronous-requests-and-task-schedules/schedule-a-task",
@@ -262,7 +275,7 @@
         "path": "/asynchronous-requests-and-task-schedules/view-edit-scheduled-tasks"
       },
       {
-        "name": "Run an ad-hoc Request",
+        "name": "Run a Request",
         "path": "/asynchronous-requests-and-task-schedules/run-an-ad-hoc-request"
       },
       {
