@@ -5,6 +5,7 @@ import { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { z } from "zod";
 import DefaultLogo from "/public/profile/loading.gif";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const UpdateProfile: React.FC = () => {
   const api = useAxiosPrivate();
@@ -13,7 +14,7 @@ const UpdateProfile: React.FC = () => {
   const profileLogo = isCombinedUserLoading
     ? DefaultLogo
     : combinedUser?.profile_picture
-    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
+    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture.original}`
     : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
 
   const [formData, setFormData] = useState({
@@ -112,9 +113,9 @@ const UpdateProfile: React.FC = () => {
       const response = await api.put(`/combined-user/${token.user_id}`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      const profileImageUrl = `${
-        import.meta.env.VITE_API_URL
-      }/uploads/profiles/${combinedUser?.user_name}/${file?.name}`;
+
+      console.log(response);
+      console.log(form);
 
       if (response.status === 200) {
         setCombinedUser((prev) => {
@@ -125,7 +126,14 @@ const UpdateProfile: React.FC = () => {
             first_name: formData.first_name,
             last_name: formData.last_name,
             email_addresses: formData.email_addresses,
-            profile_picture: profileImageUrl,
+            profile_picture: {
+              original: `${import.meta.env.VITE_API_URL}/uploads/profiles/${
+                combinedUser?.user_name
+              }/profile.jpg`,
+              thumbnail: `${import.meta.env.VITE_API_URL}/uploads/profiles/${
+                combinedUser?.user_name
+              }/thumbnail.jpg`,
+            },
           };
         });
         toast({
@@ -153,11 +161,18 @@ const UpdateProfile: React.FC = () => {
       <div className="flex flex-col items-center gap-2">
         {/* Profile Image */}
         <div className="relative w-32 h-32">
-          <img
+          <Avatar className="w-full h-full rounded-full object-cover border-2 border-gray-300">
+            <AvatarImage
+              src={isCombinedUserLoading ? DefaultLogo : formData.profileImage}
+            />
+            <AvatarFallback>{token.user_name.slice(0, 1)}</AvatarFallback>
+          </Avatar>
+
+          {/* <img
             src={isCombinedUserLoading ? DefaultLogo : formData.profileImage}
             alt="Profile"
             className="w-full h-full rounded-full object-cover border-2 border-gray-300"
-          />
+          /> */}
           {/* Edit Icon */}
           <label
             htmlFor="imageUpload"

@@ -96,9 +96,11 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
   const uniquMessagesIds = socketMessage.map((msg) => msg.id);
 
   const handleUniqueMessages = async (parentid: string) => {
-    navigate(`/notifications/inbox/${parentid}`);
-    handleRead(parentid);
-    await api.put(`/messages/update-readers/${parentid}/${user}`);
+    const res = await api.put(`/messages/update-readers/${parentid}/${user}`);
+    if (res) {
+      navigate(`/notifications/inbox/${parentid}`);
+      handleRead(parentid);
+    }
   };
 
   const handleDelete = async (id: string) => {
