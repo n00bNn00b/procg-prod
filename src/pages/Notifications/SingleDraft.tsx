@@ -27,6 +27,7 @@ import {
 import { Message, UserModel } from "@/types/interfaces/users.interface";
 import Spinner from "@/components/Spinner/Spinner";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // import { v4 as uuidv4 } from "uuid";
 
 interface IOldMsgTypes {
@@ -189,7 +190,7 @@ const SingleDraft = () => {
       parentid,
       involvedusers,
       readers: receiverNames,
-      holders: involvedusers,
+      holders: [sender.name],
       recyclebin: [],
     };
 
@@ -323,7 +324,7 @@ const SingleDraft = () => {
                   <DropdownMenuTrigger className="bg-dark-100 text-white w-44 h-8 rounded-sm font-semibold ">
                     Select Recipients
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-44 max-h-[255px] overflow-auto scrollbar-thin">
+                  <DropdownMenuContent className="w-60 max-h-[255px] overflow-auto scrollbar-thin ml-16">
                     <input
                       type="text"
                       className="w-full bg-light-100 border-b border-light-400 outline-none pl-2"
@@ -348,7 +349,18 @@ const SingleDraft = () => {
                         key={user.user_id}
                         className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer"
                       >
-                        <p>{user.user_name}</p>
+                        <div className="flex flex-row gap-1 items-center">
+                          <Avatar className="h-4 w-4">
+                            <AvatarImage
+                              src={`${url}/${user.profile_picture.thumbnail}`}
+                            />
+                            <AvatarFallback>
+                              {user.user_name.slice(0, 1)}
+                            </AvatarFallback>
+                          </Avatar>
+
+                          <p>{user.user_name}</p>
+                        </div>
                         {receiverNames.includes(user.user_name) ? (
                           <Check size={14} color="#038C5A" />
                         ) : null}
@@ -364,9 +376,19 @@ const SingleDraft = () => {
                       .map((rec) => (
                         <div
                           key={rec.name}
-                          className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full"
+                          className="flex gap-1 border h-8 px-2 items-center rounded-sm"
                         >
-                          <p className="font-semibold ">{rec.name}</p>
+                          <Avatar className="h-4 w-4">
+                            <AvatarImage
+                              src={`${url}/${rec.profile_picture}`}
+                            />
+                            <AvatarFallback>
+                              {rec.name.slice(0, 1)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <p className="font-semibold text-green-600">
+                            {rec.name}
+                          </p>
                           <div
                             onClick={() => handleRemoveReciever(rec.name)}
                             className="flex h-[65%] items-end cursor-pointer"
@@ -438,7 +460,7 @@ const SingleDraft = () => {
                 disabled={body === ""}
                 onClick={handleSend}
                 className={`${
-                  body === ""
+                  body === "" || subject === "" || recivers.length === 0
                     ? " bg-dark-400 cursor-not-allowed"
                     : " bg-dark-100 cursor-pointer"
                 } flex gap-1 items-center px-5 py-2 rounded-r-full rounded-l-md text-white hover:scale-95 duration-300`}
