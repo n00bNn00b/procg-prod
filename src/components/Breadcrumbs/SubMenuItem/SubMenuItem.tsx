@@ -23,7 +23,7 @@ const SubMenuItem = (item: MenuData) => {
               {menu.paths && (
                 <Link
                   to={menu.name.split(" ").join("-").toLowerCase()}
-                  className="flex gap-2 items-center max-w-max "
+                  className="flex gap-2 items-center max-w-max hover:underline"
                 >
                   <Plus size={15} />
                   <p>{menu.name}</p>

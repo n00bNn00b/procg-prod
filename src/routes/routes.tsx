@@ -55,6 +55,7 @@ import PrivilegedAccessReview from "@/pages/EnterpriseAccessMonitoring/Privilege
 import ServiceAccountsAudit from "@/pages/EnterpriseAccessMonitoring/ServiceAccountsAudit";
 import UserAccessVisibility from "@/pages/EnterpriseAccessMonitoring/UserAccessVisibility";
 import AuditorReporting from "@/pages/EnterpriseAccessMonitoring/AuditorReporting";
+import NotificatonsRoutes from "@/pages/Notifications/NotificatonsRoutes";
 
 const routes = createBrowserRouter([
   {
@@ -89,6 +90,10 @@ const routes = createBrowserRouter([
       {
         path: "notifications",
         children: [
+          {
+            path: "",
+            element: <NotificatonsRoutes />,
+          },
           {
             path: "inbox",
             element: <Inbox />,
