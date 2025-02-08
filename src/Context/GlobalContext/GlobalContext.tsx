@@ -94,6 +94,7 @@ export const userExample = {
   issuedAt: "",
   iat: 0,
   exp: 0,
+  profile_picture: { original: "", thumbnail: "" },
 };
 
 const GlobalContex = createContext({} as GlobalContex);

@@ -20,6 +20,9 @@ import { v4 as uuidv4 } from "uuid";
 import Spinner from "@/components/Spinner/Spinner";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { UserModel } from "@/types/interfaces/users.interface";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 // import { send } from "process";
 
 const ComposeButton = () => {
@@ -27,49 +30,65 @@ const ComposeButton = () => {
   const { users, token, user } = useGlobalContext();
   const { handlesendMessage, handleDraftMessage } = useSocketContext();
   const { toast } = useToast();
-  const [recivers, setRecivers] = useState<string[]>([]);
+  const [recivers, setRecivers] = useState<UserModel[]>([]);
   const [subject, setSubject] = useState<string>("");
   const [body, setBody] = useState<string>("");
   const [query, setQuery] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const [isDrafting, setIsDrafting] = useState(false);
   const [isAllClicked, setIsAllClicked] = useState(true);
-  const sender = token?.user_name || "";
-  const id = uuidv4();
-
-  const totalusers = [...recivers, sender];
-  const uniqueUsers = [...new Set(totalusers)];
-  const actualUsers = users.filter((usr) => usr.user_name !== user);
-
-  const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
+  const sender = {
+    name: user,
+    profile_picture: token?.profile_picture.thumbnail,
   };
+  const id = uuidv4();
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  const receiverNames = recivers.map((rcvr) => rcvr.name);
+
+  const totalusers = [...receiverNames, user];
+  const involvedusers = [...new Set(totalusers)];
+  const actualUsers = users.filter((usr) => usr.user_name !== user);
 
   const filterdUser = actualUsers.filter((user) =>
     user.user_name.toLowerCase().includes(query.toLowerCase())
   );
 
-  const handleReciever = (reciever: string) => {
-    if (isAllClicked) {
-      const newArray = recivers.filter((rcvr) => rcvr !== reciever);
-      setRecivers(newArray);
-    }
-    if (recivers.includes(reciever)) {
-      return;
-    } else {
-      setRecivers((prevArray) => [...prevArray, reciever]);
-    }
+  const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
   };
 
-  const handleRemoveReciever = (reciever: string) => {
-    const newRecipients = recivers.filter((rcvr) => rcvr !== reciever);
-    setRecivers(newRecipients);
+  const handleReciever = (reciever: UserModel) => {
+    if (receiverNames.includes(reciever.name)) {
+      const newArray = recivers.filter((rcvr) => rcvr.name !== reciever.name);
+      setRecivers(newArray);
+      setQuery("");
+    } else {
+      setRecivers((prevArray) => [...prevArray, reciever]);
+      setQuery("");
+    }
   };
 
   const handleSelectAll = () => {
-    setIsAllClicked(true);
-    const allusers = filterdUser.map((user) => user.user_name);
-    setRecivers(allusers);
+    if (!isAllClicked) {
+      setIsAllClicked(true);
+      const newReceivers = actualUsers.map((usr) => {
+        return {
+          name: usr.user_name,
+          profile_picture: usr.profile_picture.thumbnail,
+        };
+      });
+      setRecivers(newReceivers);
+    } else {
+      setIsAllClicked(false);
+      setRecivers([]);
+    }
+    setQuery("");
+  };
+
+  const handleRemoveReciever = (reciever: string) => {
+    const newRecipients = recivers.filter((rcvr) => rcvr.name !== reciever);
+    setRecivers(newRecipients);
   };
 
   const handleSend = async () => {
@@ -82,14 +101,15 @@ const ComposeButton = () => {
       date: new Date(),
       status: "Sent",
       parentid: id,
-      involvedusers: uniqueUsers,
-      readers: recivers,
-      holders: uniqueUsers,
+      involvedusers,
+      readers: receiverNames,
+      holders: involvedusers,
       recyclebin: [],
     };
     try {
       setIsSending(true);
       const response = await api.post(`/messages`, data);
+      console.log(response, "112");
       if (response.status === 201) {
         handlesendMessage(data);
         toast({
@@ -121,9 +141,9 @@ const ComposeButton = () => {
       date: new Date(),
       status: "Draft",
       parentid: id,
-      involvedusers: uniqueUsers,
-      readers: recivers,
-      holders: [sender],
+      involvedusers,
+      readers: receiverNames,
+      holders: [sender.name],
       recyclebin: [],
     };
     try {
@@ -163,7 +183,7 @@ const ComposeButton = () => {
               <DropdownMenuTrigger className="bg-dark-100 text-white w-44 h-8 rounded-sm font-semibold ">
                 Select Recipients
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-44 max-h-[255px] overflow-auto scrollbar-thin">
+              <DropdownMenuContent className="w-60 max-h-[255px] overflow-auto scrollbar-thin ml-16">
                 <input
                   type="text"
                   className="w-full bg-light-100 border-b border-light-400 outline-none pl-2"
@@ -179,12 +199,28 @@ const ComposeButton = () => {
                 </div>
                 {filterdUser.map((user) => (
                   <div
-                    onClick={() => handleReciever(user.user_name)}
+                    onClick={() =>
+                      handleReciever({
+                        name: user.user_name,
+                        profile_picture: user.profile_picture.thumbnail,
+                      })
+                    }
                     key={user.user_id}
                     className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer"
                   >
-                    <p>{user.user_name}</p>
-                    {recivers.includes(user.user_name) ? (
+                    <div className="flex flex-row gap-1 items-center">
+                      <Avatar className="h-4 w-4">
+                        <AvatarImage
+                          src={`${apiUrl}/${user.profile_picture.thumbnail}`}
+                        />
+                        <AvatarFallback>
+                          {user.user_name.slice(0, 1)}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <p>{user.user_name}</p>
+                    </div>
+                    {receiverNames.includes(user.user_name) ? (
                       <Check size={14} color="#038C5A" />
                     ) : null}
                   </div>
@@ -196,12 +232,16 @@ const ComposeButton = () => {
               <div className="rounded-sm max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1 justify-end">
                 {recivers.map((rec) => (
                   <div
-                    key={rec}
-                    className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full"
+                    key={rec.name}
+                    className="flex gap-1 border h-8 px-2 items-center rounded-sm"
                   >
-                    <p className="font-semibold ">{rec}</p>
+                    <Avatar className="h-4 w-4">
+                      <AvatarImage src={`${apiUrl}/${rec.profile_picture}`} />
+                      <AvatarFallback>{rec.name.slice(0, 1)}</AvatarFallback>
+                    </Avatar>
+                    <p className="font-semibold text-green-600">{rec.name}</p>
                     <div
-                      onClick={() => handleRemoveReciever(rec)}
+                      onClick={() => handleRemoveReciever(rec.name)}
                       className="flex h-[65%] items-end cursor-pointer"
                     >
                       <Delete size={18} />

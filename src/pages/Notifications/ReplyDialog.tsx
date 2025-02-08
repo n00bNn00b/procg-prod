@@ -7,52 +7,47 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { useToast } from "@/components/ui/use-toast";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { Message } from "@/types/interfaces/users.interface";
 import axios from "axios";
-import { Check, Delete, MessageCircleReply, Reply, Save } from "lucide-react";
+import { MessageCircleReply, Reply, Save } from "lucide-react";
 import { ChangeEvent, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ReplyDialogProps {
   subject: string;
-  parentid: string;
-  involvedUsers: string[];
-  setTotalInvolvedUsers: React.Dispatch<React.SetStateAction<string[]>>;
+  parrentMessage: Message;
   setTotalMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
 const ReplyDialog = ({
   subject: sub,
-  parentid,
-  involvedUsers,
-  setTotalInvolvedUsers,
+  parrentMessage,
   setTotalMessages,
 }: ReplyDialogProps) => {
   const api = useAxiosPrivate();
-  const { token, users, user } = useGlobalContext();
+  const { token, user } = useGlobalContext();
   const { handlesendMessage, handleDraftMessage } = useSocketContext();
   const [subject, setSubject] = useState<string>(sub);
   const [body, setBody] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const [isDrafting, setIsDrafting] = useState(false);
-  const [query, setQuery] = useState<string>("");
-  const [isAllClicked, setIsAllClicked] = useState<boolean>(true);
 
   const id = uuidv4();
   const { toast } = useToast();
-  const sender = token.user_name;
+  const sender = {
+    name: user,
+    profile_picture: token?.profile_picture.thumbnail,
+  };
   const url = import.meta.env.VITE_API_URL;
-  const Users = users.filter((usr) => usr.user_name !== user);
-  const recivers = involvedUsers.filter((rcvr) => rcvr !== sender);
+  const totalInvolved = [...parrentMessage.recivers, parrentMessage.sender];
+  const recivers = totalInvolved.filter((rcvr) => rcvr.name !== user);
+  const receiverNames = recivers.map((rcvr) => rcvr.name);
 
   const handleSend = async () => {
     const data = {
@@ -63,10 +58,10 @@ const ReplyDialog = ({
       body,
       date: new Date(),
       status: "Sent",
-      parentid,
-      involvedusers: involvedUsers,
-      readers: recivers,
-      holders: involvedUsers,
+      parentid: parrentMessage.parentid,
+      involvedusers: parrentMessage.involvedusers,
+      readers: receiverNames,
+      holders: parrentMessage.involvedusers,
       recyclebin: [],
     };
     try {
@@ -104,10 +99,10 @@ const ReplyDialog = ({
       body,
       date: new Date(),
       status: "Draft",
-      parentid,
-      involvedusers: involvedUsers,
-      readers: recivers,
-      holders: [sender],
+      parentid: parrentMessage.parentid,
+      involvedusers: parrentMessage.involvedusers,
+      readers: receiverNames,
+      holders: [sender.name],
       recyclebin: [],
     };
     try {
@@ -126,33 +121,6 @@ const ReplyDialog = ({
       setBody("");
     }
   };
-  const filterdUser = Users.filter((user) =>
-    user.user_name.toLowerCase().includes(query.toLowerCase())
-  );
-  const handleReciever = (reciever: string) => {
-    if (isAllClicked) {
-      const newArray = involvedUsers.filter((rcvr) => rcvr !== reciever);
-      setTotalInvolvedUsers(newArray);
-    }
-    if (involvedUsers.includes(reciever)) {
-      return;
-    } else {
-      setTotalInvolvedUsers((prevArray) => [...prevArray, reciever]);
-    }
-  };
-  const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-  };
-  const handleRemoveReciever = (rec: string) => {
-    console.log(rec, "click");
-    const newRecipients = involvedUsers.filter((rcvr) => rcvr !== rec);
-    setTotalInvolvedUsers(newRecipients);
-  };
-  const handleSelectAll = () => {
-    setIsAllClicked(true);
-    const allusers = users.map((user) => user.user_name);
-    setTotalInvolvedUsers(allusers);
-  };
 
   return (
     <Dialog>
@@ -167,59 +135,21 @@ const ReplyDialog = ({
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
-          <div className="flex gap-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="bg-dark-100 text-white w-44 h-8 rounded-sm font-semibold ">
-                Select Recipients
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-44 max-h-[255px] overflow-auto scrollbar-thin">
-                <input
-                  type="text"
-                  className="w-full bg-light-100 border-b border-light-400 outline-none pl-2"
-                  placeholder="Search..."
-                  value={query}
-                  onChange={handleQueryChange}
-                />
+          <div className="flex gap-4 items-center">
+            <label className="font-semibold text-dark-400">To</label>
+            <div className="rounded-sm max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1 justify-end">
+              {recivers.map((rec) => (
                 <div
-                  onClick={handleSelectAll}
-                  className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer"
+                  key={rec.name}
+                  className="flex gap-1 border h-8 px-2 items-center rounded-sm"
                 >
-                  <p>All</p>
+                  <Avatar className="h-4 w-4">
+                    <AvatarImage src={`${url}/${rec.profile_picture}`} />
+                    <AvatarFallback>{rec.name.slice(0, 1)}</AvatarFallback>
+                  </Avatar>
+                  <p className="font-semibold ">{rec.name}</p>
                 </div>
-                {filterdUser.map((user) => (
-                  <div
-                    onClick={() => handleReciever(user.user_name)}
-                    key={user.user_id}
-                    className="flex justify-between px-2 items-center hover:bg-light-200 cursor-pointer"
-                  >
-                    <p>{user.user_name}</p>
-                    {involvedUsers.includes(user.user_name) ? (
-                      <Check size={14} color="#038C5A" />
-                    ) : null}
-                  </div>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <div className="w-[calc(100%-11rem)]">
-              <div className="rounded-sm max-h-[4.5rem] scrollbar-thin overflow-auto flex flex-wrap gap-1 justify-end">
-                {involvedUsers
-                  .filter((usr) => usr !== user)
-                  ?.map((rec) => (
-                    <div
-                      key={rec}
-                      className="flex gap-1 bg-winter-100 h-8 px-3 items-center rounded-full"
-                    >
-                      <p className="font-semibold ">{rec}</p>
-                      <div
-                        onClick={() => handleRemoveReciever(rec)}
-                        className="flex h-[65%] items-end cursor-pointer"
-                      >
-                        <Delete size={18} />
-                      </div>
-                    </div>
-                  ))}
-              </div>
+              ))}
             </div>
           </div>
 
@@ -267,10 +197,10 @@ const ReplyDialog = ({
             <p className="font-semibold ">Save as drafts</p>
           </button>
           <button
-            disabled={involvedUsers.length === 0}
+            disabled={recivers.length === 0 || body === ""}
             onClick={handleSend}
             className={`${
-              body.length === 0 || body === "" || involvedUsers.length === 0
+              body.length === 0 || body === "" || recivers.length === 0
                 ? "cursor-not-allowed bg-dark-400"
                 : "cursor-pointer bg-dark-100"
             } flex gap-1 items-center px-4 py-1 rounded-r-full rounded-l-md text-white hover:scale-95 duration-300`}

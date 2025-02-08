@@ -41,7 +41,7 @@ interface RecycleBinTableProps {
 }
 const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
   const api = useAxiosPrivate();
-  const { user } = useGlobalContext();
+  const { user, token } = useGlobalContext();
   const {
     handleDeleteMessage,
     recycleBinMsg,
@@ -68,6 +68,10 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
     };
     fetchRecycleBinMsg();
   }, [api, currentPage, setIsLoading, setRecycleBinMsg, user]);
+
+  const newReceivers = recycleBinMsg.map((msg) => msg.recivers);
+
+  console.log(newReceivers, "73");
 
   const totalDisplayedMessages = 5;
   const totalPageNumbers = Math.ceil(
@@ -244,15 +248,23 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
                 <TableRow key={msg.id}>
                   <>
                     <TableCell className="py-2 font-bold">
-                      {msg.recivers.includes(user) ? "Inbox" : msg.status}
+                      {msg.recivers.includes({
+                        name: user,
+                        profile_picture: token.profile_picture.thumbnail,
+                      })
+                        ? "Inbox"
+                        : msg.status}
                     </TableCell>
                     <TableCell className="py-2">
                       {msg.recivers.length === 0
                         ? "(no user)"
-                        : msg.recivers.includes(user)
-                        ? msg.sender
-                        : msg.recivers.slice(0, 2).join(", ")}
-                      {msg.recivers.length > 2 && ", ..."}
+                        : msg.recivers.includes({
+                            name: user,
+                            profile_picture: token.profile_picture.thumbnail,
+                          })
+                        ? msg.sender.name
+                        : msg.recivers[0].name}
+                      {msg.recivers.length > 1 && ", ..."}
                     </TableCell>
                     <TableCell className="py-2">
                       <span className="font-medium mr-1">
