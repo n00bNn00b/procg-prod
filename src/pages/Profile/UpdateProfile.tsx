@@ -112,9 +112,6 @@ const UpdateProfile: React.FC = () => {
       const response = await api.put(`/combined-user/${token.user_id}`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      const profileImageUrl = `${
-        import.meta.env.VITE_API_URL
-      }/uploads/profiles/${combinedUser?.user_name}/${file?.name}`;
 
       if (response.status === 200) {
         setCombinedUser((prev) => {
@@ -125,7 +122,14 @@ const UpdateProfile: React.FC = () => {
             first_name: formData.first_name,
             last_name: formData.last_name,
             email_addresses: formData.email_addresses,
-            profile_picture: profileImageUrl,
+            profile_picture: {
+              original: `${import.meta.env.VITE_API_URL}/uploads/profiles/${
+                combinedUser?.user_name
+              }/${file?.name}`,
+              thumbnail: `${import.meta.env.VITE_API_URL}/uploads/profiles/${
+                combinedUser?.user_name
+              }/thumbnail.jpg`,
+            },
           };
         });
         toast({
