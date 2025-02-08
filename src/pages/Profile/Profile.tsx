@@ -10,8 +10,8 @@ import {
 import { QRCodeCanvas } from "qrcode.react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
-import DefaultLogo from "/public/profile/loading.gif";
 import UpdateProfile from "./UpdateProfile";
+import { AvatarFallback } from "@/components/ui/avatar";
 
 // interface IAccessProfiles {
 //   user_name?: string;
@@ -25,15 +25,12 @@ import UpdateProfile from "./UpdateProfile";
 //   phone_3?: string;
 // }
 const Profile = () => {
-  const { token, combinedUser, isCombinedUserLoading } = useGlobalContext();
+  const { token, combinedUser } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(false);
   // const [accessProfiles, setAccessProfiles] = useState<IAccessProfiles>({});
   const [accessProfiles, setAccessProfiles] = useState<string>();
-  const profileLogo = isCombinedUserLoading
-    ? DefaultLogo
-    : combinedUser?.profile_picture
-    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture}`
-    : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
+  const apiUrl = import.meta.env.VITE_API_URL;
+  console.log(combinedUser);
 
   useEffect(() => {
     const getUser = async () => {
@@ -84,8 +81,11 @@ const Profile = () => {
                   <Avatar>
                     <AvatarImage
                       className="object-cover object-center w-20 h-20 rounded-full mx-auto border border-8px"
-                      src={profileLogo}
+                      src={`${apiUrl}/${combinedUser?.profile_picture.original}`}
                     />
+                    <AvatarFallback className="object-cover object-center w-20 h-20 rounded-full mx-auto border border-8px">
+                      {token.user_name.slice(0, 1)}
+                    </AvatarFallback>
                   </Avatar>
                   <h4 className="font-bold text-center">
                     {combinedUser?.first_name} {combinedUser?.last_name}
