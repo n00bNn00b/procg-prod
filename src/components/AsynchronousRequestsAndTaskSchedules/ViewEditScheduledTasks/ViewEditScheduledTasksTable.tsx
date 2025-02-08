@@ -174,6 +174,11 @@ export function ViewEditScheduledTasksTable() {
     });
   }, [table]);
 
+  React.useEffect(() => {
+    table.toggleAllPageRowsSelected(false);
+    setSelected([]);
+  }, [page]);
+
   const handleOpenModal = (modelName: string) => {
     setIsOpenModal(modelName);
   };
@@ -249,14 +254,18 @@ export function ViewEditScheduledTasksTable() {
                       <>Selected User Task Schedule:</>
                       <br />
                       <br />
-                      {selected.map((item, index) => (
-                        <span
-                          key={item.arm_task_sche_id}
-                          className="block text-red-500"
-                        >
-                          {index + 1}. User task name : {item.args[1]}
-                        </span>
-                      ))}
+                      {selected
+                        .filter(
+                          (item) => item.cancelled_yn.toLowerCase() !== "y"
+                        )
+                        .map((item, index) => (
+                          <span
+                            key={item.arm_task_sche_id}
+                            className="block text-red-500"
+                          >
+                            {index + 1}. User task name : {item.args[1]}
+                          </span>
+                        ))}
                       <br />
                       This action cannot be undone. This will permanently cancel
                       your scheduled task.
@@ -351,8 +360,12 @@ export function ViewEditScheduledTasksTable() {
                                 const selectedRows = table
                                   .getSelectedRowModel()
                                   .rows.map((row) => row.original);
-                                console.log(selectedRows);
-                                setSelected(selectedRows);
+                                setSelected(
+                                  selectedRows.filter(
+                                    (item) =>
+                                      item.cancelled_yn.toLowerCase() !== "y"
+                                  )
+                                );
                               }, 0);
                             }}
                             className="mr-1"
@@ -396,7 +409,6 @@ export function ViewEditScheduledTasksTable() {
                             }
                             checked={row.getIsSelected()}
                             onCheckedChange={(value) => {
-                              console.log(cell, "checkbox check");
                               row.toggleSelected(!!value);
                             }}
                             onClick={() => handleRowSelection(row.original)}
