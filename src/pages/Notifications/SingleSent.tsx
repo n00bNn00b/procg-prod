@@ -216,10 +216,8 @@ const SingleSent = () => {
                       <span>
                         <ReplyDialog
                           subject={message.subject}
-                          parentid={parrentMessage.id}
-                          involvedUsers={totalInvolvedUsers}
-                          setTotalInvolvedUsers={setTotalInvolvedUsers}
                           setTotalMessages={setTotalMessages}
+                          parrentMessage={parrentMessage}
                         />
                       </span>
                     </TooltipTrigger>
