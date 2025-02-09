@@ -1,8 +1,8 @@
 import SubMenuItem from "@/components/Breadcrumbs/SubMenuItem/SubMenuItem";
 import { MenuData } from "@/components/Sidebar/Sidbar";
-import menu from "@/Menu/menu.json";
+import menu from "@/Menu/topAndDropDownMenu.json";
 
-const AsynchronousRequestsAndTaskSchedules = () => {
+const Alerts = () => {
   const menus = menu as MenuData[];
 
   return (
@@ -10,13 +10,11 @@ const AsynchronousRequestsAndTaskSchedules = () => {
       {menus.map((item) => {
         return (
           <div key={item.submenu}>
-            {item.submenu === "Asynchronous Requests and Task Schedules" && (
-              <SubMenuItem {...item} />
-            )}
+            {item.submenu === "Action Items" && <SubMenuItem {...item} />}
           </div>
         );
       })}
     </div>
   );
 };
-export default AsynchronousRequestsAndTaskSchedules;
+export default Alerts;

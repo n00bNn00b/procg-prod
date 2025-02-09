@@ -1,0 +1,55 @@
+[
+  {
+    "submenu": "Action Items",
+    "submenuIcon": "/sidebar/asynchronous-manager.svg",
+    "path": "/action-items",
+    "menuItems": []
+  },
+  {
+    "submenu": "Alerts",
+    "submenuIcon": "/sidebar/asynchronous-manager.svg",
+    "path": "/alerts",
+    "menuItems": []
+  },
+  {
+    "submenu": "Notifications",
+    "submenuIcon": "/sidebar/asynchronous-manager.svg",
+    "path": "/notifications",
+    "menuItems": [
+      {
+        "name": "Inbox",
+        "path": "/notifications/inbox"
+      },
+      {
+        "name": "Sent",
+        "path": "/notifications/sent"
+      },
+      {
+        "name": "Drafts",
+        "path": "/notifications/drafts"
+      },
+      {
+        "name": "Recycle Bin",
+        "path": "/notifications/recycle-bin"
+      }
+    ]
+  },
+  {
+    "submenu": "Access Profiles",
+    "submenuIcon": "/sidebar/asynchronous-manager.svg",
+    "path": "/access-profiles",
+    "menuItems": []
+  },
+  {
+    "submenu": "Security",
+    "submenuIcon": "/sidebar/asynchronous-manager.svg",
+    "path": "/security",
+    "menuItems": []
+  },
+  {
+    "submenu": "Settings",
+    "submenuIcon": "/sidebar/asynchronous-manager.svg",
+    "path": "/settings",
+    "menuItems": []
+  }
+]

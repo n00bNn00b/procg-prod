@@ -76,7 +76,7 @@ const UpdateProfile: React.FC = () => {
     if (file) {
       const allowedMimeTypes = ["image/jpeg", "image/png", "image/jpg"];
 
-      if (file.size > 513575) {
+      if (file.size > 500000) {
         setIsLoading(false);
         return setError("Image size should be less than 500kb");
       }
@@ -113,10 +113,6 @@ const UpdateProfile: React.FC = () => {
       const response = await api.put(`/combined-user/${token.user_id}`, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      console.log(response);
-      console.log(form);
-
       if (response.status === 200) {
         setCombinedUser((prev) => {
           if (!prev) return undefined;
@@ -129,7 +125,7 @@ const UpdateProfile: React.FC = () => {
             profile_picture: {
               original: `${import.meta.env.VITE_API_URL}/uploads/profiles/${
                 combinedUser?.user_name
-              }/profile.jpg`,
+              }/${file?.name}`,
               thumbnail: `${import.meta.env.VITE_API_URL}/uploads/profiles/${
                 combinedUser?.user_name
               }/thumbnail.jpg`,

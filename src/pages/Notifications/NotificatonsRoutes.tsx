@@ -1,31 +1,19 @@
-import { Link } from "react-router-dom";
+import SubMenuItem from "@/components/Breadcrumbs/SubMenuItem/SubMenuItem";
+import { MenuData } from "@/components/Sidebar/Sidbar";
+import menu from "@/Menu/topAndDropDownMenu.json";
 
 const NotificatonsRoutes = () => {
-  const paths = [
-    {
-      name: "Inbox",
-      path: "/notifications/inbox",
-    },
-    {
-      name: "Sent",
-      path: "/notifications/sent",
-    },
-    {
-      name: "Drafts",
-      path: "/notifications/drafts",
-    },
-    {
-      name: "Recycle Bin",
-      path: "/notifications/recycle-bin",
-    },
-  ];
+  const menus = menu as MenuData[];
+
   return (
-    <div className="flex flex-col gap-2">
-      {paths.map((path) => (
-        <Link to={path.path} className="text-blue-600 hover:underline">
-          <h3>{path.name}</h3>
-        </Link>
-      ))}
+    <div>
+      {menus.map((item) => {
+        return (
+          <div key={item.submenu}>
+            {item.submenu === "Notifications" && <SubMenuItem {...item} />}
+          </div>
+        );
+      })}
     </div>
   );
 };
