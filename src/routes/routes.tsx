@@ -56,6 +56,8 @@ import ServiceAccountsAudit from "@/pages/EnterpriseAccessMonitoring/ServiceAcco
 import UserAccessVisibility from "@/pages/EnterpriseAccessMonitoring/UserAccessVisibility";
 import AuditorReporting from "@/pages/EnterpriseAccessMonitoring/AuditorReporting";
 import NotificatonsRoutes from "@/pages/Notifications/NotificatonsRoutes";
+import ContinuousMonitoring from "@/pages/ContinuousMonitoring/ContinuousMonitoring";
+import Finance from "@/pages/Finance/Finance";
 
 const routes = createBrowserRouter([
   {
@@ -132,6 +134,10 @@ const routes = createBrowserRouter([
         path: "finance",
         children: [
           {
+            path: "",
+            element: <Finance />,
+          },
+          {
             path: "risk-management",
             element: <RiskManagement />,
           },
@@ -148,6 +154,10 @@ const routes = createBrowserRouter([
       {
         path: "continuous-monitoring",
         children: [
+          {
+            path: "",
+            element: <ContinuousMonitoring />,
+          },
           {
             path: "continuous-control-management",
             element: <ContinuousControlManagement />,
