@@ -1,4 +1,4 @@
-import { Card, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
@@ -14,8 +14,14 @@ import ReplyDialog from "./ReplyDialog";
 import { Message } from "@/types/interfaces/users.interface";
 import { useToast } from "@/components/ui/use-toast";
 import Spinner from "@/components/Spinner/Spinner";
-import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { useSocketContext } from "@/Context/SocketContext/SocketContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const SingleSent = () => {
   const { handleDeleteMessage } = useSocketContext();
@@ -39,7 +45,6 @@ const SingleSent = () => {
     parentid: "",
     involvedusers: [],
   });
-  const [totalInvolvedUsers, setTotalInvolvedUsers] = useState<string[]>([]);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   //Fetch TotalReplyMessages
   useEffect(() => {
@@ -80,7 +85,6 @@ const SingleSent = () => {
         const response = await axios.get<Message>(`${url}/messages/${id}`);
         const result = response.data;
         setParrentMessage(result);
-        setTotalInvolvedUsers(result.involvedusers);
       } catch (error) {
         if (error instanceof Error) {
           toast({
@@ -94,22 +98,6 @@ const SingleSent = () => {
 
     fetchMessage();
   }, [id, toast, url]);
-
-  const colors = [
-    "text-[#725EF2]",
-    "text-[#8C1C03]",
-    "text-[#05A61D]",
-    "text-[#D99E30]",
-    "text-[#1B8EF2]",
-    "text-[#D93D04]",
-    "text-[#027313]",
-  ];
-
-  const getUniqueColor = (user: string) => {
-    const indexOfUser = totalInvolvedUsers.indexOf(user);
-    const realIndex = indexOfUser % colors.length;
-    return `${colors[realIndex]} font-semibold`;
-  };
 
   const handleDelete = async (msgId: string) => {
     try {
@@ -175,136 +163,104 @@ const SingleSent = () => {
           <Spinner size="80" color="#000000" />
         </div>
       ) : (
-        <div className="flex flex-col gap-4 w-full">
-          {totalMessages.map((message) => (
-            <Card key={message.id} className="p-6 w-full">
-              <div className="flex text-dark-400 mb-4">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="p-1 rounded-md hover:bg-winter-100/50 h-7">
-                        <Link to="/notifications/sent">
-                          <ArrowLeft size={20} />
-                        </Link>
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Back</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span>
-                        <button
-                          onClick={() => handleDelete(message.id)}
-                          className="p-1 rounded-md hover:bg-winter-100/50"
-                        >
-                          <Trash size={20} />
-                        </button>
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Move to Recycle Bin</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span>
-                        <ReplyDialog
-                          setTotalMessages={setTotalMessages}
-                          parrentMessage={parrentMessage}
-                        />
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Replay</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <CardTitle>{`${message.subject}`}</CardTitle>
-              <p className="my-4 text-dark-400">{convertDate(message.date)}</p>
-              <div className="flex justify-between">
-                <div className="flex flex-col text-dark-400">
-                  <p>From</p>
-                  <p className={getUniqueColor(message.sender.name)}>
-                    {message.sender.name}
-                  </p>
-                  <img
-                    src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    alt="img"
-                    className="w-10 h-10 rounded-full object-cover object-center"
-                  />
-                </div>
-                <div className="flex flex-col text-dark-400">
-                  <p className="text-right">To</p>
-                  <div className="flex gap-2 max-w-[400px] items-center">
-                    {message.recivers.slice(0, 2).map((recvr) => (
-                      <div key={recvr.name} className="flex">
-                        <div className="flex flex-col text-dark-400 items-center">
-                          <p className={getUniqueColor(message.sender.name)}>
-                            {recvr.name.slice(0, 8)}
-                            {recvr.name.length > 8 && ".."}
-                          </p>
-                          <img
-                            src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                            alt="img"
-                            className="w-10 h-10 rounded-full object-cover object-center"
-                          />
-                        </div>
+        <Card className="flex flex-col gap-4 w-full p-4">
+          <div className="flex items-center">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="p-1 rounded-md hover:bg-winter-100/50 h-7">
+                    <Link to="/notifications/inbox">
+                      <ArrowLeft size={20} />
+                    </Link>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Back</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <p className="font-bold ml-4">{parrentMessage.subject}</p>
+          </div>
+          <div className="flex flex-col gap-4 w-full ">
+            {totalMessages.map((msg) => (
+              <div className="flex gap-4 items-start" key={msg.id}>
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={`${url}/${msg.sender.profile_picture}`} />
+                  <AvatarFallback>{msg.sender.name.slice(0, 1)}</AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col w-full">
+                  <div className="flex justify-between items-start">
+                    <div className="flex flex-col">
+                      <p className="font-semibold">{msg.sender.name}</p>
+                      <div className="text-sm gap-1 flex items-center">
+                        <span className="text-dark-400">to</span>
+                        <span>{msg.recivers[0].name}</span>
+                        {msg.recivers.length > 1 && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger className="focus:outline-none">
+                              {" "}
+                              <Ellipsis strokeWidth={1} size={16} />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              {msg.recivers
+                                .slice(1, msg.recivers.length + 1)
+                                .map((rcvr) => (
+                                  <p>{rcvr.name}</p>
+                                ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
                       </div>
-                    ))}
-                    {/* Hover Effect */}
-                    {message.recivers.length > 2 && (
-                      <>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <p className="text-sm text-dark-400">
+                        {convertDate(msg.date)}
+                      </p>
+                      <div className="flex items-center">
                         <TooltipProvider>
                           <Tooltip>
-                            <TooltipTrigger className=" pb-2 px-2 rounded">
-                              <Ellipsis />
+                            <TooltipTrigger asChild>
+                              <span>
+                                <ReplyDialog
+                                  setTotalMessages={setTotalMessages}
+                                  parrentMessage={parrentMessage}
+                                />
+                              </span>
                             </TooltipTrigger>
-                            <TooltipContent className=" h-60 overflow-y-scroll scrollbar-thin p-4">
-                              {message.recivers.map((rcvr) => (
-                                <div
-                                  key={rcvr.name}
-                                  className="flex my-2 text-dark-400"
-                                >
-                                  {/* {message.recivers[0] === rcvr ||
-                                message.recivers[1] === rcvr ? null : ( */}
-                                  <div className="flex items-center gap-1">
-                                    <img
-                                      src="https://plus.unsplash.com/premium_photo-1682095643806-79da986ccf8d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                      alt="img"
-                                      className="w-10 h-10 rounded-full object-cover object-center"
-                                    />
-                                    <p
-                                      className={getUniqueColor(
-                                        message.sender.name
-                                      )}
-                                    >
-                                      {rcvr.name}
-                                    </p>
-                                  </div>
-                                  {/* )} */}
-                                </div>
-                              ))}
+                            <TooltipContent>
+                              <p>Reply</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-                      </>
-                    )}
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span>
+                                <button
+                                  onClick={() => handleDelete(msg.id)}
+                                  className="p-1 rounded-md hover:bg-winter-100/50"
+                                >
+                                  <Trash size={20} />
+                                </button>
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Move to Recycle Bin</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
                   </div>
+                  <p className="text-dark-400 mb-2">
+                    {renderMessage(msg.body)}
+                  </p>
+                  <div className="bg-gray-200 h-[0.7px] w-full"></div>
                 </div>
               </div>
-              <p className="whitespace-pre-wrap mt-4">
-                {renderMessage(message.body)}
-              </p>
-            </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Card>
       )}
     </div>
   );
