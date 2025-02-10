@@ -31,7 +31,9 @@ const ReplyDialog = ({
   const api = useAxiosPrivate();
   const { token, user } = useGlobalContext();
   const { handlesendMessage, handleDraftMessage } = useSocketContext();
-  const [subject, setSubject] = useState<string>(parrentMessage.subject);
+  const [subject, setSubject] = useState<string>(
+    `Re: ${parrentMessage?.subject}`
+  );
   const [body, setBody] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const [isDrafting, setIsDrafting] = useState(false);
@@ -52,7 +54,7 @@ const ReplyDialog = ({
       id,
       sender,
       recivers,
-      subject: `Re: ${subject}`,
+      subject,
       body,
       date: new Date(),
       status: "Sent",
@@ -154,7 +156,6 @@ const ReplyDialog = ({
           <div className="flex flex-col gap-2 w-full text-dark-400">
             <label className="font-semibold ">Subject</label>
             <div className="rounded-sm outline-none border pl-2 h-8 w-full text-sm flex items-center">
-              <p>Re: </p>
               <input
                 type="text"
                 value={subject}
