@@ -58,6 +58,8 @@ import AuditorReporting from "@/pages/EnterpriseAccessMonitoring/AuditorReportin
 import NotificatonsRoutes from "@/pages/Notifications/NotificatonsRoutes";
 import ContinuousMonitoring from "@/pages/ContinuousMonitoring/ContinuousMonitoring";
 import Finance from "@/pages/Finance/Finance";
+import { ViewEditScheduledTasksTableV1 } from "@/components/AsynchronousRequestsAndTaskSchedules/ViewEditScheduledTasksV1/ViewEditScheduledTasksTableV1";
+import ScheduleATaskV1 from "@/pages/AsynchronousRequestsAndTaskSchedules/ScheduleATaskV1";
 
 const routes = createBrowserRouter([
   {
@@ -322,8 +324,17 @@ const routes = createBrowserRouter([
             element: <ScheduleATask />,
           },
           {
+            path: "v1/schedule-a-task",
+            element: <ScheduleATaskV1 />,
+          },
+          {
             path: "view-edit-scheduled-tasks",
             element: <ViewEditScheduledTasks />,
+          },
+
+          {
+            path: "v1/view-edit-scheduled-tasks",
+            element: <ViewEditScheduledTasksTableV1 />,
           },
           {
             path: "run-an-ad-hoc-request",

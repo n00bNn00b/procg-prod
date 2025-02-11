@@ -55,9 +55,9 @@ import { useARMContext } from "@/Context/ARMContext/ARMContext";
 import TaskRequest from "../TaskRequest/TaskRequest";
 import CustomModal3 from "@/components/CustomModal/CustomModal3";
 
-export function ViewEditScheduledTasksTable() {
+export function ViewEditScheduledTasksTableV1() {
   const {
-    getAsynchronousRequestsAndTaskSchedules,
+    getAsynchronousRequestsAndTaskSchedulesV1,
     isLoading,
     setIsLoading,
     deleteAsynchronousRequestsAndTaskSchedules,
@@ -74,8 +74,11 @@ export function ViewEditScheduledTasksTable() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const res = await getAsynchronousRequestsAndTaskSchedules(page, limit);
-        console.log(res, "res");
+        const res = await getAsynchronousRequestsAndTaskSchedulesV1(
+          page,
+          limit
+        );
+
         if (res) setData(res);
       } catch (error) {
         console.log(error);

@@ -21,8 +21,9 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
         return <div className="min-w-max">User Task Name</div>;
       },
       cell: ({ row }) => {
-        const args: Array<string> = row.getValue("args");
-        return <div className="min-w-max">{args[1]}</div>;
+        return (
+          <div className="min-w-max">{row.getValue("user_task_name")}</div>
+        );
       },
     },
     {
@@ -54,11 +55,31 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
     {
       accessorKey: "kwargs",
       header: () => {
-        return <div className="min-w-max">Parameters</div>;
+        return <div className="min-w-max">kwargs</div>;
       },
       cell: ({ row }) => {
         const data: string = JSON.stringify(row.getValue("kwargs"));
         return <div>{data}</div>;
+      },
+    },
+    {
+      accessorKey: "parameters",
+      header: () => {
+        return <div className="min-w-max">Parameters</div>;
+      },
+      cell: ({ row }) => {
+        const data: string = JSON.stringify(row.getValue("parameters"));
+        return <div>{data}</div>;
+      },
+    },
+    {
+      accessorKey: "schedule_type",
+      header: () => {
+        return <div className="min-w-max">Schedule Type</div>;
+      },
+      cell: ({ row }) => {
+        const data: string = row.getValue("schedule_type");
+        return <div>{data === "" ? "null" : data}</div>;
       },
     },
     {
@@ -78,16 +99,7 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
       },
       cell: ({ row }) => {
         const args: Array<string> = row.getValue("args");
-        return <div className="">{args[0]}</div>;
-      },
-    },
-    {
-      accessorKey: "ready_for_redbeat",
-      header: () => {
-        return <div className="w-[15rem]">Ready For Redbeat</div>;
-      },
-      cell: ({ row }) => {
-        return <div className="">{row.getValue("ready_for_redbeat")}</div>;
+        return <div className="">{JSON.stringify(args[0])}</div>;
       },
     },
     {
@@ -125,6 +137,16 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
       cell: ({ row }) => {
         const data: string = row.getValue("last_update_date");
         return <div className=" min-w-max">{data?.slice(0, 16)} </div>;
+      },
+    },
+    {
+      accessorKey: "ready_for_redbeat",
+      header: () => {
+        return <div className="min-w-max">Ready for Redbeat</div>;
+      },
+      cell: ({ row }) => {
+        const data: string = row.getValue("ready_for_redbeat");
+        return <div className=" min-w-max">{data} </div>;
       },
     },
     {

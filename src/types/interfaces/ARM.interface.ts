@@ -39,6 +39,9 @@ export interface IAsynchronousRequestsAndTaskSchedulesTypes {
   schedule: number;
   task_name: string;
   user_schedule_name: string;
+  parameters: string;
+  schedule_type: string;
+  ready_for_redbeat: string;
 }
 export interface IARMAsynchronousTasksParametersTypes {
   user_task_name: string;
