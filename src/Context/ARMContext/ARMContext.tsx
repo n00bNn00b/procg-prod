@@ -46,6 +46,10 @@ interface ARMContext {
     page: number,
     limit: number
   ) => Promise<IAsynchronousRequestsAndTaskSchedulesTypes[] | undefined>;
+  getAsynchronousRequestsAndTaskSchedulesV1: (
+    page: number,
+    limit: number
+  ) => Promise<IAsynchronousRequestsAndTaskSchedulesTypes[] | undefined>;
   deleteAsynchronousRequestsAndTaskSchedules: (
     selectedItems: IAsynchronousRequestsAndTaskSchedulesTypes[]
   ) => Promise<void>;
@@ -185,6 +189,29 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
       return [];
     }
   };
+  // V1 API
+  const getAsynchronousRequestsAndTaskSchedulesV1 = async (
+    page: number,
+    limit: number
+  ) => {
+    try {
+      const [allTasksSchedules, taskSchedules] = await Promise.all([
+        api.get<IAsynchronousRequestsAndTaskSchedulesTypes[]>(
+          `/asynchronous-requests-and-task-schedules`
+        ),
+        api.get<IAsynchronousRequestsAndTaskSchedulesTypes[]>(
+          `/api/v1/asynchronous-requests-and-task-schedules/task-schedules/${page}/${limit}`
+        ),
+      ]);
+      const totalCount = allTasksSchedules.data.length;
+      const totalPages = Math.ceil(totalCount / limit);
+      setTotalPage(totalPages);
+      return taskSchedules.data ?? [];
+    } catch (error) {
+      console.log("Task Parameters Item Not found");
+      return [];
+    }
+  };
   const deleteAsynchronousRequestsAndTaskSchedules = async (
     selectedItems: IAsynchronousRequestsAndTaskSchedulesTypes[]
   ) => {
@@ -240,6 +267,7 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
     isSubmit,
     setIsSubmit,
     getAsynchronousRequestsAndTaskSchedules,
+    getAsynchronousRequestsAndTaskSchedulesV1,
     deleteAsynchronousRequestsAndTaskSchedules,
     getViewRequests,
   };
