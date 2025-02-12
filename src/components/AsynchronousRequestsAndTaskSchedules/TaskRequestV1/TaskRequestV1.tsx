@@ -32,17 +32,18 @@ import {
 import { useARMContext } from "@/Context/ARMContext/ARMContext";
 import {
   IARMAsynchronousTasksTypes,
-  IAsynchronousRequestsAndTaskSchedulesTypes,
+  IAsynchronousRequestsAndTaskSchedulesTypesV1,
 } from "@/types/interfaces/ARM.interface";
 import { X } from "lucide-react";
 import Schedule from "./Schedule";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import CustomModal4 from "@/components/CustomModal/CustomModal4";
 
 interface ITaskRequestProps {
   action: string;
   handleCloseModal: () => void;
   user_schedule_name: string;
-  selected?: IAsynchronousRequestsAndTaskSchedulesTypes;
+  selected?: IAsynchronousRequestsAndTaskSchedulesTypesV1;
 }
 export interface IScheduleTypes {
   frequency_type: string;
@@ -58,7 +59,8 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
   const api = useAxiosPrivate();
   const { getAsyncTasks, getTaskParametersByTaskName, setIsSubmit } =
     useARMContext();
-  const { isOpenModal, setIsOpenModal } = useGlobalContext();
+  const { isOpenScheduleModalV1, setIsOpenScheduleModalV1 } =
+    useGlobalContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [asyncTaskNames, setAsyncTaskNames] = useState<
     IARMAsynchronousTasksTypes[] | undefined
@@ -67,7 +69,10 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
     selected?.kwargs || {}
   );
   const [scheduleType, setScheduleType] = useState<string>("");
-  const [schedule, setSchedule] = useState<IScheduleTypes>();
+  const [schedule, setSchedule] = useState<IScheduleTypes>({
+    frequency_type: "",
+    frequency: 0,
+  });
 
   useEffect(() => {
     const fetchAsyncTasks = async () => {
@@ -92,76 +97,6 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
     });
   }, [parameters]);
 
-  const FormSchema = z.object({
-    user_schedule_name: z.string(),
-    task_name: z.string(),
-    parameters: z.record(z.union([z.string(), z.number()])),
-    schedule: z.string().or(z.number()),
-    schedule_type: z.string(),
-  });
-
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      user_schedule_name: "",
-      task_name: "",
-      parameters: action === "Edit Task Schedule" ? selected?.kwargs : {},
-      schedule: action === "Edit Task Schedule" ? selected?.schedule : "",
-      schedule_type: "",
-    },
-  });
-
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    if (data.user_schedule_name !== "ad_hoc" && data.schedule === "0") {
-      toast({
-        title: "Info",
-        description: `Schedule value should be greater than 0.`,
-      });
-      return;
-    }
-
-    const scheduleTaskPostData = {
-      user_schedule_name: data.user_schedule_name,
-      task_name: data.task_name,
-      parameters: data.parameters,
-      schedule: schedule,
-      schedule_type: scheduleType,
-    };
-
-    try {
-      setIsLoading(true);
-
-      if (action === "Schedule A Task") {
-        const response = await api.post(
-          `/api/v1/asynchronous-requests-and-task-schedules/create-task-schedule-v1`,
-          scheduleTaskPostData
-        );
-        if (response) {
-          toast({
-            title: "Success",
-            description: "Schedule A Task successfully.",
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: "Failed to create task schedule.",
-            variant: "destructive",
-          });
-        }
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create task schedule.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-      form.reset();
-      setIsSubmit(Math.random() + 23 * 3000);
-    }
-  };
-
   const handleGetParameters = async (task_name: string) => {
     try {
       setIsLoading(true);
@@ -183,7 +118,91 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    const fetchAsyncTasks = async () => {
+      try {
+        setIsLoading(true);
+        setAsyncTaskNames(await getAsyncTasks());
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchAsyncTasks();
+  }, []);
 
+  const FormSchema = z.object({
+    user_schedule_name: z.string(),
+    task_name: z.string(),
+    parameters: z.record(z.union([z.string(), z.number()])),
+    schedule: z
+      .object({ frequency_type: z.string(), frequency: z.number() })
+      .optional(),
+    schedule_type: z.string(),
+  });
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      user_schedule_name: "",
+      task_name: "",
+      parameters: selected?.kwargs ?? {},
+      schedule,
+      schedule_type: "",
+    },
+  });
+  console.log(schedule, "schedule");
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    if (!(await form.trigger())) return;
+    if (schedule?.frequency === 0) {
+      return toast({
+        title: "Info",
+        description: "Schedule value should be greater than 0.",
+      });
+    }
+
+    const payload =
+      action === "Schedule A Task"
+        ? {
+            user_schedule_name: data.user_schedule_name,
+            task_name: data.task_name,
+            parameters: data.parameters,
+            schedule,
+            schedule_type: data.schedule_type,
+          }
+        : {
+            schedule,
+            schedule_type: scheduleType,
+            parameters: data.parameters,
+          };
+
+    try {
+      setIsLoading(true);
+      console.log(payload, action, "data");
+      await (action === "Schedule A Task"
+        ? api.post(
+            "/api/v1/asynchronous-requests-and-task-schedules/create-task-schedule-v1",
+            payload
+          )
+        : api.put(
+            `/asynchronous-requests-and-task-schedules/update-task-schedule-v1/${selected?.task_name}/${selected?.redbeat_schedule_name}`,
+            payload
+          ));
+      toast({ title: "Success", description: `${action} successfully.` });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to process request.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+      form.reset();
+      setIsSubmit(Math.random() + 23 * 3000);
+    }
+  };
+  console.log(action, "action");
   return (
     <div
       className={`${
@@ -196,15 +215,17 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
           <X onClick={() => handleCloseModal()} className="cursor-pointer" />
         </div>
       )}
-      {isOpenModal === "Schedule" && (
-        <Schedule
-          scheduleType={scheduleType}
-          setSchedule={setSchedule}
-          schedule={schedule}
-          setScheduleType={setScheduleType}
-          action="Schedule"
-          setIsOpenModal={setIsOpenModal}
-        />
+      {isOpenScheduleModalV1 === "Schedule" && (
+        <CustomModal4 w="w-[600px]" h="h-[300px]">
+          <Schedule
+            schedule={selected?.schedule ?? schedule}
+            setSchedule={setSchedule}
+            scheduleType={scheduleType}
+            setScheduleType={setScheduleType}
+            action="Schedule"
+            setIsOpenScheduleModalV1={setIsOpenScheduleModalV1}
+          />
+        </CustomModal4>
       )}
 
       <Form {...form}>
@@ -270,7 +291,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
               <div className="flex flex-col gap-[18px] pt-8">
                 <h3
                   className="bg-gray-300 rounded p-[7px] border text-black hover:bg-gray-300"
-                  onClick={() => setIsOpenModal("Schedule")}
+                  onClick={() => setIsOpenScheduleModalV1("Schedule")}
                 >
                   Schedule
                 </h3>
@@ -350,7 +371,11 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             </TableBody>
           </Table>
           <div className="flex justify-end">
-            <Button type="submit" className="mt-5">
+            <Button
+              type="submit"
+              className="mt-5"
+              onClick={() => console.log("Submit clicked")}
+            >
               {isLoading ? <div>Loading...</div> : "Submit"}
             </Button>
           </div>
