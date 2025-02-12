@@ -1,7 +1,7 @@
-import { IAsynchronousRequestsAndTaskSchedulesTypes } from "@/types/interfaces/ARM.interface";
+import { IAsynchronousRequestsAndTaskSchedulesTypesV1 } from "@/types/interfaces/ARM.interface";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { ColumnDef } from "@tanstack/react-table";
-export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypes>[] =
+export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypesV1>[] =
   [
     {
       id: "select",

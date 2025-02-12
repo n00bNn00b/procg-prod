@@ -123,14 +123,6 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
       schedule_minutes: Number(data.schedule),
       parameters: data.parameters,
     };
-    console.log(
-      adHocPostData,
-      scheduleTaskPostData,
-      updateScheduleTaskPostData,
-      "adHocPostData",
-      "scheduleTaskPostData",
-      "updateScheduleTaskPostData"
-    );
     try {
       setIsLoading(true);
 

@@ -5,6 +5,7 @@ import {
   IARMTaskParametersTypes,
   IARMViewRequestsTypes,
   IAsynchronousRequestsAndTaskSchedulesTypes,
+  IAsynchronousRequestsAndTaskSchedulesTypesV1,
 } from "@/types/interfaces/ARM.interface";
 import React, { ReactNode, createContext, useContext, useState } from "react";
 import { useGlobalContext } from "../GlobalContext/GlobalContext";
@@ -49,9 +50,12 @@ interface ARMContext {
   getAsynchronousRequestsAndTaskSchedulesV1: (
     page: number,
     limit: number
-  ) => Promise<IAsynchronousRequestsAndTaskSchedulesTypes[] | undefined>;
+  ) => Promise<IAsynchronousRequestsAndTaskSchedulesTypesV1[] | undefined>;
   deleteAsynchronousRequestsAndTaskSchedules: (
     selectedItems: IAsynchronousRequestsAndTaskSchedulesTypes[]
+  ) => Promise<void>;
+  deleteAsynchronousRequestsAndTaskSchedulesV1: (
+    selectedItems: IAsynchronousRequestsAndTaskSchedulesTypesV1[]
   ) => Promise<void>;
   getViewRequests: (
     page: number,
@@ -196,10 +200,10 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
   ) => {
     try {
       const [allTasksSchedules, taskSchedules] = await Promise.all([
-        api.get<IAsynchronousRequestsAndTaskSchedulesTypes[]>(
-          `/asynchronous-requests-and-task-schedules`
+        api.get<IAsynchronousRequestsAndTaskSchedulesTypesV1[]>(
+          `/api/v1/asynchronous-requests-and-task-schedules/task-schedules`
         ),
-        api.get<IAsynchronousRequestsAndTaskSchedulesTypes[]>(
+        api.get<IAsynchronousRequestsAndTaskSchedulesTypesV1[]>(
           `/api/v1/asynchronous-requests-and-task-schedules/task-schedules/${page}/${limit}`
         ),
       ]);
@@ -221,6 +225,24 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
         selectedItems.map(async (item) => {
           await api.put(
             `/asynchronous-requests-and-task-schedules/cancel-task-schedule/${item.task_name}/${item.redbeat_schedule_name}`
+          );
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const deleteAsynchronousRequestsAndTaskSchedulesV1 = async (
+    selectedItems: IAsynchronousRequestsAndTaskSchedulesTypesV1[]
+  ) => {
+    try {
+      setIsLoading(true);
+      await Promise.all(
+        selectedItems.map(async (item) => {
+          await api.put(
+            `/api/v1/asynchronous-requests-and-task-schedules/cancel-task-schedule-v1/${item.task_name}/${item.redbeat_schedule_name}`
           );
         })
       );
@@ -269,6 +291,7 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
     getAsynchronousRequestsAndTaskSchedules,
     getAsynchronousRequestsAndTaskSchedulesV1,
     deleteAsynchronousRequestsAndTaskSchedules,
+    deleteAsynchronousRequestsAndTaskSchedulesV1,
     getViewRequests,
   };
   return <ARMContext.Provider value={values}>{children}</ARMContext.Provider>;
