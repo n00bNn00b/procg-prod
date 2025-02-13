@@ -238,10 +238,15 @@
         "path": "/asynchronous-request-manager/development",
         "paths": [
           "/asynchronous-request-manager/development",
+          "/asynchronous-request-manager/development/manage-execution-methods",
           "/asynchronous-request-manager/development/register-edit-asynchronous-tasks",
           "/asynchronous-request-manager/development/manage-task-parameters"
         ],
         "subItems": [
+          {
+            "name": "Manage Execution Methods",
+            "path": "/asynchronous-request-manager/development/manage-execution-methods"
+          },
           {
             "name": "Register/Edit Asynchronous Tasks",
             "path": "/asynchronous-request-manager/development/register-edit-asynchronous-tasks"

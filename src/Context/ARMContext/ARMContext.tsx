@@ -6,6 +6,7 @@ import {
   IARMViewRequestsTypes,
   IAsynchronousRequestsAndTaskSchedulesTypes,
   IAsynchronousRequestsAndTaskSchedulesTypesV1,
+  IExecutionMethodsTypes,
 } from "@/types/interfaces/ARM.interface";
 import React, { ReactNode, createContext, useContext, useState } from "react";
 import { useGlobalContext } from "../GlobalContext/GlobalContext";
@@ -19,6 +20,10 @@ interface ARMContext {
     page: number,
     limit: number
   ) => Promise<IARMAsynchronousTasksTypes[] | undefined>;
+  getManageExecutionMethodsLazyLoading: (
+    page: number,
+    limit: number
+  ) => Promise<IExecutionMethodsTypes[] | undefined>;
 
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -99,6 +104,26 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
       setIsLoading(false);
     }
   };
+  const getManageExecutionMethodsLazyLoading = async (page: number, limit: number) => {
+    try {
+      setIsLoading(true);
+      const [countExecutionMethods, ExecutionMethods] = await Promise.all([
+        api.get<IExecutionMethodsTypes[]>(`/arm-tasks/show-execution-methods`),
+        api.get<IExecutionMethodsTypes[]>(
+          `/arm-tasks/show-execution-methods/${page}/${limit}`
+        ),
+      ]);
+       
+      const totalCount = countExecutionMethods.data.length;
+      const totalPages = Math.ceil(totalCount / limit);
+      setTotalPage(totalPages);
+      return ExecutionMethods.data ?? [];
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const getAsyncTasksLazyLoading = async (page: number, limit: number) => {
     try {
       //111
@@ -143,9 +168,9 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
   ) => {
     try {
       const [countTasksParameters, tasksParameters] = await Promise.all([
-        api.get<IARMTaskParametersTypes[]>(`/arm-tasks/${task_name}`),
+        api.get<IARMTaskParametersTypes[]>(`/arm-tasks/task-params/${task_name}`),
         api.get<IARMTaskParametersTypes[]>(
-          `/arm-tasks/${task_name}/${page}/${limit}`
+          `/arm-tasks/task-params/${task_name}/${page}/${limit}`
         ),
       ]);
 
@@ -162,7 +187,7 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
   const getTaskParametersByTaskName = async (task_name: string) => {
     try {
       const res = await api.get<IARMAsynchronousTasksParametersTypes[]>(
-        `/arm-tasks/${task_name}`
+        `/arm-tasks/task-params/${task_name}`
       );
 
       return res.data ?? [];
@@ -275,6 +300,7 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
   };
 
   const values = {
+    getManageExecutionMethodsLazyLoading,
     getAsyncTasks,
     getAsyncTasksLazyLoading,
     isLoading,

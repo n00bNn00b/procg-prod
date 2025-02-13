@@ -73,6 +73,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
     frequency_type: "",
     frequency: 0,
   });
+  // const [date, setDate] = useState<Date | undefined>(new Date());
 
   useEffect(() => {
     const fetchAsyncTasks = async () => {
@@ -152,13 +153,13 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
       schedule_type: "",
     },
   });
-  console.log(schedule, "schedule");
+
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (!(await form.trigger())) return;
-    if (schedule?.frequency === 0) {
+    if (schedule?.frequency === 0 || scheduleType === "") {
       return toast({
         title: "Info",
-        description: "Schedule value should be greater than 0.",
+        description: "Error: Select schedule again.",
       });
     }
 
@@ -179,7 +180,6 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
 
     try {
       setIsLoading(true);
-      console.log(payload, action, "data");
       await (action === "Schedule A Task"
         ? api.post(
             "/api/v1/asynchronous-requests-and-task-schedules/create-task-schedule-v1",
@@ -202,11 +202,13 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
       setIsSubmit(Math.random() + 23 * 3000);
     }
   };
-  console.log(action, "action");
+
   return (
     <div
       className={`${
-        action === "Edit Task Schedule" ? "" : "w-[50%] mx-auto my-10"
+        action === "Edit Task Schedule"
+          ? ""
+          : "w-[900px] h-[532px] mx-auto my-10 border rounded"
       } `}
     >
       {action === "Edit Task Schedule" && (
@@ -216,7 +218,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
         </div>
       )}
       {isOpenScheduleModalV1 === "Schedule" && (
-        <CustomModal4 w="w-[600px]" h="h-[300px]">
+        <CustomModal4 w="w-[770px]" h="h-[412px]">
           <Schedule
             schedule={selected?.schedule ?? schedule}
             setSchedule={setSchedule}
@@ -224,6 +226,8 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             setScheduleType={setScheduleType}
             action="Schedule"
             setIsOpenScheduleModalV1={setIsOpenScheduleModalV1}
+            // date={date}
+            // setDate={setDate}
           />
         </CustomModal4>
       )}
@@ -290,7 +294,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             {user_schedule_name !== "Ad Hoc" && (
               <div className="flex flex-col gap-[18px] pt-8">
                 <h3
-                  className="bg-gray-300 rounded p-[7px] border text-black hover:bg-gray-300"
+                  className="bg-gray-400 rounded p-[7px] border text-white font-bold hover:bg-gray-500 text-center cursor-pointer"
                   onClick={() => setIsOpenScheduleModalV1("Schedule")}
                 >
                   Schedule

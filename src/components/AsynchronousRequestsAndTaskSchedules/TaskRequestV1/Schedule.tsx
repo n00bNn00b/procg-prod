@@ -86,7 +86,7 @@ const Schedule: FC<IScheduleProps> = ({
               name="schedule_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Run the Job</FormLabel>
+                  <FormLabel>Schedule Type</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
