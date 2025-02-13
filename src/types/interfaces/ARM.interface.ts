@@ -1,3 +1,9 @@
+export interface IExecutionMethodsTypes {
+  description: string,
+  execution_method: string,
+  executor: string,
+  internal_execution_method: string,
+}
 export interface IARMAsynchronousTasksTypes {
   arm_task_id: number;
   script_name: string;

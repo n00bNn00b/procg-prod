@@ -60,6 +60,7 @@ import ContinuousMonitoring from "@/pages/ContinuousMonitoring/ContinuousMonitor
 import Finance from "@/pages/Finance/Finance";
 import { ViewEditScheduledTasksTableV1 } from "@/components/AsynchronousRequestsAndTaskSchedules/ViewEditScheduledTasksV1/ViewEditScheduledTasksTableV1";
 import ScheduleATaskV1 from "@/pages/AsynchronousRequestsAndTaskSchedules/ScheduleATaskV1";
+import ManageExecutionMethods from "@/pages/AsynchronousRequestManager/Development/ManageExecutionMethods/ManageExecutionMethods";
 
 const routes = createBrowserRouter([
   {
@@ -299,6 +300,10 @@ const routes = createBrowserRouter([
               {
                 path: "",
                 element: <Development />,
+              },
+              {
+                path: "manage-execution-methods",
+                element: <ManageExecutionMethods />,
               },
               {
                 path: "register-edit-asynchronous-tasks",

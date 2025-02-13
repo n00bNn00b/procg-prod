@@ -194,7 +194,7 @@ export function ViewEditScheduledTasksTableV1() {
     //table toggle false
     table.toggleAllRowsSelected(false);
   };
-  console.log(selected[0], "selected[0]");
+   
   return (
     <div className="px-3">
       {isOpenModal === "edit_task_schedule_v1" && (
