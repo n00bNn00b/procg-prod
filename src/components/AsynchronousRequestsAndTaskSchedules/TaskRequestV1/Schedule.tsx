@@ -22,7 +22,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
-
+import { IAsynchronousRequestsAndTaskSchedulesTypesV1 } from "@/types/interfaces/ARM.interface";
+const date = [
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+  23, 24, 25, 26, 27, 28, 29, 30, 31,
+];
+const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 interface IScheduleProps {
   schedule: IScheduleTypes;
   setSchedule: Dispatch<SetStateAction<IScheduleTypes>>;
@@ -30,6 +35,11 @@ interface IScheduleProps {
   setScheduleType: Dispatch<SetStateAction<string>>;
   action: string;
   setIsOpenScheduleModalV1: Dispatch<SetStateAction<string>>;
+  selected?: IAsynchronousRequestsAndTaskSchedulesTypesV1;
+  selectedDates: number[];
+  setSelectedDates: Dispatch<SetStateAction<number[]>>;
+  selectedDays: string[];
+  setSelectedDays: Dispatch<SetStateAction<string[]>>;
 }
 
 const Schedule: FC<IScheduleProps> = ({
@@ -39,33 +49,87 @@ const Schedule: FC<IScheduleProps> = ({
   setScheduleType,
   action,
   setIsOpenScheduleModalV1,
+  selected,
+  selectedDates,
+  setSelectedDates,
+  selectedDays,
+  setSelectedDays,
 }) => {
   const FormSchema = z.object({
     schedule_type: z.string(),
-    frequency_type: z.string(),
-    frequency: z.coerce.number().min(1, "Frequency must be at least 1"),
+    schedule:
+      scheduleType === "Periodic"
+        ? z.object({
+            frequency: z.coerce.number().min(1, "Frequency must be at least 1"),
+            frequency_type: z.string(),
+          })
+        : z.object({
+            days_of_month: z.number().array().optional(),
+            days_of_week: z.string().array().optional(),
+          }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      schedule_type: scheduleType ? scheduleType : "Periodic",
-      frequency_type: schedule?.frequency_type
-        ? schedule.frequency_type
-        : "Minute(s)",
-      frequency: schedule?.frequency ? schedule.frequency : 0,
+      schedule_type: selected?.schedule_type ?? scheduleType ?? "Periodic",
+      schedule: selected?.schedule ?? schedule,
     },
   });
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    setSchedule({
-      frequency_type: data.frequency_type,
-      frequency: data.frequency,
-    });
-    setScheduleType(data.schedule_type);
-    setIsOpenScheduleModalV1(""); // Close modal on submit
+  const handleDateSelect = (time: number | string) => {
+    if (typeof time === "number") {
+      setSelectedDays([]);
+      setSelectedDates(
+        selectedDates.includes(time)
+          ? selectedDates.filter((d) => d !== time)
+          : [...selectedDates, time]
+      );
+      setSchedule({ days_of_month: [...selectedDates, time] });
+      form.setValue(
+        "schedule.days_of_month",
+        selectedDates.includes(time)
+          ? selectedDates.filter((d) => d !== time)
+          : [...selectedDates, time]
+      );
+    } else {
+      setSelectedDates([]);
+      setSelectedDays(
+        selectedDays.includes(time)
+          ? selectedDays.filter((d) => d !== time)
+          : [...selectedDays, time]
+      );
+      setSchedule({ days_of_week: [...selectedDays, time] });
+      form.setValue(
+        "schedule.days_of_week",
+        selectedDays.includes(time)
+          ? selectedDays.filter((d) => d !== time)
+          : [...selectedDays, time]
+      );
+    }
   };
 
+  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    try {
+      setSchedule(
+        selectedDates.length > 0
+          ? { days_of_month: selectedDates }
+          : { days_of_week: selectedDays }
+      );
+      setScheduleType(data.schedule_type);
+      setIsOpenScheduleModalV1("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // useEffect(() => {
+  //   if (selected?.schedule.days_of_month) {
+  //     setSelectedDates(selected?.schedule.days_of_month);
+  //   } else if (selected?.schedule.days_of_week) {
+  //     setSelectedDays(selected?.schedule.days_of_week);
+  //   }
+  // }, []);
+  // console.log(selectedDates, "lll1");
   return (
     <div>
       {action === "Schedule" && (
@@ -96,15 +160,21 @@ const Schedule: FC<IScheduleProps> = ({
                     >
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="Periodic" />
+                          <RadioGroupItem
+                            onClick={() => setScheduleType("Periodic")}
+                            value="Periodic"
+                          />
                         </FormControl>
                         <FormLabel className="font-normal">Periodic</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem disabled value="On Specific Days" />
+                          <RadioGroupItem
+                            onClick={() => setScheduleType("on_specific_days")}
+                            value="on_specific_days"
+                          />
                         </FormControl>
-                        <FormLabel className="font-normal text-gray-500">
+                        <FormLabel className="font-normal">
                           On Specific Days
                         </FormLabel>
                       </FormItem>
@@ -116,54 +186,91 @@ const Schedule: FC<IScheduleProps> = ({
             />
 
             {/* Frequency & Frequency Type Selection */}
-            <div className="flex gap-2">
-              <FormField
-                control={form.control}
-                name="frequency"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Frequency</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="number"
-                        required
-                        value={field.value}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="frequency_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Frequency Type</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        required
+            {form.getValues().schedule_type === "Periodic" ? (
+              <div className="flex gap-2">
+                <FormField
+                  control={form.control}
+                  name="schedule.frequency"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Frequency</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="number"
+                          required
+                          value={field.value}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="schedule.frequency_type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Frequency Type</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          required
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a option" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Month(s)">Month(s)</SelectItem>
+                            <SelectItem value="Week(s)">Week(s)</SelectItem>
+                            <SelectItem value="Day(s)">Day(s)</SelectItem>
+                            <SelectItem value="Hour(s)">Hour(s)</SelectItem>
+                            <SelectItem value="Minute(s)">Minute(s)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            ) : (
+              <div>
+                <div>
+                  <h3>Dates of Every Month:</h3>
+                  <div className="grid grid-cols-7 py-2">
+                    {date.map((day) => (
+                      <div
+                        key={day}
+                        className={`${
+                          selectedDates.includes(day) && "bg-slate-400"
+                        } flex items-center justify-center h-8 border border-slate-500 rounded cursor-pointer hover:bg-slate-200 p-2`}
+                        onClick={() => handleDateSelect(day)}
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a option" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Month(s)">Month(s)</SelectItem>
-                          <SelectItem value="Week(s)">Week(s)</SelectItem>
-                          <SelectItem value="Day(s)">Day(s)</SelectItem>
-                          <SelectItem value="Hour(s)">Hour(s)</SelectItem>
-                          <SelectItem value="Minute(s)">Minute(s)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h3>Days of Every Week:</h3>
+                  <div className="grid grid-cols-7 py-2">
+                    {daysOfWeek.map((day, i) => (
+                      <div
+                        key={i}
+                        className={`${
+                          selectedDays.includes(day) && "bg-slate-400"
+                        } flex items-center justify-center h-8 border border-slate-500 rounded cursor-pointer hover:bg-slate-200 p-2`}
+                        onClick={() => handleDateSelect(day)}
+                      >
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}

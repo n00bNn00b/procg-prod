@@ -13,13 +13,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { toast } from "@/components/ui/use-toast";
 import { AxiosError } from "axios";
-import { IARMAsynchronousTasksTypes } from "@/types/interfaces/ARM.interface";
+import {
+  IARMAsynchronousTasksTypes,
+  IExecutionMethodsTypes,
+} from "@/types/interfaces/ARM.interface";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { useARMContext } from "@/Context/ARMContext/ARMContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ICreateTaskProps {
   task_name: string;
@@ -37,7 +47,27 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
 }) => {
   const api = useAxiosPrivate();
   const { isOpenModal } = useGlobalContext();
-  const { setIsSubmit } = useARMContext();
+  const { setIsSubmit, getManageExecutionMethods } = useARMContext();
+  const [executionMethods, setExecutionMethods] = useState<
+    IExecutionMethodsTypes[]
+  >([]);
+  const [selectedExecutionMethod, setSelectedExecutionMethod] =
+    useState<IExecutionMethodsTypes>(executionMethods[0]);
+  console.log(selectedExecutionMethod, "selectedExecutionMethod");
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getManageExecutionMethods();
+        if (res) setExecutionMethods(res);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+  // useEffect(() => {
+  //   setSelectedExecutionMethod();
+  // }, [selectedExecutionMethod]);
 
   const FormSchema = z.object(
     isOpenModal === "register_task"
@@ -45,7 +75,6 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
           user_task_name: z.string(),
           task_name: z.string(),
           execution_method: z.string(),
-          executor: z.string(),
           script_name: z.string(),
           script_path: z.string(),
           description: z.string(),
@@ -65,10 +94,8 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
         ? {
             user_task_name: "",
             task_name: "",
-            execution_method: "Python",
-            executor: "executors.python.run_script",
+            execution_method: selectedExecutionMethod?.execution_method,
             script_name: "",
-            script_path: "script_path_01",
             description: "",
           }
         : {
@@ -84,8 +111,10 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
     const postData = {
       user_task_name: data.user_task_name,
       task_name: data.task_name,
+      executor: selectedExecutionMethod?.executor,
       execution_method: data.execution_method,
-      executor: data.executor,
+      internal_execution_method:
+        selectedExecutionMethod?.internal_execution_method,
       script_name: data.script_name,
       script_path: data.script_path,
       description: data.description,
@@ -168,6 +197,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
       reset();
     }
   };
+  console.log(form.getValues(), "vall");
   return (
     <div>
       <div className="p-2 bg-slate-300 rounded-t mx-auto text-center font-bold flex justify-between">
@@ -222,12 +252,32 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                     <FormItem>
                       <FormLabel>Execution Method</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          required
-                          type="text"
-                          placeholder="Execution Method"
-                        />
+                        <Select
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            const selectedItem = executionMethods.find(
+                              (item) => item.execution_method === value
+                            );
+                            if (selectedItem) {
+                              setSelectedExecutionMethod(selectedItem);
+                            }
+                          }}
+                          value={field.value}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Execution Method" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {executionMethods.map((item) => (
+                              <SelectItem
+                                key={item.execution_method}
+                                value={item.execution_method}
+                              >
+                                {item.execution_method}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                     </FormItem>
                   )}
@@ -243,12 +293,32 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                     <FormItem>
                       <FormLabel>Execution Method</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          required
-                          type="text"
-                          placeholder="Execution Method"
-                        />
+                        <Select
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            const selectedItem = executionMethods.find(
+                              (item) => item.execution_method === value
+                            );
+                            if (selectedItem) {
+                              setSelectedExecutionMethod(selectedItem);
+                            }
+                          }}
+                          value={field.value}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Execution Method" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {executionMethods.map((item) => (
+                              <SelectItem
+                                key={item.execution_method}
+                                value={item.execution_method}
+                              >
+                                {item.execution_method}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                     </FormItem>
                   )}
@@ -273,23 +343,16 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                 />
               )}
               {isOpenModal === "register_task" && (
-                <FormField
-                  control={form.control}
-                  name="executor"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Executor</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          required
-                          type="text"
-                          placeholder="Executor"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                <div>
+                  <FormLabel htmlFor="Executor">Executor</FormLabel>
+                  <Input
+                    placeholder="Executor"
+                    readOnly
+                    disabled
+                    className="my-2"
+                    value={selectedExecutionMethod?.executor ?? "Executor"}
+                  />
+                </div>
               )}
             </div>
             <div className="grid grid-cols-2 gap-10">

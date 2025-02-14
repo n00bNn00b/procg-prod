@@ -62,8 +62,10 @@ export interface IAsynchronousRequestsAndTaskSchedulesTypesV1 {
   last_updated_by: number;
   redbeat_schedule_name: string;
   schedule: {
-    frequency_type: string;
-    frequency: number;
+    frequency_type?: string;
+    frequency?: number;
+    days_of_month?: number[];
+    days_of_week?: string[];
   };
   task_name: string;
   user_schedule_name: string;
