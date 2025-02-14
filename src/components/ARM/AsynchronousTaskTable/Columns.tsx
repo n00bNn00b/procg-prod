@@ -40,6 +40,15 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
     ),
   },
   {
+    accessorKey: "internal_execution_method",
+    header: () => {
+      return <div className="min-w-max">Internal Execution Method</div>;
+    },
+    cell: ({ row }) => (
+      <div className="">{row.getValue("internal_execution_method")}</div>
+    ),
+  },
+  {
     accessorKey: "script_name",
     header: () => {
       return <div className="w-[15rem]">Script Name</div>;

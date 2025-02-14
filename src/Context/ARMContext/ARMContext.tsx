@@ -20,6 +20,9 @@ interface ARMContext {
     page: number,
     limit: number
   ) => Promise<IARMAsynchronousTasksTypes[] | undefined>;
+  getManageExecutionMethods: () => Promise<
+    IExecutionMethodsTypes[] | undefined
+  >;
   getManageExecutionMethodsLazyLoading: (
     page: number,
     limit: number
@@ -104,7 +107,23 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
       setIsLoading(false);
     }
   };
-  const getManageExecutionMethodsLazyLoading = async (page: number, limit: number) => {
+  const getManageExecutionMethods = async () => {
+    try {
+      setIsLoading(true);
+      const res = await api.get<IExecutionMethodsTypes[]>(
+        `/arm-tasks/show-execution-methods`
+      );
+      return res.data ?? [];
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const getManageExecutionMethodsLazyLoading = async (
+    page: number,
+    limit: number
+  ) => {
     try {
       setIsLoading(true);
       const [countExecutionMethods, ExecutionMethods] = await Promise.all([
@@ -113,7 +132,7 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
           `/arm-tasks/show-execution-methods/${page}/${limit}`
         ),
       ]);
-       
+
       const totalCount = countExecutionMethods.data.length;
       const totalPages = Math.ceil(totalCount / limit);
       setTotalPage(totalPages);
@@ -134,6 +153,7 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
           `/arm-tasks/show-tasks/${page}/${limit}`
         ),
       ]);
+      console.log(countTasks, "IARMAsynchronousTasksTypes");
       const totalCount = countTasks.data.length;
       const totalPages = Math.ceil(totalCount / limit);
       setTotalPage(totalPages);
@@ -168,7 +188,9 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
   ) => {
     try {
       const [countTasksParameters, tasksParameters] = await Promise.all([
-        api.get<IARMTaskParametersTypes[]>(`/arm-tasks/task-params/${task_name}`),
+        api.get<IARMTaskParametersTypes[]>(
+          `/arm-tasks/task-params/${task_name}`
+        ),
         api.get<IARMTaskParametersTypes[]>(
           `/arm-tasks/task-params/${task_name}/${page}/${limit}`
         ),
@@ -267,7 +289,10 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
       await Promise.all(
         selectedItems.map(async (item) => {
           await api.put(
-            `/api/v1/asynchronous-requests-and-task-schedules/cancel-task-schedule-v1/${item.task_name}/${item.redbeat_schedule_name}`
+            `/api/v1/asynchronous-requests-and-task-schedules/cancel-task-schedule-v1/${item.task_name}`,
+            {
+              redbeat_schedule_name: item.redbeat_schedule_name,
+            }
           );
         })
       );
@@ -300,6 +325,7 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
   };
 
   const values = {
+    getManageExecutionMethods,
     getManageExecutionMethodsLazyLoading,
     getAsyncTasks,
     getAsyncTasksLazyLoading,
