@@ -48,7 +48,7 @@ interface ITaskRequestProps {
 export interface IScheduleTypes {
   frequency_type?: string;
   frequency?: number;
-  days_of_month?: number[];
+  days_of_month?: string[];
   days_of_week?: string[];
 }
 
@@ -70,7 +70,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
   const [parameters, setParameters] = useState<Record<string, string | number>>(
     selected?.kwargs || {}
   );
-  const [selectedDates, setSelectedDates] = useState<number[]>(
+  const [selectedDates, setSelectedDates] = useState<string[]>(
     selected?.schedule?.days_of_month ?? []
   );
   const [selectedDays, setSelectedDays] = useState<string[]>(
@@ -205,7 +205,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             parameters: data.parameters,
             redbeat_schedule_name: selected?.redbeat_schedule_name,
           };
-    console.log(payload, "payload");
+
     try {
       setIsLoading(true);
       const res = await (action === "Schedule A Task"
@@ -217,7 +217,8 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             `/asynchronous-requests-and-task-schedules/update-task-schedule-v1/${selected?.task_name}`,
             payload
           ));
-      if (res) toast({ title: "Success", description: `${res}` });
+
+      if (res) toast({ title: "Success", description: `${res.data.message}` });
     } catch (error) {
       toast({
         title: "Error",
@@ -246,7 +247,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
         </div>
       )}
       {isOpenScheduleModalV1 === "Schedule" && (
-        <CustomModal4 w="w-[770px]" h="h-[412px]">
+        <CustomModal4 w="w-[770px]" h="h-[440px]">
           <Schedule
             schedule={selected?.schedule ?? schedule}
             setSchedule={setSchedule}

@@ -289,13 +289,16 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
       await Promise.all(
         selectedItems.map(async (item) => {
           await api.put(
-            `/api/v1/asynchronous-requests-and-task-schedules/cancel-task-schedule-v1/${item.task_name}`,
-            {
-              redbeat_schedule_name: item.redbeat_schedule_name,
-            }
+            `/api/v1/asynchronous-requests-and-task-schedules/cancel-task-schedule-v1/${item.task_name}`
           );
         })
-      );
+      )
+        .then((res) => {
+          console.log(res, "res");
+        })
+        .catch((err) => {
+          console.log(err, "err");
+        });
     } catch (error) {
       console.log(error);
     } finally {

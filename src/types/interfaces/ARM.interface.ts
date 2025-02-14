@@ -60,18 +60,19 @@ export interface IAsynchronousRequestsAndTaskSchedulesTypesV1 {
   };
   last_update_date: string;
   last_updated_by: number;
+  parameters: string;
   redbeat_schedule_name: string;
+  ready_for_redbeat: string;
   schedule: {
     frequency_type?: string;
     frequency?: number;
-    days_of_month?: number[];
+    days_of_month?: string[];
     days_of_week?: string[];
   };
+  schedule_type: string;
   task_name: string;
   user_schedule_name: string;
-  parameters: string;
-  schedule_type: string;
-  ready_for_redbeat: string;
+  user_task_name: string;
 }
 export interface IARMAsynchronousTasksParametersTypes {
   user_task_name: string;

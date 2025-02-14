@@ -23,11 +23,49 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import { IAsynchronousRequestsAndTaskSchedulesTypesV1 } from "@/types/interfaces/ARM.interface";
-const date = [
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-  23, 24, 25, 26, 27, 28, 29, 30, 31,
+const dates = [
+  { name: "1", value: "1" },
+  { name: "2", value: "2" },
+  { name: "3", value: "3" },
+  { name: "4", value: "4" },
+  { name: "5", value: "5" },
+  { name: "6", value: "6" },
+  { name: "7", value: "7" },
+  { name: "8", value: "8" },
+  { name: "9", value: "9" },
+  { name: "10", value: "10" },
+  { name: "11", value: "11" },
+  { name: "12", value: "12" },
+  { name: "13", value: "13" },
+  { name: "14", value: "14" },
+  { name: "15", value: "15" },
+  { name: "16", value: "16" },
+  { name: "17", value: "17" },
+  { name: "18", value: "18" },
+  { name: "19", value: "19" },
+  { name: "20", value: "20" },
+  { name: "21", value: "21" },
+  { name: "22", value: "22" },
+  { name: "23", value: "23" },
+  { name: "24", value: "24" },
+  { name: "25", value: "25" },
+  { name: "26", value: "26" },
+  { name: "27", value: "27" },
+  { name: "28", value: "28" },
+  { name: "29", value: "29" },
+  { name: "30", value: "30" },
+  { name: "31", value: "31" },
+  { name: "Last Day", value: "L" },
 ];
-const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const daysOfWeek = [
+  { name: "Sun", value: "SUN" },
+  { name: "Mon", value: "MON" },
+  { name: "Tue", value: "TUE" },
+  { name: "Wed", value: "WED" },
+  { name: "Thu", value: "THU" },
+  { name: "Fri", value: "FRI" },
+  { name: "Sat", value: "SAT" },
+];
 interface IScheduleProps {
   schedule: IScheduleTypes;
   setSchedule: Dispatch<SetStateAction<IScheduleTypes>>;
@@ -36,8 +74,8 @@ interface IScheduleProps {
   action: string;
   setIsOpenScheduleModalV1: Dispatch<SetStateAction<string>>;
   selected?: IAsynchronousRequestsAndTaskSchedulesTypesV1;
-  selectedDates: number[];
-  setSelectedDates: Dispatch<SetStateAction<number[]>>;
+  selectedDates: string[];
+  setSelectedDates: Dispatch<SetStateAction<string[]>>;
   selectedDays: string[];
   setSelectedDays: Dispatch<SetStateAction<string[]>>;
 }
@@ -64,7 +102,7 @@ const Schedule: FC<IScheduleProps> = ({
             frequency_type: z.string(),
           })
         : z.object({
-            days_of_month: z.number().array().optional(),
+            days_of_month: z.string().array().optional(),
             days_of_week: z.string().array().optional(),
           }),
   });
@@ -72,13 +110,13 @@ const Schedule: FC<IScheduleProps> = ({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      schedule_type: selected?.schedule_type ?? scheduleType ?? "Periodic",
+      schedule_type: selected?.schedule_type ?? "Periodic",
       schedule: selected?.schedule ?? schedule,
     },
   });
 
-  const handleDateSelect = (time: number | string) => {
-    if (typeof time === "number") {
+  const handleDateSelect = (time: string) => {
+    if (time.length !== 3) {
       setSelectedDays([]);
       setSelectedDates(
         selectedDates.includes(time)
@@ -143,7 +181,7 @@ const Schedule: FC<IScheduleProps> = ({
       )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="p-4">
-          <div className="flex justify-between">
+          <div className="grid grid-cols-2 gap-4">
             {/* Run Job Type Selection */}
             <FormField
               control={form.control}
@@ -240,15 +278,17 @@ const Schedule: FC<IScheduleProps> = ({
                 <div>
                   <h3>Dates of Every Month:</h3>
                   <div className="grid grid-cols-7 py-2">
-                    {date.map((day) => (
+                    {dates.map((date) => (
                       <div
-                        key={day}
+                        key={date.value}
                         className={`${
-                          selectedDates.includes(day) && "bg-slate-400"
-                        } flex items-center justify-center h-8 border border-slate-500 rounded cursor-pointer hover:bg-slate-200 p-2`}
-                        onClick={() => handleDateSelect(day)}
+                          selectedDates.includes(date.value) && "bg-slate-400"
+                        }  border border-slate-500 rounded cursor-pointer hover:bg-slate-200 p-2 ${
+                          date.value === "L" && "col-span-4"
+                        }`}
+                        onClick={() => handleDateSelect(date.value)}
                       >
-                        {day}
+                        {date.name}
                       </div>
                     ))}
                   </div>
@@ -256,15 +296,15 @@ const Schedule: FC<IScheduleProps> = ({
                 <div>
                   <h3>Days of Every Week:</h3>
                   <div className="grid grid-cols-7 py-2">
-                    {daysOfWeek.map((day, i) => (
+                    {daysOfWeek.map((day) => (
                       <div
-                        key={i}
+                        key={day.value}
                         className={`${
-                          selectedDays.includes(day) && "bg-slate-400"
+                          selectedDays.includes(day.value) && "bg-slate-400"
                         } flex items-center justify-center h-8 border border-slate-500 rounded cursor-pointer hover:bg-slate-200 p-2`}
-                        onClick={() => handleDateSelect(day)}
+                        onClick={() => handleDateSelect(day.value)}
                       >
-                        {day}
+                        {day.name}
                       </div>
                     ))}
                   </div>
