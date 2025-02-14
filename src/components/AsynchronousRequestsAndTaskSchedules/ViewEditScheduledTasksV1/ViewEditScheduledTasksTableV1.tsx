@@ -194,7 +194,7 @@ export function ViewEditScheduledTasksTableV1() {
     //table toggle false
     table.toggleAllRowsSelected(false);
   };
-   
+
   return (
     <div className="px-3">
       {isOpenModal === "edit_task_schedule_v1" && (
@@ -269,7 +269,8 @@ export function ViewEditScheduledTasksTableV1() {
                             key={item.arm_task_sche_id}
                             className="block text-red-500"
                           >
-                            {index + 1}. User task name : {item.args[1]}
+                            {index + 1}. User schedule name :{" "}
+                            {item.user_schedule_name}
                           </span>
                         ))}
                       <br />
