@@ -72,11 +72,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
   const [scheduleType, setScheduleType] = useState<string>("PERIODIC");
   const [schedule, setSchedule] = useState<
     ISchedulePropsPeriodic | ISchedulePropsNonPeriodic | undefined
-  >(
-    scheduleType === "PERIODIC"
-      ? periodic ?? { frequency: 1, frequency_type: "MINUTES" }
-      : selected?.schedule
-  );
+  >(selected?.schedule);
 
   useEffect(() => {
     const fetchAsyncTasks = async () => {
@@ -100,6 +96,14 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
       // kwargs: action === "Edit Task Schedule" ? selected?.kwargs : parameters,
     });
   }, [parameters]);
+
+  useEffect(() => {
+    setSchedule(
+      scheduleType === "PERIODIC"
+        ? ({} as ISchedulePropsPeriodic)
+        : { VALUES: [] }
+    );
+  }, [scheduleType]);
 
   const handleGetParameters = async (task_name: string) => {
     try {
@@ -137,17 +141,22 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
       parameters: selected?.kwargs ?? {},
     },
   });
-  useEffect(() => {
-    setSchedule(
-      scheduleType === "PERIODIC"
-        ? { frequency: 1, frequency_type: "MINUTES" }
-        : { VALUES: [] }
-    );
-  }, [scheduleType]);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (!(await form.trigger())) return;
-
+    console.log(data, schedule, scheduleType, "schedulePayload");
+    if (
+      data.user_schedule_name === "" ||
+      data.task_name === "" ||
+      Object.keys(data.parameters as object).length === 0 ||
+      Object.keys(schedule as ISchedulePropsPeriodic).length === 0 ||
+      scheduleType === ""
+    )
+      return toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
     const payload =
       action === "Schedule A Task"
         ? {
@@ -183,8 +192,10 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
       form.reset();
+      setSchedule(undefined);
+      setScheduleType("PERIODIC");
+      setIsLoading(false);
       setIsSubmit(Math.random() + 23 * 3000);
     }
   };

@@ -232,7 +232,7 @@ const Schedule: FC<IScheduleProps> = ({
                           required
                           type="number"
                           min={1}
-                          value={field.value ?? 1}
+                          value={field.value ?? 0}
                           onChange={(e) => {
                             field.onChange(Number(e.target.value));
                             setFrequency(e.target.valueAsNumber);
@@ -264,7 +264,7 @@ const Schedule: FC<IScheduleProps> = ({
                               frequency_type: value,
                             });
                           }}
-                          value={field.value ?? "MINUTES"}
+                          value={field.value}
                           required
                         >
                           <SelectTrigger>
