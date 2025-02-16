@@ -137,6 +137,13 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
       parameters: selected?.kwargs ?? {},
     },
   });
+  useEffect(() => {
+    setSchedule(
+      scheduleType === "PERIODIC"
+        ? { frequency: 1, frequency_type: "MINUTES" }
+        : { VALUES: [] }
+    );
+  }, [scheduleType]);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (!(await form.trigger())) return;

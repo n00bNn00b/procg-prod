@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -132,15 +132,6 @@ const Schedule: FC<IScheduleProps> = ({
     },
   });
 
-  useEffect(() => {
-    setSchedule(
-      scheduleType === "PERIODIC"
-        ? { frequency: 0, frequency_type: "" }
-        : { VALUES: [] }
-    );
-  }, [scheduleType]);
-
-  console.log(form.getValues(), "form");
   const handleDateSelect = (time: string) => {
     if (schedule && "VALUES" in schedule) {
       if (Array.isArray(schedule.VALUES)) {
