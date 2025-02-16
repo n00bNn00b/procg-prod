@@ -33,6 +33,8 @@ import { useARMContext } from "@/Context/ARMContext/ARMContext";
 import {
   IARMAsynchronousTasksTypes,
   IAsynchronousRequestsAndTaskSchedulesTypesV1,
+  ISchedulePropsNonPeriodic,
+  ISchedulePropsPeriodic,
 } from "@/types/interfaces/ARM.interface";
 import { X } from "lucide-react";
 import Schedule from "./Schedule";
@@ -44,12 +46,6 @@ interface ITaskRequestProps {
   handleCloseModal: () => void;
   user_schedule_name: string;
   selected?: IAsynchronousRequestsAndTaskSchedulesTypesV1;
-}
-export interface IScheduleTypes {
-  frequency_type?: string;
-  frequency?: number;
-  days_of_month?: string[];
-  days_of_week?: string[];
 }
 
 const TaskRequestV1: FC<ITaskRequestProps> = ({
@@ -70,36 +66,17 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
   const [parameters, setParameters] = useState<Record<string, string | number>>(
     selected?.kwargs || {}
   );
-  const [selectedDates, setSelectedDates] = useState<string[]>(
-    selected?.schedule?.days_of_month ?? []
+  const [periodic, setPeriodic] = useState<
+    ISchedulePropsPeriodic | undefined
+  >();
+  const [scheduleType, setScheduleType] = useState<string>("PERIODIC");
+  const [schedule, setSchedule] = useState<
+    ISchedulePropsPeriodic | ISchedulePropsNonPeriodic | undefined
+  >(
+    scheduleType === "PERIODIC"
+      ? periodic ?? { frequency: 1, frequency_type: "MINUTES" }
+      : selected?.schedule
   );
-  const [selectedDays, setSelectedDays] = useState<string[]>(
-    selected?.schedule?.days_of_week ?? []
-  );
-  const [scheduleType, setScheduleType] = useState<string>("Periodic");
-  const [schedule, setSchedule] = useState<IScheduleTypes>(
-    scheduleType === "Periodic"
-      ? {
-          frequency_type: selected?.schedule.frequency_type ?? "Minute(s)",
-          frequency: selected?.schedule.frequency ?? 0,
-        }
-      : selected?.schedule?.days_of_month
-      ? {
-          days_of_month: selected?.schedule?.days_of_month,
-        }
-      : selected?.schedule.days_of_week
-      ? {
-          days_of_week: selected?.schedule?.days_of_week,
-        }
-      : selectedDates.length > 0
-      ? {
-          days_of_month: selectedDates,
-        }
-      : {
-          days_of_week: selectedDays,
-        }
-  );
-  // const [date, setDate] = useState<Date | undefined>(new Date())
 
   useEffect(() => {
     const fetchAsyncTasks = async () => {
@@ -145,19 +122,6 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    const fetchAsyncTasks = async () => {
-      try {
-        setIsLoading(true);
-        setAsyncTaskNames(await getAsyncTasks());
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchAsyncTasks();
-  }, []);
 
   const FormSchema = z.object({
     user_schedule_name: z.string(),
@@ -174,21 +138,8 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
     },
   });
 
-  useEffect(() => {
-    if (selected?.schedule.days_of_month) {
-      setSelectedDates(selected?.schedule.days_of_month);
-    } else if (selected?.schedule.days_of_week) {
-      setSelectedDays(selected?.schedule.days_of_week);
-    }
-  }, []);
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (!(await form.trigger())) return;
-    if (schedule?.frequency === 0 || scheduleType === "") {
-      return toast({
-        title: "Info",
-        description: "Error: Select schedule again.",
-      });
-    }
 
     const payload =
       action === "Schedule A Task"
@@ -205,7 +156,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             parameters: data.parameters,
             redbeat_schedule_name: selected?.redbeat_schedule_name,
           };
-
+    console.log(payload, "payload");
     try {
       setIsLoading(true);
       const res = await (action === "Schedule A Task"
@@ -217,7 +168,6 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             `/asynchronous-requests-and-task-schedules/update-task-schedule-v1/${selected?.task_name}`,
             payload
           ));
-
       if (res) toast({ title: "Success", description: `${res.data.message}` });
     } catch (error) {
       toast({
@@ -247,7 +197,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
         </div>
       )}
       {isOpenScheduleModalV1 === "Schedule" && (
-        <CustomModal4 w="w-[770px]" h="h-[440px]">
+        <CustomModal4 w="w-[770px]" h="h-[400px]">
           <Schedule
             schedule={selected?.schedule ?? schedule}
             setSchedule={setSchedule}
@@ -256,10 +206,8 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             action="Schedule"
             setIsOpenScheduleModalV1={setIsOpenScheduleModalV1}
             selected={selected}
-            selectedDates={selectedDates}
-            setSelectedDates={setSelectedDates}
-            selectedDays={selectedDays}
-            setSelectedDays={setSelectedDays}
+            periodic={periodic}
+            setPeriodic={setPeriodic}
           />
         </CustomModal4>
       )}

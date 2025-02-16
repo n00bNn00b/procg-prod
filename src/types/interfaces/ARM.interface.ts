@@ -1,3 +1,4 @@
+ 
 export interface IExecutionMethodsTypes {
   description: string,
   execution_method: string,
@@ -49,6 +50,14 @@ export interface IAsynchronousRequestsAndTaskSchedulesTypes {
   schedule_type: string;
   ready_for_redbeat: string;
 }
+
+export interface ISchedulePropsPeriodic {
+  frequency: number;
+  frequency_type: string;
+}
+export interface ISchedulePropsNonPeriodic {
+  VALUES: string[];
+}
 export interface IAsynchronousRequestsAndTaskSchedulesTypesV1 {
   args: string[];
   arm_task_sche_id: number;
@@ -63,12 +72,7 @@ export interface IAsynchronousRequestsAndTaskSchedulesTypesV1 {
   parameters: string;
   redbeat_schedule_name: string;
   ready_for_redbeat: string;
-  schedule: {
-    frequency_type?: string;
-    frequency?: number;
-    days_of_month?: string[];
-    days_of_week?: string[];
-  };
+  schedule: ISchedulePropsPeriodic | ISchedulePropsNonPeriodic;
   schedule_type: string;
   task_name: string;
   user_schedule_name: string;
