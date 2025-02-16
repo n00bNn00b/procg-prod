@@ -58,6 +58,10 @@ export interface ISchedulePropsPeriodic {
 export interface ISchedulePropsNonPeriodic {
   VALUES: string[];
 }
+export interface IScheduleOnce {
+  VALUES: string;
+}
+
 export interface IAsynchronousRequestsAndTaskSchedulesTypesV1 {
   args: string[];
   arm_task_sche_id: number;
@@ -72,7 +76,7 @@ export interface IAsynchronousRequestsAndTaskSchedulesTypesV1 {
   parameters: string;
   redbeat_schedule_name: string;
   ready_for_redbeat: string;
-  schedule: ISchedulePropsPeriodic | ISchedulePropsNonPeriodic;
+  schedule: ISchedulePropsPeriodic | ISchedulePropsNonPeriodic|IScheduleOnce;
   schedule_type: string;
   task_name: string;
   user_schedule_name: string;

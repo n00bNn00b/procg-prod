@@ -33,6 +33,7 @@ import { useARMContext } from "@/Context/ARMContext/ARMContext";
 import {
   IARMAsynchronousTasksTypes,
   IAsynchronousRequestsAndTaskSchedulesTypesV1,
+  IScheduleOnce,
   ISchedulePropsNonPeriodic,
   ISchedulePropsPeriodic,
 } from "@/types/interfaces/ARM.interface";
@@ -71,7 +72,10 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
   >();
   const [scheduleType, setScheduleType] = useState<string>("PERIODIC");
   const [schedule, setSchedule] = useState<
-    ISchedulePropsPeriodic | ISchedulePropsNonPeriodic | undefined
+    | ISchedulePropsPeriodic
+    | ISchedulePropsNonPeriodic
+    | IScheduleOnce
+    | undefined
   >(selected?.schedule);
 
   useEffect(() => {
@@ -172,7 +176,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             parameters: data.parameters,
             redbeat_schedule_name: selected?.redbeat_schedule_name,
           };
-    console.log(payload, "payload");
+    console.log(JSON.stringify(payload), "payload");
     try {
       setIsLoading(true);
       const res = await (action === "Schedule A Task"

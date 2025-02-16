@@ -23,71 +23,25 @@ import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import {
   IAsynchronousRequestsAndTaskSchedulesTypesV1,
+  IScheduleOnce,
   ISchedulePropsNonPeriodic,
   ISchedulePropsPeriodic,
 } from "@/types/interfaces/ARM.interface";
-const frequencyType = [
-  { name: "Month(s)", value: "MONTHS" },
-  { name: "Week(s)", value: "WEEKS" },
-  { name: "Day(s)", value: "DAYS" },
-  { name: "Hour(s)", value: "HOURS" },
-  { name: "Minute(s)", value: "MINUTES" },
-];
-const scheduler = [
-  { name: "Immediate", value: "IMMEDIATE" },
-  { name: "Once", value: "ONCE" },
-  { name: "Periodic", value: "PERIODIC" },
-  { name: "Specific Days Every Week", value: "WEEKLY_SPECIFIC_DAYS" },
-  { name: "Specific Dates Every Month", value: "MONTHLY_SPECIFIC_DATES" },
-];
-const dates = [
-  { name: "1", value: "1" },
-  { name: "2", value: "2" },
-  { name: "3", value: "3" },
-  { name: "4", value: "4" },
-  { name: "5", value: "5" },
-  { name: "6", value: "6" },
-  { name: "7", value: "7" },
-  { name: "8", value: "8" },
-  { name: "9", value: "9" },
-  { name: "10", value: "10" },
-  { name: "11", value: "11" },
-  { name: "12", value: "12" },
-  { name: "13", value: "13" },
-  { name: "14", value: "14" },
-  { name: "15", value: "15" },
-  { name: "16", value: "16" },
-  { name: "17", value: "17" },
-  { name: "18", value: "18" },
-  { name: "19", value: "19" },
-  { name: "20", value: "20" },
-  { name: "21", value: "21" },
-  { name: "22", value: "22" },
-  { name: "23", value: "23" },
-  { name: "24", value: "24" },
-  { name: "25", value: "25" },
-  { name: "26", value: "26" },
-  { name: "27", value: "27" },
-  { name: "28", value: "28" },
-  { name: "29", value: "29" },
-  { name: "30", value: "30" },
-  { name: "31", value: "31" },
-  { name: "Last Day", value: "L" },
-];
-const daysOfWeek = [
-  { name: "Sun", value: "SUN" },
-  { name: "Mon", value: "MON" },
-  { name: "Tue", value: "TUE" },
-  { name: "Wed", value: "WED" },
-  { name: "Thu", value: "THU" },
-  { name: "Fri", value: "FRI" },
-  { name: "Sat", value: "SAT" },
-];
+import OnceScheduleType from "./OnceScheduleType";
+import { frequencyType, scheduler, dates, daysOfWeek } from "./NameValueData";
+
 interface IScheduleProps {
-  schedule: ISchedulePropsPeriodic | ISchedulePropsNonPeriodic | undefined;
+  schedule:
+    | ISchedulePropsPeriodic
+    | ISchedulePropsNonPeriodic
+    | IScheduleOnce
+    | undefined;
   setSchedule: Dispatch<
     SetStateAction<
-      ISchedulePropsPeriodic | ISchedulePropsNonPeriodic | undefined
+      | ISchedulePropsPeriodic
+      | ISchedulePropsNonPeriodic
+      | IScheduleOnce
+      | undefined
     >
   >;
   scheduleType: string;
@@ -120,6 +74,9 @@ const Schedule: FC<IScheduleProps> = ({
       }),
       z.object({
         VALUES: z.array(z.string()),
+      }),
+      z.object({
+        VALUES: z.string(z.date()),
       }),
     ]),
   });
@@ -196,7 +153,7 @@ const Schedule: FC<IScheduleProps> = ({
                           <FormControl>
                             <RadioGroupItem
                               value={s.value}
-                              disabled={[`ONCE`, `IMMEDIATE`].includes(s.value)}
+                              // disabled={[`ONCE`, `IMMEDIATE`].includes(s.value)}
                               onClick={() => setScheduleType(s.value)}
                             />
                           </FormControl>
@@ -309,30 +266,32 @@ const Schedule: FC<IScheduleProps> = ({
                   ))}
                 </div>
               </div>
-            ) : (
-              form.getValues().schedule_type === "WEEKLY_SPECIFIC_DAYS" && (
+            ) : form.getValues().schedule_type === "WEEKLY_SPECIFIC_DAYS" ? (
+              <div>
                 <div>
-                  <div>
-                    <h3>Days of Every Week:</h3>
-                    <div className="grid grid-cols-7 py-2">
-                      {daysOfWeek.map((day) => (
-                        <div
-                          key={day.value}
-                          className={`${
-                            schedule &&
-                            "VALUES" in schedule &&
-                            Array.isArray(schedule.VALUES) &&
-                            schedule.VALUES.includes(day.value) &&
-                            "bg-slate-400"
-                          } flex items-center justify-center h-8 border border-slate-500 rounded cursor-pointer hover:bg-slate-200 p-2`}
-                          onClick={() => handleDateSelect(day.value)}
-                        >
-                          {day.name}
-                        </div>
-                      ))}
-                    </div>
+                  <h3>Days of Every Week:</h3>
+                  <div className="grid grid-cols-7 py-2">
+                    {daysOfWeek.map((day) => (
+                      <div
+                        key={day.value}
+                        className={`${
+                          schedule &&
+                          "VALUES" in schedule &&
+                          Array.isArray(schedule.VALUES) &&
+                          schedule.VALUES.includes(day.value) &&
+                          "bg-slate-400"
+                        } flex items-center justify-center h-8 border border-slate-500 rounded cursor-pointer hover:bg-slate-200 p-2`}
+                        onClick={() => handleDateSelect(day.value)}
+                      >
+                        {day.name}
+                      </div>
+                    ))}
                   </div>
                 </div>
+              </div>
+            ) : (
+              form.getValues().schedule_type === "ONCE" && (
+                <OnceScheduleType form={form} />
               )
             )}
           </div>
