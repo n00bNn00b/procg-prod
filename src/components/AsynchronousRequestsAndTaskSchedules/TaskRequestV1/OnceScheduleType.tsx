@@ -37,12 +37,12 @@ const FormSchema = z.object({
 
 interface IOnceScheduleType {
   form: UseFormReturn<z.infer<typeof FormSchema>>;
-  schedule:
+  scheduleHere:
     | ISchedulePropsPeriodic
     | ISchedulePropsNonPeriodic
     | IScheduleOnce
     | undefined;
-  setSchedule: Dispatch<
+  setScheduleHere: Dispatch<
     SetStateAction<
       | ISchedulePropsPeriodic
       | ISchedulePropsNonPeriodic
@@ -54,8 +54,8 @@ interface IOnceScheduleType {
 
 const OnceScheduleType: FC<IOnceScheduleType> = ({
   form,
-  // schedule,
-  setSchedule,
+  // scheduleHere,
+  setScheduleHere,
 }: IOnceScheduleType) => {
   // Default string value
   // const defaultDateString =
@@ -94,10 +94,9 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
       setSelectedMinute(dateObj.getMinutes());
       setSelectedAmPm(dateObj.getHours() >= 12 ? "PM" : "AM");
     }
-    form.setValue(
-      "schedule.VALUES",
-      format(currentTime, "MM/dd/yyyy hh:mm aa")
-    );
+    form.setValue("schedule", {
+      VALUES: format(currentTime, "MM/dd/yyyy hh:mm aa"),
+    });
   }, [form]);
 
   const getToday = () => {
@@ -127,7 +126,20 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date && date >= getToday()) {
-      setSelectedDate(date); // Only set date if it's today or in the future
+      // Adjust selected time based on user selection (selectedHour, selectedMinute, selectedAmPm)
+      const updatedDate = new Date(date);
+      const hours =
+        selectedAmPm === "AM" ? selectedHour % 12 : (selectedHour % 12) + 12;
+      updatedDate.setHours(hours);
+      updatedDate.setMinutes(selectedMinute);
+
+      // Update form value with formatted date and time
+      form.setValue("schedule", {
+        VALUES: format(updatedDate, "MM/dd/yyyy hh:mm aa"),
+      });
+
+      // Set selected date in the state
+      setSelectedDate(updatedDate);
     } else {
       toast({
         title: "Invalid Date",
@@ -168,12 +180,13 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
       }
 
       setSelectedDate(finalDate);
-      setSchedule({ VALUES: String(format(finalDate, "MM/dd/yyyy hh:mm aa")) });
+      setScheduleHere({
+        VALUES: String(format(finalDate, "MM/dd/yyyy hh:mm aa")),
+      });
       // Update the form value with formatted date
-      form.setValue(
-        "schedule.VALUES",
-        String(format(finalDate, "MM/dd/yyyy hh:mm aa"))
-      );
+      form.setValue("schedule", {
+        VALUES: format(finalDate, "MM/dd/yyyy hh:mm aa"),
+      });
     }
   };
 

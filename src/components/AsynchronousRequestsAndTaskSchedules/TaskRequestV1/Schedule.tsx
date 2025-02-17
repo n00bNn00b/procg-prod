@@ -6,6 +6,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { format } from "date-fns";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
@@ -14,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Dispatch, FC, SetStateAction, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,13 +63,14 @@ const Schedule: FC<IScheduleProps> = ({
   setIsOpenScheduleModalV1,
   selected,
 }) => {
-  // const [scheHere, setScheHere] = useState<ISchedulePropsPeriodic
-  //   | ISchedulePropsNonPeriodic
-  //   | IScheduleOnce
-  //   | undefined>();
+  const [scheduleHere, setScheduleHere] = useState<
+    | ISchedulePropsPeriodic
+    | ISchedulePropsNonPeriodic
+    | IScheduleOnce
+    | undefined
+  >();
   const [frequency, setFrequency] = useState<number>();
   const [frequency_type, setFrequency_type] = useState<string>();
-  console.log(frequency, frequency_type, schedule, "frequency");
   const FormSchema = z.object({
     schedule_type: z.string(),
     schedule: z.union([
@@ -92,29 +94,42 @@ const Schedule: FC<IScheduleProps> = ({
       schedule,
     },
   });
-  console.log(schedule, "schedule");
+
+  useEffect(() => {
+    const currentTime = new Date();
+    currentTime.setMinutes(currentTime.getMinutes() + 1);
+    const parse = format(currentTime, "MM/dd/yyyy hh:mm aa");
+    setScheduleHere(
+      scheduleType === "PERIODIC"
+        ? ({} as ISchedulePropsPeriodic)
+        : scheduleType === "ONCE"
+        ? { VALUES: parse }
+        : { VALUES: [] }
+    );
+  }, [scheduleType]);
+  console.log(form.getValues("schedule"), "scheduleHere");
+  console.log(form.getValues("schedule_type"), "scheduleHereschedule_type");
+
   const handleDateSelect = (time: string) => {
-    if (schedule && "VALUES" in schedule) {
-      console.log(time, "to be added");
-      if (Array.isArray(schedule.VALUES)) {
+    if (scheduleHere && "VALUES" in scheduleHere) {
+      if (Array.isArray(scheduleHere.VALUES)) {
         {
-          schedule.VALUES.includes(time)
-            ? setSchedule({
-                VALUES: schedule.VALUES.filter((d) => d !== time),
+          scheduleHere.VALUES.includes(time)
+            ? setScheduleHere({
+                VALUES: scheduleHere.VALUES.filter((d) => d !== time),
               })
-            : setSchedule({
-                VALUES: [...schedule.VALUES, time],
+            : setScheduleHere({
+                VALUES: [...scheduleHere.VALUES, time],
               });
         }
       }
-      form.setValue("schedule", { VALUES: [...schedule.VALUES, time] });
+      form.setValue("schedule", { VALUES: [...scheduleHere.VALUES, time] });
     }
   };
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     try {
-      // setSchedule(schedule);
-
+      setSchedule(data.schedule);
       setScheduleType(data.schedule_type);
       setIsOpenScheduleModalV1("");
     } catch (error) {
@@ -202,10 +217,6 @@ const Schedule: FC<IScheduleProps> = ({
                               FREQUENCY: e.target.valueAsNumber,
                               FREQUENCY_TYPE: frequency_type ?? "MINUTES",
                             });
-                            setSchedule({
-                              FREQUENCY: e.target.valueAsNumber,
-                              FREQUENCY_TYPE: frequency_type ?? "MINUTES",
-                            });
                           }}
                         />
                       </FormControl>
@@ -226,10 +237,6 @@ const Schedule: FC<IScheduleProps> = ({
                             field.onChange(value);
                             setFrequency_type(value);
                             form.setValue("schedule", {
-                              FREQUENCY: frequency ?? 1,
-                              FREQUENCY_TYPE: value,
-                            });
-                            setSchedule({
                               FREQUENCY: frequency ?? 1,
                               FREQUENCY_TYPE: value,
                             });
@@ -262,10 +269,10 @@ const Schedule: FC<IScheduleProps> = ({
                     <div
                       key={date.value}
                       className={`${
-                        schedule &&
-                        "VALUES" in schedule &&
-                        Array.isArray(schedule.VALUES) &&
-                        schedule.VALUES.includes(date.value) &&
+                        scheduleHere &&
+                        "VALUES" in scheduleHere &&
+                        Array.isArray(scheduleHere.VALUES) &&
+                        scheduleHere.VALUES.includes(date.value) &&
                         "bg-slate-400"
                       } text-center border border-slate-500 rounded cursor-pointer hover:bg-slate-200 p-2 ${
                         date.value === "L" && "col-span-4"
@@ -288,10 +295,10 @@ const Schedule: FC<IScheduleProps> = ({
                       <div
                         key={day.value}
                         className={`${
-                          schedule &&
-                          "VALUES" in schedule &&
-                          Array.isArray(schedule.VALUES) &&
-                          schedule.VALUES.includes(day.value) &&
+                          scheduleHere &&
+                          "VALUES" in scheduleHere &&
+                          Array.isArray(scheduleHere.VALUES) &&
+                          scheduleHere.VALUES.includes(day.value) &&
                           "bg-slate-400"
                         } flex items-center justify-center h-8 border border-slate-500 rounded cursor-pointer hover:bg-slate-200 p-2`}
                         onClick={() => handleDateSelect(day.value)}
@@ -306,8 +313,8 @@ const Schedule: FC<IScheduleProps> = ({
               form.getValues().schedule_type === "ONCE" && (
                 <OnceScheduleType
                   form={form}
-                  schedule={schedule}
-                  setSchedule={setSchedule}
+                  scheduleHere={scheduleHere}
+                  setScheduleHere={setScheduleHere}
                 />
               )
             )}
