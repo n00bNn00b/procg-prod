@@ -66,7 +66,7 @@ const ReplyDialog = ({
     };
 
     const sendNotificationPayload = {
-      sender,
+      sender: sender.name,
       recivers: receiverNames,
       subject,
       body,
