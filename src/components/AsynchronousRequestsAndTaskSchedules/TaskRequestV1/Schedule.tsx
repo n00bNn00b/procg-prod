@@ -107,8 +107,6 @@ const Schedule: FC<IScheduleProps> = ({
         : { VALUES: [] }
     );
   }, [scheduleType]);
-  console.log(form.getValues("schedule"), "scheduleHere");
-  console.log(form.getValues("schedule_type"), "scheduleHereschedule_type");
 
   const handleDateSelect = (time: string) => {
     if (scheduleHere && "VALUES" in scheduleHere) {
