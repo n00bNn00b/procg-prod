@@ -140,14 +140,14 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (!(await form.trigger())) return;
-    console.log(form.getValues(), "form");
+
     if (action !== "Edit Task Schedule") {
       if (
         data.user_schedule_name === "" ||
         data.task_name === "" ||
+        scheduleType === "" ||
         Object.keys(data.parameters as object).length === 0 ||
-        Object.keys(!schedule) ||
-        scheduleType === ""
+        !schedule
       )
         return toast({
           title: "Error",
