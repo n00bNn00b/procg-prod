@@ -106,12 +106,23 @@ const ComposeButton = () => {
       holders: involvedusers,
       recyclebin: [],
     };
+    const sendNotificationPayload = {
+      sender,
+      recivers: receiverNames,
+      subject,
+      body,
+    };
     try {
       setIsSending(true);
+
       const response = await api.post(`/messages`, data);
-      console.log(response, "112");
+
       if (response.status === 201) {
         handlesendMessage(data);
+        await api.post(
+          "/push-notification/send-notification",
+          sendNotificationPayload
+        );
         toast({
           title: "Message Sent",
         });

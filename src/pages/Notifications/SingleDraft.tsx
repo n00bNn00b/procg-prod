@@ -28,6 +28,7 @@ import { Message, UserModel } from "@/types/interfaces/users.interface";
 import Spinner from "@/components/Spinner/Spinner";
 import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { api } from "@/Api/Api";
 // import { v4 as uuidv4 } from "uuid";
 
 interface IOldMsgTypes {
@@ -153,14 +154,26 @@ const SingleDraft = () => {
       holders: involvedusers,
       recyclebin: [],
     };
+
+    const sendNotificationPayload = {
+      sender,
+      recivers: receiverNames,
+      subject,
+      body,
+    };
+
     try {
       setIsSending(true);
-      const deletedMsg = await axios.delete(`${url}/messages/${id}`);
-      const newMsg = await axios.post(`${url}/messages`, data);
+
+      const deletedMsg = await api.delete(`${url}/messages/${id}`);
+      const newMsg = await api.post(`${url}/messages`, data);
       if (newMsg.data && deletedMsg.data) {
         handleDraftMsgId(id as string);
         handlesendMessage(data);
-
+        await api.post(
+          "/push-notification/send-notification",
+          sendNotificationPayload
+        );
         toast({
           title: "Message Sent",
         });
