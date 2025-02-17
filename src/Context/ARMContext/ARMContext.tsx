@@ -10,6 +10,7 @@ import {
 } from "@/types/interfaces/ARM.interface";
 import React, { ReactNode, createContext, useContext, useState } from "react";
 import { useGlobalContext } from "../GlobalContext/GlobalContext";
+import { toast } from "@/components/ui/use-toast";
 interface ARMContextProviderProps {
   children: ReactNode;
 }
@@ -286,19 +287,29 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
   ) => {
     try {
       setIsLoading(true);
-      await Promise.all(
+      const responses = await Promise.all(
         selectedItems.map(async (item) => {
-          await api.put(
-            `/api/v1/asynchronous-requests-and-task-schedules/cancel-task-schedule-v1/${item.task_name}`
-          );
+          try {
+            console.log("Making request for:", item.task_name); // Log item details
+            const response = await api.put(
+              `/api/v1/asynchronous-requests-and-task-schedules/cancel-task-schedule-v1/${item.task_name}`,
+              {
+                redbeat_schedule_name: item.redbeat_schedule_name,
+              }
+            );
+            return response; // Ensure you are returning the actual response
+          } catch (error) {
+            console.error("Error canceling task schedule:", error);
+            return null; // Return null or handle the error as needed
+          }
         })
-      )
-        .then((res) => {
-          console.log(res, "res");
-        })
-        .catch((err) => {
-          console.log(err, "err");
+      );
+      responses.map((i) => {
+        return toast({
+          title: "Info !!!",
+          description: `${i?.data?.message}`,
         });
+      });
     } catch (error) {
       console.log(error);
     } finally {
