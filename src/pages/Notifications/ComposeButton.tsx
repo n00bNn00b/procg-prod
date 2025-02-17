@@ -107,7 +107,7 @@ const ComposeButton = () => {
       recyclebin: [],
     };
     const sendNotificationPayload = {
-      sender,
+      sender: sender.name,
       recivers: receiverNames,
       subject,
       body,
