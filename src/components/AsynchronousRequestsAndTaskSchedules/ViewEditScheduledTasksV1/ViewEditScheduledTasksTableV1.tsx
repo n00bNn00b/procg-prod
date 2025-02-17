@@ -125,10 +125,6 @@ export function ViewEditScheduledTasksTableV1() {
       //table toggle empty
       table.getRowModel().rows.map((row) => row.toggleSelected(false));
       setSelected([]);
-      toast({
-        title: "Info !!!",
-        description: `Cancel successfully.`,
-      });
     } catch (error) {
       toast({
         title: "Info !!!",
@@ -194,7 +190,7 @@ export function ViewEditScheduledTasksTableV1() {
     //table toggle false
     table.toggleAllRowsSelected(false);
   };
-
+  console.log(selected, "selected");
   return (
     <div className="px-3">
       {isOpenModal === "edit_task_schedule_v1" && (
