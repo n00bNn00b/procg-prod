@@ -64,6 +64,13 @@ const ReplyDialog = ({
       holders: parrentMessage.involvedusers,
       recyclebin: [],
     };
+
+    const sendNotificationPayload = {
+      sender,
+      recivers: receiverNames,
+      subject,
+      body,
+    };
     try {
       setIsSending(true);
       const response = await axios.post(`${url}/messages`, data);
@@ -72,6 +79,10 @@ const ReplyDialog = ({
       if (response.status === 201) {
         handlesendMessage(data);
         setTotalMessages((prev) => [data, ...prev]);
+        await api.post(
+          "/push-notification/send-notification",
+          sendNotificationPayload
+        );
         toast({
           title: "Message Sent",
         });
