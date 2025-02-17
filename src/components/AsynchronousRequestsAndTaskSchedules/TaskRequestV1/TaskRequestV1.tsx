@@ -101,16 +101,6 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
     });
   }, [parameters]);
 
-  useEffect(() => {
-    setSchedule(
-      scheduleType === "PERIODIC"
-        ? ({} as ISchedulePropsPeriodic)
-        : scheduleType === "ONCE"
-        ? { VALUES: "" }
-        : { VALUES: [] }
-    );
-  }, [scheduleType]);
-
   const handleGetParameters = async (task_name: string) => {
     try {
       setIsLoading(true);
@@ -150,19 +140,21 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (!(await form.trigger())) return;
-
-    if (
-      data.user_schedule_name === "" ||
-      data.task_name === "" ||
-      Object.keys(data.parameters as object).length === 0 ||
-      Object.keys(schedule as ISchedulePropsPeriodic).length === 0 ||
-      scheduleType === ""
-    )
-      return toast({
-        title: "Error",
-        description: "Please fill in all fields",
-        variant: "destructive",
-      });
+    console.log(form.getValues(), "form");
+    if (action !== "Edit Task Schedule") {
+      if (
+        data.user_schedule_name === "" ||
+        data.task_name === "" ||
+        Object.keys(data.parameters as object).length === 0 ||
+        Object.keys(!schedule) ||
+        scheduleType === ""
+      )
+        return toast({
+          title: "Error",
+          description: "Please fill in all fields",
+          variant: "destructive",
+        });
+    }
     const payload =
       action === "Schedule A Task"
         ? {
@@ -178,7 +170,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             parameters: data.parameters,
             redbeat_schedule_name: selected?.redbeat_schedule_name,
           };
-
+    console.log(payload, "payload");
     try {
       setIsLoading(true);
       const res = await (action === "Schedule A Task"
