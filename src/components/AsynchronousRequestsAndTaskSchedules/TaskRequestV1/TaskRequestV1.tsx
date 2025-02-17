@@ -105,6 +105,8 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
     setSchedule(
       scheduleType === "PERIODIC"
         ? ({} as ISchedulePropsPeriodic)
+        : scheduleType === "ONCE"
+        ? { VALUES: "" }
         : { VALUES: [] }
     );
   }, [scheduleType]);
@@ -176,7 +178,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             parameters: data.parameters,
             redbeat_schedule_name: selected?.redbeat_schedule_name,
           };
-    console.log(JSON.stringify(payload), "payload");
+
     try {
       setIsLoading(true);
       const res = await (action === "Schedule A Task"
@@ -219,7 +221,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
         </div>
       )}
       {isOpenScheduleModalV1 === "Schedule" && (
-        <CustomModal4 w="w-[770px]" h="h-[400px]">
+        <CustomModal4 w="w-[770px]" h="h-[450px]">
           <Schedule
             schedule={selected?.schedule ?? schedule}
             setSchedule={setSchedule}

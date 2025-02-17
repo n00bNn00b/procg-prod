@@ -153,13 +153,13 @@ const Schedule: FC<IScheduleProps> = ({
                           <FormControl>
                             <RadioGroupItem
                               value={s.value}
-                              // disabled={[`ONCE`, `IMMEDIATE`].includes(s.value)}
+                              disabled={[`IMMEDIATE`].includes(s.value)}
                               onClick={() => setScheduleType(s.value)}
                             />
                           </FormControl>
                           <FormLabel
                             className={`${
-                              [`ONCE`, `IMMEDIATE`].includes(s.value) &&
+                              [`IMMEDIATE`].includes(s.value) &&
                               "text-slate-400"
                             } font-normal`}
                           >
@@ -291,7 +291,7 @@ const Schedule: FC<IScheduleProps> = ({
               </div>
             ) : (
               form.getValues().schedule_type === "ONCE" && (
-                <OnceScheduleType form={form} />
+                <OnceScheduleType form={form} schedule={schedule} />
               )
             )}
           </div>
