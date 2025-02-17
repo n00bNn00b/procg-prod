@@ -150,7 +150,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (!(await form.trigger())) return;
-    console.log(data, schedule, scheduleType, "schedulePayload");
+
     if (
       data.user_schedule_name === "" ||
       data.task_name === "" ||

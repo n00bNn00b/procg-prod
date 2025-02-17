@@ -1,5 +1,5 @@
 import { format, parse } from "date-fns";
-import { FC, useState, useEffect } from "react";
+import { FC, useState, useEffect, Dispatch, SetStateAction } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
@@ -42,11 +42,20 @@ interface IOnceScheduleType {
     | ISchedulePropsNonPeriodic
     | IScheduleOnce
     | undefined;
+  setSchedule: Dispatch<
+    SetStateAction<
+      | ISchedulePropsPeriodic
+      | ISchedulePropsNonPeriodic
+      | IScheduleOnce
+      | undefined
+    >
+  >;
 }
 
 const OnceScheduleType: FC<IOnceScheduleType> = ({
   form,
   schedule,
+  setSchedule,
 }: IOnceScheduleType) => {
   const hours = Array.from({ length: 12 }, (_, i) => i + 1); // 1 to 12
   const minutes = Array.from({ length: 60 }, (_, i) => i); // 0 to 59
@@ -54,7 +63,9 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
 
   // Default string value
   const defaultDateString =
-    schedule && "VALUES" in schedule && schedule.VALUES ? schedule.VALUES : "";
+    schedule && "VALUES" in schedule && schedule.VALUES
+      ? String(schedule.VALUES) // Ensure it's a string
+      : "";
 
   // Parse the date string into a Date object
   const parsedDate = parse(
@@ -156,7 +167,7 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
       }
 
       setSelectedDate(finalDate);
-
+      setSchedule({ VALUES: String(format(finalDate, "MM/dd/yyyy hh:mm aa")) });
       // Update the form value
       form.setValue(
         "schedule.VALUES",
