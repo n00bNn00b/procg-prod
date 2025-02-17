@@ -108,7 +108,7 @@ const Schedule: FC<IScheduleProps> = ({
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     try {
-      setSchedule(data.schedule);
+      // setSchedule(schedule);
 
       setScheduleType(data.schedule_type);
       setIsOpenScheduleModalV1("");
@@ -197,6 +197,10 @@ const Schedule: FC<IScheduleProps> = ({
                               frequency: e.target.valueAsNumber,
                               frequency_type: frequency_type ?? "MINUTES",
                             });
+                            setSchedule({
+                              frequency: e.target.valueAsNumber,
+                              frequency_type: frequency_type ?? "MINUTES",
+                            });
                           }}
                         />
                       </FormControl>
@@ -217,6 +221,10 @@ const Schedule: FC<IScheduleProps> = ({
                             field.onChange(value);
                             setFrequency_type(value);
                             form.setValue("schedule", {
+                              frequency: frequency ?? 1,
+                              frequency_type: value,
+                            });
+                            setSchedule({
                               frequency: frequency ?? 1,
                               frequency_type: value,
                             });
@@ -291,7 +299,11 @@ const Schedule: FC<IScheduleProps> = ({
               </div>
             ) : (
               form.getValues().schedule_type === "ONCE" && (
-                <OnceScheduleType form={form} schedule={schedule} />
+                <OnceScheduleType
+                  form={form}
+                  schedule={schedule}
+                  setSchedule={setSchedule}
+                />
               )
             )}
           </div>
