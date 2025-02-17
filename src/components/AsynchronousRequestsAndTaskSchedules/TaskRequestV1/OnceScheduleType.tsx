@@ -1,4 +1,4 @@
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 import { FC, useState, useEffect, Dispatch, SetStateAction } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -23,8 +23,8 @@ const FormSchema = z.object({
   schedule_type: z.string(),
   schedule: z.union([
     z.object({
-      frequency: z.number(),
-      frequency_type: z.string(),
+      FREQUENCY: z.number(),
+      FREQUENCY_TYPE: z.string(),
     }),
     z.object({
       VALUES: z.array(z.string()),
@@ -54,34 +54,31 @@ interface IOnceScheduleType {
 
 const OnceScheduleType: FC<IOnceScheduleType> = ({
   form,
-  schedule,
+  // schedule,
   setSchedule,
 }: IOnceScheduleType) => {
+  // Default string value
+  // const defaultDateString =
+  //   schedule && "VALUES" in schedule && schedule.VALUES
+  //     ? String(schedule.VALUES) // Ensure it's a string
+  //     : "";
+
   const hours = Array.from({ length: 12 }, (_, i) => i + 1); // 1 to 12
   const minutes = Array.from({ length: 60 }, (_, i) => i); // 0 to 59
   const ampmOptions = ["AM", "PM"];
 
-  // Default string value
-  const defaultDateString =
-    schedule && "VALUES" in schedule && schedule.VALUES
-      ? String(schedule.VALUES) // Ensure it's a string
-      : "";
-
-  // Parse the date string into a Date object
-  const parsedDate = parse(
-    defaultDateString as string,
-    "MM/dd/yyyy hh:mm aa",
-    new Date()
-  );
-
-  // Set initial state based on parsedDate
-  const defaultDate = parsedDate;
-  const defaultHour = defaultDate.getHours() % 12 || 12; // 12-hour format
-  const defaultMinute = defaultDate.getMinutes() || 0;
-  const defaultAmPm = defaultDate.getHours() >= 12 ? "PM" : "AM";
+  // Get the current time and add one minute
+  const currentTime = new Date();
+  currentTime.setMinutes(currentTime.getMinutes() + 1);
+  console.log(currentTime, "current time");
+  // Default time based on current time plus 1 minute
+  const defaultHour = currentTime.getHours() % 12 || 12; // 12-hour format
+  const defaultMinute = currentTime.getMinutes();
+  const defaultAmPm = currentTime.getHours() >= 12 ? "PM" : "AM";
+  const defaultDate = currentTime;
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    defaultDate || new Date()
+    defaultDate
   );
   const [selectedHour, setSelectedHour] = useState<number>(defaultHour);
   const [selectedMinute, setSelectedMinute] = useState<number>(defaultMinute);
@@ -97,6 +94,10 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
       setSelectedMinute(dateObj.getMinutes());
       setSelectedAmPm(dateObj.getHours() >= 12 ? "PM" : "AM");
     }
+    form.setValue(
+      "schedule.VALUES",
+      format(currentTime, "MM/dd/yyyy hh:mm aa")
+    );
   }, [form]);
 
   const getToday = () => {
@@ -168,7 +169,7 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
 
       setSelectedDate(finalDate);
       setSchedule({ VALUES: String(format(finalDate, "MM/dd/yyyy hh:mm aa")) });
-      // Update the form value
+      // Update the form value with formatted date
       form.setValue(
         "schedule.VALUES",
         String(format(finalDate, "MM/dd/yyyy hh:mm aa"))

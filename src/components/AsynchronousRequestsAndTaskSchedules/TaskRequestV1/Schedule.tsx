@@ -62,15 +62,19 @@ const Schedule: FC<IScheduleProps> = ({
   setIsOpenScheduleModalV1,
   selected,
 }) => {
+  // const [scheHere, setScheHere] = useState<ISchedulePropsPeriodic
+  //   | ISchedulePropsNonPeriodic
+  //   | IScheduleOnce
+  //   | undefined>();
   const [frequency, setFrequency] = useState<number>();
   const [frequency_type, setFrequency_type] = useState<string>();
-
+  console.log(frequency, frequency_type, schedule, "frequency");
   const FormSchema = z.object({
     schedule_type: z.string(),
     schedule: z.union([
       z.object({
-        frequency: z.number(),
-        frequency_type: z.string(),
+        FREQUENCY: z.number(),
+        FREQUENCY_TYPE: z.string(),
       }),
       z.object({
         VALUES: z.array(z.string()),
@@ -88,9 +92,10 @@ const Schedule: FC<IScheduleProps> = ({
       schedule,
     },
   });
-
+  console.log(schedule, "schedule");
   const handleDateSelect = (time: string) => {
     if (schedule && "VALUES" in schedule) {
+      console.log(time, "to be added");
       if (Array.isArray(schedule.VALUES)) {
         {
           schedule.VALUES.includes(time)
@@ -179,7 +184,7 @@ const Schedule: FC<IScheduleProps> = ({
               <div className="flex gap-2">
                 <FormField
                   control={form.control}
-                  name="schedule.frequency"
+                  name="schedule.FREQUENCY"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Frequency</FormLabel>
@@ -194,12 +199,12 @@ const Schedule: FC<IScheduleProps> = ({
                             field.onChange(Number(e.target.value));
                             setFrequency(e.target.valueAsNumber);
                             form.setValue("schedule", {
-                              frequency: e.target.valueAsNumber,
-                              frequency_type: frequency_type ?? "MINUTES",
+                              FREQUENCY: e.target.valueAsNumber,
+                              FREQUENCY_TYPE: frequency_type ?? "MINUTES",
                             });
                             setSchedule({
-                              frequency: e.target.valueAsNumber,
-                              frequency_type: frequency_type ?? "MINUTES",
+                              FREQUENCY: e.target.valueAsNumber,
+                              FREQUENCY_TYPE: frequency_type ?? "MINUTES",
                             });
                           }}
                         />
@@ -211,7 +216,7 @@ const Schedule: FC<IScheduleProps> = ({
 
                 <FormField
                   control={form.control}
-                  name="schedule.frequency_type"
+                  name="schedule.FREQUENCY_TYPE"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Frequency Type</FormLabel>
@@ -221,12 +226,12 @@ const Schedule: FC<IScheduleProps> = ({
                             field.onChange(value);
                             setFrequency_type(value);
                             form.setValue("schedule", {
-                              frequency: frequency ?? 1,
-                              frequency_type: value,
+                              FREQUENCY: frequency ?? 1,
+                              FREQUENCY_TYPE: value,
                             });
                             setSchedule({
-                              frequency: frequency ?? 1,
-                              frequency_type: value,
+                              FREQUENCY: frequency ?? 1,
+                              FREQUENCY_TYPE: value,
                             });
                           }}
                           value={field.value}

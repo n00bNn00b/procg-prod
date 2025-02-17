@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 import {
   Table,
   TableBody,
@@ -102,11 +103,15 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
   }, [parameters]);
 
   useEffect(() => {
+    const currentTime = new Date();
+    currentTime.setMinutes(currentTime.getMinutes() + 1);
+    const parse = format(currentTime, "MM/dd/yyyy hh:mm aa");
+    console.log(parse, "parse");
     setSchedule(
       scheduleType === "PERIODIC"
         ? ({} as ISchedulePropsPeriodic)
         : scheduleType === "ONCE"
-        ? { VALUES: "" }
+        ? { VALUES: parse }
         : { VALUES: [] }
     );
   }, [scheduleType]);
@@ -151,18 +156,20 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (!(await form.trigger())) return;
 
-    if (
-      data.user_schedule_name === "" ||
-      data.task_name === "" ||
-      Object.keys(data.parameters as object).length === 0 ||
-      Object.keys(schedule as ISchedulePropsPeriodic).length === 0 ||
-      scheduleType === ""
-    )
-      return toast({
-        title: "Error",
-        description: "Please fill in all fields",
-        variant: "destructive",
-      });
+    // if (action !== "Edit Task Schedule") {
+    //   if (
+    //     data.user_schedule_name === "" ||
+    //     data.task_name === "" ||
+    //     Object.keys(data.parameters as object).length === 0 ||
+    //     Object.keys(schedule as ISchedulePropsPeriodic).length === 0 ||
+    //     scheduleType === ""
+    //   )
+    //     return toast({
+    //       title: "Error",
+    //       description: "Please fill in all fields",
+    //       variant: "destructive",
+    //     });
+    // }
     const payload =
       action === "Schedule A Task"
         ? {
@@ -178,19 +185,19 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             parameters: data.parameters,
             redbeat_schedule_name: selected?.redbeat_schedule_name,
           };
-
+    console.log(payload, "payload");
     try {
-      setIsLoading(true);
-      const res = await (action === "Schedule A Task"
-        ? api.post(
-            "/api/v1/asynchronous-requests-and-task-schedules/create-task-schedule-v1",
-            payload
-          )
-        : api.put(
-            `/asynchronous-requests-and-task-schedules/update-task-schedule-v1/${selected?.task_name}`,
-            payload
-          ));
-      if (res) toast({ title: "Success", description: `${res.data.message}` });
+      // setIsLoading(true);
+      // const res = await (action === "Schedule A Task"
+      //   ? api.post(
+      //       "/api/v1/asynchronous-requests-and-task-schedules/create-task-schedule-v1",
+      //       payload
+      //     )
+      //   : api.put(
+      //       `/asynchronous-requests-and-task-schedules/update-task-schedule-v1/${selected?.task_name}`,
+      //       payload
+      //     ));
+      // if (res) toast({ title: "Success", description: `${res.data.message}` });
     } catch (error) {
       toast({
         title: "Error",
