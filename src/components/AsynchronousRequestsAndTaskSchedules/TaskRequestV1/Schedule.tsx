@@ -332,7 +332,6 @@ const Schedule: FC<IScheduleProps> = ({
               form.getValues().schedule_type === "ONCE" && (
                 <OnceScheduleType
                   form={form}
-                  scheduleHere={scheduleHere}
                   setScheduleHere={setScheduleHere}
                 />
               )
