@@ -69,6 +69,7 @@ const Schedule: FC<IScheduleProps> = ({
     | IScheduleOnce
     | undefined
   >();
+
   const [frequency, setFrequency] = useState<number>();
   const [frequency_type, setFrequency_type] = useState<string>();
   const FormSchema = z.object({
@@ -99,13 +100,33 @@ const Schedule: FC<IScheduleProps> = ({
     const currentTime = new Date();
     currentTime.setMinutes(currentTime.getMinutes() + 1);
     const parse = format(currentTime, "MM/dd/yyyy hh:mm aa");
-    setScheduleHere(
-      scheduleType === "PERIODIC"
-        ? ({} as ISchedulePropsPeriodic)
-        : scheduleType === "ONCE"
-        ? { VALUES: parse }
-        : { VALUES: [] }
-    );
+
+    setScheduleHere(() => {
+      if (selected) {
+        if (selected.schedule_type === scheduleType) {
+          return selected.schedule;
+        }
+        if (scheduleType === "PERIODIC") {
+          return {} as ISchedulePropsPeriodic;
+        } else if (scheduleType === "ONCE") {
+          return { VALUES: parse };
+        } else if (scheduleType === "WEEKLY_SPECIFIC_DAYS") {
+          return { VALUES: [] };
+        } else if (scheduleType === "MONTHLY_SPECIFIC_DATES") {
+          return { VALUES: [] };
+        }
+      } else {
+        if (scheduleType === "PERIODIC") {
+          return {} as ISchedulePropsPeriodic;
+        } else if (scheduleType === "ONCE") {
+          return { VALUES: parse };
+        } else if (scheduleType === "WEEKLY_SPECIFIC_DAYS") {
+          return { VALUES: [] };
+        } else if (scheduleType === "MONTHLY_SPECIFIC_DATES") {
+          return { VALUES: [] };
+        }
+      }
+    });
   }, [scheduleType]);
 
   const handleDateSelect = (time: string) => {

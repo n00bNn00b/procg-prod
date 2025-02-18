@@ -70,7 +70,9 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
   const [periodic, setPeriodic] = useState<
     ISchedulePropsPeriodic | undefined
   >();
-  const [scheduleType, setScheduleType] = useState<string>("PERIODIC");
+  const [scheduleType, setScheduleType] = useState<string>(
+    selected?.schedule_type ?? ""
+  );
   const [schedule, setSchedule] = useState<
     | ISchedulePropsPeriodic
     | ISchedulePropsNonPeriodic
@@ -371,11 +373,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             </TableBody>
           </Table>
           <div className="flex justify-end">
-            <Button
-              type="submit"
-              className="mt-5"
-              onClick={() => console.log("Submit clicked")}
-            >
+            <Button type="submit" className="mt-5">
               {isLoading ? <div>Loading...</div> : "Submit"}
             </Button>
           </div>
