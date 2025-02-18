@@ -166,6 +166,7 @@ export function ViewEditScheduledTasksTableV1() {
     "last_updated_by",
     "last_update_date",
     "ready_for_redbeat",
+    "task_name",
   ];
 
   React.useEffect(() => {

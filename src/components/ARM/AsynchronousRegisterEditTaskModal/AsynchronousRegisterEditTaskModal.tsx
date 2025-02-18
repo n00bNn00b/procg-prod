@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ICreateTaskProps {
   task_name: string;
@@ -204,9 +205,17 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
         <h2>{task_name}</h2>
         <X onClick={() => handleCloseModal()} className="cursor-pointer" />
       </div>
-      <div className="px-11 p-5">
+      <div className="px-11 py-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+            <div className="grid grid-cols-2 gap-10">
+              <div className="flex items-center gap-1">
+                <Checkbox /> <FormLabel>Standard Request Submission</FormLabel>
+              </div>
+              <div className="flex items-center gap-1">
+                <Checkbox /> <FormLabel>Step Function</FormLabel>
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-10">
               <FormField
                 control={form.control}
@@ -221,6 +230,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                         autoFocus
                         type="text"
                         placeholder="User Task Name"
+                        className="px-2 h-8"
                       />
                     </FormControl>
                   </FormItem>
@@ -239,6 +249,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                           required
                           type="text"
                           placeholder="Task Name"
+                          className="px-2 h-8"
                         />
                       </FormControl>
                     </FormItem>
@@ -264,7 +275,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                           }}
                           value={field.value}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="px-2 h-8">
                             <SelectValue placeholder="Select Execution Method" />
                           </SelectTrigger>
                           <SelectContent>
@@ -305,7 +316,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                           }}
                           value={field.value}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="px-2 h-8">
                             <SelectValue placeholder="Select Execution Method" />
                           </SelectTrigger>
                           <SelectContent>
@@ -336,6 +347,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                           required
                           type="text"
                           placeholder="Script Name"
+                          className="px-2 h-8"
                         />
                       </FormControl>
                     </FormItem>
@@ -349,7 +361,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                     placeholder="Executor"
                     readOnly
                     disabled
-                    className="my-2"
+                    className="my-2 px-2 h-8"
                     value={selectedExecutionMethod?.executor ?? "Executor"}
                   />
                 </div>
@@ -370,6 +382,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                             required
                             type="text"
                             placeholder="Script Name"
+                            className="px-2 h-8"
                           />
                         </FormControl>
                       </FormItem>
@@ -387,6 +400,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                             required
                             type="text"
                             placeholder="Script Path"
+                            className="px-2 h-8"
                           />
                         </FormControl>
                       </FormItem>

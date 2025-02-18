@@ -65,6 +65,20 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
     ),
   },
   {
+    accessorKey: "srs",
+    header: () => {
+      return <div className="">SRS</div>;
+    },
+    cell: ({ row }) => <div className="">{row.getValue("srs")}</div>,
+  },
+  {
+    accessorKey: "sf",
+    header: () => {
+      return <div className="">SF</div>;
+    },
+    cell: ({ row }) => <div className="">{row.getValue("sf")}</div>,
+  },
+  {
     accessorKey: "created_by",
     header: () => {
       return <div className="min-w-max">Created By</div>;
