@@ -70,7 +70,7 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
   // Get the current time and add one minute
   const currentTime = new Date();
   currentTime.setMinutes(currentTime.getMinutes() + 1);
-  console.log(currentTime, "current time");
+
   // Default time based on current time plus 1 minute
   const defaultHour = currentTime.getHours() % 12 || 12; // 12-hour format
   const defaultMinute = currentTime.getMinutes();
