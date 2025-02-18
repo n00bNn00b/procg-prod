@@ -122,6 +122,7 @@ export function TaskTable() {
     "last_update_date",
     "cancelled_yn",
     "internal_execution_method",
+    "task_name",
   ];
 
   React.useEffect(() => {
