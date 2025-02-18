@@ -45,11 +45,11 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypesV1>[] 
     {
       accessorKey: "redbeat_schedule_name",
       header: () => {
-        return <div className="w-[30rem]">Redbeat Schedule Name</div>;
+        return <div className="min-w-max">Redbeat Schedule Name</div>;
       },
       cell: ({ row }) => {
         const data: string = row.getValue("redbeat_schedule_name");
-        return <div>{data === null ? "null" : data}</div>;
+        return <div className="break-all">{data === null ? "null" : data}</div>;
       },
     },
     {
@@ -89,17 +89,17 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypesV1>[] 
       },
       cell: ({ row }) => {
         const data = row.getValue("schedule");
-        return <div className="">{JSON.stringify(data)}</div>;
+        return <div className="break-all">{JSON.stringify(data)}</div>;
       },
     },
     {
       accessorKey: "args",
       header: () => {
-        return <div className="w-[15rem]">Script Name</div>;
+        return <div className="min-w-max">Args</div>;
       },
       cell: ({ row }) => {
         const args: Array<string> = row.getValue("args");
-        return <div className="">{JSON.stringify(args[0])}</div>;
+        return <div className="break-all">{JSON.stringify(args[0])}</div>;
       },
     },
     {

@@ -39,6 +39,10 @@ interface ICreateTaskProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   handleCloseModal: () => void;
 }
+interface IChackboxTypes {
+  srs?: string;
+  sf?: string;
+}
 const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
   task_name,
   selected,
@@ -54,7 +58,9 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
   >([]);
   const [selectedExecutionMethod, setSelectedExecutionMethod] =
     useState<IExecutionMethodsTypes>(executionMethods[0]);
-  console.log(selectedExecutionMethod, "selectedExecutionMethod");
+
+  const [checkboxSelected, setCheckboxSelected] = useState<IChackboxTypes>();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -70,6 +76,30 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
   //   setSelectedExecutionMethod();
   // }, [selectedExecutionMethod]);
 
+  const handleCheckboxChange = (name: string) => {
+    if (name === "srs") {
+      setCheckboxSelected((prev) => {
+        if (prev?.srs === "Y") {
+          form.setValue("srs", "N");
+          return { ...prev, srs: "N" };
+        } else {
+          form.setValue("srs", "Y");
+          return { ...prev, srs: "Y" };
+        }
+      });
+    } else if (name === "sf") {
+      setCheckboxSelected((prev) => {
+        if (prev?.sf === "Y") {
+          form.setValue("sf", "N");
+          return { ...prev, sf: "N" };
+        } else {
+          form.setValue("sf", "Y");
+          return { ...prev, sf: "Y" };
+        }
+      });
+    }
+  };
+
   const FormSchema = z.object(
     isOpenModal === "register_task"
       ? {
@@ -79,12 +109,16 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
           script_name: z.string(),
           script_path: z.string(),
           description: z.string(),
+          srs: z.string().optional(),
+          sf: z.string().optional(),
         }
       : {
           user_task_name: z.string(),
           execution_method: z.string(),
           script_name: z.string(),
           description: z.string(),
+          srs: z.string().optional(),
+          sf: z.string().optional(),
         }
   );
 
@@ -98,12 +132,17 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
             execution_method: selectedExecutionMethod?.execution_method,
             script_name: "",
             description: "",
+            srs: "N",
+            sf: "N",
+            script_path: "",
           }
         : {
             user_task_name: selected[0]?.user_task_name,
             execution_method: selected[0]?.execution_method,
             script_name: selected[0]?.script_name,
             description: selected[0]?.description,
+            srs: selected[0]?.srs,
+            sf: selected[0]?.sf,
           },
   });
   const { reset } = form;
@@ -119,14 +158,18 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
       script_name: data.script_name,
       script_path: data.script_path,
       description: data.description,
+      srs: data.srs,
+      sf: data.sf,
     };
     const putData = {
       user_task_name: data.user_task_name,
       execution_method: data.execution_method,
       script_name: data.script_name,
       description: data.description,
+      srs: data.srs,
+      sf: data.sf,
     };
-
+    console.log(postData, "post,put");
     const registerTask = async () => {
       try {
         setIsLoading(true);
@@ -198,7 +241,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
       reset();
     }
   };
-  console.log(form.getValues(), "vall");
+
   return (
     <div>
       <div className="p-2 bg-slate-300 rounded-t mx-auto text-center font-bold flex justify-between">
@@ -210,10 +253,18 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
             <div className="grid grid-cols-2 gap-10">
               <div className="flex items-center gap-1">
-                <Checkbox /> <FormLabel>Standard Request Submission</FormLabel>
+                <Checkbox
+                  checked={checkboxSelected?.srs === "Y"}
+                  onClick={() => handleCheckboxChange("srs")}
+                />
+                <FormLabel>Standard Request Submission (SRS)</FormLabel>
               </div>
               <div className="flex items-center gap-1">
-                <Checkbox /> <FormLabel>Step Function</FormLabel>
+                <Checkbox
+                  checked={checkboxSelected?.sf === "Y"}
+                  onClick={() => handleCheckboxChange("sf")}
+                />
+                <FormLabel>Step Function (SF)</FormLabel>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-10">
