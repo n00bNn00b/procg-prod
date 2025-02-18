@@ -37,11 +37,6 @@ const FormSchema = z.object({
 
 interface IOnceScheduleType {
   form: UseFormReturn<z.infer<typeof FormSchema>>;
-  scheduleHere:
-    | ISchedulePropsPeriodic
-    | ISchedulePropsNonPeriodic
-    | IScheduleOnce
-    | undefined;
   setScheduleHere: Dispatch<
     SetStateAction<
       | ISchedulePropsPeriodic
@@ -54,15 +49,8 @@ interface IOnceScheduleType {
 
 const OnceScheduleType: FC<IOnceScheduleType> = ({
   form,
-  // scheduleHere,
   setScheduleHere,
 }: IOnceScheduleType) => {
-  // Default string value
-  // const defaultDateString =
-  //   schedule && "VALUES" in schedule && schedule.VALUES
-  //     ? String(schedule.VALUES) // Ensure it's a string
-  //     : "";
-
   const hours = Array.from({ length: 12 }, (_, i) => i + 1); // 1 to 12
   const minutes = Array.from({ length: 60 }, (_, i) => i); // 0 to 59
   const ampmOptions = ["AM", "PM"];
@@ -88,12 +76,22 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
   useEffect(() => {
     const formValue = form.getValues("schedule.VALUES");
     if (typeof formValue === "string") {
-      const dateObj = new Date(formValue); // This should be a valid date string
+      const dateObj = new Date(formValue);
+
+      // Adjust for 12 AM and 12 PM cases
+      const hours = dateObj.getHours();
+      const is12AM = hours === 0;
+      const is12PM = hours === 12;
+
+      const hour = is12AM ? 12 : is12PM ? 12 : hours % 12;
+      const amPm = hours >= 12 ? "PM" : "AM";
+
       setSelectedDate(dateObj);
-      setSelectedHour(dateObj.getHours() % 12); // 12-hour format
+      setSelectedHour(hour);
       setSelectedMinute(dateObj.getMinutes());
-      setSelectedAmPm(dateObj.getHours() >= 12 ? "PM" : "AM");
+      setSelectedAmPm(amPm);
     }
+
     form.setValue("schedule", {
       VALUES: format(currentTime, "MM/dd/yyyy hh:mm aa"),
     });
