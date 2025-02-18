@@ -71,7 +71,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
     ISchedulePropsPeriodic | undefined
   >();
   const [scheduleType, setScheduleType] = useState<string>(
-    selected?.schedule_type ?? ""
+    selected?.schedule_type ?? "PERIODIC"
   );
   const [schedule, setSchedule] = useState<
     | ISchedulePropsPeriodic
