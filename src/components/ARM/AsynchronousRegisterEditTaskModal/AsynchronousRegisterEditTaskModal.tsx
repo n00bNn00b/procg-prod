@@ -59,7 +59,9 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
   const [selectedExecutionMethod, setSelectedExecutionMethod] =
     useState<IExecutionMethodsTypes>(executionMethods[0]);
 
-  const [checkboxSelected, setCheckboxSelected] = useState<IChackboxTypes>();
+  const [checkboxSelected, setCheckboxSelected] = useState<IChackboxTypes>(
+    selected[0] && { srs: selected[0].srs, sf: selected[0].sf }
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -169,16 +171,18 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
       srs: data.srs,
       sf: data.sf,
     };
-    console.log(postData, "post,put");
+
     const registerTask = async () => {
       try {
         setIsLoading(true);
-        await api.post(`/arm-tasks/register-task`, postData);
+        const res = await api.post(`/arm-tasks/register-task`, postData);
 
-        toast({
-          title: "Info !!!",
-          description: `Added successfully.`,
-        });
+        if (res) {
+          toast({
+            title: "Info !!!",
+            description: `${res.data.message}`,
+          });
+        }
         handleCloseModal();
       } catch (error) {
         if (error instanceof AxiosError) {
@@ -197,15 +201,17 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
     const editTask = async () => {
       setIsLoading(true);
       try {
-        await api.put(
+        const res = await api.put(
           `/arm-tasks/edit-task/${selected[0]?.task_name}`,
           putData
         );
 
-        toast({
-          title: "Info !!!",
-          description: `Added successfully.`,
-        });
+        if (res) {
+          toast({
+            title: "Info !!!",
+            description: `${res.data.message}`,
+          });
+        }
         handleCloseModal();
       } catch (error) {
         if (error instanceof AxiosError) {
