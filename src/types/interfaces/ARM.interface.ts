@@ -18,6 +18,8 @@ export interface IARMAsynchronousTasksTypes {
   creation_date: string;
   last_update_date: string;
   last_updated_by?: number;
+  srs?: string;
+  sf?: string;
 }
 export interface IARMTaskParametersTypes {
   arm_param_id: number;

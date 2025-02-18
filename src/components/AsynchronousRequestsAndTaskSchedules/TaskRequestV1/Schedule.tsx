@@ -128,6 +128,18 @@ const Schedule: FC<IScheduleProps> = ({
       }
     });
   }, [scheduleType]);
+  const sequenceRecords = (items: string[]) => {
+    const weekOrder =
+      scheduleType === "WEEKLY_SPECIFIC_DAYS"
+        ? daysOfWeek.map((day) => day.value)
+        : dates.map((day) => day.value);
+
+    const sortedDays = items.sort(
+      (a, b) => weekOrder.indexOf(a) - weekOrder.indexOf(b)
+    );
+
+    return sortedDays;
+  };
 
   const handleDateSelect = (time: string) => {
     if (scheduleHere && "VALUES" in scheduleHere) {
@@ -135,14 +147,18 @@ const Schedule: FC<IScheduleProps> = ({
         {
           scheduleHere.VALUES.includes(time)
             ? setScheduleHere({
-                VALUES: scheduleHere.VALUES.filter((d) => d !== time),
+                VALUES: sequenceRecords(
+                  scheduleHere.VALUES.filter((d) => d !== time)
+                ),
               })
             : setScheduleHere({
-                VALUES: [...scheduleHere.VALUES, time],
+                VALUES: sequenceRecords([...scheduleHere.VALUES, time]),
               });
         }
       }
-      form.setValue("schedule", { VALUES: [...scheduleHere.VALUES, time] });
+      form.setValue("schedule", {
+        VALUES: sequenceRecords([...scheduleHere.VALUES, time]),
+      });
     }
   };
 
