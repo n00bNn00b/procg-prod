@@ -9,13 +9,16 @@ import {
   IExecutionMethodsTypes,
 } from "@/types/interfaces/ARM.interface";
 import React, { ReactNode, createContext, useContext, useState } from "react";
-import { useGlobalContext } from "../GlobalContext/GlobalContext";
 import { toast } from "@/components/ui/use-toast";
 interface ARMContextProviderProps {
   children: ReactNode;
 }
 
 interface ARMContext {
+  totalPage: number;
+  setTotalPage: React.Dispatch<React.SetStateAction<number>>;
+  totalPage2: number;
+  setTotalPage2: React.Dispatch<React.SetStateAction<number>>;
   getAsyncTasks: () => Promise<IARMAsynchronousTasksTypes[] | undefined>;
   getAsyncTasksLazyLoading: (
     page: number,
@@ -83,7 +86,6 @@ export function useARMContext() {
 
 export function ARMContextProvider({ children }: ARMContextProviderProps) {
   const api = useAxiosPrivate();
-  const { setTotalPage } = useGlobalContext();
   const [isSubmit, setIsSubmit] = useState<number>(0);
   const [isLoading, setIsLoading] = React.useState(false);
   const [selectedTask, setSelectedTask] = useState<
@@ -93,7 +95,8 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
     IARMTaskParametersTypes[] | undefined
   >(undefined);
   // const [page, setPage] = useState<number>(1);
-  // const [totalPage, setTotalPage] = useState<number>(1);
+  const [totalPage, setTotalPage] = useState<number>(1);
+  const [totalPage2, setTotalPage2] = useState<number>(1);
 
   const getAsyncTasks = async () => {
     try {
@@ -101,7 +104,8 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
       const res = await api.get<IARMAsynchronousTasksTypes[]>(
         `/arm-tasks/show-tasks`
       );
-      return res.data ?? [];
+      const filterdData = res.data.filter((item) => item.srs === "Y");
+      return filterdData ?? [];
     } catch (error) {
       console.log(error);
     } finally {
@@ -199,7 +203,7 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
 
       const totalCount = countTasksParameters.data.length;
       const totalPages = Math.ceil(totalCount / limit);
-      setTotalPage(totalPages);
+      setTotalPage2(totalPages);
       return tasksParameters.data ?? [];
     } catch (error) {
       console.log("Task Parameters Item Not found");
@@ -339,6 +343,10 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
   };
 
   const values = {
+    totalPage,
+    setTotalPage,
+    totalPage2,
+    setTotalPage2,
     getManageExecutionMethods,
     getManageExecutionMethodsLazyLoading,
     getAsyncTasks,

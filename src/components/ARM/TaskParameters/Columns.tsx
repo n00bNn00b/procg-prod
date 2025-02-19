@@ -19,7 +19,9 @@ export const columns: ColumnDef<IARMTaskParametersTypes>[] = [
     header: () => {
       return <div className="min-w-max">Parameter Name</div>;
     },
-    cell: ({ row }) => <div>{row.getValue("parameter_name")}</div>,
+    cell: ({ row }) => (
+      <div className="uppercase">{row.getValue("parameter_name")}</div>
+    ),
   },
   {
     accessorKey: "task_name",
@@ -34,7 +36,7 @@ export const columns: ColumnDef<IARMTaskParametersTypes>[] = [
       return <div className="w-[25rem]">Description</div>;
     },
     cell: ({ row }) => (
-      <div className="w-[25rem]">{row.getValue("description")}</div>
+      <div className="w-[25rem] capitalize">{row.getValue("description")}</div>
     ),
   },
   {
@@ -42,7 +44,9 @@ export const columns: ColumnDef<IARMTaskParametersTypes>[] = [
     header: () => {
       return <div className="min-w-max">Data Type</div>;
     },
-    cell: ({ row }) => <div className="">{row.getValue("data_type")}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("data_type")}</div>
+    ),
   },
   {
     accessorKey: "created_by",

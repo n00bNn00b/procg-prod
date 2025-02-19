@@ -66,26 +66,11 @@ export const columns: ColumnDef<IARMAsynchronousTasksTypes>[] = [
 ];
 
 export function TopTable() {
-  const { getAsyncTasksLazyLoading, isLoading, setSelectedTask } =
+  const { getAsyncTasksLazyLoading, isLoading, setSelectedTask, totalPage } =
     useARMContext();
-  const { page, setPage, totalPage } = useGlobalContext();
+  const { page, setPage } = useGlobalContext();
   const [data, setData] = React.useState<IARMAsynchronousTasksTypes[] | []>([]);
   const limit = 3;
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getAsyncTasksLazyLoading(page, limit);
-        table.getRowModel().rows.map((row) => row.toggleSelected(false));
-        if (res) setData(res);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setSelectedTask(undefined);
-      }
-    };
-    fetchData();
-  }, [page]);
-
   const [selectedRowId, setSelectedRowId] = React.useState<string>("");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -113,6 +98,28 @@ export function TopTable() {
       rowSelection,
     },
   });
+
+  React.useEffect(() => {
+    setPage(1);
+  }, []);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getAsyncTasksLazyLoading(page, limit);
+        table.getRowModel().rows.map((row) => row.toggleSelected(false));
+        if (res) setData(res);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setSelectedTask(undefined);
+        // uncheck checkbox
+        table.getRowModel().rows.map((row) => row.toggleSelected(false));
+      }
+    };
+    fetchData();
+  }, [page]);
+
   const handleRowSelection = (task: IARMAsynchronousTasksTypes) => {
     setSelectedTask((prev) => {
       if (prev?.arm_task_id === task.arm_task_id) {

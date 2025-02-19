@@ -190,7 +190,7 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="VARCHAR">VARCHAR</SelectItem>
-                          <SelectItem value="integer">integer</SelectItem>
+                          <SelectItem value="integer">Integer</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>

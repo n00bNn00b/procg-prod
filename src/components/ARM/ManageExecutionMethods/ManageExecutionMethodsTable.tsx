@@ -37,18 +37,26 @@ import {
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import columns from "./Columns";
 import Pagination5 from "@/components/Pagination/Pagination5";
-import { IExecutionMethodsTypes } from "@/types/interfaces/ARM.interface"; 
+import { IExecutionMethodsTypes } from "@/types/interfaces/ARM.interface";
 import { useARMContext } from "@/Context/ARMContext/ARMContext";
 import CustomModal2 from "@/components/CustomModal/CustomModal2";
 import ExecutionMethodEdit from "../ExecutionMethodEdit/ExecutionMethodEdit";
 
 export function ManageExecutionMethodsTable() {
-  const { getManageExecutionMethodsLazyLoading, isLoading, setIsLoading, isSubmit } =
-    useARMContext();
-  const { page, setPage, totalPage, isOpenModal, setIsOpenModal } =
-    useGlobalContext();
+  const {
+    totalPage,
+    getManageExecutionMethodsLazyLoading,
+    isLoading,
+    setIsLoading,
+    isSubmit,
+  } = useARMContext();
+  const { page, setPage, isOpenModal, setIsOpenModal } = useGlobalContext();
   const [data, setData] = React.useState<IExecutionMethodsTypes[] | []>([]);
   const limit = 8;
+
+  React.useEffect(() => {
+    setPage(1);
+  }, []);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -74,9 +82,7 @@ export function ManageExecutionMethodsTable() {
     pageSize: 10, //default page size
   });
 
-  const [selected, setSelected] = React.useState<IExecutionMethodsTypes[]>(
-    []
-  );
+  const [selected, setSelected] = React.useState<IExecutionMethodsTypes[]>([]);
   const handleRowSelection = (rowSelection: IExecutionMethodsTypes) => {
     setSelected((prevSelected) => {
       if (prevSelected.includes(rowSelection)) {
@@ -175,7 +181,9 @@ export function ManageExecutionMethodsTable() {
                   <TooltipTrigger asChild>
                     <PlusIcon
                       className="cursor-pointer"
-                      onClick={() => handleOpenModal("create_execution_methods")}
+                      onClick={() =>
+                        handleOpenModal("create_execution_methods")
+                      }
                     />
                   </TooltipTrigger>
                   <TooltipContent>
@@ -193,7 +201,9 @@ export function ManageExecutionMethodsTable() {
                             ? "text-slate-200 cursor-not-allowed"
                             : "cursor-pointer"
                         }`}
-                        onClick={() => handleOpenModal("edit_execution_methods")}
+                        onClick={() =>
+                          handleOpenModal("edit_execution_methods")
+                        }
                       />
                     </TooltipTrigger>
                     <TooltipContent>

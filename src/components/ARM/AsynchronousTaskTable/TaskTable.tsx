@@ -43,12 +43,20 @@ import { useARMContext } from "@/Context/ARMContext/ARMContext";
 import CustomModal2 from "@/components/CustomModal/CustomModal2";
 
 export function TaskTable() {
-  const { getAsyncTasksLazyLoading, isLoading, setIsLoading, isSubmit } =
-    useARMContext();
-  const { page, setPage, totalPage, isOpenModal, setIsOpenModal } =
-    useGlobalContext();
+  const {
+    totalPage,
+    getAsyncTasksLazyLoading,
+    isLoading,
+    setIsLoading,
+    isSubmit,
+  } = useARMContext();
+  const { page, setPage, isOpenModal, setIsOpenModal } = useGlobalContext();
   const [data, setData] = React.useState<IARMAsynchronousTasksTypes[] | []>([]);
   const limit = 8;
+
+  React.useEffect(() => {
+    setPage(1);
+  }, []);
 
   React.useEffect(() => {
     const fetchData = async () => {
