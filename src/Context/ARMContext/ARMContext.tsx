@@ -216,7 +216,7 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
       const res = await api.get<IARMAsynchronousTasksParametersTypes[]>(
         `/arm-tasks/task-params/${task_name}`
       );
-
+      console.log(res, "res");
       return res.data ?? [];
     } catch (error) {
       console.log("Task Parameters Item Not found");

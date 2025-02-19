@@ -179,18 +179,47 @@
         "name": "Security Console",
         "path": "/tools/security-console",
         "paths": [
-          "/tools/security-console/manage-users"
+          "/tools/security-console/manage-users",
+          "/tools/security-console/manage-privileges-and-roles"
         ],
         "subItems": [
           {
             "name": "Manage Users",
             "path": "/tools/security-console/manage-users"
+          },
+          {
+            "name": "Manage Privileges and Roles",
+            "path": "/tools/security-console/manage-privileges-and-roles"
           }
         ]
       },
       {
-        "name": "Manage Data Sources",
-        "path": "/tools/manage-data-sources"
+        "_comment": "This is for the nested menu",
+        "name": "Enterprise Process Modeler",
+        "path": "/tools/enterprise-process-modeler",
+        "paths": [
+          "/tools/enterprise-process-modeler/orchestration-studio"
+        ],
+        "subItems": [
+          {
+            "name": "Orchestration Studio",
+            "path": "/tools/enterprise-process-modeler/orchestration-studio"
+          }
+        ]
+      },
+      {
+        "_comment": "This is for the nested menu",
+        "name": "Enterprise System Integrations",
+        "path": "/tools/enterprise-system-integrations",
+        "paths": [
+          "/tools/enterprise-system-integrations/manage-data-sources"
+        ],
+        "subItems": [
+          {
+            "name": "Manage Data Sources",
+            "path": "/tools/enterprise-system-integrations/manage-data-sources"
+          }
+        ]
       }
     ]
   },
