@@ -148,7 +148,6 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
         data.user_schedule_name === "" ||
         data.task_name === "" ||
         scheduleType === "" ||
-        Object.keys(data.parameters as object).length === 0 ||
         !schedule
       )
         return toast({

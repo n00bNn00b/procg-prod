@@ -8,7 +8,7 @@ import SingleDraft from "@/pages/Notifications/SingleDraft";
 import ActionItems from "@/pages/ActionItems/ActionItems";
 import Home from "@/pages/Home/Home";
 import SingleSent from "@/pages/Notifications/SingleSent";
-import ManageDataSources from "@/pages/Tools/ManageDataSources/ManageDataSources";
+import ManageDataSources from "@/pages/Tools/EnterpriseSystemIntegrations/ManageDataSources/ManageDataSources";
 import Users from "@/pages/Tools/SecurityConsole/ManageUsers/SetupAndAdministration";
 import ManageGlobaConditions from "@/pages/EnterpriseSecurityControls/ManageGlobalConditions/ManageGlobalConditions";
 import ManageLocalConditions from "@/pages/EnterpriseSecurityControls/ManageLocalConditions/ManageLocalConditions";
@@ -61,6 +61,10 @@ import Finance from "@/pages/Finance/Finance";
 import { ViewEditScheduledTasksTableV1 } from "@/components/AsynchronousRequestsAndTaskSchedules/ViewEditScheduledTasksV1/ViewEditScheduledTasksTableV1";
 import ScheduleATaskV1 from "@/pages/AsynchronousRequestsAndTaskSchedules/ScheduleATaskV1";
 import ManageExecutionMethods from "@/pages/AsynchronousRequestManager/Development/ManageExecutionMethods/ManageExecutionMethods";
+import ManagePriviedgesAndRoles from "@/pages/Tools/SecurityConsole/ManagePrivilegesAndRoles/ManagePrivilegesAndRoles";
+import EnterpriseProcessModeler from "@/pages/Tools/EnterpriseProcessModeler/EnterpriseProcessModeler";
+import OrchestrationStudio from "@/pages/Tools/EnterpriseProcessModeler/OrchestrationStudio/OrchestrationStudio";
+import EnterpriseSystemIntegrations from "@/pages/Tools/EnterpriseSystemIntegrations/EnterpriseSystemIntegrations";
 
 const routes = createBrowserRouter([
   {
@@ -189,11 +193,37 @@ const routes = createBrowserRouter([
                 path: "manage-users",
                 element: <Users />,
               },
+              {
+                path: "manage-privileges-and-roles",
+                element: <ManagePriviedgesAndRoles />,
+              },
             ],
           },
           {
-            path: "manage-data-sources",
-            element: <ManageDataSources />,
+            path: "enterprise-process-modeler",
+            children: [
+              {
+                path: "",
+                element: <EnterpriseProcessModeler />,
+              },
+              {
+                path: "orchestration-studio",
+                element: <OrchestrationStudio />,
+              },
+            ],
+          },
+          {
+            path: "enterprise-system-integrations",
+            children: [
+              {
+                path: "",
+                element: <EnterpriseSystemIntegrations />,
+              },
+              {
+                path: "manage-data-sources",
+                element: <ManageDataSources />,
+              },
+            ],
           },
         ],
       },
