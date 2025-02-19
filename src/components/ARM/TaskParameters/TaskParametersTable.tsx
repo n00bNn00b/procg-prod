@@ -44,13 +44,11 @@ import { useARMContext } from "@/Context/ARMContext/ARMContext";
 import TaskParametersModal from "../TaskParametersModal/TaskParametersModal";
 
 export function TaskParametersTable() {
-  const { selectedTask, getTaskParametersLazyLoading, isSubmit } =
+  const { totalPage2, selectedTask, getTaskParametersLazyLoading, isSubmit } =
     useARMContext();
   const [data, setData] = React.useState<IARMTaskParametersTypes[] | []>([]);
   const [isLoading, setIsLoading] = React.useState(false);
-
-  const { totalPage, isOpenModal, setIsOpenModal } = useGlobalContext();
-
+  const { isOpenModal, setIsOpenModal } = useGlobalContext();
   const [page, setPage] = React.useState<number>(1);
   const limit = 4;
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -60,10 +58,6 @@ export function TaskParametersTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0, //initial page index
-    pageSize: 10, //default page size
-  });
 
   const [selectedRows, setSelectedRows] = React.useState<
     IARMTaskParametersTypes[]
@@ -122,7 +116,6 @@ export function TaskParametersTable() {
 
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -132,7 +125,6 @@ export function TaskParametersTable() {
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination,
     },
   });
   // default hidden columns
@@ -390,7 +382,7 @@ export function TaskParametersTable() {
           <Pagination5
             currentPage={page}
             setCurrentPage={setPage}
-            totalPageNumbers={totalPage as number}
+            totalPageNumbers={totalPage2 as number}
           />
         </div>
       </div>
