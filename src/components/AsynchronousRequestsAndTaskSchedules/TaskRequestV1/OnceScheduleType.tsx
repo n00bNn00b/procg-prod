@@ -21,18 +21,20 @@ import { toast } from "@/components/ui/use-toast";
 // Validation schema using zod
 const FormSchema = z.object({
   schedule_type: z.string(),
-  schedule: z.union([
-    z.object({
-      FREQUENCY: z.number(),
-      FREQUENCY_TYPE: z.string(),
-    }),
-    z.object({
-      VALUES: z.array(z.string()),
-    }),
-    z.object({
-      VALUES: z.string(z.date()),
-    }),
-  ]),
+  schedule: z
+    .union([
+      z.object({
+        FREQUENCY: z.number(),
+        FREQUENCY_TYPE: z.string(),
+      }),
+      z.object({
+        VALUES: z.array(z.string()),
+      }),
+      z.object({
+        VALUES: z.string(z.date()),
+      }),
+    ])
+    .optional(),
 });
 
 interface IOnceScheduleType {

@@ -351,7 +351,7 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
                       ) : (
                         <>
                           <TableCell className="border border-winter-100 p-2">
-                            {key}
+                            <h3 className="uppercase">{key}</h3>
                           </TableCell>
                           <TableCell className="border border-winter-100 p-2">
                             <Input

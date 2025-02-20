@@ -71,7 +71,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
     ISchedulePropsPeriodic | undefined
   >();
   const [scheduleType, setScheduleType] = useState<string>(
-    selected?.schedule_type ?? "PERIODIC"
+    selected?.schedule_type ?? ""
   );
   const [schedule, setSchedule] = useState<
     | ISchedulePropsPeriodic
@@ -148,7 +148,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
         data.user_schedule_name === "" ||
         data.task_name === "" ||
         scheduleType === "" ||
-        !schedule
+        (scheduleType !== "IMMEDIATE" && !schedule)
       )
         return toast({
           title: "Error",
@@ -193,7 +193,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
     } finally {
       form.reset();
       setSchedule(undefined);
-      setScheduleType("PERIODIC");
+      setScheduleType("");
       setIsLoading(false);
       setIsSubmit(Math.random() + 23 * 3000);
     }
@@ -346,7 +346,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
                       ) : (
                         <>
                           <TableCell className="border border-winter-100 p-2">
-                            {key}
+                            <h3 className="uppercase">{key}</h3>
                           </TableCell>
                           <TableCell className="border border-winter-100 p-2">
                             <Input
