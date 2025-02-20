@@ -35,9 +35,9 @@ import { IARMViewRequestsTypes } from "@/types/interfaces/ARM.interface";
 import { useARMContext } from "@/Context/ARMContext/ARMContext";
 
 export function ViewRequestTable() {
-  const { getViewRequests, isLoading } = useARMContext();
+  const { totalPage, getViewRequests, isLoading } = useARMContext();
   const [data, setData] = React.useState<IARMViewRequestsTypes[] | []>([]);
-  const { page, setPage, totalPage } = useGlobalContext();
+  const { page, setPage } = useGlobalContext();
   const limit = 8;
   React.useEffect(() => {
     const fetchData = async () => {
