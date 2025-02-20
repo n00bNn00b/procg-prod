@@ -71,7 +71,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
     ISchedulePropsPeriodic | undefined
   >();
   const [scheduleType, setScheduleType] = useState<string>(
-    selected?.schedule_type ?? "PERIODIC"
+    selected?.schedule_type ?? ""
   );
   const [schedule, setSchedule] = useState<
     | ISchedulePropsPeriodic
@@ -148,7 +148,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
         data.user_schedule_name === "" ||
         data.task_name === "" ||
         scheduleType === "" ||
-        !schedule
+        (scheduleType !== "IMMEDIATE" && !schedule)
       )
         return toast({
           title: "Error",
@@ -193,7 +193,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
     } finally {
       form.reset();
       setSchedule(undefined);
-      setScheduleType("PERIODIC");
+      setScheduleType("");
       setIsLoading(false);
       setIsSubmit(Math.random() + 23 * 3000);
     }
@@ -204,7 +204,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
       className={`${
         action === "Edit Task Schedule"
           ? ""
-          : "w-[900px] h-[532px] mx-auto my-10 border rounded"
+          : "w-[900px] h-[450px] mx-auto my-10 border rounded"
       } `}
     >
       {action === "Edit Task Schedule" && (
@@ -272,7 +272,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
                         <SelectTrigger>
                           <SelectValue placeholder="Select a Task" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-60">
                           {asyncTaskNames?.map((item) => (
                             <SelectItem
                               key={item.arm_task_id}

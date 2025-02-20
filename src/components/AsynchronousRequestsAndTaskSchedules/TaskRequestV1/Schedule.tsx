@@ -74,24 +74,26 @@ const Schedule: FC<IScheduleProps> = ({
   const [frequency_type, setFrequency_type] = useState<string>();
   const FormSchema = z.object({
     schedule_type: z.string(),
-    schedule: z.union([
-      z.object({
-        FREQUENCY: z.number(),
-        FREQUENCY_TYPE: z.string(),
-      }),
-      z.object({
-        VALUES: z.array(z.string()),
-      }),
-      z.object({
-        VALUES: z.string(z.date()),
-      }),
-    ]),
+    schedule: z
+      .union([
+        z.object({
+          FREQUENCY: z.number(),
+          FREQUENCY_TYPE: z.string(),
+        }),
+        z.object({
+          VALUES: z.array(z.string()),
+        }),
+        z.object({
+          VALUES: z.string(z.date()),
+        }),
+      ])
+      .optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      schedule_type: selected?.schedule_type ?? scheduleType ?? "PERIODIC",
+      schedule_type: selected?.schedule_type ?? scheduleType ?? "IMMEDIATE",
       schedule,
     },
   });
@@ -100,34 +102,48 @@ const Schedule: FC<IScheduleProps> = ({
     const currentTime = new Date();
     currentTime.setMinutes(currentTime.getMinutes() + 1);
     const parse = format(currentTime, "MM/dd/yyyy hh:mm aa");
-
-    setScheduleHere(() => {
-      if (selected) {
-        if (selected.schedule_type === scheduleType) {
-          return selected.schedule;
+    if (scheduleType === "IMMEDIATE") {
+      form.reset({ schedule_type: scheduleType, schedule: undefined });
+      setScheduleHere(undefined);
+    } else {
+      setScheduleHere(() => {
+        if (selected) {
+          if (selected.schedule_type === scheduleType) {
+            return selected.schedule;
+          } else if (scheduleType === "PERIODIC") {
+            return {} as ISchedulePropsPeriodic;
+          } else if (scheduleType === "ONCE") {
+            return { VALUES: parse };
+          } else if (scheduleType === "WEEKLY_SPECIFIC_DAYS") {
+            form.reset({
+              schedule_type: scheduleType,
+              schedule: selected.schedule ?? undefined,
+            });
+            return { VALUES: [] };
+          } else if (scheduleType === "MONTHLY_SPECIFIC_DATES") {
+            form.reset({
+              schedule_type: scheduleType,
+              schedule: selected.schedule ?? undefined,
+            });
+            return { VALUES: [] };
+          }
+        } else {
+          if (scheduleType === "PERIODIC") {
+            return {} as ISchedulePropsPeriodic;
+          } else if (scheduleType === "ONCE") {
+            return { VALUES: parse };
+          } else if (scheduleType === "WEEKLY_SPECIFIC_DAYS") {
+            form.reset({ schedule_type: scheduleType, schedule: undefined });
+            return { VALUES: [] };
+          } else if (scheduleType === "MONTHLY_SPECIFIC_DATES") {
+            form.reset({ schedule_type: scheduleType, schedule: undefined });
+            return { VALUES: [] };
+          }
         }
-        if (scheduleType === "PERIODIC") {
-          return {} as ISchedulePropsPeriodic;
-        } else if (scheduleType === "ONCE") {
-          return { VALUES: parse };
-        } else if (scheduleType === "WEEKLY_SPECIFIC_DAYS") {
-          return { VALUES: [] };
-        } else if (scheduleType === "MONTHLY_SPECIFIC_DATES") {
-          return { VALUES: [] };
-        }
-      } else {
-        if (scheduleType === "PERIODIC") {
-          return {} as ISchedulePropsPeriodic;
-        } else if (scheduleType === "ONCE") {
-          return { VALUES: parse };
-        } else if (scheduleType === "WEEKLY_SPECIFIC_DAYS") {
-          return { VALUES: [] };
-        } else if (scheduleType === "MONTHLY_SPECIFIC_DATES") {
-          return { VALUES: [] };
-        }
-      }
-    });
+      });
+    }
   }, [scheduleType]);
+  // Sequence Records
   const sequenceRecords = (items: string[]) => {
     const weekOrder =
       scheduleType === "WEEKLY_SPECIFIC_DAYS"
@@ -140,7 +156,7 @@ const Schedule: FC<IScheduleProps> = ({
 
     return sortedDays;
   };
-
+  // Date and Time selections
   const handleDateSelect = (time: string) => {
     if (scheduleHere && "VALUES" in scheduleHere) {
       if (Array.isArray(scheduleHere.VALUES)) {
@@ -161,8 +177,13 @@ const Schedule: FC<IScheduleProps> = ({
       });
     }
   };
-
+  // console.log(form.getValues(), "form");
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    if (scheduleType !== "IMMEDIATE") {
+      if (!data.schedule) {
+        return;
+      }
+    }
     try {
       setSchedule(data.schedule);
       setScheduleType(data.schedule_type);
@@ -208,16 +229,10 @@ const Schedule: FC<IScheduleProps> = ({
                           <FormControl>
                             <RadioGroupItem
                               value={s.value}
-                              disabled={[`IMMEDIATE`].includes(s.value)}
                               onClick={() => setScheduleType(s.value)}
                             />
                           </FormControl>
-                          <FormLabel
-                            className={`${
-                              [`IMMEDIATE`].includes(s.value) &&
-                              "text-slate-400"
-                            } font-normal`}
-                          >
+                          <FormLabel className={`font-normal`}>
                             {s.name}
                           </FormLabel>
                         </FormItem>

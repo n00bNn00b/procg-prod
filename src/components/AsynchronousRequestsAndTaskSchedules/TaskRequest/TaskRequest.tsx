@@ -268,7 +268,7 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
                         <SelectTrigger>
                           <SelectValue placeholder="Select a Task" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-60">
                           {asyncTaskNames?.map((item) => (
                             <SelectItem
                               key={item.arm_task_id}
