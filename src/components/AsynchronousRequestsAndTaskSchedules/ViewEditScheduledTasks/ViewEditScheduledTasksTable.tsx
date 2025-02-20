@@ -57,6 +57,7 @@ import CustomModal3 from "@/components/CustomModal/CustomModal3";
 
 export function ViewEditScheduledTasksTable() {
   const {
+    totalPage,
     getAsynchronousRequestsAndTaskSchedules,
     isLoading,
     setIsLoading,
@@ -69,13 +70,13 @@ export function ViewEditScheduledTasksTable() {
   >([]);
   const limit = 8;
   const [page, setPage] = React.useState<number>(1);
-  const { totalPage, isOpenModal, setIsOpenModal } = useGlobalContext();
+  const { isOpenModal, setIsOpenModal } = useGlobalContext();
   React.useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
         const res = await getAsynchronousRequestsAndTaskSchedules(page, limit);
-         
+
         if (res) setData(res);
       } catch (error) {
         console.log(error);
