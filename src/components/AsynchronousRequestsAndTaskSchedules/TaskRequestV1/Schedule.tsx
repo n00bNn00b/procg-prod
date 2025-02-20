@@ -93,7 +93,7 @@ const Schedule: FC<IScheduleProps> = ({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      schedule_type: selected?.schedule_type ?? scheduleType ?? "IMMEDIATE",
+      schedule_type: scheduleType ?? selected?.schedule_type ?? "IMMEDIATE",
       schedule,
     },
   });
@@ -102,7 +102,8 @@ const Schedule: FC<IScheduleProps> = ({
     const currentTime = new Date();
     currentTime.setMinutes(currentTime.getMinutes() + 1);
     const parse = format(currentTime, "MM/dd/yyyy hh:mm aa");
-    if (scheduleType === "IMMEDIATE") {
+
+    if (scheduleType === "IMMEDIATE" || "") {
       form.reset({ schedule_type: scheduleType, schedule: undefined });
       setScheduleHere(undefined);
     } else {
@@ -143,6 +144,7 @@ const Schedule: FC<IScheduleProps> = ({
       });
     }
   }, [scheduleType]);
+
   // Sequence Records
   const sequenceRecords = (items: string[]) => {
     const weekOrder =
@@ -154,6 +156,9 @@ const Schedule: FC<IScheduleProps> = ({
       (a, b) => weekOrder.indexOf(a) - weekOrder.indexOf(b)
     );
 
+    form.setValue("schedule", {
+      VALUES: sortedDays,
+    });
     return sortedDays;
   };
   // Date and Time selections
@@ -172,12 +177,9 @@ const Schedule: FC<IScheduleProps> = ({
               });
         }
       }
-      form.setValue("schedule", {
-        VALUES: sequenceRecords([...scheduleHere.VALUES, time]),
-      });
     }
   };
-  // console.log(form.getValues(), "form");
+
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     if (scheduleType !== "IMMEDIATE") {
       if (!data.schedule) {
@@ -185,7 +187,11 @@ const Schedule: FC<IScheduleProps> = ({
       }
     }
     try {
-      setSchedule(data.schedule);
+      setSchedule(
+        scheduleType === "IMMEDIATE"
+          ? ({} as ISchedulePropsPeriodic)
+          : data.schedule
+      );
       setScheduleType(data.schedule_type);
       setIsOpenScheduleModalV1("");
     } catch (error) {
