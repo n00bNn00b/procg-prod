@@ -204,7 +204,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
       className={`${
         action === "Edit Task Schedule"
           ? ""
-          : "w-[900px] h-[532px] mx-auto my-10 border rounded"
+          : "w-[900px] h-[450px] mx-auto my-10 border rounded"
       } `}
     >
       {action === "Edit Task Schedule" && (
@@ -272,7 +272,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
                         <SelectTrigger>
                           <SelectValue placeholder="Select a Task" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-60">
                           {asyncTaskNames?.map((item) => (
                             <SelectItem
                               key={item.arm_task_id}
@@ -346,7 +346,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
                       ) : (
                         <>
                           <TableCell className="border border-winter-100 p-2">
-                            <h3 className="uppercase">{key}</h3>
+                            {key}
                           </TableCell>
                           <TableCell className="border border-winter-100 p-2">
                             <Input

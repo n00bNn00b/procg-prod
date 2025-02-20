@@ -335,7 +335,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                           <SelectTrigger className="px-2 h-8">
                             <SelectValue placeholder="Select Execution Method" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="max-h-60">
                             {executionMethods.map((item) => (
                               <SelectItem
                                 key={item.execution_method}
@@ -376,7 +376,7 @@ const AsynchronousRegisterEditTaskModal: FC<ICreateTaskProps> = ({
                           <SelectTrigger className="px-2 h-8">
                             <SelectValue placeholder="Select Execution Method" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="max-h-60">
                             {executionMethods.map((item) => (
                               <SelectItem
                                 key={item.execution_method}

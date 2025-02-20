@@ -268,7 +268,7 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
                         <SelectTrigger>
                           <SelectValue placeholder="Select a Task" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-60">
                           {asyncTaskNames?.map((item) => (
                             <SelectItem
                               key={item.arm_task_id}
@@ -351,7 +351,7 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
                       ) : (
                         <>
                           <TableCell className="border border-winter-100 p-2">
-                            <h3 className="uppercase">{key}</h3>
+                            {key}
                           </TableCell>
                           <TableCell className="border border-winter-100 p-2">
                             <Input

@@ -19,9 +19,7 @@ export const columns: ColumnDef<IARMTaskParametersTypes>[] = [
     header: () => {
       return <div className="min-w-max">Parameter Name</div>;
     },
-    cell: ({ row }) => (
-      <div className="uppercase">{row.getValue("parameter_name")}</div>
-    ),
+    cell: ({ row }) => <div>{row.getValue("parameter_name")}</div>,
   },
   {
     accessorKey: "task_name",

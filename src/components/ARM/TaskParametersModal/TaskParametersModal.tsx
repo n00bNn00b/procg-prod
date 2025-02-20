@@ -167,6 +167,10 @@ const TaskParametersModal: FC<ITaskParametersModalProps> = ({
                         autoFocus
                         type="text"
                         placeholder="Parameter Name"
+                        value={field.value.toUpperCase()}
+                        onChange={(e) =>
+                          field.onChange(e.target.value.toUpperCase())
+                        }
                       />
                     </FormControl>
                   </FormItem>
