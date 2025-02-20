@@ -145,7 +145,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
 
     if (action !== "Edit Task Schedule") {
       if (
-        data.user_schedule_name === "" ||
+        (scheduleType !== "IMMEDIATE" && data.user_schedule_name === "") ||
         data.task_name === "" ||
         scheduleType === "" ||
         (scheduleType !== "IMMEDIATE" && !schedule)
@@ -157,12 +157,18 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
         });
     }
     const payload =
-      action === "Schedule A Task"
+      action === "Schedule A Task" && scheduleType !== "IMMEDIATE"
         ? {
             user_schedule_name: data.user_schedule_name,
             task_name: data.task_name,
             parameters: data.parameters,
             schedule,
+            schedule_type: scheduleType,
+          }
+        : scheduleType === "IMMEDIATE"
+        ? {
+            task_name: data.task_name,
+            parameters: data.parameters,
             schedule_type: scheduleType,
           }
         : {
@@ -171,7 +177,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             parameters: data.parameters,
             redbeat_schedule_name: selected?.redbeat_schedule_name,
           };
-    console.log(payload, "payload");
+    // console.log(payload, "payload");
     try {
       setIsLoading(true);
       const res = await (action === "Schedule A Task"
@@ -233,6 +239,7 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 p-4">
           <div className="grid grid-cols-2 gap-4">
             {user_schedule_name !== "ad_hoc" &&
+              scheduleType !== "IMMEDIATE" &&
               action === "Schedule A Task" && (
                 <FormField
                   control={form.control}
