@@ -259,6 +259,7 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
           `/api/v1/asynchronous-requests-and-task-schedules/task-schedules/${page}/${limit}`
         ),
       ]);
+      console.log(allTasksSchedules, "allTasksSchedules");
       const totalCount = allTasksSchedules.data.length;
       const totalPages = Math.ceil(totalCount / limit);
       setTotalPage(totalPages);

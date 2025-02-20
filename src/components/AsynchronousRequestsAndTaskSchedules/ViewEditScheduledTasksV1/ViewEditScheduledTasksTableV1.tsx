@@ -57,6 +57,7 @@ import CustomModal2 from "@/components/CustomModal/CustomModal2";
 
 export function ViewEditScheduledTasksTableV1() {
   const {
+    totalPage,
     getAsynchronousRequestsAndTaskSchedulesV1,
     isLoading,
     setIsLoading,
@@ -69,7 +70,7 @@ export function ViewEditScheduledTasksTableV1() {
   >([]);
   const limit = 8;
   const [page, setPage] = React.useState<number>(1);
-  const { totalPage, isOpenModal, setIsOpenModal } = useGlobalContext();
+  const { isOpenModal, setIsOpenModal } = useGlobalContext();
 
   React.useEffect(() => {
     const fetchData = async () => {
