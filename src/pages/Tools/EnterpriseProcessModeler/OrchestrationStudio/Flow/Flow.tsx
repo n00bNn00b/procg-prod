@@ -62,6 +62,7 @@ const DnDFlow = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const response = await api.get("/orchestration-studio-process");
 
         setFlowsData(response.data);
@@ -69,6 +70,8 @@ const DnDFlow = () => {
         if (error instanceof AxiosError && error.response) {
           console.log(error.response.data);
         }
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -216,6 +219,17 @@ const DnDFlow = () => {
       }
     }
   };
+  const handleToolsOpen = () => {
+    if (newProcessName || selectedFlowName) {
+      setToolsOpen(!toolsOpen);
+    } else {
+      toast({
+        title: "Info!!",
+        description: "Please create a flow first.",
+      });
+      return;
+    }
+  };
 
   return (
     <div className="dndflow h-[85vh]">
@@ -283,12 +297,12 @@ const DnDFlow = () => {
             className={`${toolsOpen ? " " : ""} absolute z-50 rounded-2xl p-2 `}
           >
             <div className="flex flex-col gap-2">
-              <span
-                onClick={() => setToolsOpen(!toolsOpen)}
-                className="flex gap-2 items-center"
-              >
+              <span className="flex gap-2 items-center">
                 {/* Tools Icon */}
-                <div className=" bg-slate-200 rounded-full p-2 text-2xl hover:bg-slate-300 hover:shadow cursor-pointer text-red-500">
+                <div
+                  onClick={handleToolsOpen}
+                  className=" bg-slate-200 rounded-full p-2 text-2xl hover:bg-slate-300 hover:shadow cursor-pointer text-red-500"
+                >
                   <SquareMenu />
                 </div>
                 {/* Plus Icon */}
@@ -312,6 +326,16 @@ const DnDFlow = () => {
                       <Save />
                     </div>
                   )}
+
+                <h3 className={`${nodes.length > 0 ? "ml-5" : "ml-12"}`}>
+                  {newProcessName.length > 0 ? (
+                    <>Flow Name : {newProcessName}</>
+                  ) : (
+                    selectedFlowName.length > 0 && (
+                      <>Flow Name : {selectedFlowName}</>
+                    )
+                  )}
+                </h3>
               </span>
               {toolsOpen && (
                 <div className="">
@@ -322,10 +346,67 @@ const DnDFlow = () => {
           </div>
           <div
             className={`${
-              selectedNode &&
-              "absolute top-2 right-2 z-50 bg-amber-200 rounded-2xl p-2 flex gap-2"
+              selectedNode && "absolute top-2 right-2 z-50 p-2 flex gap-2"
             } `}
           >
+            {/* Edit node */}
+            {selectedNode && (
+              <div className="absolute top-2 right-52 z-50 bg-slate-200 rounded-2xl p-2">
+                {selectedNode && !isEditableEdge ? (
+                  <span
+                    onClick={() => setIsEditableEdge(true)}
+                    className="cursor-pointer"
+                  >
+                    Edit
+                  </span>
+                ) : (
+                  <div className="flex gap-2 items-center justify-center">
+                    <span
+                      onClick={() => {
+                        setNodes((prev) =>
+                          prev.map((node) =>
+                            node.id === editingNodeId
+                              ? {
+                                  ...node,
+                                  data: { ...node.data, label: newLabel },
+                                }
+                              : node
+                          )
+                        );
+                        setEditingNodeId(null);
+                        setSelectedNode(undefined);
+                        setIsEditableEdge(false);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      Done
+                    </span>
+                    <span
+                      onClick={() => {
+                        setEditingNodeId(null);
+                        setSelectedNode(undefined);
+                        setIsEditableEdge(false);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      Cancel
+                    </span>
+                  </div>
+                )}
+                {selectedNode && editingNodeId && isEditableEdge && (
+                  <div>
+                    <input
+                      type="text"
+                      value={newLabel}
+                      onChange={onInputChange}
+                      onKeyDown={handleKeyDown}
+                      autoFocus
+                      className="border p-1 w-[10rem] rounded-2xl"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
             {/* select flow */}
             {flowsData.length > 0 && (
               <div className="absolute top-2 right-2 z-50">
@@ -354,57 +435,6 @@ const DnDFlow = () => {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-              </div>
-            )}
-            {/* Edit node */}
-            {selectedNode && (
-              <div>
-                {selectedNode && !isEditableEdge ? (
-                  <span onClick={() => setIsEditableEdge(true)}>Edit</span>
-                ) : (
-                  <div className="flex gap-2 items-center justify-center">
-                    <span
-                      onClick={() => {
-                        setNodes((prev) =>
-                          prev.map((node) =>
-                            node.id === editingNodeId
-                              ? {
-                                  ...node,
-                                  data: { ...node.data, label: newLabel },
-                                }
-                              : node
-                          )
-                        );
-                        setEditingNodeId(null);
-                        setSelectedNode(undefined);
-                        setIsEditableEdge(false);
-                      }}
-                    >
-                      Done
-                    </span>
-                    <span
-                      onClick={() => {
-                        setEditingNodeId(null);
-                        setSelectedNode(undefined);
-                        setIsEditableEdge(false);
-                      }}
-                    >
-                      Cancel
-                    </span>
-                  </div>
-                )}
-                {selectedNode && editingNodeId && isEditableEdge && (
-                  <div>
-                    <input
-                      type="text"
-                      value={newLabel}
-                      onChange={onInputChange}
-                      onKeyDown={handleKeyDown}
-                      autoFocus
-                      className="border p-1 w-full rounded-2xl"
-                    />
-                  </div>
-                )}
               </div>
             )}
           </div>
