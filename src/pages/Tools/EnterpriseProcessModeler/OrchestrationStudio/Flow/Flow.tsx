@@ -35,8 +35,7 @@ import {
 } from "@/components/ui/select";
 import Spinner from "@/components/Spinner/Spinner";
 
-let id = 0;
-const getId = () => `${id++}`;
+const getId = () => `node-${Math.random().toString(36).substr(2, 9)}`;
 
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
