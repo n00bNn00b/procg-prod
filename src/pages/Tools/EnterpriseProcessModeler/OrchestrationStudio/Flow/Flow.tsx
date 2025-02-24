@@ -146,6 +146,7 @@ const DnDFlow = () => {
   );
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    console.log(event, "event");
     setSelectedNode(node);
     setEditingNodeId(node.id);
     setNewLabel(node.data.label as string);
