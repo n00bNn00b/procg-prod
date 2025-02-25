@@ -5,12 +5,12 @@ const Sidebar: FC = () => {
   const { setType, setLabel } = useDnD();
 
   const nodes = [
-    { label: "Start", type: "input" },
-    { label: "Initialization", type: "default" },
-    { label: "GetDetails", type: "default" },
-    { label: "Decision", type: "default" },
-    { label: "Alternate Process", type: "default" },
-    { label: "Stop", type: "output" },
+    { label: "Start", type: "start" },
+    { label: "Initialization", type: "initialization" },
+    { label: "GetDetails", type: "getDetails" },
+    { label: "Decision", type: "decision" },
+    { label: "Alternate Process", type: "alternateProcess" },
+    { label: "Stop", type: "stop" },
   ];
 
   // Handle drag start event
@@ -35,7 +35,7 @@ const Sidebar: FC = () => {
         <div
           key={index}
           className={`dndnode ${node.type}`}
-          onDragStart={(event) => onDragStart(event, node)} // Trigger on drag start
+          onDragStart={(event) => onDragStart(event, node)}
           draggable
         >
           {node.label}

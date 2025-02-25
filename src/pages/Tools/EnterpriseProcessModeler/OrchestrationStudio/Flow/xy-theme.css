@@ -109,3 +109,7 @@
   width: 5px;
   height: 5px;
 }
+.react-flow.touch-flow .react-flow__handle {
+  width: 10px;
+  height: 10px;
+}

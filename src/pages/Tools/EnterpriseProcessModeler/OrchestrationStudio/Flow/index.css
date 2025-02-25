@@ -42,12 +42,14 @@ body {
   cursor: grab;
 }
 
-.dndflow .dndnode.input {
-  border-color: #0041d0;
+.dndflow .dndnode.start {
+  border-color: #00e723;
+  background-color: #00e723;
 }
 
-.dndflow .dndnode.output {
-  border-color: #ff0072;
+.dndflow .dndnode.stop {
+  border-color: #ff0000;
+  background-color: #ff0000;
 }
 
 .dndflow .reactflow-wrapper {
