@@ -34,8 +34,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Spinner from "@/components/Spinner/Spinner";
-
-const getId = () => `node-${Math.random().toString(36).substr(2, 9)}`;
+import StartNode from "./NodeTypes/StartNode";
+import InitializationNode from "./NodeTypes/InitializationNode";
+import GetDetailsNode from "./NodeTypes/GetDetailsNode";
+import DecisionNode from "./NodeTypes/DecisionNode";
+import AlternateProcessNode from "./NodeTypes/AlternateProcessNode";
+import StopNode from "./NodeTypes/StopNode";
+import EditNode from "./EditNode/EditNode";
 
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
@@ -45,11 +50,13 @@ const DnDFlow = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { screenToFlowPosition } = useReactFlow();
 
-  const [selectedNode, setSelectedNode] = useState<Node>();
+  const [selectedNode, setSelectedNode] = useState<Node | undefined>(undefined);
+  const [selectedEdge, setSelectedEdge] = useState<Edge | undefined>(undefined);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [isEditableEdge, setIsEditableEdge] = useState(false);
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
   const [newLabel, setNewLabel] = useState<string>("");
+  // const [description, setDescription] = useState("");
   const [flowsData, setFlowsData] = useState<IOrchestrationDataTypes[]>([]);
   const [selectedFlowName, setSelectedFlowName] = useState<string>("");
   const [selectedFlowData, setSelectedFlowData] =
@@ -58,6 +65,17 @@ const DnDFlow = () => {
 
   const [createNewFlow, setCreateNewFlow] = useState(false);
   const [newProcessName, setNewProcessName] = useState("");
+
+  const getId = () => `node-${Math.random().toString(36).substr(2, 9)}`;
+
+  const nodeTypes = {
+    start: StartNode,
+    initialization: InitializationNode,
+    getDetails: GetDetailsNode,
+    decision: DecisionNode,
+    alternateProcess: AlternateProcessNode,
+    stop: StopNode,
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,7 +93,7 @@ const DnDFlow = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [newProcessName]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -147,35 +165,22 @@ const DnDFlow = () => {
     },
     [screenToFlowPosition, type, label]
   );
-
+  console.log(selectedNode, "selectedNode");
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    console.log(event, "event");
+    console.log(event, "Node event");
+    setSelectedEdge(undefined);
     setSelectedNode(node);
     setEditingNodeId(node.id);
     setNewLabel(node.data.label as string);
   }, []);
-
-  const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewLabel(event.target.value);
+  const onEdgeClick = (event: React.MouseEvent, edge: Edge) => {
+    console.log(event, "Edge event");
+    console.log(edge, "edge");
+    setSelectedNode(undefined);
+    setSelectedEdge(edge);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      if (editingNodeId && selectedNode) {
-        setNodes((prev) =>
-          prev.map((node) =>
-            node.id === editingNodeId
-              ? { ...node, data: { ...node.data, label: newLabel } }
-              : node
-          )
-        );
-        setEditingNodeId(null);
-        setSelectedNode(undefined);
-      }
-    }
-  };
-
-  const lastNode = nodes.filter((node) => node.type === "output");
+  const lastNode = nodes.filter((node) => node.type === "stop");
   const handleSave = async (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
@@ -204,6 +209,8 @@ const DnDFlow = () => {
             title: "Success",
             description: `${res.data.message}`,
           });
+          setNewProcessName("");
+          setSelectedFlowData(postData);
         } else if (selectedFlowData) {
           const res = await api.put(
             `/orchestration-studio-process/${selectedFlowData.process_id}`,
@@ -243,202 +250,171 @@ const DnDFlow = () => {
           onDrop={onDrop}
           onDragOver={onDragOver}
           onNodeClick={onNodeClick}
-          fitView
+          onEdgeClick={onEdgeClick}
+          nodeTypes={nodeTypes}
+          attributionPosition="bottom-left"
+          // fitView
           style={{ backgroundColor: "#F7F9FB" }}
-          className="relative"
+          className="relative touch-flow"
         >
-          <div className="flex items-center justify-center">
-            {isLoading && (
-              <div className="absolute z-50 top-5">
-                <Spinner color="red" size="40" />
-              </div>
-            )}
-            {createNewFlow && (
-              <div className="absolute z-50 top-5 bg-slate-300 p-3 border rounded">
-                <form>
-                  <input
-                    type="text"
-                    value={newProcessName ?? ""}
-                    placeholder="Flow Name"
-                    onChange={(e) => {
-                      setNewProcessName(e.target.value);
-                    }}
-                    className="px-2 py-1 rounded mr-2"
-                  />
-                  <button
-                    className="bg-slate-200 p-1 rounded-l-md border-black border hover:bg-slate-300 hover:shadow"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setEdges([]);
-                      setNodes([]);
-                      setSelectedNode(undefined);
-                      setSelectedFlowName("");
-                      setCreateNewFlow(false);
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    className="bg-slate-200 p-1 rounded-r-md border-black border hover:bg-slate-300 hover:shadow"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCreateNewFlow(false);
-                      // setNewProcessName("");
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </form>
-              </div>
-            )}
-          </div>
-          <div
-            className={`${toolsOpen ? " " : ""} absolute z-50 rounded-2xl p-2 `}
-          >
-            <div className="flex flex-col gap-2">
-              <span className="flex gap-2 items-center">
-                {/* Tools Icon */}
-                <div
-                  onClick={handleToolsOpen}
-                  className=" bg-slate-200 rounded-full p-2 text-2xl hover:bg-slate-300 hover:shadow cursor-pointer text-red-500"
-                >
-                  <SquareMenu />
+          <>
+            <div className="flex items-center justify-center">
+              {isLoading && (
+                <div className="absolute z-50 top-5">
+                  <Spinner color="red" size="40" />
                 </div>
-                {/* Plus Icon */}
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCreateNewFlow(true);
-                  }}
-                  className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
-                >
-                  <Plus />
-                </div>
-                {/* Save Icon */}
-                {edges.length > 0 &&
-                  nodes.length > 0 &&
-                  lastNode.length > 0 && (
-                    <div
-                      onClick={handleSave}
-                      className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
+              )}
+              {createNewFlow && (
+                <div className="absolute z-50 top-5 bg-slate-300 p-3 border rounded">
+                  <form>
+                    <input
+                      type="text"
+                      value={newProcessName ?? ""}
+                      placeholder="Flow Name"
+                      onChange={(e) => {
+                        setNewProcessName(e.target.value);
+                      }}
+                      autoFocus
+                      className="px-2 py-1 rounded mr-2"
+                    />
+                    <button
+                      className="bg-slate-200 p-1 rounded-l-md border-black border hover:bg-slate-300 hover:shadow"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setEdges([]);
+                        setNodes([]);
+                        setSelectedNode(undefined);
+                        setSelectedFlowName("");
+                        setCreateNewFlow(false);
+                      }}
                     >
-                      <Save />
-                    </div>
-                  )}
-
-                <h3 className={`${nodes.length > 0 ? "ml-5" : "ml-12"}`}>
-                  {newProcessName.length > 0 ? (
-                    <>Flow Name : {newProcessName}</>
-                  ) : (
-                    selectedFlowName.length > 0 && (
-                      <>Flow Name : {selectedFlowName}</>
-                    )
-                  )}
-                </h3>
-              </span>
-              {toolsOpen && (
-                <div className="">
-                  <Sidebar />
+                      Save
+                    </button>
+                    <button
+                      className="bg-slate-200 p-1 rounded-r-md border-black border hover:bg-slate-300 hover:shadow"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCreateNewFlow(false);
+                        // setNewProcessName("");
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </form>
                 </div>
               )}
             </div>
-          </div>
-          <div
-            className={`${
-              selectedNode && "absolute top-2 right-2 z-50 p-2 flex gap-2"
-            } `}
-          >
-            {/* Edit node */}
-            {selectedNode && (
-              <div className="absolute top-2 right-52 z-50 bg-slate-200 rounded-2xl p-2">
-                {selectedNode && !isEditableEdge ? (
-                  <span
-                    onClick={() => setIsEditableEdge(true)}
-                    className="cursor-pointer"
+            <div
+              className={`${
+                toolsOpen ? " " : ""
+              } absolute z-50 rounded-2xl p-2 `}
+            >
+              <div className="flex flex-col gap-2">
+                <span className="flex gap-2 items-center">
+                  {/* Tools Icon */}
+                  <div
+                    onClick={handleToolsOpen}
+                    className=" bg-slate-200 rounded-full p-2 text-2xl hover:bg-slate-300 hover:shadow cursor-pointer text-red-500"
                   >
-                    Edit
-                  </span>
-                ) : (
-                  <div className="flex gap-2 items-center justify-center">
-                    <span
-                      onClick={() => {
-                        setNodes((prev) =>
-                          prev.map((node) =>
-                            node.id === editingNodeId
-                              ? {
-                                  ...node,
-                                  data: { ...node.data, label: newLabel },
-                                }
-                              : node
-                          )
-                        );
-                        setEditingNodeId(null);
-                        setSelectedNode(undefined);
-                        setIsEditableEdge(false);
-                      }}
-                      className="cursor-pointer"
-                    >
-                      Done
-                    </span>
-                    <span
-                      onClick={() => {
-                        setEditingNodeId(null);
-                        setSelectedNode(undefined);
-                        setIsEditableEdge(false);
-                      }}
-                      className="cursor-pointer"
-                    >
-                      Cancel
-                    </span>
+                    <SquareMenu />
                   </div>
-                )}
-                {selectedNode && editingNodeId && isEditableEdge && (
-                  <div>
-                    <input
-                      type="text"
-                      value={newLabel}
-                      onChange={onInputChange}
-                      onKeyDown={handleKeyDown}
-                      autoFocus
-                      className="border p-1 w-[10rem] rounded-2xl"
-                    />
+                  {/* Plus Icon */}
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCreateNewFlow(true);
+                    }}
+                    className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
+                  >
+                    <Plus />
+                  </div>
+                  {/* Save Icon */}
+                  {edges.length > 0 &&
+                    nodes.length > 0 &&
+                    lastNode.length > 0 && (
+                      <div
+                        onClick={handleSave}
+                        className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
+                      >
+                        <Save />
+                      </div>
+                    )}
+
+                  <h3 className={`${nodes.length > 0 ? "ml-5" : "ml-12"}`}>
+                    {newProcessName.length > 0 ? (
+                      <>Flow Name : {newProcessName}</>
+                    ) : (
+                      selectedFlowName.length > 0 && (
+                        <>Flow Name : {selectedFlowName}</>
+                      )
+                    )}
+                  </h3>
+                </span>
+                {toolsOpen && (
+                  <div className="">
+                    <Sidebar />
                   </div>
                 )}
               </div>
-            )}
-            {/* select flow */}
-            {flowsData.length > 0 && (
-              <div className="absolute top-2 right-2 z-50">
-                <Select
-                  value={selectedFlowName}
-                  onValueChange={(process_name: string) => {
-                    setSelectedFlowName(process_name);
-                    setNewProcessName("");
-                    setCreateNewFlow(false);
-                  }}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select a flow" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {/* <SelectLabel>Flows</SelectLabel> */}
-                      {flowsData.map((flow) => (
-                        <SelectItem
-                          key={flow.process_id}
-                          value={flow.process_name}
-                        >
-                          {flow.process_name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-          </div>
-          <MiniMap />
+            </div>
+            <div
+              className={`absolute top-2 right-2 z-50 p-2 flex flex-col gap-1`}
+            >
+              {/* select flow */}
+              {flowsData.length > 0 && (
+                <div>
+                  <Select
+                    value={selectedFlowName}
+                    onValueChange={(process_name: string) => {
+                      setSelectedFlowName(process_name);
+                      setNewProcessName("");
+                      setCreateNewFlow(false);
+                    }}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select a flow" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {/* <SelectLabel>Flows</SelectLabel> */}
+                        {flowsData.map((flow) => (
+                          <SelectItem
+                            key={flow.process_id}
+                            value={flow.process_name}
+                          >
+                            {flow.process_name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              {/* Edit node */}
+              {(selectedNode || selectedEdge) && (
+                <>
+                  <EditNode
+                    setNodes={setNodes}
+                    setEdges={setEdges}
+                    selectedNode={selectedNode}
+                    editingNodeId={editingNodeId}
+                    setEditingNodeId={setEditingNodeId}
+                    setSelectedNode={setSelectedNode}
+                    selectedEdge={selectedEdge}
+                    setSelectedEdge={setSelectedEdge}
+                    setIsEditableEdge={setIsEditableEdge}
+                    isEditableEdge={isEditableEdge}
+                    newLabel={newLabel}
+                    // description={description}
+                    // onInputChange={onInputChange}
+                    // handleKeyDown={handleKeyDown}
+                  />
+                </>
+              )}
+            </div>
+          </>
+          <MiniMap position={"bottom-left"} zoomable pannable />
           <Controls />
           <Background />
         </ReactFlow>

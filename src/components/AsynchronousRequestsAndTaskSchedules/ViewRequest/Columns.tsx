@@ -83,7 +83,9 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
     header: () => {
       return <div className="min-w-max">Schedule</div>;
     },
-    cell: ({ row }) => <div className="">{row.getValue("schedule")}</div>,
+    cell: ({ row }) => (
+      <div className="">{JSON.stringify(row.getValue("schedule"))}</div>
+    ),
   },
   {
     accessorKey: "args",
