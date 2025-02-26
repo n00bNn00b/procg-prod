@@ -41,6 +41,7 @@ import DecisionNode from "./NodeTypes/DecisionNode";
 import AlternateProcessNode from "./NodeTypes/AlternateProcessNode";
 import StopNode from "./NodeTypes/StopNode";
 import EditNode from "./EditNode/EditNode";
+import EditEdge from "./EditEdge/EditEdge";
 
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
@@ -65,6 +66,8 @@ const DnDFlow = () => {
 
   const [createNewFlow, setCreateNewFlow] = useState(false);
   const [newProcessName, setNewProcessName] = useState("");
+  const [isAddAttribute, setIsAddAttribute] = useState(false);
+  const [attributeName, setAttributeName] = useState("");
 
   const getId = () => `node-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -165,7 +168,7 @@ const DnDFlow = () => {
     },
     [screenToFlowPosition, type, label]
   );
-  console.log(selectedNode, "selectedNode");
+
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
     console.log(event, "Node event");
     setSelectedEdge(undefined);
@@ -175,7 +178,6 @@ const DnDFlow = () => {
   }, []);
   const onEdgeClick = (event: React.MouseEvent, edge: Edge) => {
     console.log(event, "Edge event");
-    console.log(edge, "edge");
     setSelectedNode(undefined);
     setSelectedEdge(edge);
   };
@@ -237,6 +239,16 @@ const DnDFlow = () => {
       return;
     }
   };
+  const handleAddAttribute = () => {
+    if (selectedNode) {
+      setSelectedNode((prevNode) =>
+        prevNode
+          ? { ...prevNode, data: { ...prevNode.data, [attributeName]: "" } }
+          : prevNode
+      );
+    }
+    setAttributeName("");
+  };
 
   return (
     <div className="dndflow h-[85vh]">
@@ -297,6 +309,43 @@ const DnDFlow = () => {
                         e.preventDefault();
                         setCreateNewFlow(false);
                         // setNewProcessName("");
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </form>
+                </div>
+              )}
+              {/* Add Attributes */}
+              {isAddAttribute && (
+                <div className="absolute z-50 top-5 bg-slate-300 p-3 border rounded">
+                  <form>
+                    <input
+                      type="text"
+                      value={attributeName ?? ""}
+                      placeholder="Attribute Name"
+                      onChange={(e) => {
+                        setAttributeName(e.target.value);
+                      }}
+                      autoFocus
+                      className="px-2 py-1 rounded mr-2"
+                    />
+                    <button
+                      className="bg-slate-200 p-1 rounded-l-md border-black border hover:bg-slate-300 hover:shadow"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAddAttribute();
+                        setIsAddAttribute(false);
+                      }}
+                    >
+                      Save
+                    </button>
+                    <button
+                      className="bg-slate-200 p-1 rounded-r-md border-black border hover:bg-slate-300 hover:shadow"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsAddAttribute(false);
                       }}
                     >
                       Cancel
@@ -392,7 +441,7 @@ const DnDFlow = () => {
                 </div>
               )}
               {/* Edit node */}
-              {(selectedNode || selectedEdge) && (
+              {selectedNode && (
                 <>
                   <EditNode
                     setNodes={setNodes}
@@ -409,6 +458,22 @@ const DnDFlow = () => {
                     // description={description}
                     // onInputChange={onInputChange}
                     // handleKeyDown={handleKeyDown}
+                    setIsAddAttribute={setIsAddAttribute}
+                  />
+                </>
+              )}
+              {/* Edit edge */}
+              {selectedEdge && (
+                <>
+                  <EditEdge
+                    setEdges={setEdges}
+                    selectedEdge={selectedEdge}
+                    setSelectedEdge={setSelectedEdge}
+                    editingNodeId={editingNodeId}
+                    setEditingNodeId={setEditingNodeId}
+                    setIsEditableEdge={setIsEditableEdge}
+                    isEditableEdge={isEditableEdge}
+                    newLabel={newLabel}
                   />
                 </>
               )}

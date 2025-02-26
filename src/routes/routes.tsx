@@ -65,6 +65,7 @@ import ManagePriviedgesAndRoles from "@/pages/Tools/SecurityConsole/ManagePrivil
 import EnterpriseProcessModeler from "@/pages/Tools/EnterpriseProcessModeler/EnterpriseProcessModeler";
 import OrchestrationStudio from "@/pages/Tools/EnterpriseProcessModeler/OrchestrationStudio/OrchestrationStudio";
 import EnterpriseSystemIntegrations from "@/pages/Tools/EnterpriseSystemIntegrations/EnterpriseSystemIntegrations";
+import OrchestrationStudioV1 from "@/pages/Tools/EnterpriseProcessModeler/OrchestrationStudioV1/OrchestrationStudioV1";
 
 const routes = createBrowserRouter([
   {
@@ -209,6 +210,10 @@ const routes = createBrowserRouter([
               {
                 path: "orchestration-studio",
                 element: <OrchestrationStudio />,
+              },
+              {
+                path: "orchestration-studio-v1",
+                element: <OrchestrationStudioV1 />,
               },
             ],
           },
