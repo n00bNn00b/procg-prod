@@ -1,22 +1,22 @@
 import { DragEvent, FC } from "react";
-import { useDnD } from "./DnDContext"; // Ensure the path is correct
+import { useDnD } from "./DnDContext";
 
 const Sidebar: FC = () => {
   const { setType, setLabel } = useDnD();
 
   const nodes = [
-    { label: "Start", type: "start" },
-    { label: "Initialization", type: "initialization" },
-    { label: "GetDetails", type: "getDetails" },
-    { label: "Decision", type: "decision" },
-    { label: "Alternate Process", type: "alternateProcess" },
-    { label: "Stop", type: "stop" },
+    { label: "Start", type: "start", color: "#11c02b" },
+    { label: "Initialization", type: "initialization", color: "#fff" },
+    { label: "GetDetails", type: "getDetails", color: "#fff" },
+    { label: "Decision", type: "decision", color: "#fff" },
+    { label: "Alternate Process", type: "alternateProcess", color: "#fff" },
+    { label: "Stop", type: "stop", color: "#e11212" },
   ];
 
   // Handle drag start event
   const onDragStart = (
     event: DragEvent,
-    node: { label: string; type: string }
+    node: { label: string; type: string; color: string }
   ) => {
     setType(node.type);
 
@@ -24,17 +24,19 @@ const Sidebar: FC = () => {
 
     event.dataTransfer.setData("nodeLabel", node.label);
     event.dataTransfer.setData("nodeType", node.type);
+    event.dataTransfer.setData("nodeColor", node.color);
 
     event.dataTransfer.effectAllowed = "move";
   };
 
   return (
-    <div className="bg-slate-100 p-2 rounded border w-[14rem] max-w-full">
+    <div className="bg-slate-100 p-2 rounded border w-[11rem] max-w-full">
       {/* Render draggable nodes */}
       {nodes.map((node, index) => (
         <div
           key={index}
           className={`dndnode ${node.type}`}
+          style={{ backgroundColor: node.color }}
           onDragStart={(event) => onDragStart(event, node)}
           draggable
         >

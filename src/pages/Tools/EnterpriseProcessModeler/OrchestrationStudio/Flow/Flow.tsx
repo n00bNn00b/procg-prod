@@ -152,6 +152,10 @@ const DnDFlow = () => {
         return;
       }
 
+      // const nodeLabel = event.dataTransfer.getData("nodeLabel");
+      // const nodeType = event.dataTransfer.getData("nodeType");
+      const nodeColor = event.dataTransfer.getData("nodeColor");
+
       const position = screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
@@ -162,6 +166,7 @@ const DnDFlow = () => {
         type,
         position,
         data: { label: `${label}` },
+        style: { backgroundColor: nodeColor },
       };
 
       setNodes((nds) => nds.concat(newNode));
@@ -479,8 +484,14 @@ const DnDFlow = () => {
               )}
             </div>
           </>
-          <MiniMap position={"bottom-left"} zoomable pannable />
-          <Controls />
+          <Controls style={{ bottom: "20px" }} />
+          <MiniMap
+            className="z-40"
+            style={{ left: "30px" }}
+            position={"bottom-left"}
+            zoomable
+            pannable
+          />
           <Background />
         </ReactFlow>
       </div>
