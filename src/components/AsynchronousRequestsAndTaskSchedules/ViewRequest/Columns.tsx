@@ -83,9 +83,10 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
     header: () => {
       return <div className="min-w-max">Schedule</div>;
     },
-    cell: ({ row }) => (
-      <div className="">{JSON.stringify(row.getValue("schedule"))}</div>
-    ),
+    cell: ({ row }) => {
+      const data: string = JSON.stringify(row.getValue("schedule"));
+      return <div className="min-w-max">{data}</div>;
+    },
   },
   {
     accessorKey: "args",
@@ -96,6 +97,16 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
     cell: ({ row }) => {
       const data: string = JSON.stringify(row.getValue("args"));
       return <div className="w-[30rem]">{data}</div>;
+    },
+  },
+  {
+    accessorKey: "kwargs",
+    header: () => {
+      return <div className="min-w-max">Kwargs</div>;
+    },
+    cell: ({ row }) => {
+      const data: string = JSON.stringify(row.getValue("kwargs"));
+      return <div className="min-w-max">{data}</div>;
     },
   },
   {
@@ -113,9 +124,10 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
     header: () => {
       return <div className="min-w-max">Result</div>;
     },
-    cell: ({ row }) => (
-      <div className="min-w-max">{row.getValue("result")}</div>
-    ),
+    cell: ({ row }) => {
+      const data = JSON.stringify(row.getValue("result"));
+      return <div className="min-w-max">{data}</div>;
+    },
   },
 
   {
