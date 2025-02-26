@@ -265,6 +265,7 @@ const DnDFlow = () => {
   // Handle mouse enter to get node position
   const onNodeMouseEnter = (event: React.MouseEvent, node: Node) => {
     setCoordinates({ x: node.position.x, y: node.position.y, id: node.id });
+    console.log(event);
   };
 
   // Reset coordinates on mouse leave
@@ -274,12 +275,14 @@ const DnDFlow = () => {
 
   // Handle node drag events
   const onNodeDrag = (event: React.MouseEvent, node: Node) => {
-    setCoordinates({ x: node.position.x, y: node.position.y, id: node.id }); // Update coordinates during drag
+    setCoordinates({ x: node.position.x, y: node.position.y, id: node.id });
+    console.log(event);
   };
 
   // Handle node drag stop to finalize the coordinates
   const onNodeDragStop = (event: React.MouseEvent, node: Node) => {
     setCoordinates({ x: node.position.x, y: node.position.y, id: node.id });
+    console.log(event);
   };
 
   return (
