@@ -255,8 +255,35 @@ const DnDFlow = () => {
     setAttributeName("");
   };
 
+  // For coordinates
+  const [coordinates, setCoordinates] = useState<{
+    x: number;
+    y: number;
+    id: string;
+  } | null>(null);
+
+  // Handle mouse enter to get node position
+  const onNodeMouseEnter = (event: React.MouseEvent, node: Node) => {
+    setCoordinates({ x: node.position.x, y: node.position.y, id: node.id });
+  };
+
+  // Reset coordinates on mouse leave
+  const onNodeMouseLeave = () => {
+    setCoordinates(null);
+  };
+
+  // Handle node drag events
+  const onNodeDrag = (event: React.MouseEvent, node: Node) => {
+    setCoordinates({ x: node.position.x, y: node.position.y, id: node.id }); // Update coordinates during drag
+  };
+
+  // Handle node drag stop to finalize the coordinates
+  const onNodeDragStop = (event: React.MouseEvent, node: Node) => {
+    setCoordinates({ x: node.position.x, y: node.position.y, id: node.id });
+  };
+
   return (
-    <div className="dndflow h-[85vh]">
+    <div className="dndflow h-[calc(100vh-6rem)]">
       <div className="reactflow-wrapper" ref={reactFlowWrapper}>
         <ReactFlow
           nodes={nodes}
@@ -273,6 +300,11 @@ const DnDFlow = () => {
           // fitView
           style={{ backgroundColor: "#F7F9FB" }}
           className="relative touch-flow"
+          // For when hover to show coordinates
+          onNodeMouseEnter={onNodeMouseEnter}
+          onNodeMouseLeave={onNodeMouseLeave}
+          onNodeDrag={onNodeDrag}
+          onNodeDragStop={onNodeDragStop}
         >
           <>
             <div className="flex items-center justify-center">
@@ -494,6 +526,26 @@ const DnDFlow = () => {
           />
           <Background />
         </ReactFlow>
+        {coordinates && (
+          <div
+            style={{
+              position: "absolute",
+              left: coordinates.x + 90,
+              top: coordinates.y + 30,
+              padding: "5px",
+              background: "rgba(0, 0, 0, 0.3)",
+              color: "#fff",
+              borderRadius: "5px",
+              fontSize: "12px",
+              zIndex: 100,
+            }}
+          >
+            <p className="flex flex-col gap-1">
+              <p>X: {Math.round(coordinates.x)}</p>
+              <p>Y: {Math.round(coordinates.y)}</p>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
