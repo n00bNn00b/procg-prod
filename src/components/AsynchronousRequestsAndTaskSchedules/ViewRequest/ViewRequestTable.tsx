@@ -89,6 +89,7 @@ export function ViewRequestTable() {
     "redbeat_schedule_name",
     "task_id",
     "args",
+    "kwargs",
     "task_name",
     "executor",
   ];
