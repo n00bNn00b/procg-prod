@@ -29,7 +29,7 @@ const Sidebar: FC = () => {
   };
 
   return (
-    <div className="bg-slate-100 p-2 rounded border">
+    <div className="bg-slate-100 p-2 rounded border w-[14rem] max-w-full">
       {/* Render draggable nodes */}
       {nodes.map((node, index) => (
         <div

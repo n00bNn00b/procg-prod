@@ -2,9 +2,7 @@ import { memo } from "react";
 import { Handle, Position, NodeResizer } from "@xyflow/react";
 interface ResizableNodeProps {
   data: {
-    label: string;
-    type: string;
-    description: string;
+    [key: string]: string;
   };
   isConnectable: boolean;
   selected: boolean;
@@ -24,9 +22,18 @@ const AlternateProcessNode = ({
       />
       <NodeResizer isVisible={selected} minWidth={100} minHeight={30} />
       <div className="flex flex-col left-0">
-        <h3 className="font-bold">{data?.label}</h3>
-        {data?.description && <hr className="my-1" />}
-        <h3 className="flex text-slate-500">{data?.description}</h3>
+        {Object.keys(data).map((key) => (
+          <div key={key}>
+            {key === "label" ? (
+              <h3 className="font-bold">{data[key]}</h3>
+            ) : (
+              <h3 className="flex text-slate-500 items-center">
+                <span className="w-1 h-1 rounded-full mr-1 bg-black"></span>{" "}
+                {data[key]}
+              </h3>
+            )}
+          </div>
+        ))}
       </div>
       <Handle
         type="source"

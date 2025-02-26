@@ -6,11 +6,15 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edge, Node } from "@xyflow/react";
-import { EllipsisVertical } from "lucide-react";
-import { Dispatch, FC, SetStateAction, useCallback, useEffect } from "react";
+import { EllipsisVertical, X } from "lucide-react";
+import { Dispatch, FC, SetStateAction, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -28,6 +32,7 @@ interface EditNodeProps {
   newLabel: string;
   // description: string;
   // handleKeyDown: (e: React.KeyboardEvent) => void;
+  setIsAddAttribute: Dispatch<SetStateAction<boolean>>;
 }
 const EditNode: FC<EditNodeProps> = ({
   setNodes,
@@ -36,25 +41,28 @@ const EditNode: FC<EditNodeProps> = ({
   setSelectedNode,
   selectedEdge,
   setSelectedEdge,
+  setIsAddAttribute,
 }) => {
-  const FormSchema = z.object({
-    label: z.string().optional(),
-    description: z.string().optional(),
-  });
-
+  const FormSchema = z.object(
+    selectedNode
+      ? Object.keys(selectedNode.data).reduce((acc, key) => {
+          acc[key] = z.string();
+          return acc;
+        }, {} as Record<string, z.ZodType<any>>)
+      : {}
+  );
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      label: selectedNode?.data?.label ?? selectedEdge.label ?? "",
-      description: selectedNode?.data?.description ?? "",
-    },
+    defaultValues: selectedNode ? selectedNode.data : {},
   });
-  useEffect(() => {
-    form.reset({
-      label: selectedNode?.data?.label ?? selectedEdge?.label ?? "",
-      description: selectedNode?.data?.description ?? "",
-    });
-  }, [selectedNode, selectedEdge, form]);
+
+  // useEffect(() => {
+  //   form.reset(selectedNode ? selectedNode.data : {});
+  //   // form.reset({
+  //   //   label: selectedNode?.data?.label ?? selectedEdge?.label ?? "",
+  //   //   description: selectedNode?.data?.description ?? "",
+  //   // });
+  // }, [selectedNode, selectedEdge, form]);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     console.log(data, "data");
@@ -64,11 +72,7 @@ const EditNode: FC<EditNodeProps> = ({
           if (node.id === selectedNode.id) {
             return {
               ...node,
-              data: {
-                ...node.data,
-                label: data.label,
-                description: data.description,
-              },
+              data,
             };
           }
           return node;
@@ -104,15 +108,56 @@ const EditNode: FC<EditNodeProps> = ({
       setSelectedEdge(undefined);
     }
   }, []);
+  const handleRemoveAttribute = (key: string) => {
+    if (selectedNode) {
+      setSelectedNode((prevNode) =>
+        prevNode
+          ? {
+              ...prevNode,
+              data: Object.keys(prevNode.data)
+                .filter((k) => k !== key)
+                .reduce((acc, k) => {
+                  acc[k] = prevNode.data[k] as string;
+                  return acc;
+                }, {} as Record<string, string>),
+            }
+          : prevNode
+      );
+    }
+  };
+
   return (
     <>
       {(selectedNode || selectedEdge) && (
-        <div className="mt-1 bg-slate-100 rounded p-4">
+        <div className="mt-1 bg-slate-100 rounded p-4 max-h-[60vh] overflow-y-auto">
           {(selectedNode || selectedEdge) && (
             <div>
               <div className="flex items-center justify-between">
                 <div>Properties</div>
-                <EllipsisVertical size={20} />
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button>
+                      <EllipsisVertical size={20} />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-40">
+                    <span
+                      onClick={() => setIsAddAttribute(true)}
+                      className="cursor-pointer"
+                    >
+                      Add Attribute
+                    </span>
+                  </PopoverContent>
+                </Popover>
+                <X
+                  size={20}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setSelectedEdge(undefined);
+                    setSelectedNode(undefined);
+                  }}
+                />
               </div>
               <hr className="my-2" />
               <Form {...form}>
@@ -121,32 +166,34 @@ const EditNode: FC<EditNodeProps> = ({
                   className="space-y-2"
                 >
                   <div className="flex flex-col gap-4">
-                    <FormField
-                      control={form.control}
-                      name="label"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Label</FormLabel>
-                          <FormControl>
-                            <Input {...field} required placeholder="Label" />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    {!selectedEdge && (
+                    {Object.keys(selectedNode?.data).map((key, index) => (
                       <FormField
+                        key={index}
                         control={form.control}
-                        name="description"
+                        name={key}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Description</FormLabel>
+                            <FormLabel>
+                              <span className="flex justify-between">
+                                <span>{key}</span>
+                                <>
+                                  {key !== "label" && (
+                                    <X
+                                      size={15}
+                                      className="cursor-pointer"
+                                      onClick={() => handleRemoveAttribute(key)}
+                                    />
+                                  )}
+                                </>
+                              </span>
+                            </FormLabel>
                             <FormControl>
-                              <Textarea {...field} placeholder="Description" />
+                              <Input {...field} required placeholder={key} />
                             </FormControl>
                           </FormItem>
                         )}
                       />
-                    )}
+                    ))}
                   </div>
                   <hr className="my-2" />
                   <div className="flex justify-between gap-1">
