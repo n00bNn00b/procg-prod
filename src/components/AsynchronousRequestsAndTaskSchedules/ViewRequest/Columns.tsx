@@ -84,8 +84,11 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
       return <div className="min-w-max">Schedule</div>;
     },
     cell: ({ row }) => {
-      const data: string = JSON.parse(row.getValue("schedule"));
-      return <div className="min-w-max">{JSON.stringify(data)}</div>;
+      return (
+        <div className="min-w-max">
+          {JSON.stringify(row.getValue("schedule"))}
+        </div>
+      );
     },
   },
   {
@@ -95,8 +98,9 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
     },
 
     cell: ({ row }) => {
-      const data: string = JSON.parse(row.getValue("args"));
-      return <div className="w-[30rem]">{JSON.stringify(data)}</div>;
+      return (
+        <div className="w-[30rem]">{JSON.stringify(row.getValue("args"))}</div>
+      );
     },
   },
   {
@@ -105,8 +109,11 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
       return <div className="min-w-max">Kwargs</div>;
     },
     cell: ({ row }) => {
-      const data: string = JSON.parse(row.getValue("kwargs"));
-      return <div className="min-w-max">{JSON.stringify(data)}</div>;
+      return (
+        <div className="min-w-max">
+          {JSON.stringify(row.getValue("kwargs"))}
+        </div>
+      );
     },
   },
   {
@@ -115,8 +122,11 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
       return <div className="min-w-max">Parameters</div>;
     },
     cell: ({ row }) => {
-      const data: string = JSON.parse(row.getValue("parameters"));
-      return <div className="min-w-max">{JSON.stringify(data)}</div>;
+      return (
+        <div className="min-w-max">
+          {JSON.stringify(row.getValue("parameters"))}
+        </div>
+      );
     },
   },
   {
@@ -125,8 +135,11 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
       return <div className="min-w-max">Result</div>;
     },
     cell: ({ row }) => {
-      const data = JSON.parse(row.getValue("result"));
-      return <div className="min-w-max">{JSON.stringify(data)}</div>;
+      return (
+        <div className="min-w-max">
+          {JSON.stringify(row.getValue("result"))}
+        </div>
+      );
     },
   },
 
