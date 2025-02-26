@@ -199,7 +199,7 @@
         "path": "/tools/enterprise-process-modeler",
         "paths": [
           "/tools/enterprise-process-modeler/orchestration-studio",
-          "/tools/enterprise-process-modeler/orchestration-studio-v1"
+          "/tools/enterprise-process-modeler/orchestration-studio-2"
         ],
         "subItems": [
           {
@@ -207,8 +207,8 @@
             "path": "/tools/enterprise-process-modeler/orchestration-studio"
           },
           {
-            "name": "Orchestration Studio V1",
-            "path": "/tools/enterprise-process-modeler/orchestration-studio-v1"
+            "name": "Orchestration Studio 2",
+            "path": "/tools/enterprise-process-modeler/orchestration-studio-2"
           }
         ]
       },
