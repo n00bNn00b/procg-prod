@@ -93,7 +93,10 @@ const Schedule: FC<IScheduleProps> = ({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      schedule_type: scheduleType ?? selected?.schedule_type ?? "IMMEDIATE",
+      schedule_type:
+        selected?.schedule_type ?? scheduleType !== ""
+          ? scheduleType
+          : "IMMEDIATE",
       schedule,
     },
   });
@@ -101,10 +104,11 @@ const Schedule: FC<IScheduleProps> = ({
   useEffect(() => {
     const currentTime = new Date();
     currentTime.setMinutes(currentTime.getMinutes() + 1);
-    const parse = format(currentTime, "MM/dd/yyyy hh:mm aa");
+    const parse = format(currentTime, "yyyy-MM-dd HH:mm");
 
-    if (scheduleType === "IMMEDIATE" || "") {
+    if (scheduleType === "" || scheduleType === "IMMEDIATE") {
       form.reset({ schedule_type: scheduleType, schedule: undefined });
+      setScheduleType("IMMEDIATE");
       setScheduleHere(undefined);
     } else {
       setScheduleHere(() => {

@@ -189,8 +189,10 @@ const TaskRequestV1: FC<ITaskRequestProps> = ({
             `/asynchronous-requests-and-task-schedules/update-task-schedule-v1/${selected?.task_name}`,
             payload
           ));
+      console.log(res, "res");
       if (res) toast({ title: "Success", description: `${res.data.message}` });
     } catch (error) {
+      console.log(error, "er");
       toast({
         title: "Error",
         description: "Failed to process request.",

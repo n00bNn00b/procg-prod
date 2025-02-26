@@ -23,16 +23,9 @@ const FormSchema = z.object({
   schedule_type: z.string(),
   schedule: z
     .union([
-      z.object({
-        FREQUENCY: z.number(),
-        FREQUENCY_TYPE: z.string(),
-      }),
-      z.object({
-        VALUES: z.array(z.string()),
-      }),
-      z.object({
-        VALUES: z.string(z.date()),
-      }),
+      z.object({ FREQUENCY: z.number(), FREQUENCY_TYPE: z.string() }),
+      z.object({ VALUES: z.array(z.string()) }),
+      z.object({ VALUES: z.string(z.date()) }),
     ])
     .optional(),
 });
@@ -53,18 +46,16 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
   form,
   setScheduleHere,
 }: IOnceScheduleType) => {
-  const hours = Array.from({ length: 12 }, (_, i) => i + 1); // 1 to 12
+  const hours = Array.from({ length: 24 }, (_, i) => i); // 0 to 23 (24-hour format)
   const minutes = Array.from({ length: 60 }, (_, i) => i); // 0 to 59
-  const ampmOptions = ["AM", "PM"];
 
   // Get the current time and add one minute
   const currentTime = new Date();
   currentTime.setMinutes(currentTime.getMinutes() + 1);
 
   // Default time based on current time plus 1 minute
-  const defaultHour = currentTime.getHours() % 12 || 12; // 12-hour format
+  const defaultHour = currentTime.getHours(); // 24-hour format
   const defaultMinute = currentTime.getMinutes();
-  const defaultAmPm = currentTime.getHours() >= 12 ? "PM" : "AM";
   const defaultDate = currentTime;
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -72,30 +63,19 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
   );
   const [selectedHour, setSelectedHour] = useState<number>(defaultHour);
   const [selectedMinute, setSelectedMinute] = useState<number>(defaultMinute);
-  const [selectedAmPm, setSelectedAmPm] = useState<string>(defaultAmPm);
 
   // Use effect to set initial values on load (in case form already has a value)
   useEffect(() => {
     const formValue = form.getValues("schedule.VALUES");
     if (typeof formValue === "string") {
       const dateObj = new Date(formValue);
-
-      // Adjust for 12 AM and 12 PM cases
-      const hours = dateObj.getHours();
-      const is12AM = hours === 0;
-      const is12PM = hours === 12;
-
-      const hour = is12AM ? 12 : is12PM ? 12 : hours % 12;
-      const amPm = hours >= 12 ? "PM" : "AM";
-
       setSelectedDate(dateObj);
-      setSelectedHour(hour);
+      setSelectedHour(dateObj.getHours());
       setSelectedMinute(dateObj.getMinutes());
-      setSelectedAmPm(amPm);
     }
 
     form.setValue("schedule", {
-      VALUES: format(currentTime, "MM/dd/yyyy hh:mm aa"),
+      VALUES: format(currentTime, "yyyy-MM-dd HH:mm"),
     });
   }, [form]);
 
@@ -118,7 +98,6 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
     return {
       currentHour: now.getHours(),
       currentMinute: now.getMinutes(),
-      currentAmPm: now.getHours() >= 12 ? "PM" : "AM",
     };
   };
 
@@ -126,16 +105,14 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date && date >= getToday()) {
-      // Adjust selected time based on user selection (selectedHour, selectedMinute, selectedAmPm)
+      // Adjust selected time based on user selection (selectedHour, selectedMinute)
       const updatedDate = new Date(date);
-      const hours =
-        selectedAmPm === "AM" ? selectedHour % 12 : (selectedHour % 12) + 12;
-      updatedDate.setHours(hours);
+      updatedDate.setHours(selectedHour);
       updatedDate.setMinutes(selectedMinute);
 
       // Update form value with formatted date and time
       form.setValue("schedule", {
-        VALUES: format(updatedDate, "MM/dd/yyyy hh:mm aa"),
+        VALUES: format(updatedDate, "yyyy-MM-dd HH:mm"),
       });
 
       // Set selected date in the state
@@ -153,14 +130,11 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
   const updateDateTime = (
     date: Date | null | undefined,
     hour: number,
-    minute: number,
-    ampm: string
+    minute: number
   ) => {
     if (date) {
       const finalDate = new Date(date);
-      let finalHour = ampm === "PM" && hour !== 12 ? hour + 12 : hour;
-      if (ampm === "AM" && hour === 12) finalHour = 0;
-      finalDate.setHours(finalHour, minute, 0);
+      finalDate.setHours(hour, minute, 0);
 
       // Check if the selected time is in the past
       if (finalDate < new Date()) {
@@ -169,9 +143,6 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
         finalDate.setDate(tomorrow.getDate());
         finalDate.setHours(currentHour, currentMinute, 0); // Set the time to current time
 
-        // Set selected time to tomorrow and correct AM/PM
-        const adjustedAmPm = finalDate.getHours() >= 12 ? "PM" : "AM";
-        setSelectedAmPm(adjustedAmPm);
         toast({
           title: "Time Adjusted",
           description:
@@ -181,11 +152,11 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
 
       setSelectedDate(finalDate);
       setScheduleHere({
-        VALUES: String(format(finalDate, "MM/dd/yyyy hh:mm aa")),
+        VALUES: String(format(finalDate, "yyyy-MM-dd HH:mm")),
       });
       // Update the form value with formatted date
       form.setValue("schedule", {
-        VALUES: format(finalDate, "MM/dd/yyyy hh:mm aa"),
+        VALUES: format(finalDate, "yyyy-MM-dd HH:mm"),
       });
     }
   };
@@ -195,7 +166,7 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
       control={form.control}
       name="schedule"
       render={() => (
-        <FormItem className="flex flex-col">
+        <FormItem className="flex flex-col items-center">
           {/* Calendar Date Picker */}
           <Calendar
             mode="single"
@@ -203,29 +174,27 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
             onSelect={handleDateSelect}
             initialFocus
           />
-          {/* Time Picker - Hour, Minute, AM/PM */}
+
+          {/* Time Picker - Hour, Minute */}
           <div className="flex justify-between mt-2 gap-2">
             {/* Hour Selection */}
             <Select
               onValueChange={(value) => {
                 const hour = parseInt(value);
                 setSelectedHour(hour);
-                updateDateTime(
-                  selectedDate,
-                  hour,
-                  selectedMinute,
-                  selectedAmPm
-                );
+                updateDateTime(selectedDate, hour, selectedMinute);
               }}
               value={selectedHour.toString()}
             >
-              <SelectTrigger>
-                <SelectValue>{selectedHour.toString()}</SelectValue>
+              <SelectTrigger className="w-24">
+                <SelectValue>
+                  {selectedHour.toString().padStart(2, "0")}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {hours.map((hour) => (
                   <SelectItem key={hour} value={hour.toString()}>
-                    {hour}
+                    {hour.toString().padStart(2, "0")}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -236,16 +205,11 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
               onValueChange={(value) => {
                 const minute = parseInt(value);
                 setSelectedMinute(minute);
-                updateDateTime(
-                  selectedDate,
-                  selectedHour,
-                  minute,
-                  selectedAmPm
-                );
+                updateDateTime(selectedDate, selectedHour, minute);
               }}
               value={selectedMinute.toString()}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-24">
                 <SelectValue>
                   {selectedMinute.toString().padStart(2, "0")}
                 </SelectValue>
@@ -254,31 +218,6 @@ const OnceScheduleType: FC<IOnceScheduleType> = ({
                 {minutes.map((minute) => (
                   <SelectItem key={minute} value={minute.toString()}>
                     {minute.toString().padStart(2, "0")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* AM/PM Selection */}
-            <Select
-              onValueChange={(value) => {
-                setSelectedAmPm(value);
-                updateDateTime(
-                  selectedDate,
-                  selectedHour,
-                  selectedMinute,
-                  value
-                );
-              }}
-              value={selectedAmPm}
-            >
-              <SelectTrigger>
-                <SelectValue>{selectedAmPm}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {ampmOptions.map((ampm) => (
-                  <SelectItem key={ampm} value={ampm}>
-                    {ampm}
                   </SelectItem>
                 ))}
               </SelectContent>
