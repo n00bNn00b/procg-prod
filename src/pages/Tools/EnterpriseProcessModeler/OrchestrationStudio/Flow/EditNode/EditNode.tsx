@@ -45,11 +45,27 @@ const EditNode: FC<EditNodeProps> = ({
   const FormSchema = z.object(
     selectedNode
       ? Object.keys(selectedNode.data).reduce((acc, key) => {
-          acc[key] = z.string();
+          const value = selectedNode.data[key];
+
+          if (key === "attributes" && Array.isArray(value)) {
+            acc[key] = z.array(
+              z.object({
+                id: z.number(),
+                attribute_name: z.string(),
+                attribute_value: z.string(),
+              })
+            );
+          } else if (key === "label") {
+            acc[key] = z.string();
+          } else {
+            acc[key] = z.unknown();
+          }
+
           return acc;
         }, {} as Record<string, z.ZodType<any>>)
       : {}
   );
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: selectedNode ? selectedNode.data : {},
@@ -102,18 +118,15 @@ const EditNode: FC<EditNodeProps> = ({
         prevNode
           ? {
               ...prevNode,
-              data: Object.keys(prevNode.data)
-                .filter((k) => k !== key)
-                .reduce((acc, k) => {
-                  acc[k] = prevNode.data[k] as string;
-                  return acc;
-                }, {} as Record<string, string>),
+              data: Object.fromEntries(
+                Object.entries(prevNode.data).filter(([k]) => k !== key)
+              ),
             }
           : prevNode
       );
     }
   };
-
+  console.log(selectedNode, "selectedNode edit page");
   return (
     <>
       {selectedNode && (
@@ -154,53 +167,119 @@ const EditNode: FC<EditNodeProps> = ({
                   className="space-y-2"
                 >
                   <div className="flex flex-col gap-4">
-                    {Object.keys(selectedNode?.data).map((key, index) => (
-                      <FormField
-                        key={index}
-                        control={form.control}
-                        name={key}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              <span className="flex justify-between">
-                                <span>{key}</span>
-                                <>
-                                  {key !== "label" && (
-                                    <X
-                                      size={15}
-                                      className="cursor-pointer"
-                                      onClick={() => handleRemoveAttribute(key)}
-                                    />
-                                  )}
-                                </>
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                value={field.value ?? ""}
-                                required
-                                placeholder={key}
-                                onBlur={() => {
-                                  setSelectedNode((prev) => {
-                                    if (prev) {
-                                      return {
-                                        ...prev,
-                                        data: {
-                                          ...prev.data,
-                                          [key]: field.value,
-                                        },
-                                      };
-                                    }
-                                    return prev;
-                                  });
-                                }}
+                    {Object.keys(selectedNode?.data).map((key, index) => {
+                      if (key === "label") {
+                        return (
+                          <FormField
+                            key={index}
+                            control={form.control}
+                            name={key}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>
+                                  <span className="flex justify-between">
+                                    <span>{key}</span>
+                                    <>
+                                      {key !== "label" && (
+                                        <X
+                                          size={15}
+                                          className="cursor-pointer"
+                                          onClick={() =>
+                                            handleRemoveAttribute(key)
+                                          }
+                                        />
+                                      )}
+                                    </>
+                                  </span>
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    value={field.value ?? ""}
+                                    required
+                                    placeholder={key}
+                                    onBlur={() => {
+                                      setSelectedNode((prev) => {
+                                        if (prev) {
+                                          return {
+                                            ...prev,
+                                            data: {
+                                              ...prev.data,
+                                              [key]: field.value,
+                                            },
+                                          };
+                                        }
+                                        return prev;
+                                      });
+                                    }}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        );
+                      } else if (key === "attributes") {
+                        return selectedNode?.data?.attributes?.map(
+                          (attribute: any, index: number) => (
+                            <div key={index}>
+                              <FormField
+                                key={index}
+                                control={form.control}
+                                name={`attributes.${index}.attribute_value`} // Using index to ensure uniqueness
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>
+                                      <span className="flex justify-between">
+                                        <span>{attribute.attribute_name}</span>
+                                        <X
+                                          size={15}
+                                          className="cursor-pointer"
+                                          onClick={() =>
+                                            handleRemoveAttribute(attribute.id)
+                                          }
+                                        />
+                                      </span>
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        {...field}
+                                        value={
+                                          field.value ??
+                                          attribute.attribute_value
+                                        }
+                                        required
+                                        placeholder="Enter value"
+                                        onBlur={() => {
+                                          setSelectedNode((prev: any) => {
+                                            if (prev) {
+                                              const updatedAttributes = [
+                                                ...prev.data.attributes,
+                                              ];
+                                              updatedAttributes[index] = {
+                                                ...updatedAttributes[index],
+                                                attribute_value: field.value, // Update the attribute_value on blur
+                                              };
+                                              return {
+                                                ...prev,
+                                                data: {
+                                                  ...prev.data,
+                                                  attributes: updatedAttributes,
+                                                },
+                                              };
+                                            }
+                                            return prev;
+                                          });
+                                        }}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
                               />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    ))}
+                            </div>
+                          )
+                        );
+                      }
+                    })}
                   </div>
                   <hr className="my-2" />
                   <div className="flex justify-between gap-1">

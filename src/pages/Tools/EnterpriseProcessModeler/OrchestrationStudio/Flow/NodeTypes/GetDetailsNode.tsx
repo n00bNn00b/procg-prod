@@ -1,12 +1,7 @@
 import { memo } from "react";
 import { Handle, Position, NodeResizer } from "@xyflow/react";
-interface ResizableNodeProps {
-  data: {
-    [key: string]: string;
-  };
-  isConnectable: boolean;
-  selected: boolean;
-}
+import { ResizableNodeProps } from "./StartNode";
+
 const GetDetailsNode = ({
   data,
   isConnectable,
@@ -24,13 +19,19 @@ const GetDetailsNode = ({
       <div className="flex flex-col left-0">
         {Object.keys(data).map((key) => (
           <div key={key}>
-            {key === "label" ? (
-              <h3 className="font-bold">{data[key]}</h3>
-            ) : (
-              <h3 className="flex text-slate-500 items-center">
-                <span className="w-1 h-1 rounded-full mr-1 bg-black"></span>{" "}
-                {data[key]}
-              </h3>
+            {key === "label" && <h3 className="font-bold">{data[key]}</h3>}
+            {key === "attributes" && (
+              <>
+                <hr />
+                {data.attributes.map((item) => (
+                  <div key={item.id}>
+                    <h3 className="flex text-slate-700 items-center">
+                      <span className="w-1 h-1 rounded-full mr-1 bg-black"></span>
+                      <p> {item.attribute_value}</p>
+                    </h3>
+                  </div>
+                ))}
+              </>
             )}
           </div>
         ))}

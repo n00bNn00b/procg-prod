@@ -166,7 +166,7 @@ const DnDFlow = () => {
         id: getId(),
         type,
         position,
-        data: { label: `${label}` },
+        data: { label: `${label}`, attributes: [] },
         style: { backgroundColor: nodeColor },
       };
 
@@ -230,16 +230,31 @@ const DnDFlow = () => {
       return;
     }
   };
+  console.log(selectedNode, "selectedNode");
   const handleAddAttribute = () => {
-    if (selectedNode) {
-      setSelectedNode((prevNode) =>
+    if (selectedNode && attributeName.trim() !== "") {
+      setSelectedNode((prevNode: any) =>
         prevNode
-          ? { ...prevNode, data: { ...prevNode.data, [attributeName]: "" } }
+          ? {
+              ...prevNode,
+              data: {
+                ...prevNode.data,
+                attributes: [
+                  ...(prevNode.data.attributes || []),
+                  {
+                    id: Date.now(),
+                    attribute_name: attributeName,
+                    attribute_value: "",
+                  },
+                ],
+              },
+            }
           : prevNode
       );
     }
-    setAttributeName("");
+    setAttributeName(""); // Reset the attribute name input
   };
+
   const handleCreateNewFlow = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
