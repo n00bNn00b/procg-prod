@@ -14,7 +14,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edge, Node } from "@xyflow/react";
 import { EllipsisVertical, X } from "lucide-react";
-import { Dispatch, FC, SetStateAction, useCallback } from "react";
+import { Dispatch, FC, SetStateAction, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -29,7 +29,6 @@ interface EditNodeProps {
   setEditingNodeId: (id: string | null) => void;
   setIsEditableEdge: (value: boolean) => void;
   isEditableEdge: boolean;
-  newLabel: string;
   // description: string;
   // handleKeyDown: (e: React.KeyboardEvent) => void;
   setIsAddAttribute: Dispatch<SetStateAction<boolean>>;
@@ -46,23 +45,41 @@ const EditNode: FC<EditNodeProps> = ({
   const FormSchema = z.object(
     selectedNode
       ? Object.keys(selectedNode.data).reduce((acc, key) => {
-          acc[key] = z.string();
+          const value = selectedNode.data[key];
+
+          if (key === "attributes" && Array.isArray(value)) {
+            acc[key] = z.array(
+              z.object({
+                id: z.number(),
+                attribute_name: z.string(),
+                attribute_value: z.string(),
+              })
+            );
+          } else if (key === "label") {
+            acc[key] = z.string();
+          } else {
+            acc[key] = z.unknown();
+          }
+
           return acc;
         }, {} as Record<string, z.ZodType<any>>)
       : {}
   );
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: selectedNode ? selectedNode.data : {},
   });
 
-  // useEffect(() => {
-  //   form.reset(selectedNode ? selectedNode.data : {});
-  //   // form.reset({
-  //   //   label: selectedNode?.data?.label ?? selectedEdge?.label ?? "",
-  //   //   description: selectedNode?.data?.description ?? "",
-  //   // });
-  // }, [selectedNode, selectedEdge, form]);
+  useEffect(() => {
+    if (selectedNode?.data) {
+      form.reset(selectedNode ? selectedNode.data : {});
+    }
+    // form.reset({
+    //   label: selectedNode?.data?.label ?? selectedEdge?.label ?? "",
+    //   description: selectedNode?.data?.description ?? "",
+    // });
+  }, [selectedNode, form]);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     console.log(data, "data");
@@ -79,19 +96,6 @@ const EditNode: FC<EditNodeProps> = ({
         })
       );
       setSelectedNode(undefined);
-    } else {
-      setEdges((prevNodes: Edge[]) =>
-        prevNodes.map((edge: Edge) => {
-          if (edge.id === selectedEdge.id) {
-            return {
-              ...edge,
-              label: data.label,
-            };
-          }
-          return edge;
-        })
-      );
-      setSelectedEdge(undefined);
     }
   };
 
@@ -114,23 +118,20 @@ const EditNode: FC<EditNodeProps> = ({
         prevNode
           ? {
               ...prevNode,
-              data: Object.keys(prevNode.data)
-                .filter((k) => k !== key)
-                .reduce((acc, k) => {
-                  acc[k] = prevNode.data[k] as string;
-                  return acc;
-                }, {} as Record<string, string>),
+              data: Object.fromEntries(
+                Object.entries(prevNode.data).filter(([k]) => k !== key)
+              ),
             }
           : prevNode
       );
     }
   };
-
+  console.log(selectedNode, "selectedNode edit page");
   return (
     <>
-      {(selectedNode || selectedEdge) && (
+      {selectedNode && (
         <div className="mt-1 bg-slate-100 rounded p-4 max-h-[60vh] overflow-y-auto">
-          {(selectedNode || selectedEdge) && (
+          {selectedNode && (
             <div>
               <div className="flex items-center justify-between">
                 <div>Properties</div>
@@ -166,34 +167,119 @@ const EditNode: FC<EditNodeProps> = ({
                   className="space-y-2"
                 >
                   <div className="flex flex-col gap-4">
-                    {Object.keys(selectedNode?.data).map((key, index) => (
-                      <FormField
-                        key={index}
-                        control={form.control}
-                        name={key}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              <span className="flex justify-between">
-                                <span>{key}</span>
-                                <>
-                                  {key !== "label" && (
-                                    <X
-                                      size={15}
-                                      className="cursor-pointer"
-                                      onClick={() => handleRemoveAttribute(key)}
-                                    />
-                                  )}
-                                </>
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Input {...field} required placeholder={key} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    ))}
+                    {Object.keys(selectedNode?.data).map((key, index) => {
+                      if (key === "label") {
+                        return (
+                          <FormField
+                            key={index}
+                            control={form.control}
+                            name={key}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>
+                                  <span className="flex justify-between">
+                                    <span>{key}</span>
+                                    <>
+                                      {key !== "label" && (
+                                        <X
+                                          size={15}
+                                          className="cursor-pointer"
+                                          onClick={() =>
+                                            handleRemoveAttribute(key)
+                                          }
+                                        />
+                                      )}
+                                    </>
+                                  </span>
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    value={field.value ?? ""}
+                                    required
+                                    placeholder={key}
+                                    onBlur={() => {
+                                      setSelectedNode((prev) => {
+                                        if (prev) {
+                                          return {
+                                            ...prev,
+                                            data: {
+                                              ...prev.data,
+                                              [key]: field.value,
+                                            },
+                                          };
+                                        }
+                                        return prev;
+                                      });
+                                    }}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        );
+                      } else if (key === "attributes") {
+                        return selectedNode?.data?.attributes?.map(
+                          (attribute: any, index: number) => (
+                            <div key={index}>
+                              <FormField
+                                key={index}
+                                control={form.control}
+                                name={`attributes.${index}.attribute_value`} // Using index to ensure uniqueness
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>
+                                      <span className="flex justify-between">
+                                        <span>{attribute.attribute_name}</span>
+                                        <X
+                                          size={15}
+                                          className="cursor-pointer"
+                                          onClick={() =>
+                                            handleRemoveAttribute(attribute.id)
+                                          }
+                                        />
+                                      </span>
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        {...field}
+                                        value={
+                                          field.value ??
+                                          attribute.attribute_value
+                                        }
+                                        required
+                                        placeholder="Enter value"
+                                        onBlur={() => {
+                                          setSelectedNode((prev: any) => {
+                                            if (prev) {
+                                              const updatedAttributes = [
+                                                ...prev.data.attributes,
+                                              ];
+                                              updatedAttributes[index] = {
+                                                ...updatedAttributes[index],
+                                                attribute_value: field.value, // Update the attribute_value on blur
+                                              };
+                                              return {
+                                                ...prev,
+                                                data: {
+                                                  ...prev.data,
+                                                  attributes: updatedAttributes,
+                                                },
+                                              };
+                                            }
+                                            return prev;
+                                          });
+                                        }}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          )
+                        );
+                      }
+                    })}
                   </div>
                   <hr className="my-2" />
                   <div className="flex justify-between gap-1">
@@ -207,11 +293,7 @@ const EditNode: FC<EditNodeProps> = ({
                       onClick={handleDelete}
                       className="cursor-pointer p-1 flex justify-center rounded border border-red-500"
                     >
-                      {selectedNode ? (
-                        <h3>Delete Node</h3>
-                      ) : (
-                        <h3>Delete Edge</h3>
-                      )}
+                      <h3>Delete Node</h3>
                     </span>
                   </div>
                 </form>

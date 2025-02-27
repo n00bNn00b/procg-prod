@@ -9,7 +9,11 @@ const Sidebar: FC = () => {
     { label: "Initialization", type: "initialization", color: "#fff" },
     { label: "GetDetails", type: "getDetails", color: "#fff" },
     { label: "Decision", type: "decision", color: "#fff" },
-    { label: "Alternate Process", type: "alternateProcess", color: "#fff" },
+    {
+      label: "Alternate Process",
+      type: "alternateProcess",
+      color: "#fff",
+    },
     { label: "Stop", type: "stop", color: "#e11212" },
   ];
 
@@ -30,13 +34,13 @@ const Sidebar: FC = () => {
   };
 
   return (
-    <div className="bg-slate-100 p-2 rounded border w-[11rem] max-w-full">
+    <div className="flex flex-col  bg-slate-100 p-2 rounded border w-[11rem] max-w-full">
       {/* Render draggable nodes */}
       {nodes.map((node, index) => (
         <div
           key={index}
-          className={`dndnode ${node.type}`}
-          style={{ backgroundColor: node.color }}
+          className={`dndnode ${node.type} hover:bg-slate-300`}
+          style={{ backgroundColor: node.color, marginBottom: "3px" }}
           onDragStart={(event) => onDragStart(event, node)}
           draggable
         >

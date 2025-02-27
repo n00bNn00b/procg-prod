@@ -1,4 +1,4 @@
-import {  IExecutionMethodsTypes } from "@/types/interfaces/ARM.interface";
+import { IExecutionMethodsTypes } from "@/types/interfaces/ARM.interface";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 export const columns: ColumnDef<IExecutionMethodsTypes>[] = [
@@ -33,11 +33,9 @@ export const columns: ColumnDef<IExecutionMethodsTypes>[] = [
   {
     accessorKey: "executor",
     header: () => {
-      return <div className="min-w-max">Execution</div>;
+      return <div className="min-w-max">Executor</div>;
     },
-    cell: ({ row }) => (
-      <div className="">{row.getValue("executor")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("executor")}</div>,
   },
   {
     accessorKey: "description",
@@ -45,6 +43,6 @@ export const columns: ColumnDef<IExecutionMethodsTypes>[] = [
       return <div className="w-[15rem]">Description</div>;
     },
     cell: ({ row }) => <div className="">{row.getValue("description")}</div>,
-  }
+  },
 ];
 export default columns;
