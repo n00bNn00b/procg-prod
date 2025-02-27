@@ -49,7 +49,7 @@ export const columns: ColumnDef<IARMViewRequestsTypes>[] = [
   {
     accessorKey: "task_name",
     header: () => {
-      return <div className="min-w-max">Task sName</div>;
+      return <div className="min-w-max">Task Name</div>;
     },
     cell: ({ row }) => <div>{row.getValue("task_name")}</div>,
   },

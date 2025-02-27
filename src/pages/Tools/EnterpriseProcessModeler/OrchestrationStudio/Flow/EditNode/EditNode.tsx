@@ -14,7 +14,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edge, Node } from "@xyflow/react";
 import { EllipsisVertical, X } from "lucide-react";
-import { Dispatch, FC, SetStateAction, useCallback } from "react";
+import { Dispatch, FC, SetStateAction, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -29,7 +29,6 @@ interface EditNodeProps {
   setEditingNodeId: (id: string | null) => void;
   setIsEditableEdge: (value: boolean) => void;
   isEditableEdge: boolean;
-  newLabel: string;
   // description: string;
   // handleKeyDown: (e: React.KeyboardEvent) => void;
   setIsAddAttribute: Dispatch<SetStateAction<boolean>>;
@@ -56,13 +55,15 @@ const EditNode: FC<EditNodeProps> = ({
     defaultValues: selectedNode ? selectedNode.data : {},
   });
 
-  // useEffect(() => {
-  //   form.reset(selectedNode ? selectedNode.data : {});
-  //   // form.reset({
-  //   //   label: selectedNode?.data?.label ?? selectedEdge?.label ?? "",
-  //   //   description: selectedNode?.data?.description ?? "",
-  //   // });
-  // }, [selectedNode, selectedEdge, form]);
+  useEffect(() => {
+    if (selectedNode?.data) {
+      form.reset(selectedNode ? selectedNode.data : {});
+    }
+    // form.reset({
+    //   label: selectedNode?.data?.label ?? selectedEdge?.label ?? "",
+    //   description: selectedNode?.data?.description ?? "",
+    // });
+  }, [selectedNode, form]);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     console.log(data, "data");
@@ -79,19 +80,6 @@ const EditNode: FC<EditNodeProps> = ({
         })
       );
       setSelectedNode(undefined);
-    } else {
-      setEdges((prevNodes: Edge[]) =>
-        prevNodes.map((edge: Edge) => {
-          if (edge.id === selectedEdge.id) {
-            return {
-              ...edge,
-              label: data.label,
-            };
-          }
-          return edge;
-        })
-      );
-      setSelectedEdge(undefined);
     }
   };
 
@@ -128,9 +116,9 @@ const EditNode: FC<EditNodeProps> = ({
 
   return (
     <>
-      {(selectedNode || selectedEdge) && (
+      {selectedNode && (
         <div className="mt-1 bg-slate-100 rounded p-4 max-h-[60vh] overflow-y-auto">
-          {(selectedNode || selectedEdge) && (
+          {selectedNode && (
             <div>
               <div className="flex items-center justify-between">
                 <div>Properties</div>
@@ -188,7 +176,26 @@ const EditNode: FC<EditNodeProps> = ({
                               </span>
                             </FormLabel>
                             <FormControl>
-                              <Input {...field} required placeholder={key} />
+                              <Input
+                                {...field}
+                                value={field.value ?? ""}
+                                required
+                                placeholder={key}
+                                onBlur={() => {
+                                  setSelectedNode((prev) => {
+                                    if (prev) {
+                                      return {
+                                        ...prev,
+                                        data: {
+                                          ...prev.data,
+                                          [key]: field.value,
+                                        },
+                                      };
+                                    }
+                                    return prev;
+                                  });
+                                }}
+                              />
                             </FormControl>
                           </FormItem>
                         )}
@@ -207,11 +214,7 @@ const EditNode: FC<EditNodeProps> = ({
                       onClick={handleDelete}
                       className="cursor-pointer p-1 flex justify-center rounded border border-red-500"
                     >
-                      {selectedNode ? (
-                        <h3>Delete Node</h3>
-                      ) : (
-                        <h3>Delete Edge</h3>
-                      )}
+                      <h3>Delete Node</h3>
                     </span>
                   </div>
                 </form>

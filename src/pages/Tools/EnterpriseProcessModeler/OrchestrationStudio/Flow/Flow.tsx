@@ -63,6 +63,7 @@ const DnDFlow = () => {
   const [selectedFlowData, setSelectedFlowData] =
     useState<IOrchestrationDataTypes>();
   const [isLoading, setIsLoading] = useState(false);
+  const [isNewFlowCreated, setIsNewFlowCreated] = useState(false);
 
   const [createNewFlow, setCreateNewFlow] = useState(false);
   const [newProcessName, setNewProcessName] = useState("");
@@ -96,7 +97,7 @@ const DnDFlow = () => {
       }
     };
     fetchData();
-  }, [newProcessName]);
+  }, [isNewFlowCreated]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -181,47 +182,32 @@ const DnDFlow = () => {
     setEditingNodeId(node.id);
     setNewLabel(node.data.label as string);
   }, []);
+
   const onEdgeClick = (event: React.MouseEvent, edge: Edge) => {
     console.log(event, "Edge event");
     setSelectedNode(undefined);
     setSelectedEdge(edge);
   };
-
+  // console.log(nodes, "nodes");
   const lastNode = nodes.filter((node) => node.type === "stop");
   const handleSave = async (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     e.stopPropagation();
-    const id = Math.floor(Math.random() * 1000);
+    // const id = Math.floor(Math.random() * 1000);
     if (edges.length > 0 && nodes.length > 0 && lastNode.length > 0) {
-      const postData = {
-        process_id: id,
-        process_name: newProcessName,
-        process_structure: {
-          nodes,
-          edges,
-        },
-      };
       const putData = {
         process_structure: {
           nodes,
           edges,
         },
       };
+      console.log(putData, "putData");
       try {
-        if (newProcessName !== "") {
-          const res = await api.post("/orchestration-studio-process", postData);
-
-          toast({
-            title: "Success",
-            description: `${res.data.message}`,
-          });
-          setNewProcessName("");
-          setSelectedFlowData(postData);
-        } else if (selectedFlowData) {
+        if (selectedFlowData) {
           const res = await api.put(
             `/orchestration-studio-process/${selectedFlowData.process_id}`,
-            putData
+            JSON.stringify(putData)
           );
           toast({
             title: "Success",
@@ -253,6 +239,46 @@ const DnDFlow = () => {
       );
     }
     setAttributeName("");
+  };
+  const handleCreateNewFlow = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      if (flowsData) {
+        const flow = flowsData.find(
+          (flow) => flow.process_name === newProcessName
+        );
+        if (flow) {
+          toast({
+            title: "Info!!",
+            description: "Flow already exists.",
+          });
+        } else {
+          const postData = {
+            process_id: flowsData.length + 1,
+            process_name: newProcessName,
+            process_structure: { nodes: [], edges: [] },
+          };
+          const res = await api.post("/orchestration-studio-process", postData);
+          if (res) {
+            setSelectedFlowData(postData);
+            setNewProcessName(postData.process_name);
+            setEdges([]);
+            setNodes([]);
+            setSelectedNode(undefined);
+            setSelectedEdge(undefined);
+            setSelectedFlowName(newProcessName);
+            setCreateNewFlow(false);
+            setIsNewFlowCreated(true);
+            toast({
+              title: "Success",
+              description: "New flow created successfully.",
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // For coordinates
@@ -316,9 +342,10 @@ const DnDFlow = () => {
                   <Spinner color="red" size="40" />
                 </div>
               )}
+              {/* Create new flow */}
               {createNewFlow && (
                 <div className="absolute z-50 top-5 bg-slate-300 p-3 border rounded">
-                  <form>
+                  <form onSubmit={handleCreateNewFlow}>
                     <input
                       type="text"
                       value={newProcessName ?? ""}
@@ -330,16 +357,8 @@ const DnDFlow = () => {
                       className="px-2 py-1 rounded mr-2"
                     />
                     <button
+                      type="submit"
                       className="bg-slate-200 p-1 rounded-l-md border-black border hover:bg-slate-300 hover:shadow"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setEdges([]);
-                        setNodes([]);
-                        setSelectedNode(undefined);
-                        setSelectedFlowName("");
-                        setCreateNewFlow(false);
-                      }}
                     >
                       Save
                     </button>
@@ -394,6 +413,7 @@ const DnDFlow = () => {
                 </div>
               )}
             </div>
+            {/* Top left Tools Bar */}
             <div
               className={`${
                 toolsOpen ? " " : ""
@@ -429,15 +449,8 @@ const DnDFlow = () => {
                         <Save />
                       </div>
                     )}
-
-                  <h3 className={`${nodes.length > 0 ? "ml-5" : "ml-12"}`}>
-                    {newProcessName.length > 0 ? (
-                      <>Flow Name : {newProcessName}</>
-                    ) : (
-                      selectedFlowName.length > 0 && (
-                        <>Flow Name : {selectedFlowName}</>
-                      )
-                    )}
+                  <h3 className={`${nodes.length > 0 ? "ml-4" : "ml-16"}`}>
+                    Flow Name:
                   </h3>
                 </span>
                 {toolsOpen && (
@@ -447,8 +460,9 @@ const DnDFlow = () => {
                 )}
               </div>
             </div>
+            {/* Right Select Bar */}
             <div
-              className={`absolute top-2 right-2 z-50 p-2 flex flex-col gap-1`}
+              className={`absolute top-[2px] left-[260px] z-10 p-2 flex flex-col gap-1`}
             >
               {/* select flow */}
               {flowsData.length > 0 && (
@@ -459,9 +473,11 @@ const DnDFlow = () => {
                       setSelectedFlowName(process_name);
                       setNewProcessName("");
                       setCreateNewFlow(false);
+                      setSelectedEdge(undefined);
+                      setSelectedNode(undefined);
                     }}
                   >
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-[150px]">
                       <SelectValue placeholder="Select a flow" />
                     </SelectTrigger>
                     <SelectContent>
@@ -471,6 +487,7 @@ const DnDFlow = () => {
                           <SelectItem
                             key={flow.process_id}
                             value={flow.process_name}
+                            className="cursor-pointer"
                           >
                             {flow.process_name}
                           </SelectItem>
@@ -480,6 +497,11 @@ const DnDFlow = () => {
                   </Select>
                 </div>
               )}
+            </div>
+            {/* Right Edit Bar */}
+            <div
+              className={`absolute top-[2px] right-0 z-50 p-2 flex flex-col gap-1`}
+            >
               {/* Edit node */}
               {selectedNode && (
                 <>
@@ -494,10 +516,6 @@ const DnDFlow = () => {
                     setSelectedEdge={setSelectedEdge}
                     setIsEditableEdge={setIsEditableEdge}
                     isEditableEdge={isEditableEdge}
-                    newLabel={newLabel}
-                    // description={description}
-                    // onInputChange={onInputChange}
-                    // handleKeyDown={handleKeyDown}
                     setIsAddAttribute={setIsAddAttribute}
                   />
                 </>
@@ -519,10 +537,10 @@ const DnDFlow = () => {
               )}
             </div>
           </>
-          <Controls style={{ bottom: "20px" }} />
+          <Controls />
           <MiniMap
             className="z-40"
-            style={{ left: "30px" }}
+            style={{ bottom: "107px" }}
             position={"bottom-left"}
             zoomable
             pannable
@@ -543,10 +561,10 @@ const DnDFlow = () => {
               zIndex: 100,
             }}
           >
-            <p className="flex flex-col gap-1">
-              <p>X: {Math.round(coordinates.x)}</p>
-              <p>Y: {Math.round(coordinates.y)}</p>
-            </p>
+            <span className="flex flex-col gap-1">
+              <span>X: {Math.round(coordinates.x)}</span>
+              <span>Y: {Math.round(coordinates.y)}</span>
+            </span>
           </div>
         )}
       </div>
