@@ -20,7 +20,7 @@ const GetDetailsNode = ({
         {Object.keys(data).map((key) => (
           <div key={key}>
             {key === "label" && <h3 className="font-bold">{data[key]}</h3>}
-            {key === "attributes" && (
+            {key === "attributes" && data.attributes.length > 0 && (
               <>
                 <hr />
                 {data.attributes.map((item) => (
