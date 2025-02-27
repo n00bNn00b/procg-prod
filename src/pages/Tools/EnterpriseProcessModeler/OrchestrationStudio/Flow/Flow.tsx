@@ -63,7 +63,7 @@ const DnDFlow = () => {
   const [selectedFlowData, setSelectedFlowData] =
     useState<IOrchestrationDataTypes>();
   const [isLoading, setIsLoading] = useState(false);
-  const [isNewFlowCreated, setIsNewFlowCreated] = useState(false);
+  const [isNewFlowCreated, setIsNewFlowCreated] = useState<number>(0);
 
   const [createNewFlow, setCreateNewFlow] = useState(false);
   const [newProcessName, setNewProcessName] = useState("");
@@ -209,10 +209,12 @@ const DnDFlow = () => {
             `/orchestration-studio-process/${selectedFlowData.process_id}`,
             JSON.stringify(putData)
           );
-          toast({
-            title: "Success",
-            description: `${res.data.message}`,
-          });
+          if (res) {
+            toast({
+              title: "Success",
+              description: `Flow saved successfully.`,
+            });
+          }
         }
       } catch (error) {
         console.log(error);
@@ -254,7 +256,7 @@ const DnDFlow = () => {
     }
     setAttributeName(""); // Reset the attribute name input
   };
-
+  console.log(selectedFlowData, "selectedFlowData");
   const handleCreateNewFlow = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -275,15 +277,16 @@ const DnDFlow = () => {
           };
           const res = await api.post("/orchestration-studio-process", postData);
           if (res) {
-            setSelectedFlowData(postData);
-            setNewProcessName(postData.process_name);
+            setSelectedFlowName(newProcessName);
             setEdges([]);
             setNodes([]);
             setSelectedNode(undefined);
             setSelectedEdge(undefined);
-            setSelectedFlowName(newProcessName);
             setCreateNewFlow(false);
-            setIsNewFlowCreated(true);
+            setIsNewFlowCreated(Math.random() * 9999);
+            setNewProcessName("");
+            setSelectedFlowData(postData);
+
             toast({
               title: "Success",
               description: "New flow created successfully.",
@@ -475,7 +478,7 @@ const DnDFlow = () => {
                 )}
               </div>
             </div>
-            {/* Right Select Bar */}
+            {/*Select Flow */}
             <div
               className={`absolute top-[2px] left-[260px] z-10 p-2 flex flex-col gap-1`}
             >
@@ -483,7 +486,7 @@ const DnDFlow = () => {
               {flowsData.length > 0 && (
                 <div>
                   <Select
-                    value={selectedFlowName}
+                    value={selectedFlowData?.process_name ?? ""}
                     onValueChange={(process_name: string) => {
                       setSelectedFlowName(process_name);
                       setNewProcessName("");
@@ -495,7 +498,7 @@ const DnDFlow = () => {
                     <SelectTrigger className="w-[150px]">
                       <SelectValue placeholder="Select a flow" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className=" max-h-[15rem]">
                       <SelectGroup>
                         {/* <SelectLabel>Flows</SelectLabel> */}
                         {flowsData.map((flow) => (
