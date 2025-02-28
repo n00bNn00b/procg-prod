@@ -83,6 +83,9 @@
 
 .react-flow__handle {
   background-color: var(--xy-handle-background-color-default);
+  /* Edge point size controll */
+  /* width: 10px;
+  height: 10px; */
 }
 
 .react-flow__handle.connectionindicator:hover {
