@@ -7,15 +7,36 @@ export interface ResizableNodeProps {
   };
   isConnectable: boolean;
   selected: boolean;
+  positionAbsoluteX: number;
+  positionAbsoluteY: number;
 }
 interface Attributes {
   id: number;
   attribute_name: string;
   attribute_value: string;
 }
-const StartNode = ({ data, isConnectable, selected }: ResizableNodeProps) => {
+const StartNode = ({
+  data,
+  isConnectable,
+  selected,
+  positionAbsoluteX,
+  positionAbsoluteY,
+}: ResizableNodeProps) => {
   return (
-    <div>
+    <div className="group">
+      <div className="relative">
+        <span className="absolute right-[-50px] top-[-50px] p-1 bg-black/30 text-white rounded-sm text-xs z-100 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <span className="flex flex-col">
+            <span className="flex">
+              X: <p>{Math.floor(positionAbsoluteX)}</p>
+            </span>
+            <span className="flex">
+              Y: <p>{Math.floor(positionAbsoluteY)}</p>
+            </span>
+          </span>
+        </span>
+      </div>
+
       <Handle
         type="source"
         position={Position.Bottom}

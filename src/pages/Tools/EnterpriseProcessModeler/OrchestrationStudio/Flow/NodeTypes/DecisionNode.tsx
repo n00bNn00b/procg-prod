@@ -6,9 +6,23 @@ const DecisionNode = ({
   data,
   isConnectable,
   selected,
+  positionAbsoluteX,
+  positionAbsoluteY,
 }: ResizableNodeProps) => {
   return (
-    <>
+    <div className="group">
+      <div className="relative">
+        <span className="absolute right-[-50px] top-[-50px] p-1 bg-black/30 text-white rounded-sm text-xs z-100 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <span className="flex flex-col">
+            <span className="flex">
+              X: <p>{Math.floor(positionAbsoluteX)}</p>
+            </span>
+            <span className="flex">
+              Y: <p>{Math.floor(positionAbsoluteY)}</p>
+            </span>
+          </span>
+        </span>
+      </div>
       <Handle
         type="target"
         position={Position.Top}
@@ -48,7 +62,7 @@ const DecisionNode = ({
         id="right"
         isConnectable={isConnectable}
       />
-    </>
+    </div>
   );
 };
 
