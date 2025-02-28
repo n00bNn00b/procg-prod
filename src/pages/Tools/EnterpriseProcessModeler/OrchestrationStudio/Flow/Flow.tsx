@@ -314,6 +314,7 @@ const DnDFlow = () => {
           attributionPosition="bottom-left"
           fitView
           style={{ backgroundColor: "#F7F9FB" }}
+          panOnScroll
         >
           <>
             <div className="flex items-center justify-center">
@@ -510,7 +511,11 @@ const DnDFlow = () => {
             pannable
             offsetScale={0}
             className="z-40"
-            ariaLabel="Flow map"
+            ariaLabel={`${
+              selectedFlowData?.process_name
+                ? `${selectedFlowData?.process_name} Flow Map`
+                : "Flow Map"
+            }`}
             position={"bottom-left"}
           />
           <Controls style={{ bottom: 155 }} orientation="horizontal" />
