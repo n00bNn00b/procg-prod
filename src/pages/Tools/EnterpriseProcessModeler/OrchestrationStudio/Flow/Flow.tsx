@@ -314,7 +314,7 @@ const DnDFlow = () => {
           onEdgeClick={onEdgeClick}
           nodeTypes={nodeTypes}
           attributionPosition="bottom-left"
-          // fitView
+          fitView
           style={{ backgroundColor: "#F7F9FB" }}
           className="relative touch-flow"
         >
