@@ -113,3 +113,7 @@
   width: 10px;
   height: 10px;
 }
+
+.react-flow__attribution {
+  display: none !important;
+}

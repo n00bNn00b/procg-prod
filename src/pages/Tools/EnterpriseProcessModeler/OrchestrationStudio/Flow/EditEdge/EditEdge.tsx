@@ -17,13 +17,6 @@ interface EditNodeProps {
   setEdges: (payload: Edge[] | ((edges: Edge[]) => Edge[])) => void;
   selectedEdge: any;
   setSelectedEdge: Dispatch<SetStateAction<Edge | undefined>>;
-  editingNodeId: string | null;
-  setEditingNodeId: (id: string | null) => void;
-  setIsEditableEdge: (value: boolean) => void;
-  isEditableEdge: boolean;
-  newLabel: string;
-  // description: string;
-  // handleKeyDown: (e: React.KeyboardEvent) => void;
 }
 const EditEdge: FC<EditNodeProps> = ({
   setEdges,

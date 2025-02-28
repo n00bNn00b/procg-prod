@@ -54,9 +54,9 @@ const DnDFlow = () => {
   const [selectedNode, setSelectedNode] = useState<Node | undefined>(undefined);
   const [selectedEdge, setSelectedEdge] = useState<Edge | undefined>(undefined);
   const [toolsOpen, setToolsOpen] = useState(false);
-  const [isEditableEdge, setIsEditableEdge] = useState(false);
-  const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
-  const [newLabel, setNewLabel] = useState<string>("");
+  // const [isEditableEdge, setIsEditableEdge] = useState(false);
+  // const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
+  // const [newLabel, setNewLabel] = useState<string>("");
   // const [description, setDescription] = useState("");
   const [flowsData, setFlowsData] = useState<IOrchestrationDataTypes[]>([]);
   const [selectedFlowName, setSelectedFlowName] = useState<string>("");
@@ -179,8 +179,6 @@ const DnDFlow = () => {
     console.log(event, "Node event");
     setSelectedEdge(undefined);
     setSelectedNode(node);
-    setEditingNodeId(node.id);
-    setNewLabel(node.data.label as string);
   }, []);
 
   const onEdgeClick = (event: React.MouseEvent, edge: Edge) => {
@@ -316,7 +314,6 @@ const DnDFlow = () => {
           attributionPosition="bottom-left"
           fitView
           style={{ backgroundColor: "#F7F9FB" }}
-          className="relative touch-flow"
         >
           <>
             <div className="flex items-center justify-center">
@@ -490,15 +487,8 @@ const DnDFlow = () => {
                 <>
                   <EditNode
                     setNodes={setNodes}
-                    setEdges={setEdges}
                     selectedNode={selectedNode}
-                    editingNodeId={editingNodeId}
-                    setEditingNodeId={setEditingNodeId}
                     setSelectedNode={setSelectedNode}
-                    selectedEdge={selectedEdge}
-                    setSelectedEdge={setSelectedEdge}
-                    setIsEditableEdge={setIsEditableEdge}
-                    isEditableEdge={isEditableEdge}
                     setIsAddAttribute={setIsAddAttribute}
                   />
                 </>
@@ -510,21 +500,18 @@ const DnDFlow = () => {
                     setEdges={setEdges}
                     selectedEdge={selectedEdge}
                     setSelectedEdge={setSelectedEdge}
-                    editingNodeId={editingNodeId}
-                    setEditingNodeId={setEditingNodeId}
-                    setIsEditableEdge={setIsEditableEdge}
-                    isEditableEdge={isEditableEdge}
-                    newLabel={newLabel}
                   />
                 </>
               )}
             </div>
           </>
           <MiniMap
-            className="z-40"
-            position={"bottom-left"}
             zoomable
             pannable
+            offsetScale={0}
+            className="z-40"
+            ariaLabel="Flow map"
+            position={"bottom-left"}
           />
           <Controls style={{ bottom: 155 }} orientation="horizontal" />
           <Background />

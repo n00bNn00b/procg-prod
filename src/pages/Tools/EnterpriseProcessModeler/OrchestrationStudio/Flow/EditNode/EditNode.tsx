@@ -12,34 +12,22 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edge, Node } from "@xyflow/react";
+import { Node } from "@xyflow/react";
 import { EllipsisVertical, X } from "lucide-react";
-import { Dispatch, FC, SetStateAction, useCallback, useEffect } from "react";
+import { Dispatch, FC, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 interface EditNodeProps {
   setNodes: (payload: Node[] | ((nodes: Node[]) => Node[])) => void;
-  setEdges: (payload: Edge[] | ((edges: Edge[]) => Edge[])) => void;
   selectedNode: any;
   setSelectedNode: Dispatch<SetStateAction<Node | undefined>>;
-  selectedEdge: any;
-  setSelectedEdge: Dispatch<SetStateAction<Edge | undefined>>;
-  editingNodeId: string | null;
-  setEditingNodeId: (id: string | null) => void;
-  setIsEditableEdge: (value: boolean) => void;
-  isEditableEdge: boolean;
-  // description: string;
-  // handleKeyDown: (e: React.KeyboardEvent) => void;
   setIsAddAttribute: Dispatch<SetStateAction<boolean>>;
 }
 const EditNode: FC<EditNodeProps> = ({
   setNodes,
-  setEdges,
   selectedNode,
   setSelectedNode,
-  selectedEdge,
-  setSelectedEdge,
   setIsAddAttribute,
 }) => {
   const FormSchema = z.object(
@@ -99,19 +87,14 @@ const EditNode: FC<EditNodeProps> = ({
     }
   };
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = () => {
     if (selectedNode) {
       setNodes((prevNodes: Node[]) =>
         prevNodes.filter((node: Node) => node.id !== selectedNode.id)
       );
       setSelectedNode(undefined);
-    } else {
-      setEdges((prevEdges: Edge[]) =>
-        prevEdges.filter((edge: Edge) => edge.id !== selectedEdge.id)
-      );
-      setSelectedEdge(undefined);
     }
-  }, []);
+  };
   const handleRemoveAttribute = (key: string) => {
     if (selectedNode) {
       setSelectedNode((prevNode) =>
@@ -155,7 +138,6 @@ const EditNode: FC<EditNodeProps> = ({
                   size={20}
                   className="cursor-pointer"
                   onClick={() => {
-                    setSelectedEdge(undefined);
                     setSelectedNode(undefined);
                   }}
                 />
