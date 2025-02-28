@@ -6,13 +6,13 @@ const Sidebar: FC = () => {
 
   const nodes = [
     { label: "Start", type: "start", color: "#11c02b" },
-    { label: "Initialization", type: "initialization", color: "#fff" },
-    { label: "GetDetails", type: "getDetails", color: "#fff" },
-    { label: "Decision", type: "decision", color: "#fff" },
+    { label: "Initialization", type: "initialization", color: "#f4f4f5" },
+    { label: "GetDetails", type: "getDetails", color: "#f4f4f5" },
+    { label: "Decision", type: "decision", color: "#f4f4f5" },
     {
       label: "Alternate Process",
       type: "alternateProcess",
-      color: "#fff",
+      color: "#f4f4f5",
     },
     { label: "Stop", type: "stop", color: "#e11212" },
   ];

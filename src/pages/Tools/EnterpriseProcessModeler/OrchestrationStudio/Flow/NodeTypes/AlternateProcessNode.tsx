@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Handle, Position, NodeResizer } from "@xyflow/react";
 import { ResizableNodeProps } from "./StartNode";
 
@@ -9,25 +9,52 @@ const AlternateProcessNode = ({
   positionAbsoluteX,
   positionAbsoluteY,
 }: ResizableNodeProps) => {
+  // For coordinates
+  const [coordinates, setCoordinates] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+
+  // Handle mouse enter to get node position
+  const onMouseEnter = () => {
+    setCoordinates({
+      x: Math.floor(positionAbsoluteX),
+      y: Math.floor(positionAbsoluteY),
+    });
+  };
+
+  // Reset coordinates on mouse leave
+  const onMouseLeave = () => {
+    setCoordinates(null);
+  };
+
   return (
-    <div className="group">
-      <div className="relative">
-        <span
+    <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+      {coordinates && (
+        <div
           style={{
+            position: "absolute",
+            right: -50,
+            top: -55,
+            padding: "5px",
+            background: "rgba(0, 0, 0, 0.3)",
+            color: "#fff",
+            borderRadius: "5px",
+            fontSize: "12px",
             zIndex: 100,
           }}
-          className="absolute right-[-50px] top-[-50px] p-1 bg-black/30 text-white rounded-sm text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200"
         >
           <span className="flex flex-col">
             <span className="flex">
-              X: <p>{Math.floor(positionAbsoluteX)}</p>
+              X: <p> {Math.floor(positionAbsoluteX)}</p>
             </span>
             <span className="flex">
               Y: <p>{Math.floor(positionAbsoluteY)}</p>
             </span>
           </span>
-        </span>
-      </div>
+        </div>
+      )}
+
       <Handle
         type="target"
         position={Position.Top}
