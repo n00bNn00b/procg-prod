@@ -230,7 +230,7 @@ const DnDFlow = () => {
       return;
     }
   };
-  console.log(selectedNode, "selectedNode");
+
   const handleAddAttribute = () => {
     if (selectedNode && attributeName.trim() !== "") {
       setSelectedNode((prevNode: any) =>
@@ -254,7 +254,7 @@ const DnDFlow = () => {
     }
     setAttributeName(""); // Reset the attribute name input
   };
-  console.log(selectedFlowData, "selectedFlowData");
+
   const handleCreateNewFlow = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
