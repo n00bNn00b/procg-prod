@@ -19,7 +19,7 @@ import "./index.css";
 
 import { DnDProvider, useDnD } from "./DnDContext";
 import Sidebar from "./Sidebar";
-import { Pen, Plus, Save, SquareMenu, Trash } from "lucide-react";
+import { Plus, Save, SquareMenu } from "lucide-react";
 import { IOrchestrationDataTypes } from "@/types/interfaces/orchestration.interface";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { AxiosError } from "axios";
@@ -42,17 +42,6 @@ import AlternateProcessNode from "./NodeTypes/AlternateProcessNode";
 import StopNode from "./NodeTypes/StopNode";
 import EditNode from "./EditNode/EditNode";
 import EditEdge from "./EditEdge/EditEdge";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
@@ -81,8 +70,6 @@ const DnDFlow = () => {
   const [isAddAttribute, setIsAddAttribute] = useState(false);
   const [attributeName, setAttributeName] = useState("");
 
-  const [isEditFlowName, setIsEditFlowName] = useState(false);
-
   const getId = () => `node-${Math.random().toString(36).substr(2, 9)}`;
 
   const nodeTypes = {
@@ -110,7 +97,7 @@ const DnDFlow = () => {
       }
     };
     fetchData();
-  }, [isNewFlowCreated, selectedFlowName]);
+  }, [isNewFlowCreated]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -201,9 +188,39 @@ const DnDFlow = () => {
   };
   // console.log(nodes, "nodes");
   const lastNode = nodes.filter((node) => node.type === "stop");
-
+  const handleSave = async (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
+    // const id = Math.floor(Math.random() * 1000);
+    if (edges.length > 0 && nodes.length > 0 && lastNode.length > 0) {
+      const putData = {
+        process_structure: {
+          nodes,
+          edges,
+        },
+      };
+      console.log(putData, "putData");
+      try {
+        if (selectedFlowData) {
+          const res = await api.put(
+            `/orchestration-studio-process/${selectedFlowData.process_id}`,
+            JSON.stringify(putData)
+          );
+          if (res) {
+            toast({
+              title: "Success",
+              description: `Flow saved successfully.`,
+            });
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
   const handleToolsOpen = () => {
-    if (selectedFlowData) {
+    if (newProcessName || selectedFlowName) {
       setToolsOpen(!toolsOpen);
     } else {
       toast({
@@ -259,8 +276,13 @@ const DnDFlow = () => {
           const res = await api.post("/orchestration-studio-process", postData);
           if (res) {
             setSelectedFlowName(newProcessName);
-            closeAllProgress();
+            setEdges([]);
+            setNodes([]);
+            setSelectedNode(undefined);
+            setSelectedEdge(undefined);
             setCreateNewFlow(false);
+            setIsNewFlowCreated(Math.random() * 9999);
+            setNewProcessName("");
             setSelectedFlowData(postData);
 
             toast({
@@ -273,89 +295,6 @@ const DnDFlow = () => {
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const handleEditFlowName = async () => {
-    try {
-      setIsLoading(true);
-      const putData = {
-        process_name: newProcessName,
-      };
-      const res = await api.put(
-        `/orchestration-studio-process/process-name/${selectedFlowData?.process_id}`,
-        putData
-      );
-      console.log(res, "res");
-      if (res) {
-        setSelectedFlowName(newProcessName);
-        toast({
-          title: "Success",
-          description: "Flow name updated successfully.",
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const handleDeleteFlow = async () => {
-    try {
-      const res = await api.delete(
-        `/orchestration-studio-process/${selectedFlowData?.process_id}`
-      );
-      if (res) {
-        closeAllProgress();
-        setSelectedFlowData(undefined);
-        toast({
-          title: "Success",
-          description: "Flow deleted successfully.",
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleSave = async (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    e.stopPropagation();
-    // const id = Math.floor(Math.random() * 1000);
-    if (edges.length > 0 && nodes.length > 0 && lastNode.length > 0) {
-      const putData = {
-        process_structure: {
-          nodes,
-          edges,
-        },
-      };
-      console.log(putData, "putData");
-      try {
-        if (selectedFlowData) {
-          const res = await api.put(
-            `/orchestration-studio-process/${selectedFlowData.process_id}`,
-            JSON.stringify(putData)
-          );
-          if (res) {
-            toast({
-              title: "Success",
-              description: `Flow saved successfully.`,
-            });
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
-  const closeAllProgress = () => {
-    setEdges([]);
-    setNodes([]);
-    setSelectedNode(undefined);
-    setSelectedEdge(undefined);
-    setNewProcessName("");
-    setIsNewFlowCreated(Math.random() * 9999);
   };
 
   return (
@@ -454,39 +393,6 @@ const DnDFlow = () => {
                   </form>
                 </div>
               )}
-              {/* Edit Flow Name */}
-              {isEditFlowName && (
-                <div className="absolute z-50 top-5 bg-slate-300 p-3 border rounded">
-                  <form>
-                    <input
-                      type="text"
-                      value={newProcessName ?? ""}
-                      placeholder="Flow Name"
-                      onChange={(e) => {
-                        setNewProcessName(e.target.value);
-                      }}
-                      autoFocus
-                      className="px-2 py-1 rounded mr-2"
-                    />
-                    <button
-                      className="bg-slate-200 p-1 rounded-l-md border-black border hover:bg-slate-300 hover:shadow"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleEditFlowName();
-                        setIsEditFlowName(false);
-                      }}
-                    >
-                      Save
-                    </button>
-                    <button
-                      className="bg-slate-200 p-1 rounded-r-md border-black border hover:bg-slate-300 hover:shadow"
-                      onClick={() => setIsEditFlowName(false)}
-                    >
-                      Cancel
-                    </button>
-                  </form>
-                </div>
-              )}
             </div>
             {/* Top left Tools Bar */}
             <div
@@ -501,7 +407,7 @@ const DnDFlow = () => {
                     onClick={handleToolsOpen}
                     className=" bg-slate-200 rounded-full p-2 text-2xl hover:bg-slate-300 hover:shadow cursor-pointer text-red-500"
                   >
-                    <SquareMenu size={17} />
+                    <SquareMenu />
                   </div>
                   {/* Plus Icon */}
                   <div
@@ -511,49 +417,8 @@ const DnDFlow = () => {
                     }}
                     className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
                   >
-                    <Plus size={17} />
+                    <Plus />
                   </div>
-
-                  {/* Pen Icon */}
-                  {selectedFlowData && (
-                    <div
-                      onClick={() => {
-                        setIsEditFlowName(true);
-                        setNewProcessName(selectedFlowData?.process_name ?? "");
-                      }}
-                      className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
-                    >
-                      <Pen size={17} />
-                    </div>
-                  )}
-                  {/* Trash Flow */}
-                  {selectedFlowData && (
-                    <div className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow">
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Trash size={17} />
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Are you absolutely sure delete flow?
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone. This will
-                              permanently delete your account and remove your
-                              data from our servers.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteFlow}>
-                              Continue
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  )}
                   {/* Save Icon */}
                   {edges.length > 0 &&
                     nodes.length > 0 &&
@@ -562,12 +427,12 @@ const DnDFlow = () => {
                         onClick={handleSave}
                         className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
                       >
-                        <Save size={17} />
+                        <Save />
                       </div>
                     )}
-                  <div className="absolute left-[229px] w-10">
-                    <h3>Flow_Name:</h3>
-                  </div>
+                  <h3 className={`${nodes.length > 0 ? "ml-4" : "ml-16"}`}>
+                    Flow Name:
+                  </h3>
                 </span>
                 {toolsOpen && (
                   <div className="">
@@ -578,7 +443,7 @@ const DnDFlow = () => {
             </div>
             {/*Select Flow */}
             <div
-              className={`absolute top-[2px] left-[320px] z-10 p-2 flex flex-col gap-1`}
+              className={`absolute top-[2px] left-[260px] z-10 p-2 flex flex-col gap-1`}
             >
               {/* select flow */}
               {flowsData.length > 0 && (
@@ -593,17 +458,17 @@ const DnDFlow = () => {
                       setSelectedNode(undefined);
                     }}
                   >
-                    <SelectTrigger className="w-[150px] h-[30px]">
+                    <SelectTrigger className="w-[150px]">
                       <SelectValue placeholder="Select a flow" />
                     </SelectTrigger>
-                    <SelectContent className=" max-h-[15rem] ">
+                    <SelectContent className=" max-h-[15rem]">
                       <SelectGroup>
                         {/* <SelectLabel>Flows</SelectLabel> */}
                         {flowsData.map((flow) => (
                           <SelectItem
                             key={flow.process_id}
                             value={flow.process_name}
-                            className="cursor-pointer "
+                            className="cursor-pointer"
                           >
                             {flow.process_name}
                           </SelectItem>
