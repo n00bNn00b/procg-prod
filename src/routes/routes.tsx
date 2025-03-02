@@ -66,6 +66,7 @@ import EnterpriseProcessModeler from "@/pages/Tools/EnterpriseProcessModeler/Ent
 import OrchestrationStudio from "@/pages/Tools/EnterpriseProcessModeler/OrchestrationStudio/OrchestrationStudio";
 import EnterpriseSystemIntegrations from "@/pages/Tools/EnterpriseSystemIntegrations/EnterpriseSystemIntegrations";
 import OrchestrationStudio2 from "@/pages/Tools/EnterpriseProcessModeler/OrchestrationStudio2/OrchestrationStudio2";
+import OrchestrationStudio3 from "@/pages/Tools/EnterpriseProcessModeler/OrchestrationStudio3/OrchestrationStudio";
 
 const routes = createBrowserRouter([
   {
@@ -214,6 +215,10 @@ const routes = createBrowserRouter([
               {
                 path: "orchestration-studio-2",
                 element: <OrchestrationStudio2 />,
+              },
+              {
+                path: "orchestration-studio-3",
+                element: <OrchestrationStudio3 />,
               },
             ],
           },

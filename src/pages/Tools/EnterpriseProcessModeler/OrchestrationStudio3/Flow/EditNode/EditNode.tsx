@@ -219,9 +219,11 @@ const EditNode: FC<EditNodeProps> = ({
                                         <X
                                           size={15}
                                           className="cursor-pointer"
-                                          onClick={() =>
-                                            handleRemoveAttribute(attribute.id)
-                                          }
+                                          onClick={(e) => {
+                                            console.log(attribute.id, "e");
+                                            e.stopPropagation();
+                                            handleRemoveAttribute(attribute.id);
+                                          }}
                                         />
                                       </span>
                                     </FormLabel>

@@ -1,20 +1,20 @@
 import { DragEvent, FC } from "react";
 import { useDnD } from "./DnDContext";
-
+import "./index.css";
 const Sidebar: FC = () => {
   const { setType, setLabel } = useDnD();
 
   const nodes = [
-    { label: "Start", type: "start", color: "#11c02b" },
-    { label: "Initialization", type: "initialization", color: "#f4f4f5" },
-    { label: "GetDetails", type: "getDetails", color: "#f4f4f5" },
-    { label: "Decision", type: "decision", color: "#f4f4f5" },
+    { label: "Start", type: "start", color: "green" },
+    { label: "Initialization", type: "initialization", color: "lightgray" },
+    { label: "GetDetails", type: "getDetails", color: "lightgray" },
+    { label: "Decision", type: "decision", color: "lightgray" },
     {
       label: "Alternate Process",
       type: "alternateProcess",
-      color: "#f4f4f5",
+      color: "lightgray",
     },
-    { label: "Stop", type: "stop", color: "#e11212" },
+    { label: "Stop", type: "stop", color: "red" },
   ];
 
   // Handle drag start event
@@ -39,7 +39,7 @@ const Sidebar: FC = () => {
       {nodes.map((node, index) => (
         <div
           key={index}
-          className={`dndnode hover:bg-slate-300`}
+          className={`${node.type} hover:bg-slate-300`}
           style={{ backgroundColor: node.color, marginBottom: "3px" }}
           onDragStart={(event) => onDragStart(event, node)}
           draggable
