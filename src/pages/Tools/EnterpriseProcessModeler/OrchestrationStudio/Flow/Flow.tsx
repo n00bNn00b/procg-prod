@@ -307,6 +307,7 @@ const DnDFlow = () => {
       if (res) {
         closeAllProgress();
         setSelectedFlowData(undefined);
+        setToolsOpen(false);
         toast({
           title: "Success",
           description: "Flow deleted successfully.",
