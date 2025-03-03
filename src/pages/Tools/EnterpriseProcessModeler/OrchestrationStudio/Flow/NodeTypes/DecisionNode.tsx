@@ -1,7 +1,7 @@
-import { memo, useState } from "react";
+import { useState } from "react";
 import { Handle, Position, NodeResizer } from "@xyflow/react";
 import { ResizableNodeProps } from "./StartNode";
-
+import "../index.css";
 const DecisionNode = ({
   data,
   isConnectable,
@@ -62,7 +62,7 @@ const DecisionNode = ({
         isConnectable={isConnectable}
       />
       <NodeResizer isVisible={selected} minWidth={100} minHeight={30} />
-      <div className="flex flex-col left-0">
+      <div className="flex flex-col left-0  ">
         {Object.keys(data).map((key) => (
           <div key={key}>
             {key === "label" && <h3 className="font-bold">{data[key]}</h3>}
@@ -94,8 +94,14 @@ const DecisionNode = ({
         id="right"
         isConnectable={isConnectable}
       />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="bottom"
+        isConnectable={isConnectable}
+      />
     </div>
   );
 };
 
-export default memo(DecisionNode);
+export default DecisionNode;
