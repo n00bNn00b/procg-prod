@@ -8,6 +8,7 @@ const AnimatedSVGEdge = ({
   targetY,
   sourcePosition,
   targetPosition,
+  label,
 }: EdgeProps) => {
   const [edgePath] = getSmoothStepPath({
     sourceX,
@@ -17,6 +18,16 @@ const AnimatedSVGEdge = ({
     targetY,
     targetPosition,
   });
+
+  // Get the middle point of the edge path to place the label
+  const midX = (sourceX + targetX) / 2;
+  const midY = (sourceY + targetY) / 2;
+
+  const fontSize = 10;
+  const labelWidth = label ? label.toString().length * fontSize * 0.6 : 0;
+  const labelHeight = fontSize + 6;
+  const labelX = midX - labelWidth / 2;
+  const labelY = midY - labelHeight / 2;
 
   return (
     <>
@@ -41,6 +52,34 @@ const AnimatedSVGEdge = ({
             <path d="M 0 0 L 10 5 L 0 10 Z" fill="#b1b1b7" />
           </marker>
         </defs>
+
+        {/* Add the label with a background */}
+        {label && (
+          <>
+            <rect
+              x={labelX}
+              y={labelY}
+              width={labelWidth}
+              height={labelHeight}
+              className="react-flow__edge-textbg"
+              rx="2"
+              ry="2"
+              fill="white"
+              stroke="none"
+            />
+            {/* Label text */}
+            <text
+              x={midX}
+              y={midY}
+              textAnchor="middle"
+              alignmentBaseline="middle"
+              fill="#505050"
+              fontSize={fontSize}
+            >
+              {label}
+            </text>
+          </>
+        )}
       </svg>
     </>
   );

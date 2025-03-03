@@ -96,7 +96,7 @@ const DnDFlow = () => {
   const edgeTypes = {
     animatedEdge: AnimatedSVGEdge,
   };
-  console.log(edges, "edges");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
