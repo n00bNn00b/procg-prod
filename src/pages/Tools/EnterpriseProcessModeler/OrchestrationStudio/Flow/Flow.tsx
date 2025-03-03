@@ -381,7 +381,7 @@ const DnDFlow = () => {
           <>
             <div className="flex items-center justify-center">
               {isLoading && (
-                <div className="absolute z-50 top-5">
+                <div className="absolute z-50 top-[45%]">
                   <Spinner color="red" size="40" />
                 </div>
               )}
@@ -496,7 +496,7 @@ const DnDFlow = () => {
               } absolute z-50 rounded-2xl p-2 `}
             >
               <div className="flex flex-col gap-2">
-                <span className="flex gap-2 items-center">
+                <div className="flex gap-2 items-center">
                   {/* Tools Icon */}
                   <div
                     onClick={handleToolsOpen}
@@ -566,10 +566,7 @@ const DnDFlow = () => {
                         <Save size={17} />
                       </div>
                     )}
-                  <div className="absolute left-[229px] w-10">
-                    <h3>Flow_Name:</h3>
-                  </div>
-                </span>
+                </div>
                 {toolsOpen && (
                   <div className="">
                     <Sidebar />
@@ -579,8 +576,10 @@ const DnDFlow = () => {
             </div>
             {/*Select Flow */}
             <div
-              className={`absolute top-[2px] left-[320px] z-10 p-2 flex flex-col gap-1`}
+              className={`absolute top-[2px] left-[320px] z-10 p-2 flex gap-1 items-center`}
             >
+              <h3>Flow Name:</h3>
+
               {/* select flow */}
               {flowsData.length > 0 && (
                 <div>

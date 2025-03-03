@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { useState } from "react";
 import { Handle, Position, NodeResizer } from "@xyflow/react";
 export interface ResizableNodeProps {
   data: {
@@ -98,4 +98,4 @@ const StartNode = ({
   );
 };
 
-export default memo(StartNode);
+export default StartNode;

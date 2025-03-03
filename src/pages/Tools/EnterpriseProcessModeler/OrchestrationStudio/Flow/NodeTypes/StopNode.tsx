@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { useState } from "react";
 import { Handle, Position, NodeResizer } from "@xyflow/react";
 import { ResizableNodeProps } from "./StartNode";
 
@@ -85,4 +85,4 @@ const StopNode = ({
   );
 };
 
-export default memo(StopNode);
+export default StopNode;
