@@ -11,7 +11,6 @@ import {
   Edge,
   Node,
   MiniMap,
-  MarkerType,
   Connection,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -42,6 +41,7 @@ import AlternateProcessNode from "./NodeTypes/AlternateProcessNode";
 import StopNode from "./NodeTypes/StopNode";
 import EditNode from "./EditNode/EditNode";
 import EditEdge from "./EditEdge/EditEdge";
+import AnimatedSVGEdge from "./EdgeTypes/AnimatedSVGEdge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -93,7 +93,10 @@ const DnDFlow = () => {
     alternateProcess: AlternateProcessNode,
     stop: StopNode,
   };
-
+  const edgeTypes = {
+    animatedEdge: AnimatedSVGEdge,
+  };
+  console.log(edges, "edges");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -138,17 +141,7 @@ const DnDFlow = () => {
     const edge: Edge = {
       ...params,
       id: `edge-${params.source}-${params.target}`,
-      type: "smoothstep",
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-        // width: 20,
-        // height: 20,
-        // color: "#FF0072",
-      },
-      // style: {
-      //   strokeWidth: 1,
-      //   stroke: "#FF0072",
-      // },
+      type: "animatedEdge",
     };
     setEdges((eds) => addEdge(edge, eds));
   }, []);
@@ -373,6 +366,7 @@ const DnDFlow = () => {
           onNodeClick={onNodeClick}
           onEdgeClick={onEdgeClick}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           attributionPosition="bottom-left"
           fitView
           style={{ backgroundColor: "#F7F9FB" }}

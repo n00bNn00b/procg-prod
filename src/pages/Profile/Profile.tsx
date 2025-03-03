@@ -1,16 +1,7 @@
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  // CardTitle,
-} from "@/components/ui/card";
 import { QRCodeCanvas } from "qrcode.react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
-import UpdateProfile from "./UpdateProfile";
 import { AvatarFallback } from "@/components/ui/avatar";
 
 // interface IAccessProfiles {
@@ -57,27 +48,19 @@ const Profile = () => {
     getUser();
   }, [combinedUser, token]);
   return (
-    <Tabs defaultValue="profile" className="w-full">
-      <div className="bg-slate-100 rounded">
-        <TabsList className="grid w-[30rem] grid-cols-3">
-          <TabsTrigger value="profile">Access Profiles</TabsTrigger>
-          <TabsTrigger value="customize">Customize</TabsTrigger>
-        </TabsList>
-      </div>
-      <TabsContent value="profile">
-        <Card className="h-[70vh]">
-          <CardHeader>
-            {/* <CardTitle>Password</CardTitle>
-            <CardDescription>
-              Change your password here. After saving, you'll be logged out.
-            </CardDescription> */}
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="text-center">Loading</div>
-            ) : (
-              <div className="flex gap-10 justify-center">
-                <div className="flex flex-col items-center justify-center border p-4 rounded">
+    <>
+      {isLoading ? (
+        <div className="text-center">Loading</div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-3 gap-2">
+            <div className="col-span-2 border p-4 font-bold">My profiles</div>
+            <div className="border p-4 font-bold">Access Profiles</div>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="grid col-span-2">
+              <div className="border flex gap-4 items-center p-8 mb-2">
+                <>
                   <Avatar>
                     <AvatarImage
                       className="object-cover object-center w-20 h-20 rounded-full mx-auto border border-8px"
@@ -87,31 +70,61 @@ const Profile = () => {
                       {token.user_name.slice(0, 1)}
                     </AvatarFallback>
                   </Avatar>
-                  <h4 className="font-bold text-center">
+                </>
+                <div className="p-2">
+                  <h5 className="font-bold">
                     {combinedUser?.first_name} {combinedUser?.last_name}
-                  </h4>
-                  <h4 className="text-center">
-                    Job Title : {combinedUser?.job_title}
-                  </h4>
-                </div>
-                <div className="p-4 flex flex-col">
-                  <h1 className="font-bold ">Access Profiles</h1>
-                  <QRCodeCanvas
-                    value={JSON.stringify(accessProfiles)}
-                    title={"Access Profiles"}
-                    size={120}
-                  />
+                  </h5>
+                  <h5 className="font-medium uppercase">
+                    {combinedUser?.job_title}
+                  </h5>
+                  <h5 className="font-medium">Id: {combinedUser?.user_id}</h5>
                 </div>
               </div>
-            )}
-          </CardContent>
-          <CardFooter></CardFooter>
-        </Card>
-      </TabsContent>
-      <TabsContent value="customize">
-        <UpdateProfile />
-      </TabsContent>
-    </Tabs>
+              <div className="border p-8 flex flex-col gap-3">
+                <h3 className="font-bold">Personal Info</h3>
+                <div className="grid grid-cols-3">
+                  <div>
+                    <h5>User Name</h5>
+                    <h3 className="font-medium">{combinedUser?.user_name}</h3>
+                  </div>
+                  <div>
+                    <h5>First Name</h5>
+                    <h3 className="font-medium">{combinedUser?.first_name}</h3>
+                  </div>
+                  <div>
+                    <h5>Last Name</h5>
+                    <h3 className="font-medium">{combinedUser?.last_name}</h3>
+                  </div>
+                </div>
+                <div>
+                  <h5>Emails</h5>
+                  <h3 className="font-medium">
+                    {combinedUser?.email_addresses}
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div className="border p-6 flex items-center justify-center">
+              <QRCodeCanvas
+                value={JSON.stringify(accessProfiles)}
+                title={"Access Profiles"}
+                size={150}
+                imageSettings={{
+                  src: "/favicon.svg",
+                  x: undefined,
+                  y: undefined,
+                  height: 24,
+                  width: 24,
+                  opacity: 1,
+                  excavate: true,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
