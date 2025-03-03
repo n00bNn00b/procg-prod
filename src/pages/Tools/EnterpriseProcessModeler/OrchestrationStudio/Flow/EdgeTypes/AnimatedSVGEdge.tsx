@@ -14,6 +14,7 @@ const AnimatedSVGEdge = ({
   sourcePosition,
   targetPosition,
   label,
+  animated,
 }: EdgeProps) => {
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
@@ -23,14 +24,16 @@ const AnimatedSVGEdge = ({
     targetY,
     targetPosition,
   });
-
+  console.log(animated, "animated");
   return (
     <>
       <BaseEdge id={id} path={edgePath} markerEnd="url(#arrow)" />
 
-      <circle r="4" fill="#fb343a">
-        <animateMotion dur="3s" repeatCount="indefinite" path={edgePath} />
-      </circle>
+      {animated && (
+        <circle r="4" fill="#fb343a">
+          <animateMotion dur="3s" repeatCount="indefinite" path={edgePath} />
+        </circle>
+      )}
 
       {/* Define the marker (Arrow) in the <defs> section */}
       <svg>
