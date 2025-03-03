@@ -1,4 +1,9 @@
-import { BaseEdge, getSmoothStepPath, type EdgeProps } from "@xyflow/react";
+import {
+  BaseEdge,
+  EdgeLabelRenderer,
+  getSmoothStepPath,
+  type EdgeProps,
+} from "@xyflow/react";
 
 const AnimatedSVGEdge = ({
   id,
@@ -10,7 +15,7 @@ const AnimatedSVGEdge = ({
   targetPosition,
   label,
 }: EdgeProps) => {
-  const [edgePath] = getSmoothStepPath({
+  const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -18,16 +23,6 @@ const AnimatedSVGEdge = ({
     targetY,
     targetPosition,
   });
-
-  // Get the middle point of the edge path to place the label
-  const midX = (sourceX + targetX) / 2;
-  const midY = (sourceY + targetY) / 2;
-
-  const fontSize = 10;
-  const labelWidth = label ? label.toString().length * fontSize * 0.6 : 0;
-  const labelHeight = fontSize + 6;
-  const labelX = midX - labelWidth / 2;
-  const labelY = midY - labelHeight / 2;
 
   return (
     <>
@@ -55,30 +50,22 @@ const AnimatedSVGEdge = ({
 
         {/* Add the label with a background */}
         {label && (
-          <>
-            <rect
-              x={labelX}
-              y={labelY}
-              width={labelWidth}
-              height={labelHeight}
-              className="react-flow__edge-textbg"
-              rx="2"
-              ry="2"
-              fill="white"
-              stroke="none"
-            />
-            {/* Label text */}
-            <text
-              x={midX}
-              y={midY}
-              textAnchor="middle"
-              alignmentBaseline="middle"
-              fill="#505050"
-              fontSize={fontSize}
+          <EdgeLabelRenderer>
+            <div
+              style={{
+                position: "absolute",
+                transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+                background: "#ffffff",
+                padding: "2px 4px",
+                borderRadius: 5,
+                fontSize: 10,
+                color: "#505050",
+              }}
+              className="nodrag nopan"
             >
               {label}
-            </text>
-          </>
+            </div>
+          </EdgeLabelRenderer>
         )}
       </svg>
     </>
