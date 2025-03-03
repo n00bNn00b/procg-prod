@@ -142,6 +142,7 @@ const DnDFlow = () => {
       ...params,
       id: `edge-${params.source}-${params.target}`,
       type: "animatedEdge",
+      animated: false,
     };
     setEdges((eds) => addEdge(edge, eds));
   }, []);

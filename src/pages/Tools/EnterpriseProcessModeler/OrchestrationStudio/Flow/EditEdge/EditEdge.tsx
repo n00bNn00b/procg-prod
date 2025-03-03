@@ -6,10 +6,17 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edge } from "@xyflow/react";
 import { X } from "lucide-react";
-import { Dispatch, FC, SetStateAction, useCallback, useEffect } from "react";
+import { Dispatch, FC, SetStateAction, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -25,19 +32,23 @@ const EditEdge: FC<EditNodeProps> = ({
 }) => {
   const FormSchema = z.object({
     label: z.string().optional(),
+    animated: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       label: selectedEdge.label ?? "",
+      animated: String(selectedEdge.animated) ?? "false",
     },
   });
-  useEffect(() => {
-    form.reset({
-      label: selectedEdge?.label ?? "",
-    });
-  }, [selectedEdge, form]);
+
+  // useEffect(() => {
+  //   form.reset({
+  //     label: selectedEdge?.label ?? "",
+  //     animated: "false",
+  //   });
+  // }, [selectedEdge, form]);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     console.log(data, "data");
@@ -48,6 +59,7 @@ const EditEdge: FC<EditNodeProps> = ({
             return {
               ...edge,
               label: data.label,
+              animated: data.animated === "true" ? true : false,
             };
           }
           return edge;
@@ -72,7 +84,7 @@ const EditEdge: FC<EditNodeProps> = ({
           {selectedEdge && (
             <div>
               <div className="flex items-center justify-between">
-                <div>Properties</div>
+                <h3>Properties</h3>
                 <X
                   size={20}
                   className="cursor-pointer"
@@ -95,9 +107,28 @@ const EditEdge: FC<EditNodeProps> = ({
                         <FormItem>
                           <FormLabel>Label</FormLabel>
                           <FormControl>
-                            <Input {...field} required placeholder="Label" />
+                            <Input {...field} placeholder="Label" />
                           </FormControl>
                         </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="animated"
+                      render={({ field }) => (
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormLabel>Animation</FormLabel>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Animated" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="true">True</SelectItem>
+                            <SelectItem value="false">False</SelectItem>
+                          </SelectContent>
+                        </Select>
                       )}
                     />
                   </div>
