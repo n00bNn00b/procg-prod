@@ -1,3 +1,10 @@
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useRef, useCallback, DragEvent, useState, useEffect } from "react";
 import {
   ReactFlow,
@@ -202,7 +209,7 @@ const DnDFlow = () => {
     } else {
       toast({
         title: "Info!!",
-        description: "Please create a flow first.",
+        description: "Please create a flow first or select a flow.",
       });
       return;
     }
@@ -493,73 +500,121 @@ const DnDFlow = () => {
               <div className="flex flex-col gap-2">
                 <div className="flex gap-2 items-center">
                   {/* Tools Icon */}
-                  <div
-                    onClick={handleToolsOpen}
-                    className=" bg-slate-200 rounded-full p-2 text-2xl hover:bg-slate-300 hover:shadow cursor-pointer text-red-500"
-                  >
-                    <SquareMenu size={17} />
-                  </div>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          onClick={handleToolsOpen}
+                          className=" bg-slate-200 rounded-full p-2 text-2xl hover:bg-slate-300 hover:shadow cursor-pointer text-red-500"
+                        >
+                          <SquareMenu size={17} />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Tools</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
                   {/* Plus Icon */}
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCreateNewFlow(true);
-                    }}
-                    className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
-                  >
-                    <Plus size={17} />
-                  </div>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCreateNewFlow(true);
+                          }}
+                          className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
+                        >
+                          <Plus size={17} />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Create new Flow</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
 
                   {/* Pen Icon */}
                   {selectedFlowData && (
-                    <div
-                      onClick={() => {
-                        setIsEditFlowName(true);
-                        setNewProcessName(selectedFlowData?.process_name ?? "");
-                      }}
-                      className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
-                    >
-                      <Pen size={17} />
-                    </div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div
+                            onClick={() => {
+                              setIsEditFlowName(true);
+                              setNewProcessName(
+                                selectedFlowData?.process_name ?? ""
+                              );
+                            }}
+                            className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
+                          >
+                            <Pen size={17} />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Edit selected Flow</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   )}
                   {/* Trash Flow */}
                   {selectedFlowData && (
-                    <div className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow">
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Trash size={17} />
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Are you absolutely sure delete flow?
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone. This will
-                              permanently delete your account and remove your
-                              data from our servers.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteFlow}>
-                              Continue
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow">
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Trash size={17} />
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Are you absolutely sure delete flow?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will
+                                    permanently delete your account and remove
+                                    your data from our servers.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={handleDeleteFlow}>
+                                    Continue
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Delete selected Flow</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   )}
                   {/* Save Icon */}
                   {edges.length > 0 &&
                     nodes.length > 0 &&
                     lastNode.length > 0 && (
-                      <div
-                        onClick={handleSave}
-                        className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
-                      >
-                        <Save size={17} />
-                      </div>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div
+                              onClick={handleSave}
+                              className="cursor-pointer bg-slate-200 p-2 rounded-full text-2xl hover:bg-slate-300 hover:shadow"
+                            >
+                              <Save size={17} />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Save edited Flow</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     )}
                 </div>
                 {toolsOpen && (
@@ -577,36 +632,46 @@ const DnDFlow = () => {
 
               {/* select flow */}
               {flowsData.length > 0 && (
-                <div>
-                  <Select
-                    value={selectedFlowData?.process_name ?? ""}
-                    onValueChange={(process_name: string) => {
-                      setSelectedFlowName(process_name);
-                      setNewProcessName("");
-                      setCreateNewFlow(false);
-                      setSelectedEdge(undefined);
-                      setSelectedNode(undefined);
-                    }}
-                  >
-                    <SelectTrigger className="w-[180px] h-[30px]">
-                      <SelectValue placeholder="Select a Flow" />
-                    </SelectTrigger>
-                    <SelectContent className=" max-h-[15rem] ">
-                      <SelectGroup>
-                        {/* <SelectLabel>Flows</SelectLabel> */}
-                        {flowsData.map((flow) => (
-                          <SelectItem
-                            key={flow.process_id}
-                            value={flow.process_name}
-                            className="cursor-pointer "
-                          >
-                            {flow.process_name}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select
+                  value={selectedFlowData?.process_name ?? ""}
+                  onValueChange={(process_name: string) => {
+                    setSelectedFlowName(process_name);
+                    setNewProcessName("");
+                    setCreateNewFlow(false);
+                    setSelectedEdge(undefined);
+                    setSelectedNode(undefined);
+                  }}
+                >
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SelectTrigger className="w-[230px] h-[30px]">
+                          <SelectValue placeholder="Select a Flow" />
+                        </SelectTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          {selectedFlowData?.process_name ?? "Select a Flow"}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  <SelectContent className=" max-h-[15rem] ">
+                    <SelectGroup>
+                      {/* <SelectLabel>Flows</SelectLabel> */}
+                      {flowsData.map((flow) => (
+                        <SelectItem
+                          key={flow.process_id}
+                          value={flow.process_name}
+                          className="cursor-pointer "
+                        >
+                          {flow.process_name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               )}
             </div>
             {/* Right Edit Bar */}
