@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Handle, Position, NodeResizer } from "@xyflow/react";
-import { ResizableNodeProps } from "./StartNode";
 import "../index.css";
+import { ResizableNodeProps } from "@/types/interfaces/orchestration.interface";
 const DecisionNode = ({
   data,
   isConnectable,
