@@ -571,7 +571,7 @@ const DnDFlow = () => {
             </div>
             {/*Select Flow */}
             <div
-              className={`absolute top-[2px] left-[320px] z-10 p-2 flex gap-1 items-center`}
+              className={`absolute top-[2px] left-[220px] z-10 p-2 flex gap-1 items-center`}
             >
               <h3>Flow Name:</h3>
 
@@ -588,8 +588,8 @@ const DnDFlow = () => {
                       setSelectedNode(undefined);
                     }}
                   >
-                    <SelectTrigger className="w-[150px] h-[30px]">
-                      <SelectValue placeholder="Select a flow" />
+                    <SelectTrigger className="w-[180px] h-[30px]">
+                      <SelectValue placeholder="Select a Flow" />
                     </SelectTrigger>
                     <SelectContent className=" max-h-[15rem] ">
                       <SelectGroup>
