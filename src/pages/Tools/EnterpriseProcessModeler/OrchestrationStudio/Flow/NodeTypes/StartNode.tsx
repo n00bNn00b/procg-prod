@@ -1,20 +1,7 @@
 import { useState } from "react";
 import { Handle, Position, NodeResizer } from "@xyflow/react";
-export interface ResizableNodeProps {
-  data: {
-    label: string;
-    attributes: Attributes[];
-  };
-  isConnectable: boolean;
-  selected: boolean;
-  positionAbsoluteX: number;
-  positionAbsoluteY: number;
-}
-interface Attributes {
-  id: number;
-  attribute_name: string;
-  attribute_value: string;
-}
+import { ResizableNodeProps } from "@/types/interfaces/orchestration.interface";
+
 const StartNode = ({
   data,
   isConnectable,

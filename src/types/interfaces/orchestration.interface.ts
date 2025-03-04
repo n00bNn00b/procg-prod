@@ -1,4 +1,25 @@
 import { Edge, Node } from "@xyflow/react";
+import { SVGAttributes } from "react";
+
+interface Attributes {
+  id: number;
+  attribute_name: string;
+  attribute_value: string;
+}
+
+export interface ResizableNodeProps extends Partial<SVGAttributes<SVGElement>> {
+  id: string;
+  data: {
+    label: string;
+    attributes: Attributes[];
+  };
+  isConnectable: boolean;
+  selected: boolean;
+  positionAbsoluteX: number;
+  positionAbsoluteY: number;
+}
+export interface prop extends Partial<SVGAttributes<SVGElement>> {}
+
 export interface IOrchestrationDataTypes {
   process_id: number;
   process_name: string;
@@ -8,6 +29,11 @@ export interface StructureTypes {
   nodes: Node[];
   edges: Edge[];
 }
+export type ShapeProps = {
+  width: number;
+  height: number;
+} & SVGAttributes<SVGElement>;
+
 // // Node
 // export interface Node {
 //   id: number;

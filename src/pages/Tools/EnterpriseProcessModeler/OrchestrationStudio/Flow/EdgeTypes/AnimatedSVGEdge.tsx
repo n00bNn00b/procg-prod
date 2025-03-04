@@ -24,7 +24,7 @@ const AnimatedSVGEdge = ({
     targetY,
     targetPosition,
   });
-  console.log(animated, "animated");
+
   return (
     <>
       <BaseEdge id={id} path={edgePath} markerEnd="url(#arrow)" />
