@@ -107,9 +107,9 @@ const DnDFlow = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get("/orchestration-studio-process");
+        const resFlows = await api.get("/orchestration-studio-process");
 
-        setFlowsData(response.data);
+        setFlowsData(resFlows.data);
       } catch (error) {
         if (error instanceof AxiosError && error.response) {
           console.log(error.response.data);
@@ -179,7 +179,7 @@ const DnDFlow = () => {
         id: getId(),
         type,
         position,
-        data: { label: `${label}`, attributes: [] },
+        data: { label: `${label}`, step_function: "", attributes: [] },
         style: { backgroundColor: nodeColor },
       };
 
