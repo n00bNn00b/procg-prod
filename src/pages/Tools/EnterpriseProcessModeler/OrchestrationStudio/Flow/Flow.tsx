@@ -644,7 +644,7 @@ const DnDFlow = () => {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <SelectTrigger className="w-[230px] h-[30px]">
+                        <SelectTrigger className="w-[230px] h-[30px] bg-white">
                           <SelectValue placeholder="Select a Flow" />
                         </SelectTrigger>
                       </TooltipTrigger>
