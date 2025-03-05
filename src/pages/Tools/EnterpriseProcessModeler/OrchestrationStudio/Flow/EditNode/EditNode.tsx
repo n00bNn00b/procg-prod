@@ -11,10 +11,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useARMContext } from "@/Context/ARMContext/ARMContext";
+import { IARMAsynchronousTasksTypes } from "@/types/interfaces/ARM.interface";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Node } from "@xyflow/react";
 import { EllipsisVertical, X } from "lucide-react";
-import { Dispatch, FC, SetStateAction, useEffect } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -30,12 +40,36 @@ const EditNode: FC<EditNodeProps> = ({
   setSelectedNode,
   setIsAddAttribute,
 }) => {
+  const { getAsyncTasks } = useARMContext();
+  const [stepFunctionTasks, setStepFunctionTasks] = useState<
+    IARMAsynchronousTasksTypes[]
+  >([]);
+
+  useEffect(() => {
+    const fetchAsyncTasks = async () => {
+      try {
+        const stepFunction = await getAsyncTasks();
+
+        if (stepFunction) {
+          setStepFunctionTasks(stepFunction.filter((task) => task.sf === "Y"));
+        }
+      } catch (error) {
+        console.log(error, "error");
+      }
+    };
+    fetchAsyncTasks();
+  }, []);
+
   const FormSchema = z.object(
     selectedNode
       ? Object.keys(selectedNode.data).reduce((acc, key) => {
           const value = selectedNode.data[key];
 
-          if (key === "attributes" && Array.isArray(value)) {
+          if (key === "label") {
+            acc[key] = z.string();
+          } else if (key === "step_function") {
+            acc[key] = z.string();
+          } else if (key === "attributes" && Array.isArray(value)) {
             acc[key] = z.array(
               z.object({
                 id: z.number(),
@@ -43,8 +77,6 @@ const EditNode: FC<EditNodeProps> = ({
                 attribute_value: z.string(),
               })
             );
-          } else if (key === "label") {
-            acc[key] = z.string();
           } else {
             acc[key] = z.unknown();
           }
@@ -164,17 +196,6 @@ const EditNode: FC<EditNodeProps> = ({
                                 <FormLabel>
                                   <span className="flex justify-between">
                                     <span>{key}</span>
-                                    <>
-                                      {key !== "label" && (
-                                        <X
-                                          size={15}
-                                          className="cursor-pointer"
-                                          onClick={() =>
-                                            handleRemoveAttribute(key)
-                                          }
-                                        />
-                                      )}
-                                    </>
                                   </span>
                                 </FormLabel>
                                 <FormControl>
@@ -198,6 +219,61 @@ const EditNode: FC<EditNodeProps> = ({
                                       });
                                     }}
                                   />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        );
+                      } else if (key === "step_function") {
+                        return (
+                          <FormField
+                            key={index}
+                            control={form.control}
+                            name={key}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>
+                                  <span className="flex justify-between">
+                                    <span>Step Function</span>
+                                  </span>
+                                </FormLabel>
+                                <FormControl>
+                                  <Select
+                                    onValueChange={(value) => {
+                                      field.onChange(value);
+                                      setSelectedNode((prev) => {
+                                        if (prev) {
+                                          return {
+                                            ...prev,
+                                            data: {
+                                              ...prev.data,
+                                              [key]: value,
+                                            },
+                                          };
+                                        }
+                                        return prev;
+                                      });
+                                    }}
+                                    value={field.value}
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select a option" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectGroup>
+                                        {/* <SelectLabel>Step Function </SelectLabel> */}
+                                        {stepFunctionTasks.map((task) => (
+                                          <SelectItem
+                                            key={task.arm_task_id}
+                                            value={task.task_name}
+                                            className="cursor-pointer "
+                                          >
+                                            {task.user_task_name}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectGroup>
+                                    </SelectContent>
+                                  </Select>
                                 </FormControl>
                               </FormItem>
                             )}
