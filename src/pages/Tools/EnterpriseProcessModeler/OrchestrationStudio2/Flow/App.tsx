@@ -22,7 +22,7 @@ import ShapeNodeComponent from "./shape-node";
 import Sidebar from "./sidebar";
 import MiniMapNode from "./minimap-node";
 import { ShapeNode, ShapeType } from "./shape/types";
-import "./index.css";
+import "./ProFlow.css";
 
 const nodeTypes: NodeTypes = {
   shape: ShapeNodeComponent,
@@ -104,13 +104,19 @@ function ShapesProExampleApp({
           snapGrid={[10, 10]}
           onDragOver={onDragOver}
           zoomOnDoubleClick={zoomOnDoubleClick}
+          className="v2"
         >
           <Background />
           <Panel position="top-left">
             <Sidebar />
           </Panel>
-          <Controls />
-          <MiniMap zoomable draggable nodeComponent={MiniMapNode} />
+          <Controls style={{ bottom: 155 }} orientation="horizontal" />
+          <MiniMap
+            zoomable
+            draggable
+            nodeComponent={MiniMapNode}
+            position="bottom-left"
+          />
         </ReactFlow>
       </div>
     </div>

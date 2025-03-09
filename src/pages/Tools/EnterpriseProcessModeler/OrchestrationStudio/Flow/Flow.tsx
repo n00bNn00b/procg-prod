@@ -20,7 +20,7 @@ import {
   Connection,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import "./index.css";
+import "./CustomFlow.css";
 
 import { DnDProvider, useDnD } from "./DnDContext";
 import Sidebar from "./Sidebar";

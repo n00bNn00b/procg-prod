@@ -1,7 +1,7 @@
-import { type DragEvent, useRef } from 'react';
+import { type DragEvent, useRef } from "react";
 
-import Shape from '../shape';
-import { type ShapeType } from '../shape/types';
+import Shape from "../shape";
+import { type ShapeType } from "../shape/types";
 
 type SidebarItemProps = {
   type: ShapeType;
@@ -11,7 +11,7 @@ function SidebarItem({ type }: SidebarItemProps) {
   const dragImageRef = useRef<HTMLDivElement>(null);
 
   const onDragStart = (event: DragEvent<HTMLDivElement>) => {
-    event.dataTransfer?.setData('application/reactflow', type);
+    event.dataTransfer?.setData("application/reactflow", type);
 
     if (dragImageRef.current) {
       event.dataTransfer.setDragImage(dragImageRef.current, 0, 0);
