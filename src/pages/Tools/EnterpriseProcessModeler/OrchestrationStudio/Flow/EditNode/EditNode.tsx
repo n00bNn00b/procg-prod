@@ -19,7 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useARMContext } from "@/Context/ARMContext/ARMContext";
+
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { IARMAsynchronousTasksTypes } from "@/types/interfaces/ARM.interface";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Node } from "@xyflow/react";
@@ -40,7 +41,7 @@ const EditNode: FC<EditNodeProps> = ({
   setSelectedNode,
   setIsAddAttribute,
 }) => {
-  const { getAsyncTasks } = useARMContext();
+  const api = useAxiosPrivate();
   const [stepFunctionTasks, setStepFunctionTasks] = useState<
     IARMAsynchronousTasksTypes[]
   >([]);
@@ -48,10 +49,11 @@ const EditNode: FC<EditNodeProps> = ({
   useEffect(() => {
     const fetchAsyncTasks = async () => {
       try {
-        const stepFunction = await getAsyncTasks();
-
-        if (stepFunction) {
-          setStepFunctionTasks(stepFunction.filter((task) => task.sf === "Y"));
+        const res = await api.get<IARMAsynchronousTasksTypes[]>(
+          `/arm-tasks/show-tasks`
+        );
+        if (res) {
+          setStepFunctionTasks(res.data.filter((task) => task.sf === "Y"));
         }
       } catch (error) {
         console.log(error, "error");
