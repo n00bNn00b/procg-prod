@@ -144,7 +144,8 @@ const EditNode: FC<EditNodeProps> = ({
       );
     }
   };
-  console.log(selectedNode, "selectedNode edit page");
+  const displayOrder = ["label", "step_function", "attributes"];
+
   return (
     <>
       {selectedNode && (
@@ -184,161 +185,172 @@ const EditNode: FC<EditNodeProps> = ({
                   className="space-y-2"
                 >
                   <div className="flex flex-col gap-4">
-                    {Object.keys(selectedNode?.data).map((key, index) => {
-                      if (key === "label") {
-                        return (
-                          <FormField
-                            key={index}
-                            control={form.control}
-                            name={key}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>
-                                  <span className="flex justify-between">
-                                    <span>{key}</span>
-                                  </span>
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    value={field.value ?? ""}
-                                    required
-                                    placeholder={key}
-                                    onBlur={() => {
-                                      setSelectedNode((prev) => {
-                                        if (prev) {
-                                          return {
-                                            ...prev,
-                                            data: {
-                                              ...prev.data,
-                                              [key]: field.value,
-                                            },
-                                          };
-                                        }
-                                        return prev;
-                                      });
-                                    }}
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        );
-                      } else if (key === "step_function") {
-                        return (
-                          <FormField
-                            key={index}
-                            control={form.control}
-                            name={key}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>
-                                  <span className="flex justify-between">
-                                    <span>Step Function</span>
-                                  </span>
-                                </FormLabel>
-                                <FormControl>
-                                  <Select
-                                    onValueChange={(value) => {
-                                      field.onChange(value);
-                                      setSelectedNode((prev) => {
-                                        if (prev) {
-                                          return {
-                                            ...prev,
-                                            data: {
-                                              ...prev.data,
-                                              [key]: value,
-                                            },
-                                          };
-                                        }
-                                        return prev;
-                                      });
-                                    }}
-                                    value={field.value}
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select a option" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectGroup>
-                                        {/* <SelectLabel>Step Function </SelectLabel> */}
-                                        {stepFunctionTasks.map((task) => (
-                                          <SelectItem
-                                            key={task.arm_task_id}
-                                            value={task.task_name}
-                                            className="cursor-pointer "
-                                          >
-                                            {task.user_task_name}
-                                          </SelectItem>
-                                        ))}
-                                      </SelectGroup>
-                                    </SelectContent>
-                                  </Select>
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        );
-                      } else if (key === "attributes") {
-                        return selectedNode?.data?.attributes?.map(
-                          (attribute: any, index: number) => (
-                            <div key={index}>
-                              <FormField
-                                key={index}
-                                control={form.control}
-                                name={`attributes.${index}.attribute_value`} // Using index to ensure uniqueness
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>
-                                      <span className="flex justify-between">
-                                        <span>{attribute.attribute_name}</span>
-                                        <X
-                                          size={15}
-                                          className="cursor-pointer"
-                                          onClick={() =>
-                                            handleRemoveAttribute(attribute.id)
+                    {displayOrder.map((key) => {
+                      if (
+                        Object.prototype.hasOwnProperty.call(
+                          selectedNode?.data,
+                          key
+                        )
+                      ) {
+                        if (key === "label") {
+                          return (
+                            <FormField
+                              key={key}
+                              control={form.control}
+                              name={key}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>
+                                    <span className="flex justify-between">
+                                      <span>{key}</span>
+                                    </span>
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      value={field.value ?? ""}
+                                      required
+                                      placeholder={key}
+                                      onBlur={() => {
+                                        setSelectedNode((prev) => {
+                                          if (prev) {
+                                            return {
+                                              ...prev,
+                                              data: {
+                                                ...prev.data,
+                                                [key]: field.value,
+                                              },
+                                            };
                                           }
-                                        />
-                                      </span>
-                                    </FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        {...field}
-                                        value={
-                                          field.value ??
-                                          attribute.attribute_value
-                                        }
-                                        required
-                                        placeholder="Enter value"
-                                        onBlur={() => {
-                                          setSelectedNode((prev: any) => {
-                                            if (prev) {
-                                              const updatedAttributes = [
-                                                ...prev.data.attributes,
-                                              ];
-                                              updatedAttributes[index] = {
-                                                ...updatedAttributes[index],
-                                                attribute_value: field.value, // Update the attribute_value on blur
-                                              };
-                                              return {
-                                                ...prev,
-                                                data: {
-                                                  ...prev.data,
-                                                  attributes: updatedAttributes,
-                                                },
-                                              };
+                                          return prev;
+                                        });
+                                      }}
+                                    />
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          );
+                        } else if (key === "step_function") {
+                          return (
+                            <FormField
+                              key={key}
+                              control={form.control}
+                              name={key}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>
+                                    <span className="flex justify-between">
+                                      <span>Step Function</span>
+                                    </span>
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Select
+                                      onValueChange={(value) => {
+                                        field.onChange(value);
+                                        setSelectedNode((prev) => {
+                                          if (prev) {
+                                            return {
+                                              ...prev,
+                                              data: {
+                                                ...prev.data,
+                                                [key]: value,
+                                              },
+                                            };
+                                          }
+                                          return prev;
+                                        });
+                                      }}
+                                      value={field.value}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select an option" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectGroup>
+                                          {stepFunctionTasks.map((task) => (
+                                            <SelectItem
+                                              key={task.arm_task_id}
+                                              value={task.task_name}
+                                              className="cursor-pointer"
+                                            >
+                                              {task.user_task_name}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectGroup>
+                                      </SelectContent>
+                                    </Select>
+                                  </FormControl>
+                                </FormItem>
+                              )}
+                            />
+                          );
+                        } else if (key === "attributes") {
+                          return selectedNode?.data?.attributes?.map(
+                            (attribute: any, index: number) => (
+                              <div key={index}>
+                                <FormField
+                                  key={index}
+                                  control={form.control}
+                                  name={`attributes.${index}.attribute_value`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>
+                                        <span className="flex justify-between">
+                                          <span>
+                                            {attribute.attribute_name}
+                                          </span>
+                                          <X
+                                            size={15}
+                                            className="cursor-pointer"
+                                            onClick={() =>
+                                              handleRemoveAttribute(
+                                                attribute.id
+                                              )
                                             }
-                                            return prev;
-                                          });
-                                        }}
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                          )
-                        );
+                                          />
+                                        </span>
+                                      </FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          {...field}
+                                          value={
+                                            field.value ??
+                                            attribute.attribute_value
+                                          }
+                                          required
+                                          placeholder="Enter value"
+                                          onBlur={() => {
+                                            setSelectedNode((prev: any) => {
+                                              if (prev) {
+                                                const updatedAttributes = [
+                                                  ...prev.data.attributes,
+                                                ];
+                                                updatedAttributes[index] = {
+                                                  ...updatedAttributes[index],
+                                                  attribute_value: field.value,
+                                                };
+                                                return {
+                                                  ...prev,
+                                                  data: {
+                                                    ...prev.data,
+                                                    attributes:
+                                                      updatedAttributes,
+                                                  },
+                                                };
+                                              }
+                                              return prev;
+                                            });
+                                          }}
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+                            )
+                          );
+                        }
                       }
                     })}
                   </div>

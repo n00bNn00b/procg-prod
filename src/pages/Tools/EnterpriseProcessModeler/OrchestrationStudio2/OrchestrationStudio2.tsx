@@ -1,5 +1,11 @@
+import ProWorkFlowMain from "./Flow/App";
+
 const OrchestrationStudio2 = () => {
-  return <div>Orchestration Studio V1</div>;
+  return (
+    <div>
+      <ProWorkFlowMain />
+    </div>
+  );
 };
 
 export default OrchestrationStudio2;

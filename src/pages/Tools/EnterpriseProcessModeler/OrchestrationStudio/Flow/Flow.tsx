@@ -20,7 +20,7 @@ import {
   Connection,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import "./index.css";
+import "./CustomFlow.css";
 
 import { DnDProvider, useDnD } from "./DnDContext";
 import Sidebar from "./Sidebar";
@@ -644,7 +644,7 @@ const DnDFlow = () => {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <SelectTrigger className="w-[230px] h-[30px]">
+                        <SelectTrigger className="w-[230px] h-[30px] bg-white">
                           <SelectValue placeholder="Select a Flow" />
                         </SelectTrigger>
                       </TooltipTrigger>
