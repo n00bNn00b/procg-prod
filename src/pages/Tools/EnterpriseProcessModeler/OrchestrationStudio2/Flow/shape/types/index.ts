@@ -27,8 +27,15 @@ export type ShapeProps = {
 } & SVGAttributes<SVGElement>;
 
 export type ShapeComponentProps = Partial<ShapeProps> & { type: ShapeType };
-
+export type AttributesProps = {
+  id: number;
+  attribute_name: string;
+  attribute_value: string;
+};
 export type ShapeNode = Node<{
+  label: string;
+  step_function: string;
+  attributes: AttributesProps[];
   type: ShapeType;
   color: string;
 }>;

@@ -23,16 +23,18 @@ import { useARMContext } from "@/Context/ARMContext/ARMContext";
 
 import { IARMAsynchronousTasksTypes } from "@/types/interfaces/ARM.interface";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Node } from "@xyflow/react";
 import { EllipsisVertical, X } from "lucide-react";
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { ShapeNode } from "../../shape/types";
 
 interface EditNodeProps {
-  setNodes: (payload: Node[] | ((nodes: Node[]) => Node[])) => void;
+  setNodes: (
+    payload: ShapeNode[] | ((nodes: ShapeNode[]) => ShapeNode[])
+  ) => void;
   selectedNode: any;
-  setSelectedNode: Dispatch<SetStateAction<Node | undefined>>;
+  setSelectedNode: Dispatch<SetStateAction<ShapeNode | undefined>>;
   setIsAddAttribute: Dispatch<SetStateAction<boolean>>;
 }
 const EditNode: FC<EditNodeProps> = ({
@@ -59,26 +61,27 @@ const EditNode: FC<EditNodeProps> = ({
     };
     fetchAsyncTasks();
   }, []);
-
+  console.log(selectedNode, "selectedNode");
   const FormSchema = z.object(
     selectedNode
       ? Object.keys(selectedNode.data).reduce((acc, key) => {
           const value = selectedNode.data[key];
-
           if (key === "label") {
             acc[key] = z.string();
           } else if (key === "step_function") {
             acc[key] = z.string();
           } else if (key === "attributes" && Array.isArray(value)) {
-            acc[key] = z.array(
-              z.object({
-                id: z.number(),
-                attribute_name: z.string(),
-                attribute_value: z.string(),
-              })
-            );
+            acc[key] = z
+              .array(
+                z.object({
+                  id: z.number(),
+                  attribute_name: z.string(),
+                  attribute_value: z.string(),
+                })
+              )
+              .optional();
           } else {
-            acc[key] = z.unknown();
+            acc[key] = z.unknown().optional();
           }
 
           return acc;
@@ -104,25 +107,30 @@ const EditNode: FC<EditNodeProps> = ({
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     console.log(data, "data");
     if (selectedNode) {
-      setNodes((prevNodes: Node[]) =>
-        prevNodes.map((node: Node) => {
+      setNodes((prev: ShapeNode[]) => {
+        return prev.map((node: ShapeNode) => {
           if (node.id === selectedNode.id) {
             return {
               ...node,
-              data,
+              data: {
+                ...node.data,
+                label: data.label,
+                step_function: data.step_function,
+                attributes: data.attributes,
+              },
             };
           }
           return node;
-        })
-      );
+        });
+      });
       setSelectedNode(undefined);
     }
   };
 
   const handleDelete = () => {
     if (selectedNode) {
-      setNodes((prevNodes: Node[]) =>
-        prevNodes.filter((node: Node) => node.id !== selectedNode.id)
+      setNodes((prevNodes: ShapeNode[]) =>
+        prevNodes.filter((node: ShapeNode) => node.id !== selectedNode.id)
       );
       setSelectedNode(undefined);
     }
@@ -144,7 +152,13 @@ const EditNode: FC<EditNodeProps> = ({
       );
     }
   };
-  const displayOrder = ["label", "step_function", "attributes"];
+  const displayOrder = [
+    "label",
+    "step_function",
+    "attributes",
+    "color",
+    "type",
+  ];
 
   return (
     <>

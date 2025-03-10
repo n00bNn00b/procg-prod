@@ -11,7 +11,7 @@ import {
 import Shape from "../shape";
 import ShapeNodeToolbar from "../toolbar";
 import { type ShapeNode } from "../shape/types";
-import NodeLabel from "./label";
+import NodeData from "./label";
 
 // this will return the current dimensions of the node (measured internally by react flow)
 function useNodeDimensions(id: string) {
@@ -23,7 +23,7 @@ function useNodeDimensions(id: string) {
 }
 
 function ShapeNode({ id, selected, data }: NodeProps<ShapeNode>) {
-  const { color, type } = data;
+  const { label, attributes, color, type } = data;
   const { setNodes } = useReactFlow();
 
   const { width, height } = useNodeDimensions(id);
@@ -89,7 +89,7 @@ function ShapeNode({ id, selected, data }: NodeProps<ShapeNode>) {
         type="source"
         position={Position.Left}
       />
-      <NodeLabel placeholder={data.type} />
+      <NodeData label={label} attributes={attributes} />
     </>
   );
 }
