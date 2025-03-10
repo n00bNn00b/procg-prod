@@ -1,4 +1,10 @@
-import { DragEvent, DragEventHandler, useRef } from "react";
+import {
+  DragEvent,
+  DragEventHandler,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
 import {
   ReactFlow,
   Background,
@@ -12,6 +18,11 @@ import {
   Controls,
   useReactFlow,
   MiniMap,
+  useNodesState,
+  useEdgesState,
+  Edge,
+  Connection,
+  addEdge,
 } from "@xyflow/react";
 import { useControls } from "leva";
 
@@ -23,6 +34,9 @@ import Sidebar from "./sidebar";
 import MiniMapNode from "./minimap-node";
 import { ShapeNode, ShapeType } from "./shape/types";
 import "./ProFlow.css";
+import FlowItems from "./components/FlowItems";
+import { IOrchestrationDataTypes } from "@/types/interfaces/orchestration.interface";
+import AnimatedSVGEdge from "./EdgeTypes/AnimatedSVGEdge";
 
 const nodeTypes: NodeTypes = {
   shape: ShapeNodeComponent,
@@ -50,7 +64,31 @@ function ShapesProExampleApp({
   zoomOnDoubleClick = false,
 }: ExampleProps) {
   const reactFlowWrapper = useRef(null);
-  const { screenToFlowPosition, setNodes } = useReactFlow<ShapeNode>();
+  const { screenToFlowPosition } = useReactFlow();
+  const [nodes, setNodes, onNodesChange] = useNodesState<ShapeNode>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [selectedFlowData, setSelectedFlowData] =
+    useState<IOrchestrationDataTypes>();
+  const [selectedNode, setSelectedNode] = useState<ShapeNode | undefined>(
+    undefined
+  );
+  const [selectedEdge, setSelectedEdge] = useState<Edge | undefined>(undefined);
+
+  console.log(selectedNode, selectedEdge, "nodes,selectedEdge");
+
+  const edgeTypes = {
+    animatedEdge: AnimatedSVGEdge,
+  };
+
+  const onConnect = useCallback((params: Connection) => {
+    const edge: Edge = {
+      ...params,
+      id: `edge-${params.source}-${params.target}`,
+      type: "animatedEdge",
+      animated: false,
+    };
+    setEdges((eds) => addEdge(edge, eds));
+  }, []);
 
   const onDragOver = (evt: DragEvent<HTMLDivElement>) => {
     evt.preventDefault();
@@ -67,7 +105,8 @@ function ShapesProExampleApp({
     const position = screenToFlowPosition({ x: evt.clientX, y: evt.clientY });
 
     const newNode: ShapeNode = {
-      id: Date.now().toString(),
+      // id: Date.now().toString(),
+      id: `node-${Math.random().toString(36).substr(2, 9)}`,
       type: "shape",
       position,
       style: { width: 100, height: 100 },
@@ -85,15 +124,40 @@ function ShapesProExampleApp({
     );
   };
 
+  const onNodeClick = useCallback(
+    (event: React.MouseEvent, node: ShapeNode) => {
+      console.log(event, "Node event");
+      setSelectedEdge(undefined);
+      setSelectedNode(node);
+    },
+    []
+  );
+
+  const onEdgeClick = (event: React.MouseEvent, edge: Edge) => {
+    console.log(event, "Edge event");
+    setSelectedNode(undefined);
+    setSelectedEdge(edge);
+  };
+
+  console.log(defaultNodes, defaultEdges, "defaultNodes, defaultEdges");
+  console.log(nodes, edges, "nodes,edges");
   return (
     <div className="dndflow h-[calc(100vh-6rem)]">
       <div className="reactflow-wrapper" ref={reactFlowWrapper}>
         <ReactFlow
+          edgeTypes={edgeTypes}
+          onConnect={onConnect}
+          onNodeClick={onNodeClick}
+          onEdgeClick={onEdgeClick}
           colorMode={theme}
           proOptions={proOptions}
           nodeTypes={nodeTypes}
-          defaultNodes={defaultNodes}
-          defaultEdges={defaultEdges}
+          nodes={nodes}
+          edges={edges}
+          // defaultNodes={defaultNodes}
+          // defaultEdges={defaultEdges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
           defaultEdgeOptions={defaultEdgeOptions}
           connectionLineType={ConnectionLineType.SmoothStep}
           fitView
@@ -106,6 +170,12 @@ function ShapesProExampleApp({
           zoomOnDoubleClick={zoomOnDoubleClick}
           className="v2"
         >
+          <FlowItems
+            setNodes={setNodes}
+            setEdges={setEdges}
+            selectedFlowData={selectedFlowData}
+            setSelectedFlowData={setSelectedFlowData}
+          />
           <Background />
           <Panel position="top-left">
             <Sidebar />

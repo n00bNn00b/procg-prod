@@ -1,4 +1,4 @@
-import ProWorkFlowMain from "./Flow/App";
+import ProWorkFlowMain from "./Flow/Flow";
 
 const OrchestrationStudio2 = () => {
   return (
