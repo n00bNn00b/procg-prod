@@ -65,7 +65,9 @@ const TaskRequest: FC<ITaskRequestTypes> = ({
       try {
         setIsLoading(true);
         const tasks = await getAsyncTasks();
-        setAsyncTaskNames(tasks);
+        if (tasks) {
+          setAsyncTaskNames(tasks.filter((item) => item.srs === "Y"));
+        }
       } catch (error) {
         console.error(error);
       } finally {

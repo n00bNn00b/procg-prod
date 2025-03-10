@@ -104,8 +104,8 @@ export function ARMContextProvider({ children }: ARMContextProviderProps) {
       const res = await api.get<IARMAsynchronousTasksTypes[]>(
         `/arm-tasks/show-tasks`
       );
-      const filterdData = res.data.filter((item) => item.srs === "Y");
-      return filterdData ?? [];
+
+      return res.data ?? [];
     } catch (error) {
       console.log(error);
     } finally {
