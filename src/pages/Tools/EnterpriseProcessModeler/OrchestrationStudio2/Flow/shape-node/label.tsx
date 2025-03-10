@@ -13,7 +13,7 @@ const NodeData = ({ label, attributes }: NodeDataProps) => {
       {attributes.map((attribute) => (
         <div key={attribute.id} className="flex items-center">
           <span className="w-1 h-1 rounded-full mr-1 bg-black"></span>
-          <span>{attribute.value}</span>
+          <span>{attribute.attribute_value}</span>
         </div>
       ))}
     </div>

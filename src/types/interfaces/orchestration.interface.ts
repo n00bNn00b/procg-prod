@@ -1,3 +1,4 @@
+import { ShapeNode } from "@/pages/Tools/EnterpriseProcessModeler/OrchestrationStudio2/Flow/shape/types";
 import { Edge, Node } from "@xyflow/react";
 import { SVGAttributes } from "react";
 
@@ -33,6 +34,16 @@ export type ShapeProps = {
   width: number;
   height: number;
 } & SVGAttributes<SVGElement>;
+
+export interface IOrchestrationDataTypes2 {
+  process_id: number;
+  process_name: string;
+  process_structure: StructureTypes2;
+}
+export interface StructureTypes2 {
+  nodes: ShapeNode[];
+  edges: Edge[];
+}
 
 // // Node
 // export interface Node {

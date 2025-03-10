@@ -28,7 +28,9 @@ export type ShapeProps = {
 
 export type ShapeComponentProps = Partial<ShapeProps> & { type: ShapeType };
 export type AttributesProps = {
-  [key: string]: string;
+  id: number;
+  attribute_name: string;
+  attribute_value: string;
 };
 export type ShapeNode = Node<{
   label: string;

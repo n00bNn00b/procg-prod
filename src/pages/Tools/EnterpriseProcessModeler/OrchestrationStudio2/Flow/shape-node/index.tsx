@@ -23,7 +23,7 @@ function useNodeDimensions(id: string) {
 }
 
 function ShapeNode({ id, selected, data }: NodeProps<ShapeNode>) {
-  const { label, step_function, attributes, color, type } = data;
+  const { label, attributes, color, type } = data;
   const { setNodes } = useReactFlow();
 
   const { width, height } = useNodeDimensions(id);

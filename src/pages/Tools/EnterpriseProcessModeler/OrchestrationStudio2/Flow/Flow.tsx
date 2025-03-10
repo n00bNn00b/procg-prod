@@ -2,6 +2,7 @@ import {
   DragEvent,
   DragEventHandler,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -28,15 +29,23 @@ import { useControls } from "leva";
 
 import "@xyflow/react/dist/style.css";
 
-import { defaultNodes, defaultEdges } from "./initial-elements";
 import ShapeNodeComponent from "./shape-node";
 import Sidebar from "./sidebar";
 import MiniMapNode from "./minimap-node";
 import { ShapeNode, ShapeType } from "./shape/types";
 import "./ProFlow.css";
-import FlowItems from "./components/FlowItems";
-import { IOrchestrationDataTypes } from "@/types/interfaces/orchestration.interface";
+import FlowItems from "./components/FlowItems/FlowItems";
+import { IOrchestrationDataTypes2 } from "@/types/interfaces/orchestration.interface";
 import AnimatedSVGEdge from "./EdgeTypes/AnimatedSVGEdge";
+import { Plus, Save } from "lucide-react";
+import CreateAFlow from "./components/CreateAFlow/CreateAFlow";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { AxiosError } from "axios";
+import Spinner from "@/components/Spinner/Spinner";
+import { toast } from "@/components/ui/use-toast";
+import EditNode from "./components/EditNode/EditNode";
+import EditEdge from "./components/EditEdge/EditEdge";
+import AddAttribute from "./components/AddAttribute/AddAttribute";
 
 const nodeTypes: NodeTypes = {
   shape: ShapeNodeComponent,
@@ -63,18 +72,65 @@ function ShapesProExampleApp({
   panOnScroll = true,
   zoomOnDoubleClick = false,
 }: ExampleProps) {
+  const api = useAxiosPrivate();
   const reactFlowWrapper = useRef(null);
   const { screenToFlowPosition } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState<ShapeNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [selectedFlowData, setSelectedFlowData] =
-    useState<IOrchestrationDataTypes>();
+    useState<IOrchestrationDataTypes2>();
   const [selectedNode, setSelectedNode] = useState<ShapeNode | undefined>(
     undefined
   );
   const [selectedEdge, setSelectedEdge] = useState<Edge | undefined>(undefined);
 
-  console.log(selectedNode, selectedEdge, "nodes,selectedEdge");
+  const [isAddAttribute, setIsAddAttribute] = useState(false);
+  const [newProcessName, setNewProcessName] = useState("");
+  const [createNewFlow, setCreateNewFlow] = useState(false);
+  const [selectedFlowName, setSelectedFlowName] = useState<string>("");
+  const [isNewFlowCreated, setIsNewFlowCreated] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [flowsData, setFlowsData] = useState<IOrchestrationDataTypes2[]>([]);
+  const [attributeName, setAttributeName] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const resFlows = await api.get("/orchestration-studio-process");
+
+        setFlowsData(resFlows.data);
+      } catch (error) {
+        if (error instanceof AxiosError && error.response) {
+          console.log(error.response.data);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [isNewFlowCreated, selectedFlowName]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (selectedFlowName !== "") {
+          setIsLoading(true);
+          const res = await api.get(
+            `/orchestration-studio-process/${selectedFlowName}`
+          );
+          setSelectedFlowData(res.data);
+          setEdges(res.data.process_structure.edges);
+          setNodes(res.data.process_structure.nodes);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [selectedFlowName]);
 
   const edgeTypes = {
     animatedEdge: AnimatedSVGEdge,
@@ -113,7 +169,7 @@ function ShapesProExampleApp({
       data: {
         label: type,
         step_function: "",
-        attributes: [{ id: "1", name: "test", value: "test" }],
+        attributes: [],
         type,
         color: "#3F8AE2",
       },
@@ -141,9 +197,78 @@ function ShapesProExampleApp({
     setSelectedNode(undefined);
     setSelectedEdge(edge);
   };
+  const closeAllProgress = () => {
+    setEdges([]);
+    setNodes([]);
+    setSelectedNode(undefined);
+    setSelectedEdge(undefined);
+    setNewProcessName("");
+    setIsNewFlowCreated(Math.random() * 9999);
+  };
+  const handleCloseAfterSelectAFlow = () => {
+    setNewProcessName("");
+    setCreateNewFlow(false);
+    setSelectedEdge(undefined);
+    setSelectedNode(undefined);
+  };
 
-  console.log(defaultNodes, defaultEdges, "defaultNodes, defaultEdges");
-  console.log(nodes, edges, "nodes,edges");
+  const handleAddAttribute = () => {
+    if (selectedNode && attributeName.trim() !== "") {
+      setSelectedNode((prevNode: any) =>
+        prevNode
+          ? {
+              ...prevNode,
+              data: {
+                ...prevNode.data,
+                attributes: [
+                  ...(prevNode.data.attributes || []),
+                  {
+                    id: Date.now(),
+                    attribute_name: attributeName,
+                    attribute_value: "",
+                  },
+                ],
+              },
+            }
+          : prevNode
+      );
+    }
+    setAttributeName("");
+  };
+
+  const handleSave = async (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
+    // const id = Math.floor(Math.random() * 1000);
+    if (edges.length > 0 && nodes.length > 0) {
+      const putData = {
+        process_structure: {
+          nodes,
+          edges,
+        },
+      };
+      console.log(putData, "putData");
+      try {
+        if (selectedFlowData) {
+          const res = await api.put(
+            `/orchestration-studio-process/${selectedFlowData.process_id}`,
+            JSON.stringify(putData)
+          );
+          console.log(res, "res");
+          if (res) {
+            toast({
+              title: "Success",
+              description: `Flow saved successfully.`,
+            });
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
   return (
     <div className="dndflow h-[calc(100vh-6rem)]">
       <div className="reactflow-wrapper" ref={reactFlowWrapper}>
@@ -173,12 +298,85 @@ function ShapesProExampleApp({
           zoomOnDoubleClick={zoomOnDoubleClick}
           className="v2"
         >
-          <FlowItems
-            setNodes={setNodes}
-            setEdges={setEdges}
-            selectedFlowData={selectedFlowData}
-            setSelectedFlowData={setSelectedFlowData}
-          />
+          <>
+            <div className="absolute top-[2px] left-[220px] z-50 text-white flex gap-1 items-center">
+              {isLoading && (
+                <div className="absolute left-[50%] top-[45%] z-50 translate-x-[-50%]">
+                  <Spinner color="red" size="40" />
+                </div>
+              )}
+              <div className="flex gap-1 items-center">
+                <Plus
+                  size={15}
+                  color="red"
+                  onClick={() => setCreateNewFlow(!createNewFlow)}
+                  className="cursor-pointer"
+                />
+                {nodes.length > 0 && edges.length > 0 && (
+                  <div onClick={handleSave} className="cursor-pointer">
+                    <Save size={15} />
+                  </div>
+                )}
+              </div>
+
+              <FlowItems
+                flowsData={flowsData}
+                setNodes={setNodes}
+                setEdges={setEdges}
+                selectedFlowData={selectedFlowData}
+                setSelectedFlowData={setSelectedFlowData}
+                setSelectedFlowName={setSelectedFlowName}
+                handleCloseAfterSelectAFlow={handleCloseAfterSelectAFlow}
+              />
+            </div>
+            {isAddAttribute && (
+              <AddAttribute
+                attributeName={attributeName}
+                setAttributeName={setAttributeName}
+                handleAddAttribute={handleAddAttribute}
+                setIsAddAttribute={setIsAddAttribute}
+              />
+            )}
+
+            {createNewFlow && (
+              <CreateAFlow
+                flowsData={flowsData}
+                newProcessName={newProcessName}
+                setNewProcessName={setNewProcessName}
+                setCreateNewFlow={setCreateNewFlow}
+                setSelectedFlowData={setSelectedFlowData}
+                setSelectedFlowName={setSelectedFlowName}
+                closeAllProgress={closeAllProgress}
+              />
+            )}
+            {/* Right Edit Bar */}
+            <div
+              className={`absolute top-[2px] right-0 z-50 p-2 flex flex-col gap-1`}
+            >
+              {/* Edit node */}
+              {selectedNode && (
+                <>
+                  <EditNode
+                    setNodes={setNodes}
+                    selectedNode={selectedNode}
+                    setSelectedNode={setSelectedNode}
+                    setIsAddAttribute={setIsAddAttribute}
+                  />
+                </>
+              )}
+              {/* Edit edge */}
+              {selectedEdge && (
+                <>
+                  <EditEdge
+                    setEdges={setEdges}
+                    selectedEdge={selectedEdge}
+                    setSelectedEdge={setSelectedEdge}
+                  />
+                </>
+              )}
+            </div>
+          </>
+
           <Background />
           <Panel position="top-left">
             <Sidebar />
