@@ -111,6 +111,9 @@ function ShapesProExampleApp({
       position,
       style: { width: 100, height: 100 },
       data: {
+        label: type,
+        step_function: "",
+        attributes: [{ id: "1", name: "test", value: "test" }],
         type,
         color: "#3F8AE2",
       },
