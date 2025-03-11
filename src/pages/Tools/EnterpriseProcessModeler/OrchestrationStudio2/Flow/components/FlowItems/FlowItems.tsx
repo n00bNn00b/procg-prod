@@ -38,7 +38,9 @@ const FlowItems = ({
   return (
     <>
       {/*Select Flow */}
-      <div className={`p-2 flex items-center justify-center gap-1`}>
+      <div
+        className={`p-2 flex items-center justify-center gap-1 text-Red-100`}
+      >
         <h3>Flow Name:</h3>
 
         {/* select flow */}
@@ -53,7 +55,7 @@ const FlowItems = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <SelectTrigger className="w-[230px] h-[30px] ">
+                  <SelectTrigger className="w-[230px] h-[30px] bg-white">
                     <SelectValue placeholder="Select a Flow" />
                   </SelectTrigger>
                 </TooltipTrigger>
