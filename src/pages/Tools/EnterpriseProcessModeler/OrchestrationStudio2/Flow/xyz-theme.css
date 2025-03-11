@@ -58,6 +58,9 @@
 .react-flow__resize-control.handle {
   border: 1px solid var(--background);
 }
+.sidebar{
+  width: 180px;
+}
 
 .sidebar-label {
   color: var(--text);
