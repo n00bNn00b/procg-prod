@@ -113,11 +113,11 @@ const ProfileTable = () => {
     <div className="w-full">
       <table className="w-full">
         <thead>
-          <tr className="bg-[#CEDEF2] text-slate-500 text-left">
-            <th className="border px-4 py-2">SL</th>
-            <th className="border px-4 py-2">Profile Type</th>
-            <th className="border px-4 py-2">Profile ID</th>
-            <th className="border px-4 py-2">Primary</th>
+          <tr className="bg-[#CEDEF2] text-slate-500 text-left font-medium">
+            <th className="border px-4 py-2 font-semibold">SL</th>
+            <th className="border px-4 py-2 font-semibold">Profile Type</th>
+            <th className="border px-4 py-2 font-semibold">Profile ID</th>
+            <th className="border px-4 py-2 font-semibold">Primary</th>
           </tr>
         </thead>
         <tbody>
@@ -128,7 +128,7 @@ const ProfileTable = () => {
               <td className="border px-4 py-2">
                 {item.email || item.username || item.phone}
               </td>
-              <td className="border px-4 py-2">{item.primary}</td>
+              <td className="border px-4 py-2 capitalize">{item.primary}</td>
             </tr>
           ))}
         </tbody>

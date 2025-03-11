@@ -1,27 +1,24 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ChangePassword from "./ChangePassword";
-import UserLinkedDevices from "@/components/LinkedDevices/UserLinkedDevices";
-import LinkDevices from "./LinkDevices";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import ChangePassword from "./ChangePassword";
+// import UserLinkedDevices from "@/components/LinkedDevices/UserLinkedDevices";
+// import LinkDevices from "./LinkDevices";
+
+import LinkADevice from "./Components/LinkADevice";
+import Passwords from "./Components/Passwords";
+import TwoStep from "./Components/TwoStep";
+import YourDevices from "./Components/YourDevices";
 
 export default function Security() {
   return (
-    <Tabs defaultValue="change_password" className="w-full">
-      <div className="bg-slate-100 rounded">
-        <TabsList className="grid w-[40rem] grid-cols-3">
-          <TabsTrigger value="change_password">Change Password</TabsTrigger>
-          <TabsTrigger value="link-devices">Link a Device</TabsTrigger>
-          <TabsTrigger value="linked-devices">Linked Devices</TabsTrigger>
-        </TabsList>
+    <div className="grid grid-cols-4 gap-2">
+      <div className="col-span-2 flex flex-col gap-2">
+        <Passwords />
+        <TwoStep />
+        <LinkADevice />
       </div>
-      <TabsContent value="change_password">
-        <ChangePassword />
-      </TabsContent>
-      <TabsContent value="link-devices">
-        <LinkDevices />
-      </TabsContent>
-      <TabsContent value="linked-devices">
-        <UserLinkedDevices />
-      </TabsContent>
-    </Tabs>
+      <div className="col-span-2 ">
+        <YourDevices />
+      </div>
+    </div>
   );
 }

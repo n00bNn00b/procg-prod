@@ -330,6 +330,7 @@ export function SocketContextProvider({ children }: SocketContextProps) {
     });
 
     socket.on("inactiveDevice", (data) => {
+      // console.log(data, "data");
       deviceSync(data);
       setLinkedDevices((prev) => {
         if (
