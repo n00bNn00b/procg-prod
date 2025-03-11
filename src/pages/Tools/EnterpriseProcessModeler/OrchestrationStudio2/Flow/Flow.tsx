@@ -167,7 +167,7 @@ function ShapesProExampleApp({
       position,
       style: { width: 100, height: 100 },
       data: {
-        label: type,
+        label: "",
         step_function: "",
         attributes: [],
         type,

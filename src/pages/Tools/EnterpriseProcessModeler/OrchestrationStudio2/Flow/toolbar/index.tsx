@@ -1,12 +1,12 @@
-import { NodeToolbar } from '@xyflow/react';
+import { NodeToolbar } from "@xyflow/react";
 
 const colors = [
-  '#CF4C2C',
-  '#EA9C41',
-  '#EBC347',
-  '#438D57',
-  '#3F8AE2',
-  '#803DEC',
+  "#FF0000",
+  "#EA9C41",
+  "#EBC347",
+  "#549C30",
+  "#3F8AE2",
+  "#803DEC",
 ];
 
 type ShapeNodeToolbarProps = {
@@ -25,7 +25,7 @@ function ShapeNodeToolbar({
           key={color}
           style={{ backgroundColor: color }}
           onClick={() => onColorChange(color)}
-          className={`color-swatch ${color === activeColor ? 'active' : ''}`}
+          className={`color-swatch ${color === activeColor ? "active" : ""}`}
         />
       ))}
     </NodeToolbar>
