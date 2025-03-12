@@ -51,10 +51,12 @@ function SidebarItem({ type }: SidebarItemProps) {
             <div className="sidebar-item" draggable onDragStart={onDragStart}>
               <Shape
                 type={type}
-                fill={colorType()}
-                strokeWidth={1}
                 width={28}
                 height={28}
+                fill={colorType()}
+                fillOpacity={0.5}
+                stroke={colorType()}
+                strokeWidth={1}
               />
               <div className="sidebar-item-drag-image" ref={dragImageRef}>
                 <Shape

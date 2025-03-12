@@ -61,7 +61,7 @@ const EditNode: FC<EditNodeProps> = ({
     };
     fetchAsyncTasks();
   }, []);
-  console.log(selectedNode, "selectedNode");
+
   const FormSchema = z.object(
     selectedNode
       ? Object.keys(selectedNode.data).reduce((acc, key) => {
@@ -137,7 +137,7 @@ const EditNode: FC<EditNodeProps> = ({
   };
   const handleRemoveAttribute = (key: string) => {
     if (selectedNode) {
-      setSelectedNode((prevNode: any) =>
+      setSelectedNode((prevNode: ShapeNode | undefined) =>
         prevNode
           ? {
               ...prevNode,
@@ -335,26 +335,29 @@ const EditNode: FC<EditNodeProps> = ({
                                           required
                                           placeholder="Enter value"
                                           onBlur={() => {
-                                            setSelectedNode((prev: any) => {
-                                              if (prev) {
-                                                const updatedAttributes = [
-                                                  ...prev.data.attributes,
-                                                ];
-                                                updatedAttributes[index] = {
-                                                  ...updatedAttributes[index],
-                                                  attribute_value: field.value,
-                                                };
-                                                return {
-                                                  ...prev,
-                                                  data: {
-                                                    ...prev.data,
-                                                    attributes:
-                                                      updatedAttributes,
-                                                  },
-                                                };
+                                            setSelectedNode(
+                                              (prev: ShapeNode | undefined) => {
+                                                if (prev) {
+                                                  const updatedAttributes = [
+                                                    ...prev.data.attributes,
+                                                  ];
+                                                  updatedAttributes[index] = {
+                                                    ...updatedAttributes[index],
+                                                    attribute_value:
+                                                      field.value,
+                                                  };
+                                                  return {
+                                                    ...prev,
+                                                    data: {
+                                                      ...prev.data,
+                                                      attributes:
+                                                        updatedAttributes,
+                                                    },
+                                                  };
+                                                }
+                                                return prev;
                                               }
-                                              return prev;
-                                            });
+                                            );
                                           }}
                                         />
                                       </FormControl>
