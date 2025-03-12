@@ -24,7 +24,7 @@ function SidebarItem({ type }: SidebarItemProps) {
   };
   const colorType = () => {
     switch (type) {
-      case "circle":
+      case "Start":
         return "#549C30";
       case "round-rectangle":
         return "#3F8AE2";
@@ -36,7 +36,7 @@ function SidebarItem({ type }: SidebarItemProps) {
         return "#3F8AE2";
       case "parallelogram":
         return "#3F8AE2";
-      case "stop":
+      case "Stop":
         return "#FF0000";
       default:
         return "#3F8AE2";

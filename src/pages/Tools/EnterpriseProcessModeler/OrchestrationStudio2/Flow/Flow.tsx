@@ -157,7 +157,7 @@ function ShapesProExampleApp({
     const type = evt.dataTransfer.getData("application/reactflow") as ShapeType;
     const colorType = () => {
       switch (type) {
-        case "circle":
+        case "Start":
           return "#549C30";
         case "round-rectangle":
           return "#3F8AE2";
@@ -169,7 +169,7 @@ function ShapesProExampleApp({
           return "#3F8AE2";
         case "parallelogram":
           return "#3F8AE2";
-        case "stop":
+        case "Stop":
           return "#FF0000";
         default:
           return "#3F8AE2";
@@ -195,6 +195,7 @@ function ShapesProExampleApp({
       selected: true,
     };
 
+    setSelectedNode(newNode);
     setNodes((nodes) =>
       (nodes.map((n) => ({ ...n, selected: false })) as ShapeNode[]).concat([
         newNode,
