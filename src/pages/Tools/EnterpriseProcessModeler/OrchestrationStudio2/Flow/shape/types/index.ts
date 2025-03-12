@@ -2,6 +2,7 @@ import { SVGAttributes } from "react";
 import type { Node } from "@xyflow/react";
 
 import Circle from "./circle";
+import CircleStop from "./circle-stop";
 import RoundRectangle from "./round-rectangle";
 import Rectangle from "./rectangle";
 import Hexagon from "./hexagon";
@@ -17,6 +18,7 @@ export const ShapeComponents = {
   hexagon: Hexagon,
   diamond: Diamond,
   parallelogram: Parallelogram,
+  stop: CircleStop,
 };
 
 export type ShapeType = keyof typeof ShapeComponents;

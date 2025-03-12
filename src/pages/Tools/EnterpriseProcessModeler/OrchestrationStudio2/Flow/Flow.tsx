@@ -155,7 +155,26 @@ function ShapesProExampleApp({
   const onDrop: DragEventHandler = (evt: DragEvent<HTMLDivElement>) => {
     evt.preventDefault();
     const type = evt.dataTransfer.getData("application/reactflow") as ShapeType;
-
+    const colorType = () => {
+      switch (type) {
+        case "circle":
+          return "#549C30";
+        case "round-rectangle":
+          return "#3F8AE2";
+        case "rectangle":
+          return "#3F8AE2";
+        case "hexagon":
+          return "#3F8AE2";
+        case "diamond":
+          return "#3F8AE2";
+        case "parallelogram":
+          return "#3F8AE2";
+        case "stop":
+          return "#FF0000";
+        default:
+          return "#3F8AE2";
+      }
+    };
     // this will convert the pixel position of the node to the react flow coordinate system
     // so that a node is added at the correct position even when viewport is translated and/or zoomed in
     const position = screenToFlowPosition({ x: evt.clientX, y: evt.clientY });
@@ -167,11 +186,11 @@ function ShapesProExampleApp({
       position,
       style: { width: 100, height: 100 },
       data: {
-        label: "",
+        label: type,
         step_function: "",
         attributes: [],
         type,
-        color: "#3F8AE2",
+        color: colorType(),
       },
       selected: true,
     };
