@@ -20,14 +20,18 @@ function ShapeNodeToolbar({
 }: ShapeNodeToolbarProps) {
   return (
     <NodeToolbar className="nodrag" offset={32}>
-      {colors.map((color) => (
-        <button
-          key={color}
-          style={{ backgroundColor: color }}
-          onClick={() => onColorChange(color)}
-          className={`color-swatch ${color === activeColor ? "active" : ""}`}
-        />
-      ))}
+      <div className="flex p-1">
+        {colors.map((color) => (
+          <button
+            key={color}
+            style={{ backgroundColor: color }}
+            onClick={() => onColorChange(color)}
+            className={`color-swatch ${
+              color === activeColor ? "active mx-1" : ""
+            } w-4 h-6 rounded-none`}
+          />
+        ))}
+      </div>
     </NodeToolbar>
   );
 }

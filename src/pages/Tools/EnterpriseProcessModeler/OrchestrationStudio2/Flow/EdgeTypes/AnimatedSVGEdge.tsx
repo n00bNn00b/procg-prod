@@ -30,8 +30,8 @@ const AnimatedSVGEdge = ({
       <BaseEdge id={id} path={edgePath} markerEnd="url(#arrow)" />
 
       {animated && (
-        <circle r="4" fill="#fb343a">
-          <animateMotion dur="3s" repeatCount="indefinite" path={edgePath} />
+        <circle r="2" fill="#fb343a">
+          <animateMotion dur="4s" repeatCount="indefinite" path={edgePath} />
         </circle>
       )}
 
