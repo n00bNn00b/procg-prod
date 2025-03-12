@@ -1,5 +1,5 @@
-import { type MiniMapNodeProps, useInternalNode } from '@xyflow/react';
-import { ShapeComponents, ShapeNode } from '../shape/types';
+import { type MiniMapNodeProps, useInternalNode } from "@xyflow/react";
+import { ShapeComponents, ShapeNode } from "../shape/types";
 
 // the custom minimap node is being used to render the shapes of the nodes in the minimap, too
 function MiniMapNode({ id, width, height, x, y, selected }: MiniMapNodeProps) {
@@ -22,8 +22,8 @@ function MiniMapNode({ id, width, height, x, y, selected }: MiniMapNodeProps) {
       transform={`translate(${x}, ${y})`}
       className={
         selected
-          ? 'react-flow__minimap-node selected'
-          : 'react-flow__minimap-node'
+          ? "react-flow__minimap-node selected"
+          : "react-flow__minimap-node"
       }
     >
       <ShapeComponent

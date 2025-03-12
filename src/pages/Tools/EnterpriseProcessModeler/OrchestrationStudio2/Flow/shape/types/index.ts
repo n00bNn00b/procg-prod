@@ -1,8 +1,8 @@
 import { SVGAttributes } from "react";
 import type { Node } from "@xyflow/react";
 
-import Circle from "./circle";
-import CircleStop from "./circle-stop";
+import Start from "./circle";
+import Stop from "./circle-stop";
 import RoundRectangle from "./round-rectangle";
 import Rectangle from "./rectangle";
 import Hexagon from "./hexagon";
@@ -12,13 +12,13 @@ import Parallelogram from "./parallelogram";
 // here we register all the shapes that are available
 // you can add your own here
 export const ShapeComponents = {
-  circle: Circle,
+  Start: Start,
   "round-rectangle": RoundRectangle,
   rectangle: Rectangle,
   hexagon: Hexagon,
   diamond: Diamond,
   parallelogram: Parallelogram,
-  stop: CircleStop,
+  Stop: Stop,
 };
 
 export type ShapeType = keyof typeof ShapeComponents;
