@@ -28,17 +28,20 @@ import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ShapeNode } from "../../shape/types";
+import { Edge } from "@xyflow/react";
 
 interface EditNodeProps {
   setNodes: (
     payload: ShapeNode[] | ((nodes: ShapeNode[]) => ShapeNode[])
   ) => void;
+  setEdges: (payload: Edge[] | ((edges: Edge[]) => Edge[])) => void;
   selectedNode: any;
   setSelectedNode: Dispatch<SetStateAction<ShapeNode | undefined>>;
   setIsAddAttribute: Dispatch<SetStateAction<boolean>>;
 }
 const EditNode: FC<EditNodeProps> = ({
   setNodes,
+  setEdges,
   selectedNode,
   setSelectedNode,
   setIsAddAttribute,
@@ -131,6 +134,13 @@ const EditNode: FC<EditNodeProps> = ({
     if (selectedNode) {
       setNodes((prevNodes: ShapeNode[]) =>
         prevNodes.filter((node: ShapeNode) => node.id !== selectedNode.id)
+      );
+
+      setEdges((prevEdges) =>
+        prevEdges.filter(
+          (edge) =>
+            edge.source !== selectedNode.id && edge.target !== selectedNode.id
+        )
       );
       setSelectedNode(undefined);
     }

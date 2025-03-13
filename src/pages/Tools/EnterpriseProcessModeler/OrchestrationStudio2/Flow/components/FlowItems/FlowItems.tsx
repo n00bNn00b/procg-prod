@@ -57,7 +57,13 @@ const FlowItems = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <SelectTrigger className="w-[230px] h-[30px] bg-white">
+                  <SelectTrigger
+                    className={`w-[230px] h-[30px] ${
+                      theme === "dark"
+                        ? "bg-[#1e293b] text-white"
+                        : "bg-[#f7f7f7] text-black"
+                    }`}
+                  >
                     <SelectValue placeholder="Select a Flow" />
                   </SelectTrigger>
                 </TooltipTrigger>

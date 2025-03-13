@@ -9,7 +9,6 @@ import {
 import {
   ReactFlow,
   Background,
-  ReactFlowProvider,
   ConnectionLineType,
   MarkerType,
   ConnectionMode,
@@ -25,7 +24,6 @@ import {
   Connection,
   addEdge,
 } from "@xyflow/react";
-import { Leva, useControls } from "leva";
 
 import "@xyflow/react/dist/style.css";
 
@@ -37,7 +35,7 @@ import "./ProFlow.css";
 import FlowItems from "./components/FlowItems/FlowItems";
 import { IOrchestrationDataTypes2 } from "@/types/interfaces/orchestration.interface";
 import AnimatedSVGEdge from "./EdgeTypes/AnimatedSVGEdge";
-import { Plus, Save } from "lucide-react";
+import { Pen, Plus, Save, SquareMenu, Trash } from "lucide-react";
 import CreateAFlow from "./components/CreateAFlow/CreateAFlow";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { AxiosError } from "axios";
@@ -46,6 +44,23 @@ import { toast } from "@/components/ui/use-toast";
 import EditNode from "./components/EditNode/EditNode";
 import EditEdge from "./components/EditEdge/EditEdge";
 import AddAttribute from "./components/AddAttribute/AddAttribute";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const nodeTypes: NodeTypes = {
   shape: ShapeNodeComponent,
@@ -59,19 +74,19 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 
 const proOptions = { account: "paid-pro", hideAttribution: true };
 
-type ExampleProps = {
+export type ExampleProps = {
   theme?: "dark" | "light";
   snapToGrid?: boolean;
   panOnScroll?: boolean;
   zoomOnDoubleClick?: boolean;
 };
 
-function ShapesProExampleApp({
+const ShapesProExampleApp = ({
   theme = "light",
   snapToGrid = true,
   panOnScroll = true,
   zoomOnDoubleClick = false,
-}: ExampleProps) {
+}: ExampleProps) => {
   const api = useAxiosPrivate();
   const reactFlowWrapper = useRef(null);
   const { screenToFlowPosition } = useReactFlow();
@@ -86,7 +101,9 @@ function ShapesProExampleApp({
 
   const [isAddAttribute, setIsAddAttribute] = useState(false);
   const [newProcessName, setNewProcessName] = useState("");
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [createNewFlow, setCreateNewFlow] = useState(false);
+  const [isEditFlowName, setIsEditFlowName] = useState(false);
   const [selectedFlowName, setSelectedFlowName] = useState<string>("");
   const [isNewFlowCreated, setIsNewFlowCreated] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -217,6 +234,7 @@ function ShapesProExampleApp({
     setSelectedNode(undefined);
     setSelectedEdge(edge);
   };
+
   const closeAllProgress = () => {
     setEdges([]);
     setNodes([]);
@@ -231,7 +249,17 @@ function ShapesProExampleApp({
     setSelectedEdge(undefined);
     setSelectedNode(undefined);
   };
-
+  const handleToolsOpen = () => {
+    if (selectedFlowData) {
+      setToolsOpen(!toolsOpen);
+    } else {
+      toast({
+        title: "Info!!",
+        description: "Please create a flow first or select a flow.",
+      });
+      return;
+    }
+  };
   const handleAddAttribute = () => {
     if (selectedNode && attributeName.trim() !== "") {
       setSelectedNode((prevNode: ShapeNode | undefined) =>
@@ -255,6 +283,24 @@ function ShapesProExampleApp({
     }
     setAttributeName("");
   };
+  const handleDeleteFlow = async () => {
+    try {
+      const res = await api.delete(
+        `/orchestration-studio-process/${selectedFlowData?.process_id}`
+      );
+      if (res) {
+        closeAllProgress();
+        setSelectedFlowData(undefined);
+        // setToolsOpen(false);
+        toast({
+          title: "Success",
+          description: "Flow deleted successfully.",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSave = async (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -268,14 +314,14 @@ function ShapesProExampleApp({
           edges,
         },
       };
-      console.log(putData, "putData");
+
       try {
         if (selectedFlowData) {
           const res = await api.put(
             `/orchestration-studio-process/${selectedFlowData.process_id}`,
             JSON.stringify(putData)
           );
-          console.log(res, "res");
+
           if (res) {
             toast({
               title: "Success",
@@ -319,43 +365,155 @@ function ShapesProExampleApp({
           className="v2"
         >
           <>
-            <div className="absolute top-[2px] left-[220px] z-50 flex gap-1 items-center ">
-              {isLoading && (
-                <div className="absolute left-[50%] top-[45%] z-50 translate-x-[-50%]">
-                  <Spinner color="red" size="40" />
-                </div>
-              )}
+            {isLoading && (
+              <div className="absolute left-[50%] top-[45%] z-50 translate-x-[-50%]">
+                <Spinner color="red" size="40" />
+              </div>
+            )}
+            <div className="absolute top-[13px] left-[20px] z-50 flex gap-1 items-center ">
               <div
                 className={`flex gap-1 items-center ${
                   theme === "dark" ? "text-white" : "text-black"
                 }`}
               >
-                <div
-                  className={`cursor-pointer p-1 border rounded-full ${
-                    theme === "dark"
-                      ? "bg-[#1e293b] hover:bg-[#415069] border-[#1e293b]"
-                      : "bg-slate-300 hover:bg-slate-400"
-                  }`}
-                >
-                  <Plus
-                    size={15}
-                    onClick={() => setCreateNewFlow(!createNewFlow)}
-                  />
-                </div>
+                {/* Tools */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        onClick={handleToolsOpen}
+                        className={`cursor-pointer p-1 border rounded-full ${
+                          theme === "dark"
+                            ? "bg-[#1e293b] hover:bg-[#415069] border-[#1e293b]"
+                            : "bg-[#abafb5] hover:bg-slate-400 border-[#abafb5]"
+                        }`}
+                      >
+                        <SquareMenu size={15} />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Tools</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                {/* Add New Flow */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className={`cursor-pointer p-1 border rounded-full ${
+                          theme === "dark"
+                            ? "bg-[#1e293b] hover:bg-[#415069] border-[#1e293b]"
+                            : "bg-[#abafb5] hover:bg-slate-400 border-[#abafb5]"
+                        }`}
+                      >
+                        <Plus
+                          size={15}
+                          onClick={() => setCreateNewFlow(!createNewFlow)}
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Create New Flow</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                {/* Pen Icon */}
+                {selectedFlowData && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          onClick={() => {
+                            setIsEditFlowName(true);
+                            setNewProcessName(
+                              selectedFlowData?.process_name ?? ""
+                            );
+                          }}
+                          className={`cursor-pointer p-1 border rounded-full ${
+                            theme === "dark"
+                              ? "bg-[#1e293b] hover:bg-[#415069] border-[#1e293b]"
+                              : "bg-[#abafb5] hover:bg-slate-400 border-[#abafb5]"
+                          }`}
+                        >
+                          <Pen size={15} />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Edit selected Flow</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+                {/* Trash Flow */}
+                {selectedFlowData && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className={`cursor-pointer p-1 border rounded-full ${
+                            theme === "dark"
+                              ? "bg-[#1e293b] hover:bg-[#415069] border-[#1e293b]"
+                              : "bg-[#abafb5] hover:bg-slate-400 border-[#abafb5]"
+                          }`}
+                        >
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Trash size={15} />
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Are you absolutely sure delete flow?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will
+                                  permanently delete your account and remove
+                                  your data from our servers.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDeleteFlow}>
+                                  Continue
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Delete selected Flow</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+                {/* Save Icon */}
                 {nodes.length > 0 && edges.length > 0 && (
-                  <div
-                    onClick={handleSave}
-                    className={`cursor-pointer p-1 border rounded-full ${
-                      theme === "dark"
-                        ? "bg-[#1e293b] hover:bg-[#415069] border-[#1e293b]"
-                        : "bg-slate-300 hover:bg-slate-400"
-                    }`}
-                  >
-                    <Save size={15} />
-                  </div>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          onClick={handleSave}
+                          className={`cursor-pointer p-1 border rounded-full ${
+                            theme === "dark"
+                              ? "bg-[#1e293b] hover:bg-[#415069] border-[#1e293b]"
+                              : "bg-[#abafb5] hover:bg-slate-400 border-[#abafb5]"
+                          }`}
+                        >
+                          <Save size={15} />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Save Flow</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
               </div>
-
+            </div>
+            <div className="absolute top-[2px] left-[160px] z-50 flex gap-1 items-center ">
               <FlowItems
                 theme={theme}
                 flowsData={flowsData}
@@ -376,14 +534,17 @@ function ShapesProExampleApp({
               />
             )}
 
-            {createNewFlow && (
+            {(createNewFlow || isEditFlowName) && (
               <CreateAFlow
+                actionType={`${createNewFlow ? "CreateAFlow" : "EditFlowName"}`}
                 flowsData={flowsData}
+                selectedFlowData={selectedFlowData}
                 newProcessName={newProcessName}
                 setNewProcessName={setNewProcessName}
                 setCreateNewFlow={setCreateNewFlow}
                 setSelectedFlowData={setSelectedFlowData}
                 setSelectedFlowName={setSelectedFlowName}
+                setIsEditFlowName={setIsEditFlowName}
                 closeAllProgress={closeAllProgress}
               />
             )}
@@ -396,6 +557,7 @@ function ShapesProExampleApp({
                 <>
                   <EditNode
                     setNodes={setNodes}
+                    setEdges={setEdges}
                     selectedNode={selectedNode}
                     setSelectedNode={setSelectedNode}
                     setIsAddAttribute={setIsAddAttribute}
@@ -416,9 +578,14 @@ function ShapesProExampleApp({
           </>
 
           <Background />
-          <Panel position="top-left">
-            <Sidebar />
-          </Panel>
+          {toolsOpen && (
+            <div className="absolute top-8">
+              <Panel position="top-left">
+                <Sidebar />
+              </Panel>
+            </div>
+          )}
+
           <Controls style={{ bottom: 155 }} orientation="horizontal" />
           <MiniMap
             zoomable
@@ -430,84 +597,6 @@ function ShapesProExampleApp({
       </div>
     </div>
   );
-}
+};
 
-function ProWorkFlowMain() {
-  // 👇 this renders a leva control panel to interactively configure the example
-  const props = useControls({
-    theme: {
-      options: ["dark", "light"],
-      value: "light",
-    },
-    snapToGrid: true,
-    panOnScroll: true,
-    zoomOnDoubleClick: false,
-  });
-
-  useEffect(() => {
-    const styleElement = document.createElement("style");
-    document.head.appendChild(styleElement);
-
-    const themeStyles = `
-      /* Apply background color to all Leva-related elements */
-      #leva__root,
-      .leva-c-kWgxhW,
-      .leva-c-dmsJDs,
-      .leva-c-grzFYX,
-      .leva-c-bDGmTT,
-      .leva-c-iSkYoW {
-        background-color: ${
-          props.theme === "dark" ? "#181c20" : "#f0f0f0"
-        } !important;
-        color: ${props.theme === "dark" ? "#d7d7d7" : "#000"} !important;
-      }
-
-      /* Apply color changes to :root and .leva-t-kqjEjX */
-      :root {
-        --leva-colors-elevation2: ${
-          props.theme === "dark" ? "#292d39" : "#d7d7d7"
-        } !important;
-        --leva-colors-elevation3: ${
-          props.theme === "dark" ? "#292d39" : "#d7d7d7"
-        } !important;
-        --leva-colors-background: ${
-          props.theme === "dark" ? "#333" : "#fff"
-        } !important;
-        --leva-colors-text: ${
-          props.theme === "dark" ? "#fff" : "#000"
-        } !important;
-      }
-
-      .leva-t-kqjEjX {
-        --leva-colors-elevation3: ${
-          props.theme === "dark" ? "#444" : "#f2f2f2"
-        } !important;
-      }
-      .leva-c-hwBXYF {
-        height: 25px;
-        background-color: ${
-          props.theme === "dark" ? "#292d39" : "#d7d7d7"
-        } !important;
-        border-radius: 10px
-      }
-    `;
-
-    styleElement.innerHTML = themeStyles;
-
-    return () => {
-      document.head.removeChild(styleElement);
-    };
-  }, [props.theme]);
-
-  return (
-    <ReactFlowProvider>
-      <Leva
-        collapsed
-        // titleBar={{ title: "Control panel" }}
-      />
-      <ShapesProExampleApp {...(props as ExampleProps)} />
-    </ReactFlowProvider>
-  );
-}
-
-export default ProWorkFlowMain;
+export default ShapesProExampleApp;
