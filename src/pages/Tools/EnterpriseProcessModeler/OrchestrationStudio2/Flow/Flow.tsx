@@ -25,7 +25,7 @@ import {
   Connection,
   addEdge,
 } from "@xyflow/react";
-import { useControls } from "leva";
+import { Leva, useControls } from "leva";
 
 import "@xyflow/react/dist/style.css";
 
@@ -416,7 +416,6 @@ function ShapesProExampleApp({
 
 function ProWorkFlowMain() {
   // 👇 this renders a leva control panel to interactively configure the example
-  // you can safely remove this in your own app
   const props = useControls({
     theme: {
       options: ["dark", "light"],
@@ -473,14 +472,6 @@ function ProWorkFlowMain() {
         } !important;
         border-radius: 10px
       }
-      // .leva-c-cHvNmv {
-      //   display: block !important
-      // }
-      // .leva-c-ctBOWy {
-      //   display: none
-      // }
-
-
     `;
 
     styleElement.innerHTML = themeStyles;
@@ -492,6 +483,7 @@ function ProWorkFlowMain() {
 
   return (
     <ReactFlowProvider>
+      <Leva collapsed />
       <ShapesProExampleApp {...(props as ExampleProps)} />
     </ReactFlowProvider>
   );
