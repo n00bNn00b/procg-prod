@@ -234,6 +234,7 @@ const ShapesProExampleApp = ({
     setSelectedNode(undefined);
     setSelectedEdge(edge);
   };
+
   const closeAllProgress = () => {
     setEdges([]);
     setNodes([]);
@@ -556,6 +557,7 @@ const ShapesProExampleApp = ({
                 <>
                   <EditNode
                     setNodes={setNodes}
+                    setEdges={setEdges}
                     selectedNode={selectedNode}
                     setSelectedNode={setSelectedNode}
                     setIsAddAttribute={setIsAddAttribute}

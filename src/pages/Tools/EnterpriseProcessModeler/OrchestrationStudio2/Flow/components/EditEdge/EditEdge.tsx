@@ -16,7 +16,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edge } from "@xyflow/react";
 import { X } from "lucide-react";
-import { Dispatch, FC, SetStateAction, useCallback } from "react";
+import { Dispatch, FC, SetStateAction, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -43,12 +43,14 @@ const EditEdge: FC<EditNodeProps> = ({
     },
   });
 
-  // useEffect(() => {
-  //   form.reset({
-  //     label: selectedEdge?.label ?? "",
-  //     animated: "false",
-  //   });
-  // }, [selectedEdge, form]);
+  useEffect(() => {
+    if (selectedEdge) {
+      form.reset({
+        label: selectedEdge.label ?? "",
+        animated: selectedEdge.animated ?? "false",
+      });
+    }
+  }, [selectedEdge, form]);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     console.log(data, "data");
@@ -118,7 +120,7 @@ const EditEdge: FC<EditNodeProps> = ({
                       render={({ field }) => (
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                         >
                           <FormLabel>Animation</FormLabel>
                           <SelectTrigger>
