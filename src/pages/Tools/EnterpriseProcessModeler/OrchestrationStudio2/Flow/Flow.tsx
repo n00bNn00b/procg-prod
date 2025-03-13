@@ -319,27 +319,35 @@ function ShapesProExampleApp({
           className="v2"
         >
           <>
-            <div className="absolute top-[2px] left-[220px] z-50 text-white flex gap-1 items-center">
+            <div className="absolute top-[2px] left-[220px] z-50 flex gap-1 items-center ">
               {isLoading && (
                 <div className="absolute left-[50%] top-[45%] z-50 translate-x-[-50%]">
                   <Spinner color="red" size="40" />
                 </div>
               )}
-              <div className="flex gap-1 items-center">
-                <Plus
-                  size={15}
-                  color="red"
-                  onClick={() => setCreateNewFlow(!createNewFlow)}
-                  className="cursor-pointer"
-                />
+              <div
+                className={`flex gap-1 items-center ${
+                  theme === "dark" ? "text-white" : "text-black"
+                }`}
+              >
+                <div className="cursor-pointer p-1 border rounded-full bg-slate-300 hover:bg-slate-400">
+                  <Plus
+                    size={15}
+                    onClick={() => setCreateNewFlow(!createNewFlow)}
+                  />
+                </div>
                 {nodes.length > 0 && edges.length > 0 && (
-                  <div onClick={handleSave} className="cursor-pointer">
+                  <div
+                    onClick={handleSave}
+                    className="cursor-pointer p-1 border rounded-full bg-slate-300 hover:bg-slate-400"
+                  >
                     <Save size={15} />
                   </div>
                 )}
               </div>
 
               <FlowItems
+                theme={theme}
                 flowsData={flowsData}
                 setNodes={setNodes}
                 setEdges={setEdges}

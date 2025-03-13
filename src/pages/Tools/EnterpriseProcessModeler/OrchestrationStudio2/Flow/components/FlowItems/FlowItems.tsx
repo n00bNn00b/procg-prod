@@ -19,6 +19,7 @@ import {
 import { Edge } from "@xyflow/react";
 import { ShapeNode } from "../../shape/types";
 interface IFlowItemsProps {
+  theme?: string;
   flowsData: IOrchestrationDataTypes[];
   setNodes: React.Dispatch<React.SetStateAction<ShapeNode[]>>;
   setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
@@ -30,6 +31,7 @@ interface IFlowItemsProps {
   handleCloseAfterSelectAFlow: () => void;
 }
 const FlowItems = ({
+  theme,
   flowsData,
   selectedFlowData,
   setSelectedFlowName,
@@ -38,10 +40,10 @@ const FlowItems = ({
   return (
     <>
       {/*Select Flow */}
-      <div
-        className={`p-2 flex items-center justify-center gap-1 text-Red-100`}
-      >
-        <h3>Flow Name:</h3>
+      <div className={`p-2 flex items-center justify-center gap-1`}>
+        <h3 className={`${theme === "dark" ? "text-white" : "text-black"}`}>
+          Flow Name:
+        </h3>
 
         {/* select flow */}
         {flowsData.length > 0 && (
