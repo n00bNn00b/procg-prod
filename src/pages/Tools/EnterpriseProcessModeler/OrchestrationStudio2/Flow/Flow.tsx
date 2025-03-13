@@ -330,7 +330,13 @@ function ShapesProExampleApp({
                   theme === "dark" ? "text-white" : "text-black"
                 }`}
               >
-                <div className="cursor-pointer p-1 border rounded-full bg-slate-300 hover:bg-slate-400">
+                <div
+                  className={`cursor-pointer p-1 border rounded-full ${
+                    theme === "dark"
+                      ? "bg-[#1e293b] hover:bg-[#415069] border-[#1e293b]"
+                      : "bg-slate-300 hover:bg-slate-400"
+                  }`}
+                >
                   <Plus
                     size={15}
                     onClick={() => setCreateNewFlow(!createNewFlow)}
@@ -339,7 +345,11 @@ function ShapesProExampleApp({
                 {nodes.length > 0 && edges.length > 0 && (
                   <div
                     onClick={handleSave}
-                    className="cursor-pointer p-1 border rounded-full bg-slate-300 hover:bg-slate-400"
+                    className={`cursor-pointer p-1 border rounded-full ${
+                      theme === "dark"
+                        ? "bg-[#1e293b] hover:bg-[#415069] border-[#1e293b]"
+                        : "bg-slate-300 hover:bg-slate-400"
+                    }`}
                   >
                     <Save size={15} />
                   </div>
@@ -491,7 +501,10 @@ function ProWorkFlowMain() {
 
   return (
     <ReactFlowProvider>
-      <Leva collapsed />
+      <Leva
+        collapsed
+        // titleBar={{ title: "Control panel" }}
+      />
       <ShapesProExampleApp {...(props as ExampleProps)} />
     </ReactFlowProvider>
   );
