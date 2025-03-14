@@ -1,8 +1,10 @@
 import {
   closestCenter,
   DndContext,
+  DragEndEvent,
   DragOverEvent,
   DragOverlay,
+  DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
@@ -111,7 +113,10 @@ const DND: FC<IManageAccessModelDNDProps> = ({
     (item) => item.manage_access_model_logic_id === activeId
   );
 
-  const attrmaxId = Math.max(...rightWidgets?.map((item) => item.id));
+  const attrmaxId =
+    rightWidgets.length > 0
+      ? Math.max(...rightWidgets.map((item) => item.id))
+      : 0;
 
   const getId = rightWidgets.length > 0 ? attrmaxId + 1 : 1;
 
@@ -145,8 +150,8 @@ const DND: FC<IManageAccessModelDNDProps> = ({
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
-  const handleDragStart = (event: any) => {
-    setActiveId(event.active.id);
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as number);
   };
   const findContainer = (id: string | number | undefined) => {
     if (leftWidgets.some((item) => item.manage_access_model_logic_id === id)) {
@@ -220,7 +225,7 @@ const DND: FC<IManageAccessModelDNDProps> = ({
     }
   };
   // console.log(rightWidgets, "right widgets");
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     // console.log(active, over, "handleDragEnd");
     if (over) {

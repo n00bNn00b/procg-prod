@@ -31,6 +31,7 @@ import { ShapeNode } from "../../shape/types";
 import { Edge } from "@xyflow/react";
 
 interface EditNodeProps {
+  theme: string;
   setNodes: (
     payload: ShapeNode[] | ((nodes: ShapeNode[]) => ShapeNode[])
   ) => void;
@@ -40,6 +41,7 @@ interface EditNodeProps {
   setIsAddAttribute: Dispatch<SetStateAction<boolean>>;
 }
 const EditNode: FC<EditNodeProps> = ({
+  theme,
   setNodes,
   setEdges,
   selectedNode,
@@ -173,7 +175,11 @@ const EditNode: FC<EditNodeProps> = ({
   return (
     <>
       {selectedNode && (
-        <div className="mt-1 bg-slate-100 rounded p-4 max-h-[60vh] overflow-y-auto">
+        <div
+          className={`mt-1 rounded p-4 max-h-[60vh] overflow-y-auto scrollbar-thin ${
+            theme === "dark" ? "bg-[#1e293b] text-white" : "bg-[#f7f7f7]"
+          }`}
+        >
           {selectedNode && (
             <div>
               <div className="flex items-center justify-between">
@@ -249,6 +255,11 @@ const EditNode: FC<EditNodeProps> = ({
                                           return prev;
                                         });
                                       }}
+                                      className={`${
+                                        theme === "dark"
+                                          ? "border-white"
+                                          : "border-gray-400"
+                                      }`}
                                     />
                                   </FormControl>
                                 </FormItem>
@@ -287,7 +298,13 @@ const EditNode: FC<EditNodeProps> = ({
                                       }}
                                       value={field.value}
                                     >
-                                      <SelectTrigger>
+                                      <SelectTrigger
+                                        className={`${
+                                          theme === "dark"
+                                            ? "border-white"
+                                            : "border-gray-400"
+                                        }`}
+                                      >
                                         <SelectValue placeholder="Select an option" />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -369,6 +386,11 @@ const EditNode: FC<EditNodeProps> = ({
                                               }
                                             );
                                           }}
+                                          className={`${
+                                            theme === "dark"
+                                              ? "border-white"
+                                              : "border-gray-400"
+                                          }`}
                                         />
                                       </FormControl>
                                     </FormItem>

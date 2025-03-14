@@ -28,6 +28,8 @@ const OrchestrationStudio2 = () => {
       .leva-c-grzFYX,
       .leva-c-bDGmTT,
       .leva-c-iSkYoW {
+        font-family: Work Sans, sans-serif;
+        // font-size: 16px;
         background-color: ${
           props.theme === "dark" ? "#181c20" : "#f0f0f0"
         } !important;
@@ -82,6 +84,7 @@ const OrchestrationStudio2 = () => {
         >
           <Leva
             collapsed
+            hideCopyButton
             // titleBar={{ title: "Control panel" }}
           />
         </div>
