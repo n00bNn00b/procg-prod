@@ -149,6 +149,10 @@ const ShapesProExampleApp = ({
     fetchData();
   }, [selectedFlowName]);
 
+  useEffect(() => {
+    setToolsOpen(false);
+  }, [!selectedFlowData]);
+
   const edgeTypes = {
     animatedEdge: AnimatedSVGEdge,
   };
@@ -334,42 +338,44 @@ const ShapesProExampleApp = ({
       }
     }
   };
-
+  console.log(edges, "edges");
   return (
     <div className="dndflow h-[calc(100vh-6rem)]">
       <div className="reactflow-wrapper" ref={reactFlowWrapper}>
         <ReactFlow
+          colorMode={theme}
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           onConnect={onConnect}
           onNodeClick={onNodeClick}
           onEdgeClick={onEdgeClick}
-          colorMode={theme}
           proOptions={proOptions}
-          nodeTypes={nodeTypes}
-          nodes={nodes}
-          edges={edges}
           // defaultNodes={defaultNodes}
           // defaultEdges={defaultEdges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           defaultEdgeOptions={defaultEdgeOptions}
-          connectionLineType={ConnectionLineType.SmoothStep}
           fitView
-          connectionMode={ConnectionMode.Loose}
-          panOnScroll={panOnScroll}
           onDrop={onDrop}
-          snapToGrid={snapToGrid}
-          snapGrid={[10, 10]}
           onDragOver={onDragOver}
+          snapGrid={[10, 10]}
+          snapToGrid={snapToGrid}
+          panOnScroll={panOnScroll}
+          connectionMode={ConnectionMode.Loose}
+          connectionLineType={ConnectionLineType.SmoothStep}
           zoomOnDoubleClick={zoomOnDoubleClick}
           className="v2"
         >
           <>
+            {/* Loading process... */}
             {isLoading && (
               <div className="absolute left-[50%] top-[45%] z-50 translate-x-[-50%]">
                 <Spinner color="red" size="40" />
               </div>
             )}
+            {/* Action tools */}
             <div className="absolute top-[13px] left-[20px] z-50 flex gap-1 items-center ">
               <div
                 className={`flex gap-1 items-center ${
@@ -418,7 +424,6 @@ const ShapesProExampleApp = ({
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-
                 {/* Pen Icon */}
                 {selectedFlowData && (
                   <TooltipProvider>
@@ -513,6 +518,7 @@ const ShapesProExampleApp = ({
                 )}
               </div>
             </div>
+            {/* Select Flow */}
             <div className="absolute top-[2px] left-[160px] z-50 flex gap-1 items-center ">
               <FlowItems
                 theme={theme}
@@ -525,6 +531,7 @@ const ShapesProExampleApp = ({
                 handleCloseAfterSelectAFlow={handleCloseAfterSelectAFlow}
               />
             </div>
+            {/* Add Attribute  */}
             {isAddAttribute && (
               <AddAttribute
                 attributeName={attributeName}
@@ -533,7 +540,7 @@ const ShapesProExampleApp = ({
                 setIsAddAttribute={setIsAddAttribute}
               />
             )}
-
+            {/* Create or Edit Flow */}
             {(createNewFlow || isEditFlowName) && (
               <CreateAFlow
                 actionType={`${createNewFlow ? "CreateAFlow" : "EditFlowName"}`}
@@ -550,12 +557,13 @@ const ShapesProExampleApp = ({
             )}
             {/* Right Edit Bar */}
             <div
-              className={`absolute top-[2px] right-0 z-50 p-2 flex flex-col gap-1`}
+              className={`absolute top-[35px] right-0 z-50 p-2 flex flex-col gap-1`}
             >
               {/* Edit node */}
               {selectedNode && (
                 <>
                   <EditNode
+                    theme={theme}
                     setNodes={setNodes}
                     setEdges={setEdges}
                     selectedNode={selectedNode}
@@ -568,6 +576,7 @@ const ShapesProExampleApp = ({
               {selectedEdge && (
                 <>
                   <EditEdge
+                    theme={theme}
                     setEdges={setEdges}
                     selectedEdge={selectedEdge}
                     setSelectedEdge={setSelectedEdge}

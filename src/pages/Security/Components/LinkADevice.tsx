@@ -17,7 +17,7 @@ const LinkADevice = () => {
       {isOpen && (
         <>
           <p className="pb-2">Scan the QR code with your authenticator</p>
-          <div className="bg-white p-4 inline-block">
+          <div className="bg-white p-[10px] inline-block">
             <QRCodeCanvas
               value={JSON.stringify(token.access_token)}
               title={"Link Account"}

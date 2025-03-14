@@ -14,12 +14,12 @@ const Passwords = () => {
         <ChangePassword setIsOpenUpdateBtn={setIsOpenUpdateBtn} />
       ) : (
         <div className="flex flex-col gap-2 p-2">
-          <p className="text-slate-400">********</p>
+          <p className="text-slate-400">*************</p>
           <div className="flex gap-2 text-green-500">
-            <Verified /> <span>Very Secure</span>
+            <Verified size={24} /> <span>Very Secure</span>
           </div>
           <div
-            className="flex gap-2 p-2 bg-white text-slate-400 w-28 border rounded-md cursor-pointer"
+            className="flex gap-2 px-[10px] py-[8px] bg-white w-[103px] h-[42px] border rounded-md cursor-pointer"
             onClick={() => setIsOpenUpdateBtn(!isOpenUpdateBtn)}
           >
             <FilePenLine /> <span>Update</span>

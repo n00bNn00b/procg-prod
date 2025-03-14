@@ -65,30 +65,48 @@ function ShapeNode({ id, selected, data }: NodeProps<ShapeNode>) {
         stroke={color}
         fillOpacity={0.8}
       />
-      <Handle
-        style={handleStyle}
-        id="top"
-        type="source"
-        position={Position.Top}
-      />
-      <Handle
-        style={handleStyle}
-        id="right"
-        type="source"
-        position={Position.Right}
-      />
-      <Handle
-        style={handleStyle}
-        id="bottom"
-        type="source"
-        position={Position.Bottom}
-      />
-      <Handle
-        style={handleStyle}
-        id="left"
-        type="source"
-        position={Position.Left}
-      />
+      {type === "Start" ? (
+        <Handle
+          style={handleStyle}
+          id="bottom"
+          type="source"
+          position={Position.Bottom}
+        />
+      ) : type === "Stop" ? (
+        <Handle
+          style={handleStyle}
+          id="top"
+          type="source"
+          position={Position.Top}
+        />
+      ) : (
+        <>
+          <Handle
+            style={handleStyle}
+            id="top"
+            type="source"
+            position={Position.Top}
+          />
+          <Handle
+            style={handleStyle}
+            id="right"
+            type="source"
+            position={Position.Right}
+          />
+          <Handle
+            style={handleStyle}
+            id="bottom"
+            type="source"
+            position={Position.Bottom}
+          />
+          <Handle
+            style={handleStyle}
+            id="left"
+            type="source"
+            position={Position.Left}
+          />
+        </>
+      )}
       <NodeData label={label} attributes={attributes} />
     </>
   );

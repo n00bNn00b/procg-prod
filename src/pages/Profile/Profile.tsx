@@ -4,7 +4,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { useEffect, useState } from "react";
 import { AvatarFallback } from "@/components/ui/avatar";
 import ProfileTable from "./Table/ProfileTable";
-import { Plus } from "lucide-react";
+import { FilePenLine, SquarePlus, Trash } from "lucide-react";
 
 // interface IAccessProfiles {
 //   user_name?: string;
@@ -51,14 +51,14 @@ const Profile = () => {
             <div className="px-4 font-semibold">My profiles</div>
             <div className="grid grid-cols-3 gap-2">
               <div className="grid col-span-2">
-                <div className="flex gap-4 items-center p-4 bg-[#cedef2]">
+                <div className="flex gap-5 items-center px-4 py-[14px] bg-[#cedef2]">
                   <>
                     <Avatar>
                       <AvatarImage
-                        className="object-cover object-center w-20 h-20 rounded-full mx-auto border border-8px"
+                        className="object-cover object-center w-[76px] h-[76px] rounded-full mx-auto border border-8px"
                         src={`${apiUrl}/${combinedUser?.profile_picture.original}`}
                       />
-                      <AvatarFallback className="object-cover object-center w-20 h-20 rounded-full mx-auto border border-8px">
+                      <AvatarFallback className="object-cover object-center w-[76px] h-[76px] rounded-full mx-auto border border-8px">
                         {token.user_name.slice(0, 1)}
                       </AvatarFallback>
                     </Avatar>
@@ -67,16 +67,21 @@ const Profile = () => {
                     <h5 className="font-medium">
                       {combinedUser?.first_name} {combinedUser?.last_name}
                     </h5>
-                    <h5 className=" ">{combinedUser?.job_title}</h5>
-                    <h5 className=" ">Id: {combinedUser?.user_id}</h5>
+                    <h5 className="">{combinedUser?.job_title}</h5>
+                    <h5 className="font-light">Id: {combinedUser?.user_id}</h5>
                   </div>
                 </div>
-                <div className="flex flex-row-reverse my-2 text-white cursor-pointer">
-                  <div className="bg-[#2563eb] rounded px-4 py-2 flex gap-2 items-center">
-                    <Plus
-                      size={15}
-                      className="border border-white rounded p-[2px]"
-                    />
+                <div className="flex flex-row-reverse gap-[10px] my-2 text-white cursor-pointer">
+                  <div className="bg-[#2563eb] rounded px-[10px] py-2 flex gap-2 items-center">
+                    <FilePenLine size={20} />
+                    <h3>Edit</h3>
+                  </div>
+                  <div className="bg-[#2563eb] rounded px-[10px] py-2 flex gap-2 items-center">
+                    <Trash size={20} />
+                    <h3>Delete</h3>
+                  </div>
+                  <div className="bg-[#2563eb] rounded px-[10px] py-2 flex gap-2 items-center">
+                    <SquarePlus size={20} />
                     <h3>Add Profile</h3>
                   </div>
                 </div>

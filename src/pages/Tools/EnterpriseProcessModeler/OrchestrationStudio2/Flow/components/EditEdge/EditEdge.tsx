@@ -21,11 +21,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 interface EditNodeProps {
+  theme: string;
   setEdges: (payload: Edge[] | ((edges: Edge[]) => Edge[])) => void;
   selectedEdge: any;
   setSelectedEdge: Dispatch<SetStateAction<Edge | undefined>>;
 }
 const EditEdge: FC<EditNodeProps> = ({
+  theme,
   setEdges,
   selectedEdge,
   setSelectedEdge,
@@ -109,7 +111,15 @@ const EditEdge: FC<EditNodeProps> = ({
                         <FormItem>
                           <FormLabel>Label</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="Label" />
+                            <Input
+                              {...field}
+                              placeholder="Label"
+                              className={`${
+                                theme === "dark"
+                                  ? "border-white"
+                                  : "border-gray-400"
+                              }`}
+                            />
                           </FormControl>
                         </FormItem>
                       )}
@@ -123,7 +133,13 @@ const EditEdge: FC<EditNodeProps> = ({
                           value={field.value}
                         >
                           <FormLabel>Animation</FormLabel>
-                          <SelectTrigger>
+                          <SelectTrigger
+                            className={`${
+                              theme === "dark"
+                                ? "border-white"
+                                : "border-gray-400"
+                            }`}
+                          >
                             <SelectValue placeholder="Animated" />
                           </SelectTrigger>
                           <SelectContent>
