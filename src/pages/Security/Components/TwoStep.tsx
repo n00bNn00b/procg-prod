@@ -22,7 +22,7 @@ const TwoStep = () => {
         )}
       </div>
       {isOpen && (
-        <div className="flex gap-2 p-2 bg-white text-slate-400 w-28 border rounded-md">
+        <div className="flex gap-2 p-[10px] bg-white w-[111px] border rounded-md">
           <Key /> <span>Update</span>
         </div>
       )}

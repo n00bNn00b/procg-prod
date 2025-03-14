@@ -338,7 +338,7 @@ const ShapesProExampleApp = ({
       }
     }
   };
-
+  console.log(edges, "edges");
   return (
     <div className="dndflow h-[calc(100vh-6rem)]">
       <div className="reactflow-wrapper" ref={reactFlowWrapper}>

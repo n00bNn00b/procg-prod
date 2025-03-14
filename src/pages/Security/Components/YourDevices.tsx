@@ -3,16 +3,16 @@ import { useSocketContext } from "@/Context/SocketContext/SocketContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import useUserInfo from "@/hooks/useUserInfo";
 import { useEffect, useState } from "react";
-import Desktop from "/icons/device-icon/desktop.svg";
-import Laptop from "/icons/device-icon/laptop.svg";
-import Mac from "/icons/device-icon/mac.svg";
-import Mobile from "/icons/device-icon/android.svg";
-import Tablet from "/icons/device-icon/tablet.svg";
-// import iOS from "/icons/os-icon/mac.svg";
-// import Windows from "/icons/os-icon/windows.svg";
-// import MacOS from "/icons/os-icon/mac.svg";
-// import Linux from "/icons/os-icon/linux.svg";
-// import Android from "/icons/os-icon/android.svg";
+// import Desktop from "/icons/device-icon/desktop.svg";
+// import Laptop from "/icons/device-icon/laptop.svg";
+// import Mac from "/icons/device-icon/mac.svg";
+// import Mobile from "/icons/device-icon/android.svg";
+// import Tablet from "/icons/device-icon/tablet.svg";
+import iOS from "/icons/os-icon/mac.svg";
+import Windows from "/icons/os-icon/windows.svg";
+import MacOS from "/icons/os-icon/mac.svg";
+import Linux from "/icons/os-icon/linux.svg";
+import Android from "/icons/os-icon/android.svg";
 import Edge from "/icons/browser-icon/edge.svg";
 import Chrome from "/icons/browser-icon/chrome.svg";
 import Safari from "/icons/browser-icon/safari.svg";
@@ -38,6 +38,7 @@ const YourDevices = () => {
       try {
         await userInfo(token.user_id);
         const res = await api.get(`/devices/${token?.user_id}`);
+        console.log(res, "res");
         setLinkedDevices(res.data);
       } catch (error) {
         console.log("error while getting devices");
@@ -77,7 +78,7 @@ const YourDevices = () => {
         <h3 className="font-semibold">Your Devices</h3>
         <p>Your devices linked to this account in ED anlytics.</p>
         <div>
-          <p className="bg-white text-red-500 font-semibold p-2 inline-block cursor-pointer">
+          <p className="w-[239px] text-center bg-white text-red-500 font-semibold p-2 inline-block cursor-pointer">
             Logout from all devices
           </p>
         </div>
@@ -93,17 +94,16 @@ const YourDevices = () => {
                 <div>
                   <img
                     src={
-                      device.device_type === "Desktop"
-                        ? Desktop
-                        : device.device_type === "Laptop"
-                        ? Laptop
-                        : device.device_type === "Mac"
-                        ? Mac
-                        : device.device_type === "Mobile" ||
-                          device.device_type === "Handset"
-                        ? Mobile
-                        : device.device_type === "Tablet"
-                        ? Tablet
+                      device.os === "Windows"
+                        ? Windows
+                        : device.os === "Linux"
+                        ? Linux
+                        : device.os === "Mac"
+                        ? MacOS
+                        : device.os === "iOS"
+                        ? iOS
+                        : device.os === "Android"
+                        ? Android
                         : Undefined
                     }
                     alt="image"
@@ -111,7 +111,7 @@ const YourDevices = () => {
                   />
                 </div>
                 <div>
-                  <p className="font-medium">{device.device_type}</p>
+                  <p className="font-medium">{device.os}</p>
                   <span className=" ">
                     <span>{device.location}</span>
                     <span> - </span>
