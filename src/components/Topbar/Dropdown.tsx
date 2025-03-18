@@ -19,7 +19,7 @@ const Dropdown = () => {
   const api = useAxiosPrivate();
   const apiUrl = import.meta.env.VITE_API_URL;
   const { token, setToken, combinedUser } = useGlobalContext();
-  const { handleDisconnect } = useSocketContext();
+  const { handleDisconnect, setLinkedDevices } = useSocketContext();
   const navigate = useNavigate();
 
   const userExample = {
@@ -35,6 +35,7 @@ const Dropdown = () => {
     profile_picture: { original: "", thumbnail: "" },
   };
   const handleSignOut = async () => {
+    setLinkedDevices([]);
     await api.get(`/logout`);
     handleDisconnect();
     setToken(userExample);

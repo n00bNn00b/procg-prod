@@ -20,7 +20,7 @@ const Settings = () => {
           authentication app
         </p>
         <div className="px-4 py-2 bg-white w-full flex justify-between">
-          <p>{JSON.stringify(url)}</p>
+          <p>{url}</p>
           <Copy className="cursor-pointer hover:text-red-500" />
         </div>
       </div>

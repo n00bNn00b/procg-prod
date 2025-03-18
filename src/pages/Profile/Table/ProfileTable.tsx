@@ -1,8 +1,5 @@
-"use client";
-
-import * as React from "react";
-
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { useEffect, useState } from "react";
 
 export type IProfilesType = {
   id: number;
@@ -60,9 +57,9 @@ export interface IProfilesType1 {
 }
 const ProfileTable = () => {
   const { combinedUser } = useGlobalContext();
-  const [data, setData] = React.useState<IProfilesType1[]>([]);
+  const [data, setData] = useState<IProfilesType1[]>([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       if (combinedUser) {
         const accessProfiles: IProfilesType1[] = [];
