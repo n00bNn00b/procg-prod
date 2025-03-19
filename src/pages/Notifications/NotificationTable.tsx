@@ -76,7 +76,7 @@ const NotificationTable = ({ path, person }: NotificationTableProps) => {
     fetchReceivedMessages();
   }, [currentPage, setIsLoading, setReceivedMessages, user, toast, api]);
 
-  const totalDisplayedMessages = 5;
+  const totalDisplayedMessages = 50;
   const totalPageNumbers = Math.ceil(
     totalReceivedMessages / totalDisplayedMessages
   );

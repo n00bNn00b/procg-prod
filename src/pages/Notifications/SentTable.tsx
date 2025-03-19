@@ -75,7 +75,7 @@ const SentTable = ({ path, person }: SentTableProps) => {
     fetchSentMessages();
   }, [currentPage, user, setIsLoading, setSentMessages, toast, api]);
 
-  const totalDisplayedMessages = 5;
+  const totalDisplayedMessages = 50;
   const totalPageNumbers = Math.ceil(
     totalSentMessages / totalDisplayedMessages
   );

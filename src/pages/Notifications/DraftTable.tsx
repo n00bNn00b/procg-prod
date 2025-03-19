@@ -76,7 +76,7 @@ const DraftTable = ({ path, person }: DraftTableProps) => {
     fetchSentMessages();
   }, [currentPage, setDraftMessages, setIsLoading, user, toast, api]);
 
-  const totalDisplayedMessages = 5;
+  const totalDisplayedMessages = 50;
   const totalPageNumbers = Math.ceil(
     totalDraftMessages / totalDisplayedMessages
   );
