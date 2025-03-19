@@ -15,7 +15,7 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { Message } from "@/types/interfaces/users.interface";
 import axios from "axios";
 import { MessageCircleReply, Reply, Save } from "lucide-react";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -31,9 +31,7 @@ const ReplyDialog = ({
   const api = useAxiosPrivate();
   const { token, user } = useGlobalContext();
   const { handlesendMessage, handleDraftMessage } = useSocketContext();
-  const [subject, setSubject] = useState<string>(
-    `Re: ${parrentMessage?.subject}`
-  );
+  const [subject, setSubject] = useState<string>("");
   const [body, setBody] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const [isDrafting, setIsDrafting] = useState(false);
@@ -48,6 +46,10 @@ const ReplyDialog = ({
   const totalInvolved = [...parrentMessage.recivers, parrentMessage.sender];
   const recivers = totalInvolved.filter((rcvr) => rcvr.name !== user);
   const receiverNames = recivers.map((rcvr) => rcvr.name);
+
+  useEffect(() => {
+    setSubject(`Re: ${parrentMessage.subject}`);
+  }, [parrentMessage.subject]);
 
   const handleSend = async () => {
     const data = {
@@ -96,7 +98,7 @@ const ReplyDialog = ({
       }
     } finally {
       setIsSending(false);
-      // setSubject("");
+      setSubject("");
       setBody("");
     }
   };

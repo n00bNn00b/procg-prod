@@ -73,7 +73,7 @@ const RecycleBinTable = ({ path, person }: RecycleBinTableProps) => {
 
   console.log(newReceivers, "73");
 
-  const totalDisplayedMessages = 5;
+  const totalDisplayedMessages = 50;
   const totalPageNumbers = Math.ceil(
     totalRecycleBinMsg / totalDisplayedMessages
   );
