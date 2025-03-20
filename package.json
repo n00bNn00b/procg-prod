@@ -42,6 +42,7 @@
     "react-day-picker": "8.10.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.52.1",
+    "react-phone-input-2": "^2.15.1",
     "react-pro-sidebar": "^1.1.0",
     "react-router-dom": "^6.25.1",
     "socket.io-client": "^4.7.5",
