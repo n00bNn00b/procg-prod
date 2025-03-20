@@ -50,6 +50,7 @@ interface GlobalContex {
   fetchDataSource: (id: number) => Promise<IDataSourceTypes>;
   isLoading: boolean;
   isCombinedUserLoading: boolean;
+  setIsCombinedUserLoading: Dispatch<SetStateAction<boolean>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   createDataSource: (postData: IDataSourcePostTypes) => Promise<void>;
   updateDataSource: (
@@ -154,6 +155,7 @@ export function GlobalContextProvider({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        setIsCombinedUserLoading(true);
         if (token?.user_id === 0) return;
         const [users, combinedUser] = await Promise.all([
           api.get<Users[]>(`/users`),
@@ -485,6 +487,7 @@ export function GlobalContextProvider({
         fetchDataSource,
         isLoading,
         isCombinedUserLoading,
+        setIsCombinedUserLoading,
         setIsLoading,
         createDataSource,
         updateDataSource,

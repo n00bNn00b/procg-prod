@@ -1,5 +1,22 @@
-import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import { useEffect, useState } from "react";
+import { FilePenLine, Trash2 } from "lucide-react";
+import { useState } from "react";
+import CustomModal from "../CustomModal/CustomModal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+import { tailspin } from "ldrs";
+import { toast } from "@/components/ui/use-toast";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+tailspin.register();
 
 export type IProfilesType = {
   id: number;
@@ -47,67 +64,72 @@ export type IProfilesType = {
 //   },
 // ];
 export interface IProfilesType1 {
-  id: number;
-  type: string;
-  email?: string;
-  phone?: string;
-  username?: string;
-  UserID?: string;
-  primary: string;
+  primary_yn: string;
+  profile_id: string;
+  profile_type: string;
+  serial_number: number;
+  user_id: number;
 }
-const ProfileTable = () => {
-  const { combinedUser } = useGlobalContext();
-  const [data, setData] = useState<IProfilesType1[]>([]);
+interface ProfileTableProps {
+  profiles: IProfilesType1[];
+  setIsUpdated: React.Dispatch<React.SetStateAction<number>>;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const ProfileTable = ({
+  profiles,
+  setIsUpdated,
+  isLoading,
+  setIsLoading,
+}: ProfileTableProps) => {
+  const api = useAxiosPrivate();
+  const url = import.meta.env.VITE_API_URL;
+  const [isUpdateProfile, setIsUpdateProfile] = useState(false);
+  const [editableProfile, setEditableProfile] = useState<IProfilesType1>(
+    {} as IProfilesType1
+  );
 
-  useEffect(() => {
+  const editProfile = (profile: IProfilesType1) => {
+    setIsUpdateProfile(true);
+    setEditableProfile(profile);
+    console.log(profile, "profile");
+  };
+  const displayOrder = ["Email", "Mobile Number", "GUID", "Username"];
+  const sortedProfiles = profiles.sort(
+    (a, b) =>
+      displayOrder.indexOf(a.profile_type) -
+      displayOrder.indexOf(b.profile_type)
+  );
+  const handleDelete = async (serial_number: number) => {
     try {
-      if (combinedUser) {
-        const accessProfiles: IProfilesType1[] = [];
-
-        for (let i = 0; i < combinedUser?.email_addresses.length; i++) {
-          const email = combinedUser?.email_addresses[i];
-
-          const profile = {
-            id: i + 1,
-            type: "email",
-            email: email,
-            primary: "false",
-          };
-
-          accessProfiles.push(profile);
-        }
-        if (combinedUser.user_name) {
-          const user_name = combinedUser?.user_name;
-
-          const profile = {
-            id: accessProfiles.length + 1,
-            type: "username",
-            username: user_name,
-            primary: "false",
-          };
-          accessProfiles.push(profile);
-        }
-        if (combinedUser.user_id) {
-          const user_id = combinedUser?.user_id.toString();
-
-          const profile = {
-            id: accessProfiles.length + 1,
-            type: "UserID",
-            username: user_id,
-            primary: "false",
-          };
-          accessProfiles.push(profile);
-        }
-
-        setData(accessProfiles);
+      const res = await api.delete(
+        `${url}/access-profiles/${editableProfile.user_id}/${serial_number}`
+      );
+      if (res.status === 200) {
+        toast({
+          description: `${res.data.message}`,
+        });
+        setIsUpdated(Math.random() + 23 * 3000);
       }
     } catch (error) {
-      console.log(error, "error");
+      console.log(error);
+      toast({
+        description: `Failed to delete`,
+        variant: "destructive",
+      });
     }
-  }, [combinedUser]);
-
+  };
   return (
     <div className="w-full">
+      {isUpdateProfile && (
+        <CustomModal
+          editableProfile={editableProfile}
+          setIsOpenModal={setIsUpdateProfile}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          setIsUpdated={setIsUpdated}
+        />
+      )}
       <table className="w-full">
         <thead>
           <tr className="bg-[#CEDEF2] text-slate-500 text-left font-medium">
@@ -115,19 +137,88 @@ const ProfileTable = () => {
             <th className="border px-4 py-2 font-semibold">Profile Type</th>
             <th className="border px-4 py-2 font-semibold">Profile ID</th>
             <th className="border px-4 py-2 font-semibold">Primary</th>
+            <th className="border px-4 py-2 font-semibold">Action</th>
           </tr>
         </thead>
         <tbody>
-          {data?.map((item, i) => (
-            <tr key={item.id}>
-              <td className="border px-4 py-2">{i + 1}</td>
-              <td className="border px-4 py-2 capitalize">{item.type}</td>
-              <td className="border px-4 py-2">
-                {item.email || item.username || item.phone}
+          {isLoading ? (
+            <tr>
+              <td colSpan={5} className="h-20">
+                <span className="flex items-center justify-center h-full">
+                  <l-tailspin
+                    size="40"
+                    stroke="5"
+                    speed="0.9"
+                    color="red"
+                  ></l-tailspin>
+                </span>
               </td>
-              <td className="border px-4 py-2 capitalize">{item.primary}</td>
             </tr>
-          ))}
+          ) : (
+            <>
+              {profiles.length > 0 ? (
+                <>
+                  {sortedProfiles?.map((item, i) => (
+                    <tr key={item.serial_number}>
+                      <td className="border px-4 py-2">{i + 1}</td>
+                      <td className="border px-4 py-2 capitalize">
+                        {item.profile_type}
+                      </td>
+                      <td className="border px-4 py-2">{item.profile_id}</td>
+                      <td className="border px-4 py-2 capitalize">
+                        <input
+                          type="checkbox"
+                          checked={item.primary_yn === "Y"}
+                          readOnly
+                        />
+                      </td>
+                      <td className="border px-4 py-2 flex gap-1">
+                        <FilePenLine
+                          className="cursor-pointer"
+                          onClick={() => editProfile(item)}
+                        />
+
+                        <AlertDialog>
+                          <AlertDialogTrigger>
+                            <Trash2 className="cursor-pointer" />
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Are you absolutely sure?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will
+                                permanently delete your account and remove your
+                                data from our servers.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(item.serial_number)}
+                              >
+                                Continue
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ) : (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="border px-4 py-2 text-center text-slate-500"
+                  >
+                    Profile not found
+                  </td>
+                </tr>
+              )}
+            </>
+          )}
         </tbody>
       </table>
     </div>
