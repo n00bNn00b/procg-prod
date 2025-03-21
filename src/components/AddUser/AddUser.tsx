@@ -66,11 +66,11 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
                   message: "One or more emails are invalid.",
                 }
               ),
-            password: z.string().min(6, {
-              message: "At least 6 characters.",
+            password: z.string().min(8, {
+              message: "At least 8 characters.",
             }),
-            confirm_password: z.string().min(6, {
-              message: "At least 6 characters need.",
+            confirm_password: z.string().min(8, {
+              message: "At least 8 characters need.",
             }),
           }
         : {
@@ -96,14 +96,14 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
               ),
             password: z
               .string()
-              .min(6, {
-                message: "At least 6 characters.",
+              .min(8, {
+                message: "At least 8 characters.",
               })
               .optional(),
             confirm_password: z
               .string()
-              .min(6, {
-                message: "At least 6 characters need.",
+              .min(8, {
+                message: "At least 8 characters need.",
               })
               .optional(),
           }
@@ -137,7 +137,8 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
               : // If it's an array, join the emails into a string
                 selected[0].email_addresses,
             // If it's already a string, just leave it
-
+            password: "",
+            confirm_password: "",
             first_name: selected[0].first_name,
             middle_name: selected[0].middle_name,
             last_name: selected[0].last_name,

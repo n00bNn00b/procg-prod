@@ -106,3 +106,11 @@ export interface IUserLinkedDevices {
   ip_address?: string;
   location?: string;
 }
+
+export interface IProfilesType {
+  primary_yn: string;
+  profile_id: string;
+  profile_type: string;
+  serial_number: number;
+  user_id: number;
+}

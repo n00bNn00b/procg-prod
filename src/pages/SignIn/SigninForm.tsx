@@ -22,7 +22,7 @@ interface SignInFormProps {
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
-  password: z.string().min(4, "Password must be at least 4 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
