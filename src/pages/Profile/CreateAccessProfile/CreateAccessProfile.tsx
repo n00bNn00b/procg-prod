@@ -13,37 +13,56 @@ import { useState } from "react";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { toast } from "@/components/ui/use-toast";
+import Spinner from "@/components/Spinner/Spinner";
+import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 
 interface ICreateAccessProfileTypes {
   setIsCreateNewProfile: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsUpdated: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const CreateAccessProfile = ({
   setIsCreateNewProfile,
+  setIsUpdated,
 }: ICreateAccessProfileTypes) => {
   const api = useAxiosPrivate();
   const url = import.meta.env.VITE_API_URL;
+  const { combinedUser } = useGlobalContext();
   const [profileType, setProfileType] = useState("");
   const [profileId, setProfileId] = useState<number | string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const data = {
-        profiles: [{ profile_type: profileType, profile_id: profileId }],
-      };
-      const res = await api.post(`${url}/access-profiles`, data);
+      setIsLoading(true);
+      const data = { profile_type: profileType, profile_id: profileId };
+
+      const res = await api.post(
+        `${url}/access-profiles/${combinedUser?.user_id}`,
+        data
+      );
       console.log(res.data);
+      if (res) {
+        setIsUpdated(Math.random() + 23 * 3000);
+        toast({
+          description: `${res.data.message}`,
+        });
+        setIsCreateNewProfile(false);
+      }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
-  console.log(profileId, "profileId");
+
   return (
     <CustomModal4 h={"h-[384px]"} w="w-[770px]">
       <div className="h-full">
         <div className="flex justify-between bg-[#CEDEF2] p-5">
-          <h3 className="font-semibold">Create Access Profile</h3>
+          <h3 className="font-semibold">Add Profile</h3>
           <X
             onClick={() => setIsCreateNewProfile(false)}
             className="cursor-pointer"
@@ -103,7 +122,7 @@ const CreateAccessProfile = ({
             </div>
             <div className="flex justify-end">
               <Button type="submit" className="px-4 py-2">
-                Add
+                {isLoading ? <Spinner size="25" color="white" /> : "Add"}
               </Button>
             </div>
           </form>

@@ -16,15 +16,10 @@ import {
 import { tailspin } from "ldrs";
 import { toast } from "@/components/ui/use-toast";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { Checkbox } from "@/components/ui/checkbox";
+import { IProfilesType } from "@/types/interfaces/users.interface";
 tailspin.register();
 
-export type IProfilesType = {
-  id: number;
-  email_addresses: string[];
-  phones: string[];
-  guid: string;
-  username: string;
-};
 // interface IAccessProfiles {
 //   user_name?: string;
 //   email?: string;
@@ -75,12 +70,14 @@ interface ProfileTableProps {
   setIsUpdated: React.Dispatch<React.SetStateAction<number>>;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  primaryCheckedItems: IProfilesType[];
 }
 const ProfileTable = ({
   profiles,
   setIsUpdated,
   isLoading,
   setIsLoading,
+  primaryCheckedItems,
 }: ProfileTableProps) => {
   const api = useAxiosPrivate();
   const url = import.meta.env.VITE_API_URL;
@@ -94,12 +91,14 @@ const ProfileTable = ({
     setEditableProfile(profile);
     console.log(profile, "profile");
   };
+
   const displayOrder = ["Email", "Mobile Number", "GUID", "Username"];
   const sortedProfiles = profiles.sort(
     (a, b) =>
       displayOrder.indexOf(a.profile_type) -
       displayOrder.indexOf(b.profile_type)
   );
+
   const handleDelete = async (serial_number: number) => {
     try {
       const res = await api.delete(
@@ -128,6 +127,7 @@ const ProfileTable = ({
           isLoading={isLoading}
           setIsLoading={setIsLoading}
           setIsUpdated={setIsUpdated}
+          primaryCheckedItems={primaryCheckedItems}
         />
       )}
       <table className="w-full">
@@ -166,10 +166,10 @@ const ProfileTable = ({
                       </td>
                       <td className="border px-4 py-2">{item.profile_id}</td>
                       <td className="border px-4 py-2 capitalize">
-                        <input
-                          type="checkbox"
+                        <Checkbox
                           checked={item.primary_yn === "Y"}
-                          readOnly
+                          disabled
+                          aria-readonly
                         />
                       </td>
                       <td className="border px-4 py-2 flex gap-1">

@@ -2,13 +2,15 @@ import CustomModal4 from "@/components/CustomModal/CustomModal4";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IProfilesType1 } from "../Table/ProfileTable";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { toast } from "@/components/ui/use-toast";
 import Spinner from "@/components/Spinner/Spinner";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { Checkbox } from "@/components/ui/checkbox";
+import { IProfilesType } from "@/types/interfaces/users.interface";
 
 interface ICustomModalTypes {
   editableProfile: IProfilesType1;
@@ -16,6 +18,7 @@ interface ICustomModalTypes {
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setIsUpdated: React.Dispatch<React.SetStateAction<number>>;
+  primaryCheckedItems: IProfilesType[];
 }
 const CustomModal = ({
   editableProfile,
@@ -23,12 +26,30 @@ const CustomModal = ({
   isLoading,
   setIsLoading,
   setIsUpdated,
+  primaryCheckedItems,
 }: ICustomModalTypes) => {
   const api = useAxiosPrivate();
   const url = import.meta.env.VITE_API_URL;
   const [profileId, setProfileId] = useState<number | string>(
     editableProfile.profile_id
   );
+  const [isPrimary, setIsPrimary] = useState<string>(
+    editableProfile.primary_yn
+  );
+  const [isChecked, setIsChecked] = useState(
+    editableProfile.primary_yn === "Y" ? true : false
+  );
+
+  useEffect(() => {
+    if (isChecked) {
+      if (
+        primaryCheckedItems.length > 0 &&
+        primaryCheckedItems[0].primary_yn !== editableProfile.primary_yn
+      )
+        toast({ description: `Primary profile already exists.` });
+    }
+  }, [isChecked]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -38,6 +59,7 @@ const CustomModal = ({
           editableProfile.profile_type !== "Email"
             ? Number(profileId)
             : profileId,
+        primary_yn: isPrimary,
       };
       const res = await api.put(
         `${url}/access-profiles/${editableProfile.user_id}/${editableProfile.serial_number}`,
@@ -65,7 +87,7 @@ const CustomModal = ({
     <>
       <CustomModal4 h={"h-[384px]"} w="w-[770px]">
         <div className="flex justify-between bg-[#CEDEF2] p-5">
-          <h3 className="font-semibold">Edit Profile</h3>
+          <h3 className="font-semibold">Update Profile</h3>
           <X onClick={() => setIsOpenModal(false)} className="cursor-pointer" />
         </div>
         <div className="p-8">
@@ -79,9 +101,11 @@ const CustomModal = ({
                 <Input
                   type="text"
                   disabled
+                  id="profile_type"
                   value={editableProfile.profile_type}
                 />
               </div>
+
               <div className="flex flex-col gap-2 w-full">
                 <label htmlFor="profile_type">Profile ID</label>
                 {editableProfile.profile_type === "Mobile Number" ? (
@@ -104,6 +128,19 @@ const CustomModal = ({
                     onChange={(e) => setProfileId(e.target.value)}
                   />
                 )}
+              </div>
+
+              <div className="flex flex-col items-center gap-2 ">
+                <label htmlFor="primary">Primary</label>
+                <Checkbox
+                  checked={isPrimary === "Y" ? true : false}
+                  id="primary"
+                  className="my-auto"
+                  onCheckedChange={(e) => {
+                    setIsPrimary(e === true ? "Y" : "N");
+                    setIsChecked(isPrimary !== "Y" ? true : false);
+                  }}
+                />
               </div>
             </div>
             <div className="flex justify-end">

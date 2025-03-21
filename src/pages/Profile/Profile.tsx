@@ -17,9 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { IProfilesType } from "@/types/interfaces/users.interface";
 
 const Profile = () => {
-  const { token, combinedUser, isCombinedUserLoading } = useGlobalContext();
+  const { combinedUser, isCombinedUserLoading } = useGlobalContext();
   const url = import.meta.env.VITE_API_URL;
   const api = useAxiosPrivate();
   const [isCreateNewProfile, setIsCreateNewProfile] = useState(false);
@@ -28,6 +29,9 @@ const Profile = () => {
   const [data, setData] = useState<IProfilesType1[]>([]);
   const [isUpdated, setIsUpdated] = useState<number>(0);
   const [selectedProfileType, setSelectedProfileType] = useState("");
+  const [primaryCheckedItems, setPrimaryCheckedItems] = useState<
+    IProfilesType[]
+  >([]);
 
   const filterProfileType = data.filter(
     (item) => item.profile_type === selectedProfileType
@@ -44,6 +48,12 @@ const Profile = () => {
           const resData = await api.get(
             `${url}/access-profiles/${combinedUser?.user_id}`
           );
+          // is primary available
+          const filterPrimaryData = resData.data.filter(
+            (item: IProfilesType) => item.primary_yn === "Y"
+          );
+          setPrimaryCheckedItems(filterPrimaryData);
+
           setData(resData.data);
         }
       } catch (error) {
@@ -55,10 +65,20 @@ const Profile = () => {
     fetchData();
   }, [combinedUser?.user_id, isUpdated]);
 
+  const uniqueProfiles = data.filter(
+    (value, index, self) =>
+      self.findIndex(
+        (profile) => profile.profile_type === value.profile_type
+      ) === index
+  );
+
   return (
     <>
       {isCreateNewProfile && (
-        <CreateAccessProfile setIsCreateNewProfile={setIsCreateNewProfile} />
+        <CreateAccessProfile
+          setIsCreateNewProfile={setIsCreateNewProfile}
+          setIsUpdated={setIsUpdated}
+        />
       )}
       {isCombinedUserLoading ? (
         <div className="flex flex-row min-h-[calc(100vh-100px)] justify-center items-center">
@@ -70,6 +90,7 @@ const Profile = () => {
             <div className="px-4 font-semibold">My Profiles</div>
             <div className="grid grid-cols-3 gap-2">
               <div className="grid col-span-2">
+                {/* User Information */}
                 <div className="flex gap-5 items-center px-4 py-[14px] bg-[#cedef2]">
                   <>
                     <Avatar>
@@ -78,7 +99,7 @@ const Profile = () => {
                         src={`${url}/${combinedUser?.profile_picture.original}`}
                       />
                       <AvatarFallback className="object-cover object-center w-[76px] h-[76px] rounded-full mx-auto border border-8px">
-                        {token.user_name.slice(0, 1)}
+                        {combinedUser?.user_name.slice(0, 1)}
                       </AvatarFallback>
                     </Avatar>
                   </>
@@ -91,6 +112,7 @@ const Profile = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-11 gap-[10px] my-2  cursor-pointer">
+                  {/* search */}
                   <div className="col-span-6 flex gap-2 items-center h-10 relative">
                     <Input
                       type="text"
@@ -111,10 +133,8 @@ const Profile = () => {
                       </button>
                     )}
                   </div>
-                  <div
-                    className="col-span-3"
-                    onClick={() => setIsCreateNewProfile(true)}
-                  >
+                  {/* select profile type */}
+                  <div className="col-span-3">
                     <Select
                       value={selectedProfileType}
                       onValueChange={(e) => setSelectedProfileType(e)}
@@ -123,17 +143,24 @@ const Profile = () => {
                         <SelectValue placeholder="Select Profile Type" />
                       </SelectTrigger>
                       <SelectContent>
-                        {data.map((item) => (
-                          <SelectItem
-                            key={item.serial_number}
-                            value={item.profile_type}
-                          >
-                            {item.profile_type}
+                        {data.length > 0 ? (
+                          uniqueProfiles.map((item) => (
+                            <SelectItem
+                              key={item.serial_number}
+                              value={item.profile_type}
+                            >
+                              {item.profile_type}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem disabled value="None">
+                            None
                           </SelectItem>
-                        ))}
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
+                  {/* add profile */}
                   <div
                     className="bg-[#2563eb] rounded px-[10px] py-2 flex gap-1 items-center h-10 col-span-2 text-white"
                     onClick={() => setIsCreateNewProfile(true)}
@@ -142,14 +169,17 @@ const Profile = () => {
                     <h3 className="text-sm">Add Profile</h3>
                   </div>
                 </div>
+                {/* Profile Type Table*/}
                 <ProfileTable
                   profiles={searchInput ? filteredData : data}
                   setIsUpdated={setIsUpdated}
                   isLoading={isLoading}
                   setIsLoading={setIsLoading}
+                  primaryCheckedItems={primaryCheckedItems}
                 />
               </div>
               <div>
+                {/* QR Code */}
                 <div className="border bg-[#cedef2] p-4">
                   <div className="font-semibold">Access Profiles</div>
                   <div className="bg-white flex items-center justify-center p-16  mt-4">
