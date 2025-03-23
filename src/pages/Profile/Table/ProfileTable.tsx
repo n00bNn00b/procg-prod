@@ -70,14 +70,14 @@ interface ProfileTableProps {
   setIsUpdated: React.Dispatch<React.SetStateAction<number>>;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  primaryCheckedItems: IProfilesType[];
+  primaryCheckedItem: IProfilesType | undefined;
 }
 const ProfileTable = ({
   profiles,
   setIsUpdated,
   isLoading,
   setIsLoading,
-  primaryCheckedItems,
+  primaryCheckedItem,
 }: ProfileTableProps) => {
   const api = useAxiosPrivate();
   const url = import.meta.env.VITE_API_URL;
@@ -89,10 +89,10 @@ const ProfileTable = ({
   const editProfile = (profile: IProfilesType1) => {
     setIsUpdateProfile(true);
     setEditableProfile(profile);
-    console.log(profile, "profile");
+    // console.log(profile, "profile");
   };
 
-  const displayOrder = ["Email", "Mobile Number", "GUID", "Username"];
+  const displayOrder = ["Email", "Mobile Number", "GUID"];
   const sortedProfiles = profiles.sort(
     (a, b) =>
       displayOrder.indexOf(a.profile_type) -
@@ -127,17 +127,21 @@ const ProfileTable = ({
           isLoading={isLoading}
           setIsLoading={setIsLoading}
           setIsUpdated={setIsUpdated}
-          primaryCheckedItems={primaryCheckedItems}
+          primaryCheckedItem={primaryCheckedItem}
         />
       )}
       <table className="w-full">
         <thead>
           <tr className="bg-[#CEDEF2] text-slate-500 text-left font-medium">
-            <th className="border px-4 py-2 font-semibold">SL</th>
-            <th className="border px-4 py-2 font-semibold">Profile Type</th>
-            <th className="border px-4 py-2 font-semibold">Profile ID</th>
-            <th className="border px-4 py-2 font-semibold">Primary</th>
-            <th className="border px-4 py-2 font-semibold">Action</th>
+            <th className="border px-2 py-2 font-semibold w-4">SL</th>
+            <th className="border px-2 py-2 font-semibold w-40">
+              Profile Type
+            </th>
+            <th className="border px-2 py-2 font-semibold">Profile ID</th>
+            <th className="border px-2 py-2 font-semibold text-center w-[10%]">
+              Primary
+            </th>
+            <th className="border px-2 py-2 font-semibold">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -160,19 +164,19 @@ const ProfileTable = ({
                 <>
                   {sortedProfiles?.map((item, i) => (
                     <tr key={item.serial_number}>
-                      <td className="border px-4 py-2">{i + 1}</td>
-                      <td className="border px-4 py-2 capitalize">
+                      <td className="border px-2 py-2">{i + 1}</td>
+                      <td className="border px-2 py-2 capitalize min-w-max">
                         {item.profile_type}
                       </td>
-                      <td className="border px-4 py-2">{item.profile_id}</td>
-                      <td className="border px-4 py-2 capitalize">
+                      <td className="border px-2 py-2">{item.profile_id}</td>
+                      <td className="border px-2 py-2 text-center">
                         <Checkbox
                           checked={item.primary_yn === "Y"}
                           disabled
                           aria-readonly
                         />
                       </td>
-                      <td className="border px-4 py-2 flex gap-1">
+                      <td className="border px-2 py-2 flex gap-1">
                         <FilePenLine
                           className="cursor-pointer"
                           onClick={() => editProfile(item)}
@@ -211,7 +215,7 @@ const ProfileTable = ({
                 <tr>
                   <td
                     colSpan={5}
-                    className="border px-4 py-2 text-center text-slate-500"
+                    className="border px-2 py-2 text-center text-slate-500"
                   >
                     Profile not found
                   </td>

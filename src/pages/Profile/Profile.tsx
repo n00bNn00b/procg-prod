@@ -3,20 +3,12 @@ import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { QRCodeCanvas } from "qrcode.react";
 import { AvatarFallback } from "@/components/ui/avatar";
 import ProfileTable, { IProfilesType1 } from "./Table/ProfileTable";
-import { Search, SquarePlus, X } from "lucide-react";
+import { SquarePlus } from "lucide-react";
 import Spinner from "@/components/Spinner/Spinner";
 import { useEffect, useState } from "react";
 
 import CreateAccessProfile from "./CreateAccessProfile/CreateAccessProfile";
-import { Input } from "@/components/ui/input";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { IProfilesType } from "@/types/interfaces/users.interface";
 
 const Profile = () => {
@@ -24,21 +16,10 @@ const Profile = () => {
   const url = import.meta.env.VITE_API_URL;
   const api = useAxiosPrivate();
   const [isCreateNewProfile, setIsCreateNewProfile] = useState(false);
-  const [searchInput, setSearchInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<IProfilesType1[]>([]);
   const [isUpdated, setIsUpdated] = useState<number>(0);
-  const [selectedProfileType, setSelectedProfileType] = useState("");
-  const [primaryCheckedItems, setPrimaryCheckedItems] = useState<
-    IProfilesType[]
-  >([]);
-
-  const filterProfileType = data.filter(
-    (item) => item.profile_type === selectedProfileType
-  );
-  const filteredData = filterProfileType.filter((item) =>
-    item.profile_id.includes(searchInput)
-  );
+  const [primaryCheckedItem, setPrimaryCheckedItem] = useState<IProfilesType>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,10 +30,10 @@ const Profile = () => {
             `${url}/access-profiles/${combinedUser?.user_id}`
           );
           // is primary available
-          const filterPrimaryData = resData.data.filter(
+          const filterPrimaryData = resData.data.find(
             (item: IProfilesType) => item.primary_yn === "Y"
           );
-          setPrimaryCheckedItems(filterPrimaryData);
+          setPrimaryCheckedItem(filterPrimaryData);
 
           setData(resData.data);
         }
@@ -64,13 +45,6 @@ const Profile = () => {
     };
     fetchData();
   }, [combinedUser?.user_id, isUpdated]);
-
-  const uniqueProfiles = data.filter(
-    (value, index, self) =>
-      self.findIndex(
-        (profile) => profile.profile_type === value.profile_type
-      ) === index
-  );
 
   return (
     <>
@@ -111,55 +85,7 @@ const Profile = () => {
                     <h5 className="font-light">Id: {combinedUser?.user_id}</h5>
                   </div>
                 </div>
-                <div className="grid grid-cols-11 gap-[10px] my-2  cursor-pointer">
-                  {/* search */}
-                  <div className="col-span-6 flex gap-2 items-center h-10 relative">
-                    <Input
-                      type="text"
-                      value={searchInput}
-                      className="border-[#1B5FF2] border-2 p-2 text-black"
-                      placeholder="Search Profile ID"
-                      onChange={(e) => setSearchInput(e.target.value)}
-                    />
-                    <button className="absolute right-0 bg-[#1B5FF2] p-[9px] rounded-r">
-                      <Search size={20} className="  text-white" />
-                    </button>
-                    {searchInput && (
-                      <button
-                        className="absolute right-10"
-                        onClick={() => setSearchInput("")}
-                      >
-                        <X size={20} className="text-[#1B5FF2]" />
-                      </button>
-                    )}
-                  </div>
-                  {/* select profile type */}
-                  <div className="col-span-3">
-                    <Select
-                      value={selectedProfileType}
-                      onValueChange={(e) => setSelectedProfileType(e)}
-                    >
-                      <SelectTrigger className="border-[#1B5FF2] border-2">
-                        <SelectValue placeholder="Select Profile Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {data.length > 0 ? (
-                          uniqueProfiles.map((item) => (
-                            <SelectItem
-                              key={item.serial_number}
-                              value={item.profile_type}
-                            >
-                              {item.profile_type}
-                            </SelectItem>
-                          ))
-                        ) : (
-                          <SelectItem disabled value="None">
-                            None
-                          </SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="flex flex-row-reverse my-2  cursor-pointer">
                   {/* add profile */}
                   <div
                     className="bg-[#2563eb] rounded px-[10px] py-2 flex gap-1 items-center h-10 col-span-2 text-white"
@@ -171,11 +97,11 @@ const Profile = () => {
                 </div>
                 {/* Profile Type Table*/}
                 <ProfileTable
-                  profiles={searchInput ? filteredData : data}
+                  profiles={data}
                   setIsUpdated={setIsUpdated}
                   isLoading={isLoading}
                   setIsLoading={setIsLoading}
-                  primaryCheckedItems={primaryCheckedItems}
+                  primaryCheckedItem={primaryCheckedItem}
                 />
               </div>
               <div>
