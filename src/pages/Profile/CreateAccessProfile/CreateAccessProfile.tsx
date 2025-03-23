@@ -11,8 +11,9 @@ import CustomModal4 from "@/components/CustomModal/CustomModal4";
 import { X } from "lucide-react";
 import { useState } from "react";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
+import "../customStyle.css";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 import { toast } from "@/components/ui/use-toast";
 import Spinner from "@/components/Spinner/Spinner";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
@@ -30,7 +31,7 @@ const CreateAccessProfile = ({
   const url = import.meta.env.VITE_API_URL;
   const { combinedUser } = useGlobalContext();
   const [profileType, setProfileType] = useState("");
-  const [profileId, setProfileId] = useState<number | string>("");
+  const [profileId, setProfileId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,12 +39,12 @@ const CreateAccessProfile = ({
     try {
       setIsLoading(true);
       const data = { profile_type: profileType, profile_id: profileId };
-
+      // console.log(data, "data");
       const res = await api.post(
         `${url}/access-profiles/${combinedUser?.user_id}`,
         data
       );
-      console.log(res.data);
+
       if (res) {
         setIsUpdated(Math.random() + 23 * 3000);
         toast({
@@ -74,7 +75,7 @@ const CreateAccessProfile = ({
             onSubmit={handleSubmit}
           >
             <div className="flex gap-4">
-              <div className="flex flex-col gap-2 w-full">
+              <div className="flex flex-col gap-2 w-[300px]">
                 <label htmlFor="profile_type">Profile Type</label>
                 <Select
                   onValueChange={(e) => {
@@ -90,7 +91,6 @@ const CreateAccessProfile = ({
                     <SelectItem value="Email">Email</SelectItem>
                     <SelectItem value="Mobile Number">Mobile Number</SelectItem>
                     <SelectItem value="GUID">GUID</SelectItem>
-                    <SelectItem value="Username">Username</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -98,15 +98,12 @@ const CreateAccessProfile = ({
                 <label htmlFor="profile_type">Profile ID</label>
                 {profileType === "Mobile Number" ? (
                   <PhoneInput
-                    country={"bd"}
+                    international
+                    defaultCountry="BD"
+                    placeholder="Enter phone number"
                     value={profileId as string}
-                    onChange={(e) => setProfileId(e)}
-                    inputStyle={{
-                      width: "100%",
-                      height: "40px",
-                      borderRadius: "6px",
-                      border: "1px solid #e2e8f0",
-                    }}
+                    onChange={(e) => setProfileId(e as string)}
+                    className="w-full text-xl focus:outline-none transition duration-300 ease-in-out px-2 py-1 rounded mr-2 h-10 border"
                   />
                 ) : (
                   <Input

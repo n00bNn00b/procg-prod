@@ -7,8 +7,9 @@ import { IProfilesType1 } from "../Table/ProfileTable";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { toast } from "@/components/ui/use-toast";
 import Spinner from "@/components/Spinner/Spinner";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
+import "../customStyle.css";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 import { Checkbox } from "@/components/ui/checkbox";
 import { IProfilesType } from "@/types/interfaces/users.interface";
 
@@ -18,7 +19,7 @@ interface ICustomModalTypes {
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setIsUpdated: React.Dispatch<React.SetStateAction<number>>;
-  primaryCheckedItems: IProfilesType[];
+  primaryCheckedItem: IProfilesType | undefined;
 }
 const CustomModal = ({
   editableProfile,
@@ -26,11 +27,11 @@ const CustomModal = ({
   isLoading,
   setIsLoading,
   setIsUpdated,
-  primaryCheckedItems,
+  primaryCheckedItem,
 }: ICustomModalTypes) => {
   const api = useAxiosPrivate();
   const url = import.meta.env.VITE_API_URL;
-  const [profileId, setProfileId] = useState<number | string>(
+  const [profileId, setProfileId] = useState<string>(
     editableProfile.profile_id
   );
   const [isPrimary, setIsPrimary] = useState<string>(
@@ -43,29 +44,44 @@ const CustomModal = ({
   useEffect(() => {
     if (isChecked) {
       if (
-        primaryCheckedItems.length > 0 &&
-        primaryCheckedItems[0].primary_yn !== editableProfile.primary_yn
+        primaryCheckedItem &&
+        primaryCheckedItem.primary_yn !== editableProfile.primary_yn
       )
         toast({ description: `Primary profile already exists.` });
     }
   }, [isChecked]);
-
+  // console.log(primaryCheckedItem, "primaryCheckedItem");
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       setIsLoading(true);
       const data = {
-        profile_id:
-          editableProfile.profile_type !== "Email"
-            ? Number(profileId)
-            : profileId,
+        profile_id: profileId,
         primary_yn: isPrimary,
       };
+
+      if (isChecked) {
+        if (
+          primaryCheckedItem &&
+          primaryCheckedItem.primary_yn !== editableProfile.primary_yn
+        ) {
+          try {
+            await api.put(
+              `${url}/access-profiles/${primaryCheckedItem.user_id}/${primaryCheckedItem.serial_number}`,
+              { ...primaryCheckedItem, primary_yn: "N" }
+            );
+            // console.log(response.data, "response");
+          } catch (error) {
+            console.error("Error updating profile:", error);
+          }
+        }
+      }
+
       const res = await api.put(
         `${url}/access-profiles/${editableProfile.user_id}/${editableProfile.serial_number}`,
         data
       );
-      console.log(res.data, "res");
+
       if (res.status === 200) {
         toast({
           description: `${res.data.message}`,
@@ -110,15 +126,12 @@ const CustomModal = ({
                 <label htmlFor="profile_type">Profile ID</label>
                 {editableProfile.profile_type === "Mobile Number" ? (
                   <PhoneInput
-                    country={"bd"}
+                    international
+                    defaultCountry="BD"
+                    placeholder="Enter phone number"
                     value={profileId as string}
-                    onChange={(e) => setProfileId(e)}
-                    inputStyle={{
-                      width: "100%",
-                      height: "40px",
-                      borderRadius: "6px",
-                      border: "1px solid #e2e8f0",
-                    }}
+                    onChange={(e) => setProfileId(e as string)}
+                    className="w-full text-xl focus:outline-none transition duration-300 ease-in-out px-2 py-1 rounded mr-2 h-10 border"
                   />
                 ) : (
                   <Input
