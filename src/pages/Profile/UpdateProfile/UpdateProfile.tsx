@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { toast } from "@/components/ui/use-toast";
@@ -15,18 +15,16 @@ const UpdateProfile: React.FC = () => {
   const { combinedUser, setCombinedUser, isCombinedUserLoading } =
     useGlobalContext();
 
-  const profileLogo = useMemo(() => {
+  const profileLogo = () => {
     return isCombinedUserLoading
       ? DefaultLogo
       : combinedUser?.profile_picture
-      ? `${import.meta.env.VITE_API_URL}/${
-          combinedUser.profile_picture.original
-        }`
-      : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
-  }, [isCombinedUserLoading, combinedUser?.profile_picture]);
+      ? `${url}/${combinedUser.profile_picture.original}`
+      : `${url}/uploads/profiles/default/loading.gif`;
+  };
 
   const [isImageSelected, setIsImageSelected] = useState(false);
-  const [formData, setFormData] = useState(profileLogo);
+  const [profileImage, setProfileImage] = useState(profileLogo);
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,7 +32,7 @@ const UpdateProfile: React.FC = () => {
     const { name, files } = e.target;
     if (name === "profileImage" && files?.[0]) {
       setFile(files[0]);
-      setFormData(URL.createObjectURL(files[0]));
+      setProfileImage(URL.createObjectURL(files[0]));
       setIsImageSelected(true);
     }
   };
@@ -103,7 +101,9 @@ const UpdateProfile: React.FC = () => {
     <>
       <div className="relative w-[76px] h-[76px] rounded-full">
         <Avatar className="w-full h-full rounded-full object-cover border-2 border-gray-300 ">
-          <AvatarImage src={isCombinedUserLoading ? DefaultLogo : formData} />
+          <AvatarImage
+            src={isCombinedUserLoading ? DefaultLogo : profileImage}
+          />
           <AvatarFallback>{combinedUser?.user_name.slice(0, 1)}</AvatarFallback>
         </Avatar>
         <label
@@ -125,7 +125,7 @@ const UpdateProfile: React.FC = () => {
               d="M16.862 3.487l3.651 3.651M4.5 20.25h3.75L19.62 8.88a1.125 1.125 0 000-1.591l-3.75-3.75a1.125 1.125 0 00-1.591 0L4.5 16.5v3.75z"
             />
           </svg>
-          <span className="tooltiptext">
+          <span className="tooltiptext text-sm">
             Image size should be less than 200kb and only JPEG, PNG, and JPG
           </span>
           <input
