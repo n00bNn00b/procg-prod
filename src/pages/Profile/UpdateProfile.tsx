@@ -164,12 +164,6 @@ const UpdateProfile: React.FC = () => {
             <AvatarFallback>{token.user_name.slice(0, 1)}</AvatarFallback>
           </Avatar>
 
-          {/* <img
-            src={isCombinedUserLoading ? DefaultLogo : formData.profileImage}
-            alt="Profile"
-            className="w-full h-full rounded-full object-cover border-2 border-gray-300"
-          /> */}
-          {/* Edit Icon */}
           <label
             htmlFor="imageUpload"
             className="absolute bottom-2 right-2 bg-gray-700 p-2 rounded-full cursor-pointer hover:bg-gray-600"

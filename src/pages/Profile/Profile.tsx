@@ -1,7 +1,5 @@
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
-import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { QRCodeCanvas } from "qrcode.react";
-import { AvatarFallback } from "@/components/ui/avatar";
 import ProfileTable, { IProfilesType1 } from "./Table/ProfileTable";
 import { SquarePlus } from "lucide-react";
 import Spinner from "@/components/Spinner/Spinner";
@@ -10,6 +8,8 @@ import { useEffect, useState } from "react";
 import CreateAccessProfile from "./CreateAccessProfile/CreateAccessProfile";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { IProfilesType } from "@/types/interfaces/users.interface";
+import UpdateProfile from "./UpdateProfile/UpdateProfile";
+// import UpdateProfile from "./UpdateProfile";
 
 const Profile = () => {
   const { combinedUser, isCombinedUserLoading } = useGlobalContext();
@@ -66,17 +66,7 @@ const Profile = () => {
               <div className="grid col-span-2">
                 {/* User Information */}
                 <div className="flex gap-5 items-center px-4 py-[14px] bg-[#cedef2]">
-                  <>
-                    <Avatar>
-                      <AvatarImage
-                        className="object-cover object-center w-[76px] h-[76px] rounded-full mx-auto border border-8px"
-                        src={`${url}/${combinedUser?.profile_picture.original}`}
-                      />
-                      <AvatarFallback className="object-cover object-center w-[76px] h-[76px] rounded-full mx-auto border border-8px">
-                        {combinedUser?.user_name.slice(0, 1)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </>
+                  <UpdateProfile />
                   <div className="p-2">
                     <h5 className="font-medium">
                       {combinedUser?.first_name} {combinedUser?.last_name}
