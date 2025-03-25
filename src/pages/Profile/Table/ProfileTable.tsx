@@ -99,10 +99,10 @@ const ProfileTable = ({
       displayOrder.indexOf(b.profile_type)
   );
 
-  const handleDelete = async (serial_number: number) => {
+  const handleDelete = async (user_id: number, serial_number: number) => {
     try {
       const res = await api.delete(
-        `${url}/access-profiles/${editableProfile.user_id}/${serial_number}`
+        `${url}/access-profiles/${user_id}/${serial_number}`
       );
       if (res.status === 200) {
         toast({
@@ -200,7 +200,9 @@ const ProfileTable = ({
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => handleDelete(item.serial_number)}
+                                onClick={() =>
+                                  handleDelete(item.user_id, item.serial_number)
+                                }
                               >
                                 Continue
                               </AlertDialogAction>

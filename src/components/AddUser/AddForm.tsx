@@ -200,12 +200,7 @@ const AddForm: FC<AddFormProps> = ({
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      required
-                      type="text"
-                      placeholder="Last Name"
-                    />
+                    <Input {...field} type="text" placeholder="Last Name" />
                   </FormControl>
                 </FormItem>
               )}
