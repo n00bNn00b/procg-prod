@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import React, { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 interface Props {
   checkedMethod: string;
   setCheckedMethod: Dispatch<SetStateAction<string>>;

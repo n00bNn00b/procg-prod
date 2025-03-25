@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import MailSelectionImage from "./MailSelectionImage.svg";
 import { Button } from "@/components/ui/button";
 import {
