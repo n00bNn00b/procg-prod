@@ -1,6 +1,6 @@
 import CustomModal4 from "@/components/CustomModal/CustomModal4";
 import { Image, X } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, DragEvent, SetStateAction, useState } from "react";
 import UpdateImageFile from "./UpdateImageFile.svg";
 import { Button } from "@/components/ui/button";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
@@ -13,21 +13,17 @@ tailspin.register();
 
 interface Props {
   setIsEditProfileImage: Dispatch<SetStateAction<boolean>>;
-  profileImage: string;
-  setProfileImage: Dispatch<SetStateAction<string>>;
 }
-const SelectImageModal = ({
-  setIsEditProfileImage,
-  profileImage,
-  setProfileImage,
-}: Props) => {
+const SelectImageModal = ({ setIsEditProfileImage }: Props) => {
   const api = useAxiosPrivate();
   const url = import.meta.env.VITE_API_URL;
   const { combinedUser, setCombinedUser, isCombinedUserLoading } =
     useGlobalContext();
 
+  const [profileImage, setProfileImage] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, files } = e.target;
@@ -35,6 +31,25 @@ const SelectImageModal = ({
       setFile(files[0]);
       setProfileImage(URL.createObjectURL(files[0]));
     }
+  };
+  const handleDragOver = (event: DragEvent) => {
+    event.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDrop = (event: DragEvent) => {
+    event.preventDefault();
+
+    const file = event.dataTransfer.files[0]; // Get the first file dropped
+    if (file && file.type.startsWith("image")) {
+      setFile(file);
+      setProfileImage(URL.createObjectURL(file));
+    } else {
+      toast({
+        description: "Please drop a valid image file!",
+      });
+    }
+    setIsDragOver(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -117,7 +132,11 @@ const SelectImageModal = ({
                 <label
                   htmlFor="imageUpload"
                   aria-label="Upload profile image"
-                  className="border border-black border-dashed rounded w-[364px] h-[128px] flex flex-col items-center justify-between p-5 cursor-pointer"
+                  className={`border border-black border-dashed rounded w-[364px] h-[128px] flex flex-col items-center justify-between p-5 cursor-pointer ${
+                    isDragOver && "bg-slate-200"
+                  }`}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
                 >
                   {file ? (
                     <>
