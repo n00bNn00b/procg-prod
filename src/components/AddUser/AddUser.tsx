@@ -51,7 +51,7 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
             user_name: z.string(),
             first_name: z.string(),
             middle_name: z.string().optional(),
-            last_name: z.string(),
+            last_name: z.string().optional(),
             job_title: z.string(),
             tenant_id: z.string(),
             email_addresses: z
@@ -77,7 +77,7 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
             user_name: z.string(),
             first_name: z.string(),
             middle_name: z.string().optional(),
-            last_name: z.string(),
+            last_name: z.string().optional(),
             job_title: z.string(),
             email_addresses: z
               .string() // Ensure it's a string if provided
