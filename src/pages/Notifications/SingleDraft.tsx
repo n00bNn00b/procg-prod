@@ -50,6 +50,7 @@ const SingleDraft = () => {
   const url = import.meta.env.VITE_API_URL;
   const idString = useParams();
   const id = idString.id;
+  const date = new Date();
   const [parentid, setParentid] = useState<string>("");
   const [status, setStatus] = useState<string>("");
   const [recivers, setRecivers] = useState<UserModel[]>([]);
@@ -146,7 +147,7 @@ const SingleDraft = () => {
       recivers,
       subject,
       body,
-      date: new Date(),
+      date,
       status: "Sent",
       parentid,
       involvedusers,
@@ -156,8 +157,11 @@ const SingleDraft = () => {
     };
 
     const sendNotificationPayload = {
-      sender: sender.name,
-      recivers: receiverNames,
+      id,
+      parentid: id,
+      date,
+      sender: sender,
+      recivers: recivers,
       subject,
       body,
     };
@@ -198,7 +202,7 @@ const SingleDraft = () => {
       recivers,
       subject,
       body,
-      date: new Date(),
+      date,
       status: status,
       parentid,
       involvedusers,

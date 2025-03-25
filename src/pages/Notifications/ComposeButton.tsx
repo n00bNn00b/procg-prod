@@ -42,6 +42,7 @@ const ComposeButton = () => {
     profile_picture: token?.profile_picture.thumbnail,
   };
   const id = uuidv4();
+  const date = new Date();
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const receiverNames = recivers.map((rcvr) => rcvr.name);
@@ -98,7 +99,7 @@ const ComposeButton = () => {
       recivers,
       subject,
       body,
-      date: new Date(),
+      date,
       status: "Sent",
       parentid: id,
       involvedusers,
@@ -107,8 +108,11 @@ const ComposeButton = () => {
       recyclebin: [],
     };
     const sendNotificationPayload = {
-      sender: sender.name,
-      recivers: receiverNames,
+      id,
+      parentid: id,
+      date,
+      sender: sender,
+      recivers: recivers,
       subject,
       body,
     };
@@ -149,7 +153,7 @@ const ComposeButton = () => {
       recivers,
       subject,
       body,
-      date: new Date(),
+      date,
       status: "Draft",
       parentid: id,
       involvedusers,
