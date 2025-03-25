@@ -37,6 +37,7 @@ const ReplyDialog = ({
   const [isDrafting, setIsDrafting] = useState(false);
 
   const id = uuidv4();
+  const date = new Date();
   const { toast } = useToast();
   const sender = {
     name: user,
@@ -58,7 +59,7 @@ const ReplyDialog = ({
       recivers,
       subject,
       body,
-      date: new Date(),
+      date,
       status: "Sent",
       parentid: parrentMessage.parentid,
       involvedusers: parrentMessage.involvedusers,
@@ -68,8 +69,11 @@ const ReplyDialog = ({
     };
 
     const sendNotificationPayload = {
-      sender: sender.name,
-      recivers: receiverNames,
+      id,
+      parentid: parrentMessage.id,
+      date,
+      sender: sender,
+      recivers: recivers,
       subject,
       body,
     };
