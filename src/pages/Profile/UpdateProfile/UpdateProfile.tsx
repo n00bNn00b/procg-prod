@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { toast } from "@/components/ui/use-toast";
@@ -15,14 +15,14 @@ const UpdateProfile: React.FC = () => {
   const { combinedUser, setCombinedUser, isCombinedUserLoading } =
     useGlobalContext();
 
-  const profileLogo = () => {
+  const profileLogo = useMemo(() => {
     return isCombinedUserLoading
       ? DefaultLogo
-      : combinedUser?.profile_picture
+      : combinedUser?.profile_picture.original
       ? `${url}/${combinedUser.profile_picture.original}`
       : `${url}/uploads/profiles/default/loading.gif`;
-  };
-
+  }, [combinedUser?.profile_picture.original]);
+  console.log(profileLogo, "profileLogo");
   const [isImageSelected, setIsImageSelected] = useState(false);
   const [profileImage, setProfileImage] = useState(profileLogo);
   const [file, setFile] = useState<File | null>(null);
@@ -103,6 +103,7 @@ const UpdateProfile: React.FC = () => {
         <Avatar className="w-full h-full rounded-full object-cover border-2 border-gray-300 ">
           <AvatarImage
             src={isCombinedUserLoading ? DefaultLogo : profileImage}
+            alt="Profile image"
           />
           <AvatarFallback>{combinedUser?.user_name.slice(0, 1)}</AvatarFallback>
         </Avatar>

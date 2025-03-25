@@ -8,7 +8,8 @@ import { useEffect, useState } from "react";
 import CreateAccessProfile from "./CreateAccessProfile/CreateAccessProfile";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { IProfilesType } from "@/types/interfaces/users.interface";
-import UpdateProfile from "./UpdateProfile/UpdateProfile";
+import UpdateProfile3 from "./UpdateProfile/UpdateProfile3";
+// import UpdateProfile from "./UpdateProfile/UpdateProfile";
 // import UpdateProfile from "./UpdateProfile";
 
 const Profile = () => {
@@ -66,7 +67,7 @@ const Profile = () => {
               <div className="grid col-span-2">
                 {/* User Information */}
                 <div className="flex gap-5 items-center px-4 py-[14px] bg-[#cedef2]">
-                  <UpdateProfile />
+                  <UpdateProfile3 />
                   <div className="p-2">
                     <h5 className="font-medium">
                       {combinedUser?.first_name} {combinedUser?.last_name}
