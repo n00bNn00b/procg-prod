@@ -2,10 +2,10 @@ import React, { useMemo, useState } from "react";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import DefaultLogo from "/public/profile/loading.gif";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Pen } from "lucide-react";
 import "../customStyle.css";
 import { tailspin } from "ldrs";
 import SelectImageModal from "./SelectImageModal";
+import { ImagePlus } from "lucide-react";
 tailspin.register();
 
 const UpdateProfile3: React.FC = () => {
@@ -34,7 +34,7 @@ const UpdateProfile3: React.FC = () => {
           />
           <AvatarFallback>{combinedUser?.user_name.slice(0, 1)}</AvatarFallback>
         </Avatar>
-        <Pen
+        <ImagePlus
           className="absolute bottom-0 left-2 bg-gray-400 p-1 rounded-full cursor-pointer hover:bg-gray-500 "
           onClick={() => setIsEditProfileImage(!isEditProfileImage)}
         />

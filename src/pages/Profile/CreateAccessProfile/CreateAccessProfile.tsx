@@ -60,7 +60,7 @@ const CreateAccessProfile = ({
   };
 
   return (
-    <CustomModal4 h={"h-[384px]"} w="w-[770px]">
+    <CustomModal4 className="h-[384px] w-[770px]">
       <div className="h-full">
         <div className="flex justify-between bg-[#CEDEF2] p-5">
           <h3 className="font-semibold">Add Profile</h3>
