@@ -13,10 +13,10 @@ const Body1 = ({ checkedMethod, setCheckedMethod, setNextClick }: Props) => {
         <h3 className="font-medium">Choose Verification Method</h3>
         <div>
           <div className="flex justify-between items-center">
-            <h3 className="font-medium">Mobile</h3>
+            <h3 className="font-medium">Mobile Number</h3>
             <Checkbox
-              checked={checkedMethod === "Mobile"}
-              onCheckedChange={() => setCheckedMethod("Mobile")}
+              checked={checkedMethod === "Mobile Number"}
+              onCheckedChange={() => setCheckedMethod("Mobile Number")}
             />
           </div>
           <p>
@@ -40,6 +40,7 @@ const Body1 = ({ checkedMethod, setCheckedMethod, setNextClick }: Props) => {
       </div>
       <div className="flex justify-end">
         <Button
+          disabled={!checkedMethod}
           onClick={() => {
             setNextClick(checkedMethod);
           }}

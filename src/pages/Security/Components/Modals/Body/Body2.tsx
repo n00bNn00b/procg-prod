@@ -1,5 +1,6 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import MailSelectionImage from "./MailSelectionImage.svg";
+import MobileSelectionImage from "./MobileSectionImage.svg";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -8,60 +9,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import { IProfilesType } from "@/types/interfaces/users.interface";
 
 interface Props {
-  filterType: string;
+  data: IProfilesType[];
   selectedID: string;
   setSelectedID: Dispatch<SetStateAction<string>>;
   setSendClick: Dispatch<SetStateAction<string>>;
+  checkedMethod: string;
 }
 const Body2 = ({
-  filterType,
+  data,
   selectedID,
   setSelectedID,
   setSendClick,
+  checkedMethod,
 }: Props) => {
-  const api = useAxiosPrivate();
-  const url = import.meta.env.VITE_API_URL;
-  const { combinedUser } = useGlobalContext();
-  const [data, setData] = useState<IProfilesType[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (combinedUser?.user_id) {
-          const resData = await api.get<IProfilesType[]>(
-            `${url}/access-profiles/${combinedUser?.user_id}`
-          );
-          console.log(resData, "resData");
-          if (resData) {
-            setData(
-              resData.data.filter((item) => item.profile_type === filterType)
-            );
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
-
   return (
     <div className="flex flex-col gap-4 p-5 items-center">
       <div className="flex flex-col gap-4 items-center">
         <img
-          src={MailSelectionImage}
+          src={
+            checkedMethod === "Email"
+              ? MailSelectionImage
+              : MobileSelectionImage
+          }
           alt="Mail Image"
           className="w-[120px] h-90px"
         />
 
         <h3 className="font-medium">Enter your email to receive an OTP</h3>
         <div className="flex flex-col gap-3">
-          <h5>Email</h5>
+          <h5>{checkedMethod}</h5>
           <Select
             defaultValue={selectedID}
             onValueChange={(value) => setSelectedID(value)}
