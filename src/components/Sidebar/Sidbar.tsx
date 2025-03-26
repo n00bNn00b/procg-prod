@@ -68,7 +68,7 @@ const Sidbar = () => {
     <Sidebar
       collapsed={!open}
       transitionDuration={1000}
-      className="h-[calc(100vh-3rem)] text-[14px] bg-white z-40"
+      className="h-[calc(100vh-3rem)] text-[14px] z-40"
       style={{ position: "fixed" }}
       rootStyles={{
         ["." + sidebarClasses.container]: {
@@ -78,6 +78,7 @@ const Sidbar = () => {
           transition: "1s",
           paddingRight: 10,
           paddingLeft: 10,
+          backgroundColor: "#fbfbfb",
         },
         border: "none",
       }}
