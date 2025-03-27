@@ -76,7 +76,7 @@ const YourDevices = () => {
     <>
       <div className="flex flex-col gap-2 bg-[#b4d6f3] p-4">
         <h3 className="font-semibold">Your Devices</h3>
-        <p>Your devices linked to this account in ED anlytics.</p>
+        <p>Your account is logged in from multiple devices.</p>
         <div>
           <p className="w-[239px] text-center bg-white text-red-500 font-semibold p-2 inline-block cursor-pointer">
             Logout from all devices
