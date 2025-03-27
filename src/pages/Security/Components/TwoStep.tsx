@@ -7,7 +7,9 @@ const TwoStep = () => {
   const [twoStepModal1, setTwoStepModal1] = useState(false);
   return (
     <div
-      className={`flex flex-col gap-2 ${isOpenAccordion && "p-4 bg-[#f5f5f5]"}`}
+      className={`flex flex-col gap-2 ${
+        isOpenAccordion && "p-4 bg-[#f5f5f5]"
+      } transition-all duration-300 ease-in-out`}
     >
       <div className="bg-[#b4d6f3] p-4">
         <div
@@ -19,9 +21,9 @@ const TwoStep = () => {
         </div>
         {isOpenAccordion && (
           <p>
-            Protect your account with extra an extra verification step. Use an
-            authenticator app or receive codes via email to confirm your
-            identity each time you log in.
+            Protect your account with an extra verification step. Receive codes
+            via email or mobile number to confirm your identity each time you
+            log in.
           </p>
         )}
       </div>
