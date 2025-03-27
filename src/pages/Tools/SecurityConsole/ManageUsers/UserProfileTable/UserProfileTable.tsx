@@ -47,10 +47,10 @@ import {
   IUsersInfoTypes,
 } from "@/types/interfaces/users.interface";
 import Pagination5 from "@/components/Pagination/Pagination5";
-import CreateAccessProfile from "@/pages/Profile/CreateAccessProfile/CreateAccessProfile";
 import UpdateProfileIDModal from "@/pages/Profile/UpdateProfileIDModal/UpdateProfileIDModal";
 import { toast } from "@/components/ui/use-toast";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import CreateAccessProfile from "./CreateAccessProfile/CreateAccessProfile";
 interface Props {
   profileData: IProfilesType[];
   isUpdated: number;
@@ -179,6 +179,7 @@ export function UserProfileTable({
     <div className="px-3">
       {openModalName === "create_user_profile" && isCreateNewProfile ? (
         <CreateAccessProfile
+          selectedUsers={selectedUsers}
           setIsCreateNewProfile={setIsCreateNewProfile}
           setIsUpdated={setIsUpdated}
         />
@@ -248,7 +249,7 @@ export function UserProfileTable({
                           key={item.serial_number}
                           className="block text-red-500"
                         >
-                          {index + 1}. profile id : {item.profile_id}
+                          {index + 1}. Profile id : {item.profile_id}
                         </span>
                       ))}
                       This action cannot be undone. This will permanently delete

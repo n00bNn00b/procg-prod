@@ -11,25 +11,26 @@ import CustomModal4 from "@/components/CustomModal/CustomModal4";
 import { X } from "lucide-react";
 import { useState } from "react";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import "../customStyle.css";
+import "./customStyle.css";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { toast } from "@/components/ui/use-toast";
 import Spinner from "@/components/Spinner/Spinner";
-import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
+import { IUsersInfoTypes } from "@/types/interfaces/users.interface";
 
 interface ICreateAccessProfileTypes {
   setIsCreateNewProfile: React.Dispatch<React.SetStateAction<boolean>>;
   setIsUpdated: React.Dispatch<React.SetStateAction<number>>;
+  selectedUsers: IUsersInfoTypes[];
 }
 
 const CreateAccessProfile = ({
   setIsCreateNewProfile,
   setIsUpdated,
+  selectedUsers,
 }: ICreateAccessProfileTypes) => {
   const api = useAxiosPrivate();
   const url = import.meta.env.VITE_API_URL;
-  const { combinedUser } = useGlobalContext();
   const [profileType, setProfileType] = useState("");
   const [profileId, setProfileId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +42,7 @@ const CreateAccessProfile = ({
       const data = { profile_type: profileType, profile_id: profileId };
       // console.log(data, "data");
       const res = await api.post(
-        `${url}/access-profiles/${combinedUser?.user_id}`,
+        `${url}/access-profiles/${selectedUsers[0].user_id}`,
         data
       );
       console.log(data, res, "data");
