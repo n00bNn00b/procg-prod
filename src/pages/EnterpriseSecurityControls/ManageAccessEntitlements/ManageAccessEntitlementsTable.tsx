@@ -237,7 +237,7 @@ const ManageAccessEntitlementsTable = () => {
               <FileEdit className="cursor-not-allowed text-slate-200" />
             )}
             <Plus
-              className="cursor-pointer hover:scale-110 duration-300 text-green-500"
+              className="cursor-pointer hover:scale-110 duration-300 "
               onClick={() => {
                 setEditManageAccessEntitlement(true);
                 setSelectedManageAccessEntitlements(
@@ -257,7 +257,7 @@ const ManageAccessEntitlementsTable = () => {
                   <Trash
                     className={`hover:scale-110 duration-300 ${
                       selected.length > 0
-                        ? "text-red-500 cursor-pointer"
+                        ? " cursor-pointer"
                         : "text-slate-200 cursor-not-allowed"
                     }`}
                     onClick={handleGenerateAccessPointsDelete}

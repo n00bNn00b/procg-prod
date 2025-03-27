@@ -32,7 +32,6 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -43,28 +42,43 @@ import {
 } from "@/components/ui/table";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import columns from "./Columns";
-import CustomModal3 from "@/components/CustomModal/CustomModal3";
-import AddUser from "@/components/AddUser/AddUser";
-import { IUsersInfoTypes } from "@/types/interfaces/users.interface";
+import {
+  IProfilesType,
+  IUsersInfoTypes,
+} from "@/types/interfaces/users.interface";
 import Pagination5 from "@/components/Pagination/Pagination5";
+import CreateAccessProfile from "@/pages/Profile/CreateAccessProfile/CreateAccessProfile";
+import UpdateProfileIDModal from "@/pages/Profile/UpdateProfileIDModal/UpdateProfileIDModal";
+import { toast } from "@/components/ui/use-toast";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 interface Props {
+  profileData: IProfilesType[];
+  isUpdated: number;
+  setIsUpdated: React.Dispatch<React.SetStateAction<number>>;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   selectedUsers: IUsersInfoTypes[];
-  setSelectedUsers: React.Dispatch<React.SetStateAction<IUsersInfoTypes[]>>;
+  primaryCheckedItem: IProfilesType | undefined;
 }
-export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
-  const {
-    isLoading,
-    fetchCombinedUser,
-    usersInfo: data,
-    page,
-    setPage,
-    totalPage,
-    deleteCombinedUser,
-    token,
-    isOpenModal,
-    setIsOpenModal,
-  } = useGlobalContext();
-
+export function UserProfileTable({
+  profileData,
+  isUpdated,
+  setIsUpdated,
+  isLoading,
+  setIsLoading,
+  selectedUsers,
+  primaryCheckedItem,
+}: Props) {
+  const api = useAxiosPrivate();
+  const url = import.meta.env.VITE_API_URL;
+  const { fetchCombinedUser, page, setPage, totalPage } = useGlobalContext();
+  const [openModalName, setOpenModalName] = React.useState("");
+  const [isCreateNewProfile, setIsCreateNewProfile] = React.useState(false);
+  const [isUpdateProfile, setIsUpdateProfile] = React.useState(false);
+  const [selectedProfile, setSelectedProfile] = React.useState<IProfilesType[]>(
+    []
+  );
+  console.log(selectedProfile, "selectedProfile");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -72,12 +86,29 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  const displayOrder = ["Email", "Mobile Number", "GUID"];
+  const data = profileData.sort(
+    (a, b) =>
+      displayOrder.indexOf(a.profile_type) -
+      displayOrder.indexOf(b.profile_type)
+  );
+
   React.useEffect(() => {
     fetchCombinedUser();
   }, []);
+  React.useEffect(() => {
+    if (page > 1 || page < totalPage) {
+      fetchCombinedUser();
+    }
+  }, [page, totalPage]);
 
-  const handleRowSelection = (rowSelection: IUsersInfoTypes) => {
-    setSelectedUsers((prevSelected) => {
+  React.useEffect(() => {
+    handleCloseModal();
+  }, [isUpdated]);
+
+  const handleRowSelection = (rowSelection: IProfilesType) => {
+    setSelectedProfile((prevSelected) => {
       if (prevSelected.includes(rowSelection)) {
         return prevSelected.filter((item) => item !== rowSelection);
       } else {
@@ -86,12 +117,32 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
     });
   };
 
-  const handleDelete = () => {
-    deleteCombinedUser(selectedUsers);
+  const handleDelete = async () => {
+    // deleteCombinedUser(selected);
+    for (const element of selectedProfile) {
+      try {
+        const res = await api.delete(
+          `${url}/access-profiles/${element.user_id}/${element.serial_number}`
+        );
+        if (res.status === 200) {
+          toast({
+            description: `${res.data.message}`,
+          });
+          setIsUpdated(Math.random() + 23 * 3000);
+        }
+      } catch (error) {
+        console.log(error);
+        toast({
+          description: `Failed to delete`,
+          variant: "destructive",
+        });
+      }
+    }
     //table toggle empty
     table.getRowModel().rows.map((row) => row.toggleSelected(false));
-    setSelectedUsers([]);
+    setSelectedProfile([]);
   };
+
   const table = useReactTable({
     data,
     columns,
@@ -112,41 +163,36 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
     },
   });
 
-  React.useEffect(() => {
-    if (page > 1 || page < totalPage) {
-      fetchCombinedUser();
-    }
-  }, [page, totalPage]);
   const handleOpenModal = (modelName: string) => {
-    setIsOpenModal(modelName);
+    setOpenModalName(modelName);
+    setIsCreateNewProfile(true);
+    setIsUpdateProfile(true);
   };
   const handleCloseModal = () => {
-    setIsOpenModal(""); // close modal
-    setSelectedUsers([]);
+    setOpenModalName(""); // close modal
+    setSelectedProfile([]);
     //table toggle false
     table.toggleAllRowsSelected(false);
   };
-  React.useEffect(() => {
-    handleCloseModal();
-  }, [page]);
-
+  console.log(selectedProfile, "s");
   return (
     <div className="px-3">
-      {isOpenModal === "create_user" ? (
-        <CustomModal3>
-          <AddUser
-            selected={selectedUsers}
-            handleCloseModal={handleCloseModal}
-          />
-        </CustomModal3>
+      {openModalName === "create_user_profile" && isCreateNewProfile ? (
+        <CreateAccessProfile
+          setIsCreateNewProfile={setIsCreateNewProfile}
+          setIsUpdated={setIsUpdated}
+        />
       ) : (
-        isOpenModal === "edit_user" && (
-          <CustomModal3>
-            <AddUser
-              selected={selectedUsers}
-              handleCloseModal={handleCloseModal}
-            />
-          </CustomModal3>
+        openModalName === "edit_user_profile" &&
+        isUpdateProfile && (
+          <UpdateProfileIDModal
+            editableProfile={selectedProfile[0]}
+            setIsOpenModal={setIsUpdateProfile}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+            setIsUpdated={setIsUpdated}
+            primaryCheckedItem={primaryCheckedItem}
+          />
         )
       )}
       {/* top icon and columns*/}
@@ -156,20 +202,20 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
             <div className="flex gap-3">
               <PlusIcon
                 className="cursor-pointer"
-                onClick={() => handleOpenModal("create_user")}
+                onClick={() => handleOpenModal("create_user_profile")}
               />
               <button
                 disabled={
-                  selectedUsers.length > 1 || selectedUsers.length === 0
+                  selectedProfile.length > 1 || selectedProfile.length === 0
                 }
               >
                 <FileEdit
                   className={`${
-                    selectedUsers.length > 1 || selectedUsers.length === 0
+                    selectedProfile.length > 1 || selectedProfile.length === 0
                       ? "text-slate-200 cursor-not-allowed"
                       : "cursor-pointer"
                   }`}
-                  onClick={() => handleOpenModal("edit_user")}
+                  onClick={() => handleOpenModal("edit_user_profile")}
                 />
               </button>
 
@@ -177,13 +223,14 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
                 <AlertDialogTrigger asChild>
                   <button
                     disabled={
-                      token.user_type !== "system" || selectedUsers.length === 0
+                      // token.user_type !== "system" ||
+                      selectedProfile.length === 0
                     }
                   >
                     <Trash
                       className={`${
-                        token.user_type !== "system" ||
-                        selectedUsers.length === 0
+                        // token.user_type !== "system" ||
+                        selectedProfile.length === 0
                           ? "cursor-not-allowed text-slate-200"
                           : "cursor-pointer"
                       }`}
@@ -196,9 +243,12 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
                       Are you absolutely sure?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      {selectedUsers.map((item, index) => (
-                        <span key={item.user_id} className="block text-red-500">
-                          {index + 1}. username : {item.user_name}
+                      {selectedProfile.map((item, index) => (
+                        <span
+                          key={item.serial_number}
+                          className="block text-red-500"
+                        >
+                          {index + 1}. profile id : {item.profile_id}
                         </span>
                       ))}
                       This action cannot be undone. This will permanently delete
@@ -216,20 +266,22 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
             </div>
           </div>
         </div>
-        <Input
-          placeholder="Filter User Name..."
-          value={
-            (table.getColumn("user_name")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("user_name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm px-4 py-2"
-        />
+
+        {/* Middle Selected User */}
+        <div className="mx-auto">
+          {selectedUsers.length === 1 && (
+            <h3>
+              Selected Username:{" "}
+              <span className="font-semibold">
+                {selectedUsers[0].user_name}
+              </span>
+            </h3>
+          )}
+        </div>
         {/* Columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -256,7 +308,7 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
       </div>
       {/* Table */}
       <div className="rounded-md border">
-        <div>
+        <div className="h-[10rem] overflow-y-auto ">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -289,7 +341,7 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
                                   .getSelectedRowModel()
                                   .rows.map((row) => row.original);
                                 console.log(selectedRows);
-                                setSelectedUsers(selectedRows);
+                                setSelectedProfile(selectedRows);
                               }, 0);
                             }}
                             className="mr-1"
@@ -332,9 +384,9 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
                           <Checkbox
                             className=""
                             checked={row.getIsSelected()}
-                            onCheckedChange={(value) => {
-                              row.toggleSelected(!!value);
-                            }}
+                            onCheckedChange={(value) =>
+                              row.toggleSelected(!!value)
+                            }
                             onClick={() => handleRowSelection(row.original)}
                           />
                         ) : (
@@ -366,13 +418,12 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
             {table.getFilteredRowModel().rows.length} row(s) selected.
           </div>
           <Pagination5
-            currentPage={page}
+            currentPage={1}
             setCurrentPage={setPage}
-            totalPageNumbers={totalPage as number}
+            totalPageNumbers={1}
           />
         </div>
       </div>
-      {/* Start Pagination */}
     </div>
   );
 }

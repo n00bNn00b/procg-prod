@@ -17,7 +17,7 @@ export const columns: ColumnDef<IUsersInfoTypes>[] = [
   },
   {
     accessorKey: "user_name",
-    header: "User Name",
+    header: "Username",
     cell: ({ row }) => <div>{row.getValue("user_name")}</div>,
   },
 
