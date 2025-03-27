@@ -21,7 +21,7 @@ interface ICustomModalTypes {
   setIsUpdated: React.Dispatch<React.SetStateAction<number>>;
   primaryCheckedItem: IProfilesType | undefined;
 }
-const CustomModal = ({
+const UpdateProfileIDModal = ({
   editableProfile,
   setIsOpenModal,
   isLoading,
@@ -168,4 +168,4 @@ const CustomModal = ({
   );
 };
 
-export default CustomModal;
+export default UpdateProfileIDModal;

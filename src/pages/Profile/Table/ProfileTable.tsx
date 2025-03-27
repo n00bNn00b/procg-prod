@@ -1,6 +1,6 @@
 import { FilePenLine, Trash2 } from "lucide-react";
 import { useState } from "react";
-import CustomModal from "../CustomModal/CustomModal";
+import UpdateProfileIDModal from "../UpdateProfileIDModal/UpdateProfileIDModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -121,7 +121,7 @@ const ProfileTable = ({
   return (
     <div className="w-full">
       {isUpdateProfile && (
-        <CustomModal
+        <UpdateProfileIDModal
           editableProfile={editableProfile}
           setIsOpenModal={setIsUpdateProfile}
           isLoading={isLoading}

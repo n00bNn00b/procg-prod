@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Plus } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import Pagination5 from "@/components/Pagination/Pagination5";
@@ -107,7 +107,7 @@ const AccessPointsEntitleTable = () => {
         <div className="flex gap-2">
           {/* Access Points Button */}
           <Button
-            className="px-4 py-2 border rounded shadow"
+            className="px-4 py-2 rounded hover:shadow bg-white border text-black hover:bg-white"
             onClick={() => {
               setIsOpenModal("access_points");
               setPage(1);
@@ -124,12 +124,19 @@ const AccessPointsEntitleTable = () => {
 
           {/* Create Access Point Button */}
           <Button
+            className="bg-white border text-black hover:bg-white hover:shadow"
             onClick={() => {
               setIsOpenModal("create_access_point");
               setAccessPointStatus("create");
             }}
+            disabled={
+              !selectedManageAccessEntitlements?.entitlement_id ||
+              selected[0]?.entitlement_id !==
+                selectedManageAccessEntitlements?.entitlement_id ||
+              selected.length === 0
+            }
           >
-            Create Access Point
+            <Plus />
           </Button>
         </div>
 
