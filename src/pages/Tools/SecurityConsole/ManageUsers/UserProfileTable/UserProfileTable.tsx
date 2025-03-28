@@ -174,7 +174,7 @@ export function UserProfileTable({
     //table toggle false
     table.toggleAllRowsSelected(false);
   };
-  console.log(selectedProfile, "s");
+  console.log(selectedUsers, "selectedUsers");
   return (
     <div className="px-3">
       {openModalName === "create_user_profile" && isCreateNewProfile ? (
@@ -201,10 +201,16 @@ export function UserProfileTable({
         <div className="flex gap-3">
           <div className="flex gap-3 items-center px-4 py-2 border rounded">
             <div className="flex gap-3">
-              <PlusIcon
-                className="cursor-pointer"
-                onClick={() => handleOpenModal("create_user_profile")}
-              />
+              <button disabled={selectedUsers.length !== 1}>
+                <PlusIcon
+                  className={`${
+                    selectedUsers.length !== 1
+                      ? "text-slate-200 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
+                  onClick={() => handleOpenModal("create_user_profile")}
+                />
+              </button>
               <button
                 disabled={
                   selectedProfile.length > 1 || selectedProfile.length === 0

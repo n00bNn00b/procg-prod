@@ -43,10 +43,10 @@ import {
 } from "@/components/ui/table";
 import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import columns from "./Columns";
-import CustomModal3 from "@/components/CustomModal/CustomModal3";
 import AddUser from "@/components/AddUser/AddUser";
 import { IUsersInfoTypes } from "@/types/interfaces/users.interface";
 import Pagination5 from "@/components/Pagination/Pagination5";
+import CustomModal4 from "@/components/CustomModal/CustomModal4";
 interface Props {
   selectedUsers: IUsersInfoTypes[];
   setSelectedUsers: React.Dispatch<React.SetStateAction<IUsersInfoTypes[]>>;
@@ -133,20 +133,20 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
   return (
     <div className="px-3">
       {isOpenModal === "create_user" ? (
-        <CustomModal3>
+        <CustomModal4 className="w-[770px] ">
           <AddUser
             selected={selectedUsers}
             handleCloseModal={handleCloseModal}
           />
-        </CustomModal3>
+        </CustomModal4>
       ) : (
         isOpenModal === "edit_user" && (
-          <CustomModal3>
+          <CustomModal4 className="w-[770px] ">
             <AddUser
               selected={selectedUsers}
               handleCloseModal={handleCloseModal}
             />
-          </CustomModal3>
+          </CustomModal4>
         )
       )}
       {/* top icon and columns*/}

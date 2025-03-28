@@ -48,11 +48,10 @@ const EditForm: FC<AddFormProps> = ({
             name="user_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>User Name</FormLabel>
+                <FormLabel className="font-normal">User Name</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    required
                     autoFocus
                     type="text"
                     placeholder="User Name"
@@ -66,12 +65,8 @@ const EditForm: FC<AddFormProps> = ({
             name="job_title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Job Title</FormLabel>
-                <Select
-                  required
-                  onValueChange={field.onChange}
-                  value={field.value}
-                >
+                <FormLabel className="font-normal">Job Title</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a Job Title" />
@@ -93,14 +88,9 @@ const EditForm: FC<AddFormProps> = ({
             name="first_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>First Name</FormLabel>
+                <FormLabel className="font-normal">First Name</FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    required
-                    type="text"
-                    placeholder="First Name"
-                  />
+                  <Input {...field} type="text" placeholder="First Name" />
                 </FormControl>
               </FormItem>
             )}
@@ -110,7 +100,7 @@ const EditForm: FC<AddFormProps> = ({
             name="middle_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Middle Name</FormLabel>
+                <FormLabel className="font-normal">Middle Name</FormLabel>
                 <FormControl>
                   <Input {...field} type="text" placeholder="Middle Name" />
                 </FormControl>
@@ -122,14 +112,9 @@ const EditForm: FC<AddFormProps> = ({
             name="last_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel className="font-normal">Last Name</FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    required
-                    type="text"
-                    placeholder="Last Name"
-                  />
+                  <Input {...field} type="text" placeholder="Last Name" />
                 </FormControl>
               </FormItem>
             )}
@@ -140,7 +125,7 @@ const EditForm: FC<AddFormProps> = ({
             name="email_addresses"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="font-normal">Email</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -159,7 +144,7 @@ const EditForm: FC<AddFormProps> = ({
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className="font-normal">Password</FormLabel>
                 <FormControl>
                   <Input {...field} type="password" placeholder="••••••••" />
                 </FormControl>
@@ -173,7 +158,7 @@ const EditForm: FC<AddFormProps> = ({
             name="confirm_password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel className="font-normal">Confirm Password</FormLabel>
                 <FormControl>
                   <Input {...field} type="password" placeholder="••••••••" />
                 </FormControl>

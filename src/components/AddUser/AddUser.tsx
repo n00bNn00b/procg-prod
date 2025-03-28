@@ -30,6 +30,7 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
   const [userType, setUserType] = useState<string>("person");
   const [tenants, setTenants] = useState<ITenantsTypes[] | undefined>([]);
   hourglass.register();
+
   useEffect(() => {
     const fetchTenantsData = async () => {
       try {
@@ -43,6 +44,7 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
     };
     fetchTenantsData();
   }, []);
+
   const FormSchema = z
     .object(
       isOpenModal === "create_user"
@@ -74,11 +76,11 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
             }),
           }
         : {
-            user_name: z.string(),
-            first_name: z.string(),
+            user_name: z.string().optional(),
+            first_name: z.string().optional(),
             middle_name: z.string().optional(),
             last_name: z.string().optional(),
-            job_title: z.string(),
+            job_title: z.string().optional(),
             email_addresses: z
               .string() // Ensure it's a string if provided
               .optional() // Make it optional
@@ -94,18 +96,8 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
                   message: "One or more emails are invalid.",
                 }
               ),
-            password: z
-              .string()
-              .min(8, {
-                message: "At least 8 characters.",
-              })
-              .optional(),
-            confirm_password: z
-              .string()
-              .min(8, {
-                message: "At least 8 characters need.",
-              })
-              .optional(),
+            password: z.string().optional(),
+            confirm_password: z.string().optional(),
           }
     )
     .refine((data) => data.password === data.confirm_password, {
@@ -188,16 +180,17 @@ const AddUser: FC<IAddUserProps> = ({ selected, handleCloseModal }) => {
     }
   };
   return (
-    <div className="border rounded shadow-xl">
-      <div className="p-2 bg-slate-300 rounded-t mx-auto text-center font-bold flex justify-between">
-        {isOpenModal === "edit_user" ? (
-          <h1>Edit An Account</h1>
-        ) : (
-          <h1>Create An Account</h1>
-        )}
+    <div className=" ">
+      <div className="px-6 py-2 bg-slate-300 rounded-t mx-auto text-center font-bold flex justify-between">
+        <h1>
+          {isOpenModal === "edit_user"
+            ? "Edit An Account"
+            : "Create An Account"}
+        </h1>
+
         <X onClick={() => handleCloseModal()} className="cursor-pointer" />
       </div>
-      <div className="p-2">
+      <div className="px-11 py-3">
         {isOpenModal === "edit_user" ? (
           <EditForm
             form={form}
