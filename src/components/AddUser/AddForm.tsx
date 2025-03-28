@@ -278,14 +278,14 @@ const AddForm: FC<AddFormProps> = ({
         ) : (
           ""
         )}
-        <div className="flex gap-4 p-4">
+        <div className="flex gap-4 pt-4 justify-end">
           <Button
-            className="w-full bg-red-300 hover:bg-red-500"
+            className="bg-white text-red-400 hover:text-Red-100 font-bold hover:bg-white border hover:shadow"
             onClick={handleReset}
           >
             Reset Form
           </Button>
-          <Button className="w-full" type="submit">
+          <Button type="submit" className="hover:shadow">
             {isLoading ? (
               <l-tailspin
                 size="30"
@@ -294,7 +294,7 @@ const AddForm: FC<AddFormProps> = ({
                 color="white"
               ></l-tailspin>
             ) : (
-              "Submit"
+              "Create"
             )}
           </Button>
         </div>
