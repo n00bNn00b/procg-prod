@@ -99,6 +99,22 @@ const AccessPointsEntitleTable = () => {
     table.toggleAllRowsSelected(false); // Reset row selection
   }, [page, totalPage, selected.length]);
 
+  // default hidden columns
+  const hiddenColumns = [
+    "element_type",
+    "access_control",
+    "change_control",
+    "audit",
+  ];
+
+  useEffect(() => {
+    table.getAllColumns().forEach((column) => {
+      if (hiddenColumns.includes(column.id)) {
+        column.toggleVisibility(false);
+      }
+    });
+  }, [table]);
+  console.log(data, "data");
   // Table Rendering
   return (
     <div className="px-3">
@@ -183,7 +199,7 @@ const AccessPointsEntitleTable = () => {
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="border bg-slate-200 py-0 px-1 h-9"
+                    className="border h-9 py-0 px-1 border-slate-400 bg-slate-200"
                   >
                     {header.isPlaceholder
                       ? null
