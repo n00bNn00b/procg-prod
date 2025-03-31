@@ -32,7 +32,6 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -216,16 +215,6 @@ export function UsersTable({ selectedUsers, setSelectedUsers }: Props) {
             </div>
           </div>
         </div>
-        <Input
-          placeholder="Filter User Name..."
-          value={
-            (table.getColumn("user_name")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("user_name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm px-4 py-2"
-        />
         {/* Columns */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

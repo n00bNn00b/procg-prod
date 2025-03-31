@@ -1,8 +1,3 @@
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import ChangePassword from "./ChangePassword";
-// import UserLinkedDevices from "@/components/LinkedDevices/UserLinkedDevices";
-// import LinkDevices from "./LinkDevices";
-
 import LinkADevice from "./Components/LinkADevice";
 import Passwords from "./Components/Passwords";
 import TwoStep from "./Components/TwoStep";

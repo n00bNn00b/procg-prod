@@ -31,7 +31,12 @@ export const columns: ColumnDef<IProfilesType>[] = [
       const primary: string = row.getValue("primary_yn");
       return (
         <div className="text-center">
-          <input type="checkbox" checked={primary === "Y"} readOnly />
+          <input
+            type="checkbox"
+            checked={primary === "Y"}
+            readOnly
+            className="accent-black"
+          />
         </div>
       );
     },
