@@ -311,7 +311,7 @@ const ManageDataSources = () => {
           <div className="flex gap-3 px-4 py-2 border rounded">
             <AlertDialog>
               <AlertDialogTrigger>
-                <Plus className="cursor-pointer  text-green-500" />
+                <Plus className="cursor-pointer" />
               </AlertDialogTrigger>
               <AlertDialogContent className="bg-slate-300">
                 <AlertDialogHeader>
@@ -373,7 +373,7 @@ const ManageDataSources = () => {
                 <Trash
                   className={`${
                     selected.length > 0
-                      ? "cursor-pointer hover:text-red-600"
+                      ? "cursor-pointer"
                       : "cursor-not-allowed"
                   }`}
                 />

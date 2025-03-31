@@ -78,7 +78,7 @@ export function UserProfileTable({
   const [selectedProfile, setSelectedProfile] = React.useState<IProfilesType[]>(
     []
   );
-  console.log(selectedProfile, "selectedProfile");
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -174,7 +174,7 @@ export function UserProfileTable({
     //table toggle false
     table.toggleAllRowsSelected(false);
   };
-  console.log(selectedUsers, "selectedUsers");
+
   return (
     <div className="px-3">
       {openModalName === "create_user_profile" && isCreateNewProfile ? (

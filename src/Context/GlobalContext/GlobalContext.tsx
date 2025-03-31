@@ -278,13 +278,10 @@ export function GlobalContextProvider({
         });
       }
     } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        toast({
-          title: "Info !!!",
-          variant: "destructive",
-          description: `${error.response.data.message}`,
-        });
-      }
+      toast({
+        variant: "destructive",
+        description: `Failed to reset password.`,
+      });
 
       return;
     } finally {

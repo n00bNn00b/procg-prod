@@ -171,6 +171,12 @@
       "/tools",
       "/tools/security-console",
       "/tools/security-console/manage-users",
+      "/tools/security-console/manage-privileges-and-roles",
+      "/tools/enterprise-process-modeler",
+      "/tools/enterprise-process-modeler/orchestration-studio",
+      "/tools/enterprise-process-modeler/orchestration-studio-2",
+      "/tools/enterprise-system-integrations",
+      "/tools/enterprise-system-integrations/manage-data-sources",
       "/tools/manage-data-sources"
     ],
     "menuItems": [
