@@ -203,6 +203,26 @@ const ManageAccessEntitlementsTable = () => {
     setSelected([]);
   };
 
+  // default hidden columns
+  const hiddenColumns = [
+    "comments",
+    "effective_date",
+    "revison",
+    "revision_date",
+    "created_on",
+    "created_by",
+    "last_updated_on",
+    "last_updated_by",
+  ];
+
+  React.useEffect(() => {
+    table.getAllColumns().forEach((column) => {
+      if (hiddenColumns.includes(column.id)) {
+        column.toggleVisibility(false);
+      }
+    });
+  }, [table]);
+
   // Table Render
   return (
     <div className="px-3">
