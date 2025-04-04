@@ -70,7 +70,7 @@ export function UserProfileTable({
   primaryCheckedItem,
 }: Props) {
   const api = useAxiosPrivate();
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const { fetchCombinedUser, page, setPage, totalPage } = useGlobalContext();
   const [openModalName, setOpenModalName] = React.useState("");
   const [isCreateNewProfile, setIsCreateNewProfile] = React.useState(false);

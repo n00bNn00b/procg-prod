@@ -47,7 +47,7 @@ const SingleDraft = () => {
   } = useSocketContext();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const idString = useParams();
   const id = idString.id;
   const date = new Date();

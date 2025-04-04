@@ -42,7 +42,7 @@ const DND: FC<IManageAccessModelDNDProps> = ({
     setStateChange,
   } = useAACContext();
   // console.log(attrMaxId, "attrMaxId");
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const iniLeftWidget = [
     {
       id: manageAccessModelAttrMaxId ? manageAccessModelAttrMaxId + 1 : 1,

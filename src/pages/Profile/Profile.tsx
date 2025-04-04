@@ -14,7 +14,7 @@ import UpdateProfile3 from "./UpdateProfile/UpdateProfile3";
 
 const Profile = () => {
   const { combinedUser, isCombinedUserLoading } = useGlobalContext();
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const api = useAxiosPrivate();
   const [isCreateNewProfile, setIsCreateNewProfile] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

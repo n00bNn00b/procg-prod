@@ -14,8 +14,12 @@ const UpdateProfile: React.FC = () => {
   const profileLogo = isCombinedUserLoading
     ? DefaultLogo
     : combinedUser?.profile_picture
-    ? `${import.meta.env.VITE_API_URL}/${combinedUser.profile_picture.original}`
-    : `${import.meta.env.VITE_API_URL}/uploads/profiles/default/loading.gif`;
+    ? `${import.meta.env.VITE_NODE_ENDPOINT_URL}/${
+        combinedUser.profile_picture.original
+      }`
+    : `${
+        import.meta.env.VITE_NODE_ENDPOINT_URL
+      }/uploads/profiles/default/loading.gif`;
 
   const [formData, setFormData] = useState({
     user_name: combinedUser?.user_name || "",
@@ -123,12 +127,12 @@ const UpdateProfile: React.FC = () => {
             last_name: formData.last_name,
             email_addresses: formData.email_addresses,
             profile_picture: {
-              original: `${import.meta.env.VITE_API_URL}/uploads/profiles/${
-                combinedUser?.user_name
-              }/${file?.name}`,
-              thumbnail: `${import.meta.env.VITE_API_URL}/uploads/profiles/${
-                combinedUser?.user_name
-              }/thumbnail.jpg`,
+              original: `${
+                import.meta.env.VITE_NODE_ENDPOINT_URL
+              }/uploads/profiles/${combinedUser?.user_name}/${file?.name}`,
+              thumbnail: `${
+                import.meta.env.VITE_NODE_ENDPOINT_URL
+              }/uploads/profiles/${combinedUser?.user_name}/thumbnail.jpg`,
             },
           };
         });

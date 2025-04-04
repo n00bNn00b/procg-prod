@@ -43,7 +43,7 @@ const ReplyDialog = ({
     name: user,
     profile_picture: token?.profile_picture.thumbnail,
   };
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const totalInvolved = [...parrentMessage.recivers, parrentMessage.sender];
   const recivers = totalInvolved.filter((rcvr) => rcvr.name !== user);
   const receiverNames = recivers.map((rcvr) => rcvr.name);

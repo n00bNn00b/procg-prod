@@ -43,7 +43,7 @@ const ComposeButton = () => {
   };
   const id = uuidv4();
   const date = new Date();
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl = import.meta.env.VITE_NODE_ENDPOINT_URL;
 
   const receiverNames = recivers.map((rcvr) => rcvr.name);
 

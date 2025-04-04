@@ -29,7 +29,7 @@ const SignInForm = ({ setIsWrongCredential }: SignInFormProps) => {
   const { setToken, isLoading, setIsLoading } = useGlobalContext();
   const navigate = useNavigate();
   const location = useLocation();
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const initialUserInfo = useInitialUserInfo();
 
   const form = useForm<z.infer<typeof loginSchema>>({

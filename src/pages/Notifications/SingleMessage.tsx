@@ -30,7 +30,7 @@ const SingleMessage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const { id } = useParams();
 
   const [totalMessages, setTotalMessages] = useState<Message[]>([]);

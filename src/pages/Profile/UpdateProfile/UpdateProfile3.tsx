@@ -9,7 +9,7 @@ import { FilePenLine } from "lucide-react";
 tailspin.register();
 
 const UpdateProfile3: React.FC = () => {
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const { combinedUser, isCombinedUserLoading } = useGlobalContext();
   const [isEditProfileImage, setIsEditProfileImage] = useState(false);
 

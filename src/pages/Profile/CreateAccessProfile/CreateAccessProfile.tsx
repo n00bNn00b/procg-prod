@@ -28,7 +28,7 @@ const CreateAccessProfile = ({
   setIsUpdated,
 }: ICreateAccessProfileTypes) => {
   const api = useAxiosPrivate();
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const { combinedUser } = useGlobalContext();
   const [profileType, setProfileType] = useState("");
   const [profileId, setProfileId] = useState<string>("");

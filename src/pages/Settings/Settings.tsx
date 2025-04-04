@@ -4,7 +4,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { useState } from "react";
 
 const Settings = () => {
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const [isCopyURL, setIsCopyURL] = useState(false);
 
   const handleCopy = () => {

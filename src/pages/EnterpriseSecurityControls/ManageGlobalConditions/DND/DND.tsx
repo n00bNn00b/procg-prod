@@ -36,7 +36,7 @@ const DND: FC = () => {
     setIsActionLoading,
   } = useAACContext();
   // console.log(attrMaxId, "attrMaxId");
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const iniLeftWidget = [
     {
       id: attrMaxId ? attrMaxId + 1 : 1,

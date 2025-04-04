@@ -17,7 +17,7 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 const Dropdown = () => {
   const api = useAxiosPrivate();
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const { token, setToken, combinedUser } = useGlobalContext();
   const { handleDisconnect, setLinkedDevices } = useSocketContext();
   const navigate = useNavigate();
