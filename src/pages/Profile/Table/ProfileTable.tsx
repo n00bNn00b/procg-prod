@@ -80,7 +80,7 @@ const ProfileTable = ({
   primaryCheckedItem,
 }: ProfileTableProps) => {
   const api = useAxiosPrivate();
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const [isUpdateProfile, setIsUpdateProfile] = useState(false);
   const [editableProfile, setEditableProfile] = useState<IProfilesType1>(
     {} as IProfilesType1
@@ -93,7 +93,10 @@ const ProfileTable = ({
   };
 
   const displayOrder = ["Email", "Mobile Number", "GUID"];
-  const sortedProfiles = profiles.sort(
+  const sortedProfilesBySerialNumber = profiles.sort(
+    (a, b) => b.serial_number - a.serial_number
+  );
+  const sortedProfiles = sortedProfilesBySerialNumber.sort(
     (a, b) =>
       displayOrder.indexOf(a.profile_type) -
       displayOrder.indexOf(b.profile_type)

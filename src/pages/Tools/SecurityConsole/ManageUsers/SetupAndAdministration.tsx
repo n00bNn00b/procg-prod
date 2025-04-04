@@ -9,7 +9,7 @@ import { UserProfileTable } from "./UserProfileTable/UserProfileTable";
 
 const SetupAndAdministration = () => {
   const api = useAxiosPrivate();
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<IProfilesType[]>([]);
   // const [filterUserID, setFilterUserID] = useState<number[]>([]);

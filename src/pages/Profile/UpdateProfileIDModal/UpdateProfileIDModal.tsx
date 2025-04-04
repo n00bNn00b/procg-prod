@@ -30,7 +30,7 @@ const UpdateProfileIDModal = ({
   primaryCheckedItem,
 }: ICustomModalTypes) => {
   const api = useAxiosPrivate();
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const [profileId, setProfileId] = useState<string>(
     editableProfile.profile_id
   );

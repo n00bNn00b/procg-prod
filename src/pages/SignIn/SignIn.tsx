@@ -12,7 +12,7 @@ import Spinner from "@/components/Spinner/Spinner";
 const SignIn = () => {
   const { token, isUserLoading } = useGlobalContext();
   const [isWrongCredential, setIsWrongCredential] = useState(false);
-  // const url = import.meta.env.VITE_API_URL;
+  // const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   if (isUserLoading) {
     return (
       <div className="flex flex-row min-h-screen justify-center items-center">

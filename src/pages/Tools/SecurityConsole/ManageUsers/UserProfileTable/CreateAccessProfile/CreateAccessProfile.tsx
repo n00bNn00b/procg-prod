@@ -30,7 +30,7 @@ const CreateAccessProfile = ({
   selectedUsers,
 }: ICreateAccessProfileTypes) => {
   const api = useAxiosPrivate();
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const [profileType, setProfileType] = useState("");
   const [profileId, setProfileId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);

@@ -35,7 +35,7 @@ const AccessPointsEntitleModal = () => {
   } = useManageAccessEntitlementsContext();
   const { token } = useGlobalContext();
   const [dataSources, setDataSources] = useState<IDataSourceTypes[]>([]);
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   useEffect(() => {
     const res = async () => {
       const res = await axios.get<IDataSourceTypes[]>(`${url}/data-sources`);
@@ -85,7 +85,7 @@ const AccessPointsEntitleModal = () => {
     console.log(data.data_source_id, "datasource");
     console.log(typeof data.data_source_id, "datasource");
     const postAccessPointsElement = async () => {
-      const url = import.meta.env.VITE_API_URL;
+      const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
       //get max access point id
       const res = await axios.get(`${url}/access-points-element`);
       const accessPointsMaxId =

@@ -37,7 +37,7 @@ const DragOverlayComponent: FC<DroppableItemProps> = ({
   index,
   setItems,
 }) => {
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_NODE_ENDPOINT_URL;
   const {
     attributes,
     isDragging,
