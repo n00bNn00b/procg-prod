@@ -28,7 +28,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useGlobalContext } from "@/Context/GlobalContext/GlobalContext";
 import columns from "./Columns";
 import Pagination5 from "@/components/Pagination/Pagination5";
 import { IARMViewRequestsTypes } from "@/types/interfaces/ARM.interface";
@@ -37,7 +36,7 @@ import { useARMContext } from "@/Context/ARMContext/ARMContext";
 export function ViewRequestTable() {
   const { totalPage, getViewRequests, isLoading } = useARMContext();
   const [data, setData] = React.useState<IARMViewRequestsTypes[] | []>([]);
-  const { page, setPage } = useGlobalContext();
+  const [page, setPage] = React.useState(1);
   const limit = 8;
   React.useEffect(() => {
     const fetchData = async () => {
