@@ -89,7 +89,7 @@ export const columns: ColumnDef<IAsynchronousRequestsAndTaskSchedulesTypesV1>[] 
       },
       cell: ({ row }) => {
         const data = row.getValue("schedule");
-        return <div className="break-all">{JSON.stringify(data)}</div>;
+        return <div>{JSON.stringify(data)}</div>;
       },
     },
     {
